@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<process version="5.3.015">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="5.3.015" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="UTF-8"/>
+    <process expanded="true">
+      <operator activated="true" class="retrieve" compatibility="5.3.015" expanded="true" height="60" name="Retrieve" width="90" x="45" y="210">
+        <parameter key="repository_entry" value="//Samples/data/Iris"/>
+      </operator>
+      <operator activated="true" class="rule_induction" compatibility="5.3.015" expanded="true" height="76" name="Rule Induction" width="90" x="179" y="210">
+        <parameter key="criterion" value="information_gain"/>
+        <parameter key="sample_ratio" value="0.9"/>
+        <parameter key="pureness" value="0.9"/>
+        <parameter key="minimal_prune_benefit" value="0.25"/>
+        <parameter key="use_local_random_seed" value="false"/>
+        <parameter key="local_random_seed" value="1992"/>
+      </operator>
+      <operator activated="true" class="multiply" compatibility="5.3.015" expanded="true" height="112" name="Multiply (2)" width="90" x="313" y="255"/>
+      <operator activated="true" class="disesor.analytics.rules:rule_generator" compatibility="5.0.000" expanded="true" height="76" name="Generator reguł" width="90" x="514" y="390">
+        <parameter key="min_rule_covered" value="10"/>
+        <parameter key="quality_measure" value="precision"/>
+      </operator>
+      <operator activated="true" class="apply_model" compatibility="5.3.015" expanded="true" height="76" name="Apply Model (3)" width="90" x="648" y="390">
+        <list key="application_parameters"/>
+        <parameter key="create_view" value="false"/>
+      </operator>
+      <operator activated="true" class="performance_classification" compatibility="5.3.015" expanded="true" height="76" name="Performance (3)" width="90" x="782" y="390">
+        <parameter key="main_criterion" value="first"/>
+        <parameter key="accuracy" value="true"/>
+        <parameter key="classification_error" value="false"/>
+        <parameter key="kappa" value="false"/>
+        <parameter key="weighted_mean_recall" value="false"/>
+        <parameter key="weighted_mean_precision" value="false"/>
+        <parameter key="spearman_rho" value="false"/>
+        <parameter key="kendall_tau" value="false"/>
+        <parameter key="absolute_error" value="false"/>
+        <parameter key="relative_error" value="false"/>
+        <parameter key="relative_error_lenient" value="false"/>
+        <parameter key="relative_error_strict" value="false"/>
+        <parameter key="normalized_absolute_error" value="false"/>
+        <parameter key="root_mean_squared_error" value="false"/>
+        <parameter key="root_relative_squared_error" value="false"/>
+        <parameter key="squared_error" value="false"/>
+        <parameter key="correlation" value="false"/>
+        <parameter key="squared_correlation" value="false"/>
+        <parameter key="cross-entropy" value="false"/>
+        <parameter key="margin" value="false"/>
+        <parameter key="soft_margin_loss" value="false"/>
+        <parameter key="logistic_loss" value="false"/>
+        <parameter key="skip_undefined_labels" value="true"/>
+        <parameter key="use_example_weights" value="true"/>
+        <list key="class_weights"/>
+      </operator>
+      <operator activated="true" class="multiply" compatibility="5.3.015" expanded="true" height="94" name="Multiply" width="90" x="313" y="120"/>
+      <operator activated="true" class="disesor.analytics.rules:rule_translator" compatibility="5.0.000" expanded="true" height="76" name="Translator reguł" width="90" x="514" y="120"/>
+      <operator activated="true" class="apply_model" compatibility="5.3.015" expanded="true" height="76" name="Apply Model (2)" width="90" x="514" y="255">
+        <list key="application_parameters"/>
+        <parameter key="create_view" value="false"/>
+      </operator>
+      <operator activated="true" class="performance_classification" compatibility="5.3.015" expanded="true" height="76" name="Performance (2)" width="90" x="782" y="255">
+        <parameter key="main_criterion" value="first"/>
+        <parameter key="accuracy" value="true"/>
+        <parameter key="classification_error" value="false"/>
+        <parameter key="kappa" value="false"/>
+        <parameter key="weighted_mean_recall" value="false"/>
+        <parameter key="weighted_mean_precision" value="false"/>
+        <parameter key="spearman_rho" value="false"/>
+        <parameter key="kendall_tau" value="false"/>
+        <parameter key="absolute_error" value="false"/>
+        <parameter key="relative_error" value="false"/>
+        <parameter key="relative_error_lenient" value="false"/>
+        <parameter key="relative_error_strict" value="false"/>
+        <parameter key="normalized_absolute_error" value="false"/>
+        <parameter key="root_mean_squared_error" value="false"/>
+        <parameter key="root_relative_squared_error" value="false"/>
+        <parameter key="squared_error" value="false"/>
+        <parameter key="correlation" value="false"/>
+        <parameter key="squared_correlation" value="false"/>
+        <parameter key="cross-entropy" value="false"/>
+        <parameter key="margin" value="false"/>
+        <parameter key="soft_margin_loss" value="false"/>
+        <parameter key="logistic_loss" value="false"/>
+        <parameter key="skip_undefined_labels" value="true"/>
+        <parameter key="use_example_weights" value="true"/>
+        <list key="class_weights"/>
+      </operator>
+      <operator activated="true" class="apply_model" compatibility="5.3.015" expanded="true" height="76" name="Apply Model" width="90" x="648" y="120">
+        <list key="application_parameters"/>
+        <parameter key="create_view" value="false"/>
+      </operator>
+      <operator activated="true" class="performance_classification" compatibility="5.3.015" expanded="true" height="76" name="Performance" width="90" x="782" y="30">
+        <parameter key="main_criterion" value="first"/>
+        <parameter key="accuracy" value="true"/>
+        <parameter key="classification_error" value="false"/>
+        <parameter key="kappa" value="false"/>
+        <parameter key="weighted_mean_recall" value="false"/>
+        <parameter key="weighted_mean_precision" value="false"/>
+        <parameter key="spearman_rho" value="false"/>
+        <parameter key="kendall_tau" value="false"/>
+        <parameter key="absolute_error" value="false"/>
+        <parameter key="relative_error" value="false"/>
+        <parameter key="relative_error_lenient" value="false"/>
+        <parameter key="relative_error_strict" value="false"/>
+        <parameter key="normalized_absolute_error" value="false"/>
+        <parameter key="root_mean_squared_error" value="false"/>
+        <parameter key="root_relative_squared_error" value="false"/>
+        <parameter key="squared_error" value="false"/>
+        <parameter key="correlation" value="false"/>
+        <parameter key="squared_correlation" value="false"/>
+        <parameter key="cross-entropy" value="false"/>
+        <parameter key="margin" value="false"/>
+        <parameter key="soft_margin_loss" value="false"/>
+        <parameter key="logistic_loss" value="false"/>
+        <parameter key="skip_undefined_labels" value="true"/>
+        <parameter key="use_example_weights" value="true"/>
+        <list key="class_weights"/>
+      </operator>
+      <connect from_op="Retrieve" from_port="output" to_op="Rule Induction" to_port="training set"/>
+      <connect from_op="Rule Induction" from_port="model" to_op="Multiply" to_port="input"/>
+      <connect from_op="Rule Induction" from_port="exampleSet" to_op="Multiply (2)" to_port="input"/>
+      <connect from_op="Multiply (2)" from_port="output 1" to_op="Apply Model (2)" to_port="unlabelled data"/>
+      <connect from_op="Multiply (2)" from_port="output 2" to_op="Translator reguł" to_port="example set"/>
+      <connect from_op="Multiply (2)" from_port="output 3" to_op="Generator reguł" to_port="training set"/>
+      <connect from_op="Generator reguł" from_port="model" to_op="Apply Model (3)" to_port="model"/>
+      <connect from_op="Generator reguł" from_port="exampleSet" to_op="Apply Model (3)" to_port="unlabelled data"/>
+      <connect from_op="Apply Model (3)" from_port="labelled data" to_op="Performance (3)" to_port="labelled data"/>
+      <connect from_op="Apply Model (3)" from_port="model" to_port="result 6"/>
+      <connect from_op="Performance (3)" from_port="performance" to_port="result 5"/>
+      <connect from_op="Multiply" from_port="output 1" to_op="Apply Model (2)" to_port="model"/>
+      <connect from_op="Multiply" from_port="output 2" to_op="Translator reguł" to_port="rapidminer rules"/>
+      <connect from_op="Translator reguł" from_port="disesor rules" to_op="Apply Model" to_port="model"/>
+      <connect from_op="Translator reguł" from_port="example set" to_op="Apply Model" to_port="unlabelled data"/>
+      <connect from_op="Apply Model (2)" from_port="labelled data" to_op="Performance (2)" to_port="labelled data"/>
+      <connect from_op="Apply Model (2)" from_port="model" to_port="result 4"/>
+      <connect from_op="Performance (2)" from_port="performance" to_port="result 3"/>
+      <connect from_op="Apply Model" from_port="labelled data" to_op="Performance" to_port="labelled data"/>
+      <connect from_op="Apply Model" from_port="model" to_port="result 2"/>
+      <connect from_op="Performance" from_port="performance" to_port="result 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+      <portSpacing port="sink_result 3" spacing="0"/>
+      <portSpacing port="sink_result 4" spacing="0"/>
+      <portSpacing port="sink_result 5" spacing="0"/>
+      <portSpacing port="sink_result 6" spacing="0"/>
+      <portSpacing port="sink_result 7" spacing="0"/>
+    </process>
+  </operator>
+</process>

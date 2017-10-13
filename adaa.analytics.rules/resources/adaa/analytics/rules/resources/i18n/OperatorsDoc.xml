@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="windows-1252" standalone="no"?>
+<operatorHelp lang="en_EN">    
+   <group>
+      <key>adaa</key>
+      <name>ADAA</name>
+   </group>    
+   
+   <operator>
+	   <key>expert_rule_generator</key>
+	   <name>Expert rule generator</name>
+	   <synopsis>Expert rule generator</synopsis>
+	   <help>
+	   Generates classification, regression, or survival rules. Classification rules can be induced with a help expert knowledge.
+	   </help>
+	</operator>   
+   
+	<operator>
+	    <key>rule_generator</key>
+	    <name>Rule generator</name>
+	    <synopsis>Rule generator</synopsis>
+	    <help>
+	    Generates classification, regression or survival rules.
+	    </help>
+	</operator>
+   
+   <operator>
+	    <key>rule_translator</key>
+	    <name>Rule translator</name>
+	    <synopsis>Rule translator</synopsis>
+	    <help>
+	    Translates rules from RapidMiner to Disesor format.
+	    </help>
+	</operator>
+	
+	 <operator>
+	    <key>survival_evaluator</key>
+	    <name>Survival rules evaluator</name>
+	    <synopsis>Survival rules evaluator</synopsis>
+	    <help>
+	    Evaluates survival rules using IBS indicator (Integrated Brier's Score).
+	    </help>
+	</operator>
+   
+</operatorHelp>

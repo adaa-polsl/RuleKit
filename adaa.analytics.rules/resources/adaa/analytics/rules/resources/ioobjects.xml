@@ -1,0 +1,18 @@
+<ioobjects>
+<!--  
+    This is an example how to specify IOObjects and theirs various renderers.
+	<ioobject
+		name="Document"
+		class="com.rapidminer.operator.text.Document"
+		reportable="true">
+	  <renderer>com.rapidminer.gui.renderer.text.DocumentRenderer</renderer>
+	</ioobject>
+	
+    <ioobject
+        name="Word List"
+        class="com.rapidminer.operator.text.WordList"
+        reportable="true">
+      <renderer>com.rapidminer.gui.renderer.DefaultTextRenderer</renderer>
+    </ioobject>
+ -->
+</ioobjects>
