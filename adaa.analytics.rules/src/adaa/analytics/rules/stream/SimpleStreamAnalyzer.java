@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import adaa.analytics.rules.induction.AbstractSeparateAndConquer;
-import adaa.analytics.rules.logic.Rule;
-import adaa.analytics.rules.logic.RuleSetBase;
-import adaa.analytics.rules.quality.ClassificationMeasure;
+import adaa.analytics.rules.logic.induction.AbstractSeparateAndConquer;
+import adaa.analytics.rules.logic.quality.ClassificationMeasure;
+import adaa.analytics.rules.logic.representation.Rule;
+import adaa.analytics.rules.logic.representation.RuleSetBase;
 
 public class SimpleStreamAnalyzer extends AbstractStreamAnalyzer {
 

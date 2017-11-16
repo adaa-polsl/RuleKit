@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import adaa.analytics.rules.logic.Logger;
-import adaa.analytics.rules.logic.SurvivalRule;
+import adaa.analytics.rules.logic.representation.Logger;
+import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.RuleGenerator;
 import adaa.analytics.rules.operator.SurvivalPerformanceEvaluator;
 

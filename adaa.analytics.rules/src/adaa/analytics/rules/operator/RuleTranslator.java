@@ -2,16 +2,16 @@ package adaa.analytics.rules.operator;
 
 import java.util.List;
 
-import adaa.analytics.rules.logic.ClassificationRule;
-import adaa.analytics.rules.logic.ClassificationRuleSet;
-import adaa.analytics.rules.logic.CompoundCondition;
-import adaa.analytics.rules.logic.ElementaryCondition;
-import adaa.analytics.rules.logic.IValueSet;
-import adaa.analytics.rules.logic.Interval;
-import adaa.analytics.rules.logic.RegressionRuleSet;
-import adaa.analytics.rules.logic.Rule;
-import adaa.analytics.rules.logic.RuleSetBase;
-import adaa.analytics.rules.logic.SingletonSet;
+import adaa.analytics.rules.logic.representation.ClassificationRule;
+import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
+import adaa.analytics.rules.logic.representation.CompoundCondition;
+import adaa.analytics.rules.logic.representation.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.IValueSet;
+import adaa.analytics.rules.logic.representation.Interval;
+import adaa.analytics.rules.logic.representation.RegressionRuleSet;
+import adaa.analytics.rules.logic.representation.Rule;
+import adaa.analytics.rules.logic.representation.RuleSetBase;
+import adaa.analytics.rules.logic.representation.SingletonSet;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;

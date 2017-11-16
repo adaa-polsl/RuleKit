@@ -1,22 +1,22 @@
 package adaa.analytics.rules.stream;
 
-import adaa.analytics.rules.induction.AbstractSeparateAndConquer;
-import adaa.analytics.rules.induction.ClassificationExpertFinder;
-import adaa.analytics.rules.induction.ClassificationExpertSnC;
-import adaa.analytics.rules.induction.ClassificationFinder;
-import adaa.analytics.rules.induction.ClassificationSnC;
-import adaa.analytics.rules.induction.InductionParameters;
-import adaa.analytics.rules.induction.RegressionFinder;
-import adaa.analytics.rules.induction.RegressionSnC;
-import adaa.analytics.rules.induction.SurvivalClassificationSnC;
-import adaa.analytics.rules.induction.SurvivalLogRankFinder;
-import adaa.analytics.rules.induction.SurvivalLogRankSnC;
-import adaa.analytics.rules.logic.Rule;
-import adaa.analytics.rules.logic.RuleSetBase;
-import adaa.analytics.rules.logic.SurvivalRule;
+import adaa.analytics.rules.logic.induction.AbstractSeparateAndConquer;
+import adaa.analytics.rules.logic.induction.ClassificationExpertFinder;
+import adaa.analytics.rules.logic.induction.ClassificationExpertSnC;
+import adaa.analytics.rules.logic.induction.ClassificationFinder;
+import adaa.analytics.rules.logic.induction.ClassificationSnC;
+import adaa.analytics.rules.logic.induction.InductionParameters;
+import adaa.analytics.rules.logic.induction.RegressionFinder;
+import adaa.analytics.rules.logic.induction.RegressionSnC;
+import adaa.analytics.rules.logic.induction.SurvivalClassificationSnC;
+import adaa.analytics.rules.logic.induction.SurvivalLogRankFinder;
+import adaa.analytics.rules.logic.induction.SurvivalLogRankSnC;
+import adaa.analytics.rules.logic.quality.LogRank;
+import adaa.analytics.rules.logic.representation.Rule;
+import adaa.analytics.rules.logic.representation.RuleSetBase;
+import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.ExpertRuleGenerator;
 import adaa.analytics.rules.operator.RuleGenerator;
-import adaa.analytics.rules.quality.LogRank;
 
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.set.Partition;

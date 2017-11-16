@@ -1,16 +1,13 @@
 package adaa.analytics.rules.stream;
 
-import adaa.analytics.rules.induction.AbstractSeparateAndConquer;
-import adaa.analytics.rules.induction.Covering;
-import adaa.analytics.rules.induction.InductionParameters;
-import adaa.analytics.rules.logic.ClassificationRuleSet;
-import adaa.analytics.rules.logic.RuleSetBase;
+import adaa.analytics.rules.logic.induction.AbstractSeparateAndConquer;
+import adaa.analytics.rules.logic.induction.Covering;
+import adaa.analytics.rules.logic.induction.InductionParameters;
+import adaa.analytics.rules.logic.representation.RuleSetBase;
 
 import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.set.Partition;
-import com.rapidminer.example.set.ShuffledPartitionBuilder;
 import com.rapidminer.example.set.SimplePartitionBuilder;
 import com.rapidminer.example.set.SplittedExampleSet;
 import com.rapidminer.operator.Model;

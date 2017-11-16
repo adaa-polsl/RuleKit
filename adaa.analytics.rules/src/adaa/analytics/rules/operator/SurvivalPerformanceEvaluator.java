@@ -3,7 +3,7 @@ package adaa.analytics.rules.operator;
 import java.util.LinkedList;
 import java.util.List;
 
-import adaa.analytics.rules.logic.IntegratedBrierScore;
+import adaa.analytics.rules.logic.representation.IntegratedBrierScore;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
