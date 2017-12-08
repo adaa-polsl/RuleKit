@@ -1,4 +1,4 @@
-/*package adaa.analytics.rules;
+package adaa.analytics.rules;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,15 +24,15 @@ import java.util.regex.Pattern;
 import org.junit.Assert;
 import org.junit.Test;
 
-import adaa.analytics.rules.consoles.app.ExperimentalConsole;
+import adaa.analytics.rules.consoles.ExperimentalConsole;
 import adaa.analytics.rules.experiments.ExperimentBase;
 import adaa.analytics.rules.experiments.InternalXValidationExperiment;
 import adaa.analytics.rules.experiments.Report;
-import adaa.analytics.rules.logic.Logger;
-import adaa.analytics.rules.logic.SurvivalRule;
+import adaa.analytics.rules.logic.representation.Logger;
+import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.RuleGenerator;
 import adaa.analytics.rules.operator.SurvivalPerformanceEvaluator;
-import adaa.analytics.rules.quality.ClassificationMeasure;
+import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.stream.RuleGeneratorFromStream;
 
 import com.rapidminer.RapidMiner;
@@ -47,8 +47,6 @@ import com.rapidminer.operator.performance.PerformanceVector;
 import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
 import com.rapidminer.tools.OperatorService;
 
-import disesor.rapidminer.development.RapidMinerEnvironment;
-import disesor.rapidminer.development.SwingUtils;
 
 public class PluginTests {
     
@@ -58,7 +56,7 @@ public class PluginTests {
     public void runPlugin() throws Exception {
     	Logger.getInstance().addStream(System.out, Level.FINER);
 
-    	RapidMinerEnvironment env = new RapidMinerEnvironment.Builder(false)
+    /*	RapidMinerEnvironment env = new RapidMinerEnvironment.Builder(false)
         		.initCoreOperators(true)
                 .loadExternalPlugins(false)
                 .showSplash(false)
@@ -66,7 +64,7 @@ public class PluginTests {
                 .build();
        
         env.runPlugin();
-       
+      */ 
         SwingUtils.waitForEventDispatchThread();
     }
     
@@ -360,4 +358,4 @@ public class PluginTests {
 		}
     }
 }
-*/
+

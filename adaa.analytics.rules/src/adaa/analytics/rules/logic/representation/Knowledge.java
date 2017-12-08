@@ -19,7 +19,8 @@ public class Knowledge implements Serializable {
 	protected boolean induceUsingPreferred;
 	protected boolean induceUsingAutomatic;
 	protected boolean considerOtherClasses;
-	protected int preferredCountPerRule;
+	protected int preferredConditionsPerRule;
+	protected int preferredAttributesPerRule;
 	
 	protected boolean isRegression;
 	protected int numClasses;
@@ -60,8 +61,11 @@ public class Knowledge implements Serializable {
 	public boolean isConsiderOtherClasses() { return considerOtherClasses; }
 	public void setConsiderOtherClasses(boolean considerOtherClasses) { this.considerOtherClasses = considerOtherClasses; }
 
-	public int getPreferredCountPerRule() { return preferredCountPerRule; }
-	public void setPreferredCountPerRule(int preferredCountPerRule) { this.preferredCountPerRule = preferredCountPerRule; }
+	public int getPreferredConditionsPerRule() { return preferredConditionsPerRule; }
+	public void setPreferredConditionsPerRule(int preferredConditionsPerRule) { this.preferredConditionsPerRule = preferredConditionsPerRule; }
+
+	public int getPreferredAttributesPerRule() { return preferredAttributesPerRule; }
+	public void setPreferredAttributesPerRule(int preferredAttributesPerRule) { this.preferredAttributesPerRule = preferredAttributesPerRule; }
 
 	
 	public Knowledge(ExampleSet dataset, MultiSet<Rule> rules, MultiSet<Rule> preferredConditions, MultiSet<Rule> forbiddenConditions) {
@@ -73,7 +77,8 @@ public class Knowledge implements Serializable {
 		this.induceUsingPreferred = false;
 		this.induceUsingAutomatic = false;
 		this.considerOtherClasses = false;
-		this.preferredCountPerRule = Integer.MAX_VALUE;
+		this.preferredConditionsPerRule = Integer.MAX_VALUE;
+		this.preferredAttributesPerRule = Integer.MAX_VALUE;
 
 		int numClasses = (dataset.getAttributes().getLabel().isNominal()) 
 			?  dataset.getAttributes().getLabel().getMapping().size() : 1;
@@ -162,7 +167,8 @@ public class Knowledge implements Serializable {
 				+ "induceUsingPreferred=" + induceUsingPreferred + "\n"
 				+ "induceUsingAutomatic=" + induceUsingAutomatic + "\n"
 				+ "considerOtherClasses=" + considerOtherClasses + "\n"
-				+ "preferredCountPerRule=" + preferredCountPerRule + "\n\n";
+				+ "preferredConditionsPerRule=" + preferredConditionsPerRule + "\n"
+				+ "preferredAttributesPerRule=" + preferredAttributesPerRule + "\n\n";
 		
 		out += "Expert rules:\n";
 		for (int key: rules.keySet()) {

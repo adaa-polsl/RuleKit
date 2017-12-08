@@ -71,7 +71,9 @@ public class ExpertRuleGenerator extends RuleGenerator {
 	
 	public static final String PARAMETER_CONSIDER_OTHER_CLASSES = "consider_other_classes";
 	
-	public static final String PARAMETER_PREFERRED_COUNT_PER_RULE = "preferred_count_per_rule";
+	public static final String PARAMETER_PREFERRED_CONDITIONS_PER_RULE = "preferred_conditions_per_rule";
+	
+	public static final String PARAMETER_PREFERRED_ATTRIBUTES_PER_RULE = "preferred_attributes_per_rule";
 	
 	public ExpertRuleGenerator(OperatorDescription description) {
 		super(description);	
@@ -131,7 +133,12 @@ public class ExpertRuleGenerator extends RuleGenerator {
 		type.registerDependencyCondition(classificationMetaCondition);
 		types.add(type);
 		
-		type = new ParameterTypeInt(PARAMETER_PREFERRED_COUNT_PER_RULE, getParameterDescription(PARAMETER_PREFERRED_COUNT_PER_RULE),
+		type = new ParameterTypeInt(PARAMETER_PREFERRED_CONDITIONS_PER_RULE, getParameterDescription(PARAMETER_PREFERRED_CONDITIONS_PER_RULE),
+				1, Integer.MAX_VALUE, Integer.MAX_VALUE);
+		type.registerDependencyCondition(enableExpertCondition);
+		types.add(type);
+		
+		type = new ParameterTypeInt(PARAMETER_PREFERRED_ATTRIBUTES_PER_RULE, getParameterDescription(PARAMETER_PREFERRED_ATTRIBUTES_PER_RULE),
 				1, Integer.MAX_VALUE, Integer.MAX_VALUE);
 		type.registerDependencyCondition(enableExpertCondition);
 		types.add(type);
@@ -192,7 +199,8 @@ public class ExpertRuleGenerator extends RuleGenerator {
 			knowledge.setInduceUsingPreferred(getParameterAsBoolean(PARAMETER_INDUCE_USING_PREFERRED));
 			knowledge.setInduceUsingAutomatic(getParameterAsBoolean(PARAMETER_INDUCE_USING_AUTOMATIC));
 			knowledge.setConsiderOtherClasses(getParameterAsBoolean(PARAMETER_CONSIDER_OTHER_CLASSES));
-			knowledge.setPreferredCountPerRule(getParameterAsInt(PARAMETER_PREFERRED_COUNT_PER_RULE));
+			knowledge.setPreferredConditionsPerRule(getParameterAsInt(PARAMETER_PREFERRED_CONDITIONS_PER_RULE));
+			knowledge.setPreferredAttributesPerRule(getParameterAsInt(PARAMETER_PREFERRED_ATTRIBUTES_PER_RULE));
 			
 			InductionParameters params = new InductionParameters();
 			params.setInductionMeasure(createMeasure(PARAMETER_INDUCTION_MEASURE));

@@ -70,7 +70,7 @@ public class ClassificationExpertFinder extends ClassificationFinder {
 			(!isRuleEmpty && knowledge.isExtendUsingPreferred())) {
 			
 			boolean carryOn = true;
-			int preferredConditionCounter = knowledge.getPreferredCountPerRule();
+			int preferredCounter = knowledge.getPreferredConditionsPerRule();
 			
 			while (carryOn) {
 				CompoundCondition bestCondition = null;
@@ -109,7 +109,7 @@ public class ClassificationExpertFinder extends ClassificationFinder {
 					
 					Logger.log("Preferred condition " + rule.getPremise().getSubconditions().size() + " added: " 
 							+ rule.toString() + "\n", Level.FINER);
-					if (--preferredConditionCounter == 0) {
+					if (--preferredCounter == 0) {
 						carryOn = false;
 					}
 				}
@@ -131,6 +131,8 @@ public class ClassificationExpertFinder extends ClassificationFinder {
 			
 			// condition loop
 			boolean carryOn = true;
+			int preferredCounter = knowledge.getPreferredAttributesPerRule();
+						
 			do {
 				ElementaryCondition condition = induceCondition(rule, dataset, uncoveredPositives, covered, localAllowed);	
 				carryOn = tryAddCondition(rule, condition, dataset, covered);
@@ -139,6 +141,10 @@ public class ClassificationExpertFinder extends ClassificationFinder {
 					knowledge.getPreferredAttributes((int)classId).remove(condition.getAttribute());
 					localAllowed.remove(dataset.getAttributes().get(condition.getAttribute()));
 					used.add(dataset.getAttributes().get(condition.getAttribute()));
+					
+					if (--preferredCounter == 0) {
+						carryOn = false;
+					}
 				}
 			} while (carryOn); 
 			

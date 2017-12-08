@@ -68,7 +68,7 @@ public class RegressionExpertFinder extends RegressionFinder {
 			(!isRuleEmpty && knowledge.isExtendUsingPreferred())) {
 			
 			boolean carryOn = true;
-			int preferredConditionCounter = knowledge.getPreferredCountPerRule();
+			int preferredCounter = knowledge.getPreferredConditionsPerRule();
 						
 			while (carryOn) {
 				ConditionEvaluation bestEvaluation = new ConditionEvaluation();
@@ -102,7 +102,7 @@ public class RegressionExpertFinder extends RegressionFinder {
 					Logger.log("Preferred condition " + rule.getPremise().getSubconditions().size() + " added: " 
 							+ rule.toString() + "\n", Level.FINER);
 					
-					if (--preferredConditionCounter == 0) {
+					if (--preferredCounter == 0) {
 						carryOn = false;
 					}
 				}
@@ -114,6 +114,7 @@ public class RegressionExpertFinder extends RegressionFinder {
 		if ((isRuleEmpty && knowledge.isInduceUsingPreferred()) ||
 			(!isRuleEmpty && knowledge.isExtendUsingPreferred())) {
 			boolean carryOn = true;
+			int preferredCounter = knowledge.getPreferredAttributesPerRule();
 			
 			// create temporary collection of preferred attributes
 			Set<Attribute> localAllowed = new TreeSet<Attribute>(new AttributeComparator());
@@ -145,6 +146,11 @@ public class RegressionExpertFinder extends RegressionFinder {
 					rule.setWeight(v);	
 					Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
 							+ rule.toString() + "\n", Level.FINER);
+					
+					if (--preferredCounter == 0) {
+						carryOn = false;
+					}
+					
 				} else {
 					carryOn = false;
 				}
