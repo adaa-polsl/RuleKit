@@ -134,7 +134,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 			}
 			
 			RuleSetBase rs = snc.run(exampleSet);
-			recalculatePerformance(rs);
+			performances = recalculatePerformance(rs);
 			model = rs;
 			
 		} catch (IllegalAccessException e) {
@@ -249,22 +249,24 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		return msg;
 	 }
 	 
-	 protected void recalculatePerformance(RuleSetBase rs) {
-		performances = new PerformanceVector();
-		performances.addCriterion(new EstimatedPerformance("#rules", rs.getRules().size(), 1, false));
-		performances.addCriterion(new EstimatedPerformance("#conditions", rs.calculateConditionsCount(), 1, false));
-		performances.addCriterion(new EstimatedPerformance("#induced conditions", rs.calculateInducedCondtionsCount(), 1, false));
-		performances.addCriterion(new EstimatedPerformance("avg rule coverage", rs.calculateAvgRuleCoverage(), 1, false));
+	 public static PerformanceVector recalculatePerformance(RuleSetBase rs) {
+		PerformanceVector pv = new PerformanceVector();
+		pv.addCriterion(new EstimatedPerformance("#rules", rs.getRules().size(), 1, false));
+		pv.addCriterion(new EstimatedPerformance("#conditions", rs.calculateConditionsCount(), 1, false));
+		pv.addCriterion(new EstimatedPerformance("#induced conditions", rs.calculateInducedCondtionsCount(), 1, false));
+		pv.addCriterion(new EstimatedPerformance("avg rule coverage", rs.calculateAvgRuleCoverage(), 1, false));
 
 		if (rs instanceof SurvivalRuleSet ) {
 			SurvivalRuleSet srs = (SurvivalRuleSet)rs;
-			performances.addCriterion(new EstimatedPerformance("avg p-value", srs.calculateSignificance(0.05).p , 1, false));
-			performances.addCriterion(new EstimatedPerformance("avg FDR adj. p-value", srs.calculateSignificanceFDR(0.05).p, 1, false));
-			performances.addCriterion(new EstimatedPerformance("avg FWER adj. p-value", srs.calculateSignificanceFWER(0.05).p, 1, false));
+			pv.addCriterion(new EstimatedPerformance("avg p-value", srs.calculateSignificance(0.05).p , 1, false));
+			pv.addCriterion(new EstimatedPerformance("avg FDR adj. p-value", srs.calculateSignificanceFDR(0.05).p, 1, false));
+			pv.addCriterion(new EstimatedPerformance("avg FWER adj. p-value", srs.calculateSignificanceFWER(0.05).p, 1, false));
 			
-			performances.addCriterion(new EstimatedPerformance("fraction 0.05 significant", srs.calculateSignificance(0.05).fraction, 1, false));
-			performances.addCriterion(new EstimatedPerformance("fraction 0.05 FDR significant", srs.calculateSignificanceFDR(0.05).fraction, 1, false));
-			performances.addCriterion(new EstimatedPerformance("fraction 0.05 FWER significant", srs.calculateSignificanceFWER(0.05).fraction, 1, false));
+			pv.addCriterion(new EstimatedPerformance("fraction 0.05 significant", srs.calculateSignificance(0.05).fraction, 1, false));
+			pv.addCriterion(new EstimatedPerformance("fraction 0.05 FDR significant", srs.calculateSignificanceFDR(0.05).fraction, 1, false));
+			pv.addCriterion(new EstimatedPerformance("fraction 0.05 FWER significant", srs.calculateSignificanceFWER(0.05).fraction, 1, false));
 		}	
+		
+		return pv;
 	 }
 }

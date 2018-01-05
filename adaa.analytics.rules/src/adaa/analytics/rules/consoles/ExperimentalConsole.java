@@ -141,24 +141,26 @@ public class ExperimentalConsole {
 	            
 	            // create experiments for all params sets  
 	            for (ParamSetWrapper wrapper : paramSets) {
-	            	String reportFile = reportPath + "/" + name;
+	            	String paramString = "";
 	            	
 	            	if (wrapper.name.length() > 0) {
-	            		reportFile += ", " + wrapper.name;
+	            		paramString += ", " + wrapper.name;
 	            		
 	            	} else {
 		            	for (String key: wrapper.map.keySet()) {
 		            		Object o = wrapper.map.get(key);
 		            		if (o instanceof String) {
-		            			reportFile += ", " + key + "=" + wrapper.map.get(key);
+		            			paramString += ", " + key + "=" + wrapper.map.get(key);
 		            		
 		            		}
 		            	}
 	            	}
-	            	String modelFile = reportFile + ".res";
-	            	reportFile += ".csv";
 	            	
 	            	File file = new File(path);
+	            	
+	            	String reportFile = reportPath + "/" + name + (file.isDirectory() ? ", ext-10cv" : ", 10cv") + paramString + ".csv";
+	            	String modelFile =  reportPath + "/" + name + ", full" + paramString + ".res";
+	            	
 	            	ExperimentBase exp;
 	            	
 	            	if (file.isDirectory()) {

@@ -232,7 +232,7 @@ public class ExpertRuleGenerator extends RuleGenerator {
 
 			model = snc.run(exampleSet);
 			RuleSetBase rs = (RuleSetBase)model;
-			recalculatePerformance(rs);
+			performances = recalculatePerformance(rs);
 			
 		} catch (IllegalAccessException e1) {
 			// TODO Auto-generated catch block
