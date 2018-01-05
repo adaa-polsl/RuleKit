@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.representation.Logger;
+import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.RuleGenerator;
 import adaa.analytics.rules.operator.SurvivalPerformanceEvaluator;
@@ -209,14 +210,24 @@ public class InternalXValidationExperiment extends ExperimentBase {
 					BufferedWriter bw = new BufferedWriter(fw);
 		    		Model model = (Model)objs[1];
 		    		bw.write(model.toString());
-		    		PerformanceVector performance = (PerformanceVector)objs[2];
-		    	
+		    		
 		    		bw.write("\n");
+		    		
+		    		// add model performance
+		    		RuleSetBase rs = (RuleSetBase)model;
+		    		PerformanceVector performance = RuleGenerator.recalculatePerformance(rs);
 			    	for (String name : performance.getCriteriaNames()) {
 			    		double avg = performance.getCriterion(name).getAverage();
 			    		bw.write(name + ": " + avg + "\n");	
 			    	}
-		    		
+			    	
+			    	// add evaluator performance
+			    	performance = (PerformanceVector)objs[2];
+			    	for (String name : performance.getCriteriaNames()) {
+			    		double avg = performance.getCriterion(name).getAverage();
+			    		bw.write(name + ": " + avg + "\n");	
+			    	}
+			    	
 		    		bw.close();
 		    	}
 				
