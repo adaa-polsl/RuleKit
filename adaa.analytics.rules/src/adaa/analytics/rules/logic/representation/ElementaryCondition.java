@@ -17,6 +17,10 @@ public class ElementaryCondition extends ConditionBase {
 	public String getAttribute() { return attribute; }
 	public IValueSet getValueSet() { return valueSet; }
 	
+	protected ElementaryCondition() {
+		;
+	}
+	
 	public ElementaryCondition(String attribute, IValueSet valueSet) {
 		this.attribute = attribute;
 		this.valueSet = valueSet;

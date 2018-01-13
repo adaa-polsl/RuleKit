@@ -5,7 +5,7 @@ import java.util.Set;
 
 import com.rapidminer.example.Example;
 
-public class Action extends ConditionBase {
+public class Action extends ElementaryCondition {
 
 	/**
 	 * 
@@ -28,6 +28,9 @@ public class Action extends ConditionBase {
 		
 		return "(" + attribute + ", " + leftValue.toString() + "->" + rightValue.toString() + ")";
 	}
+	
+	public IValueSet getLeftValue() { return leftValue; }
+	public IValueSet getRightValue() { return rightValue;};
 	
 	@Override
 	public boolean equals(Object ref) {
