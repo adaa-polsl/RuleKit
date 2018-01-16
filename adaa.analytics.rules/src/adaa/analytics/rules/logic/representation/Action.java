@@ -11,15 +11,15 @@ public class Action extends ElementaryCondition {
 	 * 
 	 */
 	private static final long serialVersionUID = -7307576747677085713L;
-	protected String attribute;
+	
 	protected IValueSet leftValue, rightValue;
 	
-	public Action(String attribute, IValueSet sourceValue, IValueSet targetValue) throws Exception {
+	public Action(String attribute, IValueSet sourceValue, IValueSet targetValue)  {
 		
 		this.attribute = attribute;
-		if (!leftValue.getClass().equals(targetValue.getClass())) {
-			throw new Exception("Different types of Action value sets.");
-		}
+	//	if (!sourceValue.getClass().equals(targetValue.getClass())) {
+	//		leftValue = rightValue = null;
+	//	}
 		leftValue = sourceValue;
 		rightValue = targetValue;
 	}

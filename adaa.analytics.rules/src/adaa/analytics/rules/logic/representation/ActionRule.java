@@ -16,6 +16,11 @@ public class ActionRule extends Rule {
 
 	protected Action actionConsequence;
 	
+	public String toString() {
+		String s = "IF " + premise.toString() + " THEN " + actionConsequence.toString();	
+		return s;
+	}
+	
 	public ActionRule(){
 		super();
 	}
@@ -101,4 +106,7 @@ public class ActionRule extends Rule {
 		return covered;
 	}
 
+	public ElementaryCondition getConsequence() {
+		return actionConsequence;
+	}
 }

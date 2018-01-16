@@ -132,8 +132,7 @@ public class ActionFinder extends AbstractFinder {
 		
 		double posClass = ((SingletonSet)((Action)aRule.getConsequence()).getLeftValue()).getValue();
 		double negClass = ((SingletonSet)((Action)aRule.getConsequence()).getRightValue()).getValue();
-		List<String> mapping = null;
-		trainSet.getAttributes().get(rule.getConsequence().getAttribute()).getMapping();
+		List<String> mapping = trainSet.getAttributes().get(rule.getConsequence().getAttribute()).getMapping().getValues();
 		
 		Rule posRule = new ClassificationRule(new CompoundCondition()
 				, new ElementaryCondition(rule.getConsequence().getAttribute(), new SingletonSet(posClass, mapping)));
