@@ -52,7 +52,7 @@ public class ClassificationMeasure implements IQualityMeasure {
 		case LogicalSufficiency:
 			return p*N/(n*P);
 		case Precision:
-			return p / p+n;
+			return p / (p+n);
 		case RSS:
 			return p/P - n/N;
 		case SBayesian:
