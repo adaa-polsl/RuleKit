@@ -4,9 +4,14 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.junit.Test;
 
 import com.rapidminer.RapidMiner;
@@ -23,31 +28,57 @@ import adaa.analytics.rules.logic.induction.AbstractSeparateAndConquer;
 import adaa.analytics.rules.logic.induction.ActionFinder;
 import adaa.analytics.rules.logic.induction.ActionSnC;
 import adaa.analytics.rules.logic.induction.InductionParameters;
+import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.*;
 
+@RunWith(Parameterized.class)
 public class ActionTests {
-
-	protected InductionParameters params;
 	protected static String testDirectory =  "C:/Users/pmatyszok/Desktop/dane/";
-	protected static String testFile = "wine.arff";
-	protected static com.rapidminer.Process process;
-	protected static ExampleSet exampleSet;
-	protected static String labelParameter = "class";
+	
+	protected InductionParameters params;
+	protected String testFile;
+	protected com.rapidminer.Process process;
+	protected ExampleSet exampleSet;
+	protected String labelParameter;
+	
+	@Parameters
+	public static Collection<Object[]> testData(){
+		return Arrays.asList(new Object[][]{
+			//fileName, labelName, measure, pruningEnabled, ignoreMissing, minCov, maxUncov, maxGrowing
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9},
+			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9}
+		});
+	}
+	
+	public ActionTests(String testFileName, String labelParameterName,
+			ClassificationMeasure measure,
+			boolean enablePruning, boolean ignoreMissing, double minimumCovered,
+			double maximumUncoveredFraction, double maxGrowingConditions) {
+		testFile = testFileName;
+		labelParameter = labelParameterName;
+		
+		params = new InductionParameters();
+		params.setInductionMeasure(measure);
+		params.setEnablePruning(enablePruning);
+		params.setIgnoreMissing(ignoreMissing);
+		params.setMinimumCovered(minimumCovered);
+		params.setMaximumUncoveredFraction(maximumUncoveredFraction);
+		params.setMaxGrowingConditions(maxGrowingConditions);
+		
+	}
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		
+		RapidMiner.init();
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 	}
 
-	@Test
-	public void test() throws OperatorCreationException, OperatorException {
-		RapidMiner.init();
-		
+	protected ExampleSet parseArffFile() throws OperatorException, OperatorCreationException {
 		ArffExampleSource arffSource = (ArffExampleSource)OperatorService.createOperator(ArffExampleSource.class);
+		//role setter allows for deciding which attribute is class attribute
 		ChangeAttributeRole roleSetter = (ChangeAttributeRole)OperatorService.createOperator(ChangeAttributeRole.class);
 		
 		File arffFile = Paths.get(testDirectory, testFile).toFile();
@@ -59,17 +90,30 @@ public class ActionTests {
     	process = new com.rapidminer.Process();
 		process.getRootOperator().getSubprocess(0).addOperator(arffSource);
 		process.getRootOperator().getSubprocess(0).addOperator(roleSetter);
-		//process.getRootOperator().getOutputPorts().addPort(arffSource.getOutputPorts().getPortByName("output"));
 		
 		arffSource.getOutputPorts().getPortByName("output").connectTo(
 				roleSetter.getInputPorts().getPortByName("example set input"));
+		
 		roleSetter.getOutputPorts().getPortByName("example set output").connectTo(
 				process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(0));
 		
 		IOContainer c = process.run();
-		exampleSet = (ExampleSet)c.getElementAt(0);
+		//parsed arff file
+		return (ExampleSet)c.getElementAt(0);
+	}
+	
+	@Test
+	public void test() throws OperatorCreationException, OperatorException {
+		
+		ExampleSet exampleSet = parseArffFile();
+		
 		AbstractSeparateAndConquer snc = new ActionSnC(new ActionFinder(params), params);
 		ActionRuleSet actions = (ActionRuleSet)snc.run(exampleSet);
+		
+		//AbstractSeparateAndConquer snc = new ClassificationSnC(new ClassificationFinder(params), params);
+		//RuleSetBase set = snc.run(exampleSet);
+		//System.out.println(set.toString());
+		
 		System.out.println(actions.toString());
 		fail("Not yet implemented");
 	}
