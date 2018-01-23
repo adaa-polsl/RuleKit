@@ -51,7 +51,7 @@ public class ElementaryCondition extends ConditionBase {
 		} else {
 			ElementaryCondition ref = (obj instanceof ElementaryCondition) ? (ElementaryCondition)obj : null;
 			if (ref != null) {
-				return this.valueSet.equals(ref) && this.attribute.equals(ref.getAttribute()); 
+				return this.valueSet.equals(ref.getValueSet()) && this.attribute.equals(ref.getAttribute()); 
 			} else {
 				return false;
 			}

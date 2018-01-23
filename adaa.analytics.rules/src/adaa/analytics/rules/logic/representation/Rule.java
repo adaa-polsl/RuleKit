@@ -77,6 +77,15 @@ public abstract class Rule implements Serializable {
 		this.weighted_N = cov.weighted_N;
 	}
 	
+	public Covering getCoveringInformation() {
+		Covering cov = new Covering();
+		cov.weighted_n = weighted_n;
+		cov.weighted_p = weighted_p;
+		cov.weighted_N = weighted_N;
+		cov.weighted_P = weighted_P;
+		return cov;
+	}
+	
 	
 	public abstract Covering covers(ExampleSet set, Set<Integer> ids);
 	
