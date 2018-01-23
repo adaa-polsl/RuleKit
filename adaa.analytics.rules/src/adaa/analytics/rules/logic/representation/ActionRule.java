@@ -70,10 +70,8 @@ public class ActionRule extends Rule {
 					covering.weighted_n += weight;
 				}
 			}
-			return covering;
 		}
-		
-		return null;
+		return covering;
 	}
 
 	@Override
@@ -108,5 +106,33 @@ public class ActionRule extends Rule {
 
 	public ElementaryCondition getConsequence() {
 		return actionConsequence;
+	}
+	
+	public Rule getLeftRule() {
+		
+		CompoundCondition premise = new CompoundCondition();
+		for (ConditionBase a : this.getPremise().getSubconditions()) {
+			Action ac = (Action)a;
+			premise.addSubcondition(new ElementaryCondition(ac.getAttribute(), ac.getLeftValue()));
+		}
+		
+		Rule r = new ClassificationRule(premise, new ElementaryCondition(actionConsequence.getAttribute(), actionConsequence.getLeftValue()));
+		
+		return r;
+	}
+	
+	public Rule getRightRule() {
+		
+		CompoundCondition premise = new CompoundCondition();
+		for (ConditionBase a : this.getPremise().getSubconditions()) {
+			Action ac = (Action)a;
+			if (ac.getRightValue() != null) {
+				premise.addSubcondition(new ElementaryCondition(ac.getAttribute(), ac.getRightValue()));
+			}
+		}
+		
+		Rule r = new ClassificationRule(premise, new ElementaryCondition(actionConsequence.getAttribute(), actionConsequence.getRightValue()));
+		
+		return r;
 	}
 }

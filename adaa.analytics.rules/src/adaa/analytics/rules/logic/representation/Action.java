@@ -26,7 +26,11 @@ public class Action extends ElementaryCondition {
 	
 	public String toString() {
 		
-		return "(" + attribute + ", " + leftValue.toString() + "->" + rightValue.toString() + ")";
+		return "(" + attribute + ", " + leftValue.toString() + "->" + (rightValue == null ? " " : rightValue.toString() ) + ")";
+	}
+	
+	public boolean isPrunable() {
+		return false;
 	}
 	
 	public IValueSet getLeftValue() { return leftValue; }
