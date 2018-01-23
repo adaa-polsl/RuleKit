@@ -12,7 +12,6 @@ import com.rapidminer.example.table.NominalMapping;
 import adaa.analytics.rules.logic.representation.Action;
 import adaa.analytics.rules.logic.representation.ActionRule;
 import adaa.analytics.rules.logic.representation.ActionRuleSet;
-import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.Rule;
@@ -48,7 +47,7 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 		
 		double weightedP = 0, weightedN = 0;
 		Set<Integer> uncoveredPositives = new HashSet<Integer>(), uncovered = new HashSet<Integer>();
-		
+		Set<Integer> uncoveredNegatives = new HashSet<Integer>();
 		//iterate over all examples
 		for (int i = 0; i < dataset.size(); i++) {
 			
@@ -60,10 +59,11 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 				uncoveredPositives.add(i);
 			} else {
 				weightedN += w;
+				uncoveredNegatives.add(i);
 			}
 			uncovered.add(i);
 		}
-		
+		finder.setUncoveredNegatives(uncoveredNegatives);
 		boolean carryOn = uncoveredPositives.size() > 0;
 		
 		while(carryOn) {

@@ -1,7 +1,6 @@
 package adaa.analytics.rules.logic.induction;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -12,8 +11,6 @@ import com.rapidminer.example.ExampleSet;
 import adaa.analytics.rules.logic.quality.*;
 import adaa.analytics.rules.logic.representation.Action;
 import adaa.analytics.rules.logic.representation.ActionRule;
-import adaa.analytics.rules.logic.representation.ClassificationRule;
-import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ConditionBase;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Interval;
@@ -21,14 +18,26 @@ import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.SingletonSet;
 
 public class ActionFinder extends AbstractFinder {
+	
+	protected Set<Integer> uncoveredNegatives;
+	
+	public void setUncoveredNegatives(Set<Integer> toSet) {
+		uncoveredNegatives = toSet;
+	}
+	
+	public Set<Integer> getUncoveredNegatives() {
+		return uncoveredNegatives;
+	}
 
 	public ActionFinder(InductionParameters params) {
 		super(params);
-		// TODO Auto-generated constructor stub
 	}
 	
-	protected ConditionBase getBestElementaryCondition(Set<ElementaryCondition> conditions, ExampleSet trainSet, 
-			Rule rule/*, IQualityMeasure quality params.getInductionMeasure...*/){
+	protected ConditionBase getBestElementaryCondition(
+			Set<ElementaryCondition> conditions, 
+			ExampleSet trainSet, 
+			Set<Integer> positives,
+			Rule rule) {
 		
 		double bestQ = Double.NEGATIVE_INFINITY;
 		ConditionBase best = null;
@@ -38,13 +47,15 @@ public class ActionFinder extends AbstractFinder {
 			//extend rule with condition
 			rule.getPremise().addSubcondition(cond);
 			
-			Covering cov = rule.covers(trainSet);
+			Covering cov = rule.covers(trainSet, positives);
+			Covering covAll = rule.covers(trainSet);
 			
-			double quality = ((ClassificationMeasure)params.getInductionMeasure())
-								.calculate(cov.weighted_p, cov.weighted_n, cov.weighted_P, cov.weighted_N);
+			double quality = ((ClassificationMeasure)params.getInductionMeasure()).calculate(covAll);
+			
 			if (cov.weighted_p >= params.getMinimumCovered() && quality >= bestQ) {
 				bestQ = quality;
 				best = cond;
+				rule.setCoveringInformation(cov);
 			}
 			
 			//clean it up
@@ -56,7 +67,10 @@ public class ActionFinder extends AbstractFinder {
 	
 	
 	
-	protected Set<ElementaryCondition> generateElementaryConditions(ExampleSet trainSet, Set<Attribute> allowedAttributes, Set<Integer> coveredByRule) {
+	protected Set<ElementaryCondition> generateElementaryConditions(
+			ExampleSet trainSet,
+			Set<Attribute> allowedAttributes,
+			Set<Integer> coveredByRule) {
 		
 		HashSet<ElementaryCondition> conditions = new HashSet<ElementaryCondition>();
 		
@@ -67,8 +81,11 @@ public class ActionFinder extends AbstractFinder {
 		return conditions;
 	}
 
-	private void getElementaryConditionForAttribute(ExampleSet trainSet, Set<Integer> coveredByRule,
-			Set<ElementaryCondition> conditions, String attributeName) {
+	private void getElementaryConditionForAttribute(
+			ExampleSet trainSet,
+			Set<Integer> coveredByRule,
+			Set<ElementaryCondition> conditions,
+			String attributeName) {
 		
 		Attribute attribute = trainSet.getAttributes().get(attributeName);
 		Set<Double> attributeValues = new HashSet<Double>();
@@ -102,6 +119,7 @@ public class ActionFinder extends AbstractFinder {
 				
 				attributeValues.add(val);
 			}
+			
 			HashSet<Double> midPoints = new HashSet<Double>();
 			attributeValues.stream().reduce(0.0, (a,b) -> {midPoints.add(a + b /2.0); return 0.0;});
 			
@@ -115,51 +133,51 @@ public class ActionFinder extends AbstractFinder {
 	}
 	
 	protected Action buildAction(ElementaryCondition left, ElementaryCondition right) throws Exception {
-		return new Action(left.getAttribute(), left.getValueSet(), right.getValueSet());
+		
+		return new Action(left.getAttribute(), left.getValueSet(), right == null ? null : right.getValueSet());
 	}
 
 	@Override
-	protected ElementaryCondition induceCondition(Rule rule, ExampleSet trainSet, Set<Integer> uncoveredByRuleset,
-			Set<Integer> coveredByRule, Set<Attribute> allowedAttributes) {
+	protected ElementaryCondition induceCondition(
+			Rule rule,
+			ExampleSet trainSet, 
+			Set<Integer> uncoveredByRuleset,
+			Set<Integer> coveredByRule,
+			Set<Attribute> allowedAttributes) {
 		
 		ActionRule aRule = rule instanceof ActionRule ? (ActionRule)rule : null;
 		
-//		if (aRule == null) {
-//			throw new InvalidAttributeValueException("rule");
-//		}
 		if (aRule == null)
 			return null;
 		
-		double posClass = ((SingletonSet)((Action)aRule.getConsequence()).getLeftValue()).getValue();
-		double negClass = ((SingletonSet)((Action)aRule.getConsequence()).getRightValue()).getValue();
-		List<String> mapping = trainSet.getAttributes().get(rule.getConsequence().getAttribute()).getMapping().getValues();
-		
-		Rule posRule = new ClassificationRule(new CompoundCondition()
-				, new ElementaryCondition(rule.getConsequence().getAttribute(), new SingletonSet(posClass, mapping)));
-		Rule negRule = new ClassificationRule(new CompoundCondition()
-				, new ElementaryCondition(rule.getConsequence().getAttribute(), new SingletonSet(negClass, mapping)));
+		Rule posRule = aRule.getLeftRule();
+		Rule negRule = aRule.getRightRule();
 		
 		Set<ElementaryCondition> conds = this.generateElementaryConditions(trainSet, allowedAttributes, coveredByRule);
-		ConditionBase best = this.getBestElementaryCondition(conds, trainSet, posRule);
+		ConditionBase best = this.getBestElementaryCondition(conds, trainSet, uncoveredByRuleset, posRule);
 		
-		Set<Integer> uncoveredByRule = new HashSet<Integer>();
+		if (best == null)
+			return null;
 		
-		
-		
-		for (int i = 0; i < trainSet.size(); i++) {
-			uncoveredByRule.add(i);
+		Attribute usedAttribute = trainSet.getAttributes().get(((ElementaryCondition)best).getAttribute());
+		if (usedAttribute.isNominal()){
+			allowedAttributes.remove(usedAttribute);
 		}
 		
-		uncoveredByRule.removeAll(uncoveredByRuleset);
-		Set<ElementaryCondition> newConds = new HashSet<ElementaryCondition>();
-		this.getElementaryConditionForAttribute(trainSet, uncoveredByRule, newConds, ((ElementaryCondition)best).getAttribute());
-		ConditionBase otherBest = this.getBestElementaryCondition(newConds, trainSet, negRule);
+		Set<Integer> coveredByNegRule = negRule.covers(trainSet).positives;		
+		Set<ElementaryCondition> conditionsForNegativeRule = new HashSet<ElementaryCondition>();
+		
+		this.getElementaryConditionForAttribute(trainSet, coveredByNegRule, conditionsForNegativeRule, ((ElementaryCondition)best).getAttribute());
+		ConditionBase otherBest = this.getBestElementaryCondition(conditionsForNegativeRule, trainSet, uncoveredNegatives, negRule);
 
+		/*if (best.equals(otherBest)) {
+			return null;
+		}*/
+		
 		Action proposedAction = null;
 		try {
 			proposedAction = this.buildAction((ElementaryCondition)best, (ElementaryCondition)otherBest);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -179,21 +197,20 @@ public class ActionFinder extends AbstractFinder {
 			
 
 			aRule.getPremise().addSubcondition((ElementaryCondition)proposedAction);
-			Covering normalCovering = aRule.covers(trainSet);
+			Covering normalCovering = aRule.covers(trainSet, uncoveredByRuleset);
 			double normalQ = this.calculateQuality(trainSet, normalCovering, params.getInductionMeasure());
 			aRule.getPremise().removeSubcondition((ElementaryCondition)proposedAction);
 			
 			aRule.getPremise().addSubcondition((ElementaryCondition)nilAction);
-			Covering nilCovering = aRule.covers(trainSet);
+			Covering nilCovering = aRule.covers(trainSet, uncoveredByRuleset);
 			double nilQ = this.calculateQuality(trainSet, nilCovering, params.getInductionMeasure());
 			aRule.getPremise().removeSubcondition((ElementaryCondition)nilAction);
 			
-			if (normalQ > nilQ) {
-				return proposedAction;
-			} else {
-				return nilAction;
+			if (normalQ < nilQ) {
+				proposedAction = nilAction;
 			}
 		}
+		return proposedAction;
 	}
 
 }
