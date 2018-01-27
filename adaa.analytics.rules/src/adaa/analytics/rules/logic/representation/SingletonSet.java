@@ -58,4 +58,10 @@ public class SingletonSet implements IValueSet, Serializable {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public int hashCode() {
+		long temp = Double.doubleToLongBits(value);
+		return (int) (temp ^ (temp >>> 32));
+	}
 }

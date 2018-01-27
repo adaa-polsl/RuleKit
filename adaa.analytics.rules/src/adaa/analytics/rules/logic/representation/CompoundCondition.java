@@ -106,6 +106,14 @@ public class CompoundCondition extends ConditionBase {
 			}
 		}
 	}
+	
+	@Override
+	public int hashCode() {
+		int result = subconditions.hashCode();
+		result = 31 * result + operator.hashCode();
+		return result;
+	}
+	
 	@Override
 	public Set<String> getAttributes() {
 		Set<String> atts = new HashSet<String>();
