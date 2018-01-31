@@ -17,6 +17,10 @@ public class ElementaryCondition extends ConditionBase {
 	public String getAttribute() { return attribute; }
 	public IValueSet getValueSet() { return valueSet; }
 	
+	protected ElementaryCondition() {
+		;
+	}
+	
 	public ElementaryCondition(String attribute, IValueSet valueSet) {
 		this.attribute = attribute;
 		this.valueSet = valueSet;
@@ -47,7 +51,7 @@ public class ElementaryCondition extends ConditionBase {
 		} else {
 			ElementaryCondition ref = (obj instanceof ElementaryCondition) ? (ElementaryCondition)obj : null;
 			if (ref != null) {
-				return this.valueSet.equals(ref) && this.attribute.equals(ref.getAttribute()); 
+				return this.valueSet.equals(ref.getValueSet()) && this.attribute.equals(ref.getAttribute()); 
 			} else {
 				return false;
 			}
@@ -57,6 +61,14 @@ public class ElementaryCondition extends ConditionBase {
 	public ElementaryCondition intersect(ElementaryCondition other) {
 		return new ElementaryCondition(attribute, this.valueSet.getIntersection(other.getValueSet())); 
 	}
+	
+	@Override
+	public int hashCode() {
+		int result = attribute.hashCode();
+		result = 31 * result + valueSet.hashCode();
+		return result;
+	}
+	
 	@Override
 	public Set<String> getAttributes() {
 		Set<String> attrs = new HashSet<String>();

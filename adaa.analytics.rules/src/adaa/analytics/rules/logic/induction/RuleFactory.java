@@ -1,5 +1,7 @@
 package adaa.analytics.rules.logic.induction;
 
+import adaa.analytics.rules.logic.representation.ActionRule;
+import adaa.analytics.rules.logic.representation.ActionRuleSet;
 import adaa.analytics.rules.logic.representation.ClassificationRule;
 import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
@@ -19,6 +21,7 @@ public class RuleFactory {
 	public static final int CLASSIFICATION = 1; 
 	public static final int REGRESSION = 2;
 	public static final int SURVIVAL = 3;
+	public static final int ACTION = 4;
 	
 	protected int type;
 	protected boolean isVoting = true;
@@ -43,6 +46,8 @@ public class RuleFactory {
 			return new RegressionRule(premise, consequence);
 		case SURVIVAL:
 			return new SurvivalRule(premise, consequence);
+		case ACTION:
+			return new ActionRule();
 		}
 		
 		return null;
@@ -56,6 +61,8 @@ public class RuleFactory {
 			return new RegressionRuleSet(set, isVoting, knowledge);
 		case SURVIVAL:
 			return new SurvivalRuleSet(set, isVoting, knowledge);
+		case ACTION:
+			return new ActionRuleSet(set, isVoting, knowledge);
 		}
 		
 		return null;

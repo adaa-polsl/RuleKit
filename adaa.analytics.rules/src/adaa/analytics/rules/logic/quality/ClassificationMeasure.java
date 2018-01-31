@@ -1,5 +1,7 @@
 package adaa.analytics.rules.logic.quality;
 
+import adaa.analytics.rules.logic.induction.Covering;
+
 public class ClassificationMeasure implements IQualityMeasure {
 	
 	public static final int	Accuracy = 0;
@@ -87,6 +89,11 @@ public class ClassificationMeasure implements IQualityMeasure {
 		default:
 			throw new IllegalArgumentException("ClassificationMeasure: unknown measure type");
 		}
+	}
+	
+	public double calculate(Covering cov) {
+		return this.calculate(cov.weighted_p, cov.weighted_n,
+				cov.weighted_P, cov.weighted_N);
 	}
 	
 	public double calculate(ContingencyTable ct) {
