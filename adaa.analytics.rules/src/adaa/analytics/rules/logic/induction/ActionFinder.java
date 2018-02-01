@@ -3,6 +3,7 @@ package adaa.analytics.rules.logic.induction;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
@@ -14,6 +15,7 @@ import adaa.analytics.rules.logic.representation.ActionRule;
 import adaa.analytics.rules.logic.representation.ConditionBase;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Interval;
+import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.SingletonSet;
 
@@ -211,6 +213,109 @@ public class ActionFinder extends AbstractFinder {
 			}
 		}
 		return proposedAction;
+	}
+	
+	public double calculateActionQuality(final ExampleSet trainSet, Covering covering, IQualityMeasure measure) {
+		double q = ((ClassificationMeasure)measure).calculate(covering);
+		return q;
+	}
+	
+	/**
+	 * Removes irrelevant conditions from rule using hill-climbing strategy and action-specific quality measurements. 
+	 * @param rule Rule to be pruned.
+	 * @param trainSet Training set. 
+	 * @return Updated covering object.
+	 */
+	@Override
+	public Covering prune(final Rule rule_, final ExampleSet trainSet) {
+		
+		Logger.log("ActionFinder.prune()\n", Level.FINE);
+		ActionRule rule = rule_ instanceof ActionRule ? (ActionRule)rule_ : null;
+		
+		if (rule == null) {
+			throw new RuntimeException("Not an actionrule in actionrule pruning!");
+		}
+		
+		// check preconditions
+		if (rule.getWeighted_p() == Double.NaN || rule.getWeighted_p() == Double.NaN ||
+			rule.getWeighted_P() == Double.NaN || rule.getWeighted_N() == Double.NaN) {
+			throw new IllegalArgumentException();
+		}
+		
+		Covering covering = rule.actionCovers(trainSet);
+		double initialQuality = calculateActionQuality(trainSet, covering, params.getPruningMeasure());
+		boolean continueClimbing = true;
+		boolean shouldActionBeNil = false;
+		while (continueClimbing) {
+			ConditionBase toRemove = null;
+			double bestQuality = Double.NEGATIVE_INFINITY;
+			
+			for (ConditionBase cnd : rule.getPremise().getSubconditions()) {
+				// consider only prunable conditions
+				if (!cnd.isPrunable()) {
+					continue;
+				}
+				
+				// disable subcondition to calculate measure
+				cnd.setDisabled(true);
+				covering = rule.actionCovers(trainSet);
+				cnd.setDisabled(false);
+				
+				double q = calculateActionQuality(trainSet, covering, params.getPruningMeasure());
+				
+				if (q > bestQuality) {
+					bestQuality = q;
+					toRemove = cnd;
+					shouldActionBeNil = false;
+				}
+				
+				Action actionCondition = cnd instanceof Action ? (Action)cnd : null;
+				if (actionCondition == null) {
+					Logger.log("Non-action condition in ActionFinder.prune", Level.ALL);
+					continue;
+				}
+				
+				actionCondition.setActionNil(true);
+				covering = rule.actionCovers(trainSet);
+				actionCondition.setActionNil(false);
+				
+				q = calculateActionQuality(trainSet, covering, params.getPruningMeasure());
+				
+				if (q > bestQuality) {
+					bestQuality = q;
+					//with disabled right part of action
+					toRemove = actionCondition;
+					shouldActionBeNil = true;
+				}
+			}
+			
+			// if there is something to remove
+			if (bestQuality >= initialQuality) {
+				initialQuality = bestQuality;				
+				rule.getPremise().removeSubcondition(toRemove);
+				
+				if (shouldActionBeNil) {
+					Action ac = toRemove instanceof Action ? (Action)toRemove : null;
+					if (ac == null) {
+						throw new RuntimeException("Impossible at that phase!");
+					}
+					ac.setActionNil(true);
+					rule.getPremise().addSubcondition(ac);
+				}
+				// stop climbing when only single condition remains
+				continueClimbing = rule.getPremise().getSubconditions().size() > 1;
+				Logger.log("Condition removed: " + rule + "\n", Level.FINER);
+			} else {
+				continueClimbing = false;
+			}
+		}
+		
+		covering = rule.actionCovers(trainSet);
+		rule.setCoveringInformation(covering);
+		double weight = calculateActionQuality(trainSet, covering, params.getPruningMeasure());
+		rule.setWeight(weight);
+		
+		return covering;
 	}
 
 }

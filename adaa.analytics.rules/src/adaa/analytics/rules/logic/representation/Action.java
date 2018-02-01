@@ -13,6 +13,7 @@ public class Action extends ElementaryCondition {
 	private static final long serialVersionUID = -7307576747677085713L;
 	
 	protected IValueSet leftValue, rightValue;
+
 	
 	public Action(String attribute, IValueSet sourceValue, IValueSet targetValue)  {
 		
@@ -23,14 +24,25 @@ public class Action extends ElementaryCondition {
 		leftValue = sourceValue;
 		rightValue = targetValue;
 	}
-	
+		
 	public String toString() {
 		
 		return "(" + attribute + ", " + leftValue.toString() + "->" + (rightValue == null ? " " : rightValue.toString() ) + ")";
 	}
 	
+	public ElementaryCondition intersect(ElementaryCondition other) {
+		if (other instanceof Action)
+		{
+			Action ac = (Action)other;
+			return (ElementaryCondition) new Action(attribute, 
+					this.leftValue.getIntersection(ac.getLeftValue()), 
+					rightValue.getIntersection(ac.getRightValue())); 
+		}
+		return new ElementaryCondition(attribute, this.valueSet.getIntersection(other.getValueSet()));
+	}
+	
 	public boolean isPrunable() {
-		return false;
+		return super.isPrunable();
 	}
 	
 	public IValueSet getLeftValue() { return leftValue; }
@@ -56,6 +68,25 @@ public class Action extends ElementaryCondition {
 		return attrs;
 	}
 
+	private boolean isNilAction = false;
+	
+	public void setActionNil(boolean isNil) {
+		isNilAction = isNil;
+	}
+	
+	public boolean getActionNil() {
+		return isNilAction;
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = this.attribute.hashCode();
+		int a = leftValue == null ? 0 : leftValue.hashCode();
+		int b = rightValue == null ? 0 : rightValue.hashCode();
+		result = 31 * result + 7 * a + 13 * b;
+		return result;
+	}
+	
 	@Override
 	//Assume that action evaluates, if left part of condition is met
 	protected boolean internalEvaluate(Example ex) {

@@ -45,8 +45,10 @@ public class ActionTests {
 	public static Collection<Object[]> testData(){
 		return Arrays.asList(new Object[][]{
 			//fileName, labelName, measure, pruningEnabled, ignoreMissing, minCov, maxUncov, maxGrowing
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Accuracy), true, true, 5.0, 0.05, 0.9},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9},
-			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9}
+			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9},
+			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Accuracy), true, true, 5.0, 0.05, 0.9}
 		});
 	}
 	
@@ -59,6 +61,7 @@ public class ActionTests {
 		
 		params = new InductionParameters();
 		params.setInductionMeasure(measure);
+		params.setPruningMeasure(measure);
 		params.setEnablePruning(enablePruning);
 		params.setIgnoreMissing(ignoreMissing);
 		params.setMinimumCovered(minimumCovered);
@@ -114,8 +117,9 @@ public class ActionTests {
 		//RuleSetBase set = snc.run(exampleSet);
 		//System.out.println(set.toString());
 		
+		System.out.println("File name: " + testFile);
+		System.out.println("Pruning: " + params.isPruningEnabled());
 		System.out.println(actions.toString());
-		fail("Not yet implemented");
 	}
 
 }

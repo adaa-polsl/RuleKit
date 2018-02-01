@@ -17,7 +17,7 @@ public class ActionRule extends Rule {
 	protected Action actionConsequence;
 	
 	public String toString() {
-		String s = "IF " + premise.toString() + " THEN " + actionConsequence.toString();	
+		String s = "IF " + premise == null ? "" :premise.toString() + " THEN " + actionConsequence.toString();	
 		return s;
 	}
 	
@@ -73,6 +73,60 @@ public class ActionRule extends Rule {
 		}
 		return covering;
 	}
+	
+	private void updateCoveringForSubrule(
+			Covering cov,
+			Example ex,
+			Rule rule,
+			int id,
+			double w) {
+		
+	
+		boolean consequenceAgree = this.actionConsequence.evaluate(ex);
+		if (consequenceAgree) {
+			cov.weighted_P += w;
+		} else {
+			cov.weighted_N += w;
+		}
+		
+		if (this.getPremise().evaluate(ex)) {
+			if (consequenceAgree) {
+				cov.positives.add(id);
+				cov.weighted_p += w;
+			} else {
+				cov.negatives.add(id);
+				cov.weighted_n += w;
+			}
+		}
+	}
+	
+	public Covering actionCovers(ExampleSet set) {
+		
+		Covering covered = new Covering();
+		
+		Rule rightRule = this.getRightRule();
+		Rule leftRule = this.getLeftRule();
+		
+		Covering leftCov = new Covering();
+		Covering rightCov = new Covering();
+		
+		for (int i = 0; i < set.size(); i++) {
+			
+			Example ex = set.getExample(i);
+			double w = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
+			
+			updateCoveringForSubrule(leftCov, ex, leftRule, i, w);
+			updateCoveringForSubrule(rightCov, ex, rightRule, i, w);
+			
+		}
+		
+		covered.weighted_p = Math.min(leftCov.weighted_p, rightCov.weighted_p);
+		covered.weighted_n = Math.max(leftCov.weighted_n, rightCov.weighted_n);
+		covered.weighted_P = leftCov.weighted_P;
+		covered.weighted_N = leftCov.weighted_N;
+		
+		return covered;
+	}
 
 	@Override
 	public Covering covers(ExampleSet set) {
@@ -126,7 +180,7 @@ public class ActionRule extends Rule {
 		CompoundCondition premise = new CompoundCondition();
 		for (ConditionBase a : this.getPremise().getSubconditions()) {
 			Action ac = (Action)a;
-			if (ac.getRightValue() != null) {
+			if (ac.getRightValue() != null && !ac.getActionNil()) {
 				premise.addSubcondition(new ElementaryCondition(ac.getAttribute(), ac.getRightValue()));
 			}
 		}
