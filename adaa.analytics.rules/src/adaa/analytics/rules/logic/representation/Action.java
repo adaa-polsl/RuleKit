@@ -27,7 +27,7 @@ public class Action extends ElementaryCondition {
 		
 	public String toString() {
 		
-		return "(" + attribute + ", " + leftValue.toString() + "->" + (rightValue == null ? " " : rightValue.toString() ) + ")";
+		return "(" + attribute + ", " + leftValue.toString() + "->" + ((rightValue == null || this.isNilAction) ? " " : rightValue.toString() ) + ")";
 	}
 	
 	public ElementaryCondition intersect(ElementaryCondition other) {
