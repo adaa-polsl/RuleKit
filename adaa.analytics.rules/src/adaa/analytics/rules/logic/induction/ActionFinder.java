@@ -1,6 +1,8 @@
 package adaa.analytics.rules.logic.induction;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -215,18 +217,12 @@ public class ActionFinder extends AbstractFinder {
 		return proposedAction;
 	}
 	
-	public double calculateActionQuality(final ExampleSet trainSet, Covering covering, IQualityMeasure measure) {
+	public double calculateActionQuality(Covering covering, IQualityMeasure measure) {
 		double q = ((ClassificationMeasure)measure).calculate(covering);
 		return q;
 	}
 	
-	/**
-	 * Removes irrelevant conditions from rule using hill-climbing strategy and action-specific quality measurements. 
-	 * @param rule Rule to be pruned.
-	 * @param trainSet Training set. 
-	 * @return Updated covering object.
-	 */
-	@Override
+	//@Override
 	public Covering prune(final Rule rule_, final ExampleSet trainSet) {
 		
 		Logger.log("ActionFinder.prune()\n", Level.FINE);
@@ -242,8 +238,242 @@ public class ActionFinder extends AbstractFinder {
 			throw new IllegalArgumentException();
 		}
 		
+		int maskLength = (trainSet.size() + Long.SIZE - 1) / Long.SIZE;
+		//during growing, nil action never will be constructed (?)
+		int maskCount = rule.getPremise().getSubconditions().size();
+		
+		Rule leftRule = rule.getLeftRule();
+		Rule rightRule = rule.getRightRule();
+		
+		Covering lCov = leftRule.covers(trainSet);
+		leftRule.setCoveringInformation(lCov);
+		
+		int maskCountLeft = maskCount;//leftRule.getPremise().getSubconditions().size();
+		
+		long[] masksLeft = new long[maskCountLeft * maskLength]; 
+		long[] labelMaskLeft = new long[maskLength];
+		
+		int maskCountRight = maskCount;//rightRule.getPremise().getSubconditions().size();
+		long[] masksRight = new long[maskCountRight * maskLength];
+		long[] labelMaskRight = new long[maskLength];
+		
+		for (int i = 0; i < trainSet.size(); i++) {
+			
+			Example ex = trainSet.getExample(i);
+			
+			int wordId = i / Long.SIZE;
+			int wordOffset = i % Long.SIZE;
+			
+			if (leftRule.getConsequence().evaluate(ex)) {
+				labelMaskLeft[wordId] |= 1L << wordOffset;
+			}
+			
+			if (rightRule.getConsequence().evaluate(ex)) {
+				labelMaskRight[wordId] |= 1L << wordOffset;
+			}
+			
+			for (int m = 0; m < maskCountLeft; ++m) {
+				ConditionBase cnd = leftRule.getPremise().getSubconditions().get(m);
+				if (cnd.evaluate(ex)) {
+					masksLeft[m * maskLength + wordId] |= 1L << wordOffset;
+				}
+			}
+			
+			for (int m = 0; m < maskCountRight; m++) {
+				ConditionBase cnd = rightRule.getPremise().getSubconditions().get(m);
+				if (cnd.evaluate(ex)) {
+					masksRight[m * maskLength + wordId] |= 1L << wordOffset;
+				}
+			}
+		}
+		
+		Map<ConditionBase, Integer> condToMaskLeft = new HashMap<ConditionBase, Integer>();
+		Map<ConditionBase, Integer> condToMaskRight = new HashMap<ConditionBase, Integer>();
+		Map<ConditionBase, Integer> conditionToMask = new HashMap<ConditionBase, Integer>();
+		Set<ConditionBase> presentCondLeft = new HashSet<ConditionBase>();
+		Set<ConditionBase> presentCondRight = new HashSet<ConditionBase>();
+		Set<ConditionBase> presentConditions = new HashSet<ConditionBase>();
+		
+		for (int i = 0; i < maskCount; i++) {
+			ConditionBase cndLeft = leftRule.getPremise().getSubconditions().get(i);
+			condToMaskLeft.put(cndLeft, i);
+			presentCondLeft.add(cndLeft);
+			
+			ConditionBase cndRight = rightRule.getPremise().getSubconditions().get(i);
+			condToMaskRight.put(cndRight, i);
+			presentCondRight.add(cndRight);
+			
+			ConditionBase cnd = rule.getPremise().getSubconditions().get(i);
+			conditionToMask.put(cnd, i);
+			presentConditions.add(cnd);
+		}
+		
 		Covering covering = rule.actionCovers(trainSet);
-		double initialQuality = calculateActionQuality(trainSet, covering, params.getPruningMeasure());
+		double initialQuality = this.calculateActionQuality(covering, params.getPruningMeasure());
+		boolean climbing = true;
+		
+		while(climbing) {
+			
+			ConditionBase toRemove = null;
+			double bestQuality = Double.NEGATIVE_INFINITY;
+			boolean looseCondition = false;
+			for (ConditionBase cnd_ : rule.getPremise().getSubconditions()) {
+				
+				Action cnd = cnd_ instanceof Action ? (Action)cnd_ : null;
+				if (cnd == null) {
+					throw new RuntimeException("Impossible at that phase");
+				}
+				
+				if (!cnd.isPrunable()) continue;
+				
+				presentConditions.remove(cnd);
+				presentCondLeft.remove(cnd.getLeftCondition());
+				presentCondRight.remove(cnd.getRightCondition());
+				
+				double pLeft = 0.0, nLeft = 0.0;
+				double pRight = 0.0, nRight = 0.0;
+				double loosePLeft = 0.0, looseNLeft = 0.0;
+				
+				
+				
+				for (int wordId = 0; wordId < maskLength; ++wordId) {
+					long word = ~(0L);
+					long labelWord = labelMaskLeft[wordId];
+					// iterate over all present conditions
+					for (ConditionBase other : presentCondLeft) {
+						int m = condToMaskLeft.get(other);
+						word &= masksLeft[m * maskLength + wordId];
+					}
+					long loosedWord = word & masksLeft[conditionToMask.get(cnd) * maskLength + wordId];
+					// no weighting - use popcount
+					if (trainSet.getAttributes().getWeight() == null) {
+						pLeft += Long.bitCount(word & labelWord);
+						nLeft += Long.bitCount(word & ~labelWord);
+						loosePLeft += Long.bitCount(loosedWord & labelWord);
+						looseNLeft += Long.bitCount(loosedWord & ~labelWord);
+					} else {
+						long posWord = word & labelWord;
+						long negWord = word & ~labelWord;
+						long loosePosWord = loosedWord & labelWord;
+						long looseNegWord = loosedWord & ~labelWord;
+						for (int wordOffset = 0; wordOffset < Long.SIZE; ++wordOffset) {
+							if ((posWord & (1L << wordOffset)) != 0) {
+								pLeft += trainSet.getExample(wordId * Long.SIZE + wordOffset).getWeight();
+							} else if ((negWord & (1L << wordOffset)) != 0) {
+								nLeft += trainSet.getExample(wordId * Long.SIZE + wordOffset).getWeight();
+							}
+							if ((loosePosWord & (1L << wordOffset)) != 0) {
+								loosePLeft += trainSet.getExample(wordId * Long.SIZE + wordOffset).getWeight();
+							} else if ((looseNegWord & (1L << wordOffset)) != 0) {
+								looseNLeft += trainSet.getExample(wordId * Long.SIZE + wordOffset).getWeight();
+							}
+						}
+					}
+					
+					word = ~(0L);
+					labelWord = labelMaskRight[wordId];
+					for (ConditionBase other : presentCondRight) {
+						int m = condToMaskRight.get(other);
+						word &= masksRight[m * maskLength + wordId];
+					}
+					
+					if (trainSet.getAttributes().getWeight() == null) {
+						pRight += Long.bitCount(word & labelWord);
+						nRight += Long.bitCount(word & ~labelWord);
+					} else {
+						long posWord = word & labelWord;
+						long negWord = word & ~labelWord;
+						for (int wordOffset = 0; wordOffset < Long.SIZE; ++wordOffset) {
+							if ((posWord & (1L << wordOffset)) != 0) {
+								pRight += trainSet.getExample(wordId * Long.SIZE + wordOffset).getWeight();
+							} else if ((negWord & (1L << wordOffset)) != 0) {
+								nRight += trainSet.getExample(wordId * Long.SIZE + wordOffset).getWeight();
+							}
+						}
+					}
+				}
+				
+				presentConditions.add(cnd);
+				presentCondLeft.add(cnd.getLeftCondition());
+				presentCondRight.add(cnd.getRightCondition());
+				
+				double q = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
+						Math.min(pLeft, pRight), Math.max(nLeft, nRight), leftRule.getWeighted_P(), leftRule.getWeighted_N());
+				
+				double loose_q = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
+						Math.min(loosePLeft, pRight), Math.max(looseNLeft, nRight), leftRule.getWeighted_P(), leftRule.getWeighted_N());
+				
+				if (q > bestQuality) {
+					bestQuality = q;
+					toRemove = cnd;
+					looseCondition = false;
+				}
+				
+				if (loose_q > bestQuality) {
+					bestQuality = loose_q;
+					toRemove = cnd;
+					looseCondition = true;
+				}
+				
+			}
+			
+			if (bestQuality >= initialQuality) {
+				initialQuality = bestQuality;
+				
+				presentConditions.remove(toRemove);
+				presentCondRight.remove(((Action)toRemove).getRightCondition());
+				
+				if (looseCondition) {
+					rule.getPremise().removeSubcondition(toRemove);
+					Action act = (Action)toRemove;
+					act.setActionNil(true);
+					//act.setPrunable(false); ???
+					rule.getPremise().addSubcondition(act);
+				} else {
+					presentCondLeft.remove(((Action)toRemove).getLeftCondition());
+					rule.getPremise().removeSubcondition(toRemove);
+				}
+				if (rule.getPremise().getSubconditions().size() == 1) {
+					climbing = false;
+				}
+			} else {
+				climbing = false;
+			}
+		}
+		
+		covering = rule.actionCovers(trainSet);
+		rule.setCoveringInformation(covering);
+		
+		double weight = calculateActionQuality(covering, params.getPruningMeasure());
+		rule.setWeight(weight);
+		
+		return covering;
+	}
+	
+	/**
+	 * Removes irrelevant conditions from rule using hill-climbing strategy and action-specific quality measurements. 
+	 * @param rule Rule to be pruned.
+	 * @param trainSet Training set. 
+	 * @return Updated covering object.
+	 */
+	//@Override
+	public Covering prune2(final Rule rule_, final ExampleSet trainSet) {
+		
+		Logger.log("ActionFinder.prune()\n", Level.FINE);
+		ActionRule rule = rule_ instanceof ActionRule ? (ActionRule)rule_ : null;
+		
+		if (rule == null) {
+			throw new RuntimeException("Not an actionrule in actionrule pruning!");
+		}
+		
+		// check preconditions
+		if (rule.getWeighted_p() == Double.NaN || rule.getWeighted_p() == Double.NaN ||
+			rule.getWeighted_P() == Double.NaN || rule.getWeighted_N() == Double.NaN) {
+			throw new IllegalArgumentException();
+		}
+		
+		Covering covering = rule.actionCovers(trainSet);
+		double initialQuality = calculateActionQuality(covering, params.getPruningMeasure());
 		boolean continueClimbing = true;
 		boolean shouldActionBeNil = false;
 		while (continueClimbing) {
@@ -261,7 +491,7 @@ public class ActionFinder extends AbstractFinder {
 				covering = rule.actionCovers(trainSet);
 				cnd.setDisabled(false);
 				
-				double q = calculateActionQuality(trainSet, covering, params.getPruningMeasure());
+				double q = calculateActionQuality(covering, params.getPruningMeasure());
 				
 				if (q > bestQuality) {
 					bestQuality = q;
@@ -269,7 +499,7 @@ public class ActionFinder extends AbstractFinder {
 					shouldActionBeNil = false;
 				}
 				
-				Action actionCondition = cnd instanceof Action ? (Action)cnd : null;
+			/*	Action actionCondition = cnd instanceof Action ? (Action)cnd : null;
 				if (actionCondition == null) {
 					Logger.log("Non-action condition in ActionFinder.prune", Level.ALL);
 					continue;
@@ -279,14 +509,14 @@ public class ActionFinder extends AbstractFinder {
 				covering = rule.actionCovers(trainSet);
 				actionCondition.setActionNil(false);
 				
-				q = calculateActionQuality(trainSet, covering, params.getPruningMeasure());
+				q = calculateActionQuality(covering, params.getPruningMeasure());
 				
 				if (q > bestQuality) {
 					bestQuality = q;
 					//with disabled right part of action
 					toRemove = actionCondition;
 					shouldActionBeNil = true;
-				}
+				}*/
 			}
 			
 			// if there is something to remove
@@ -312,7 +542,7 @@ public class ActionFinder extends AbstractFinder {
 		
 		covering = rule.actionCovers(trainSet);
 		rule.setCoveringInformation(covering);
-		double weight = calculateActionQuality(trainSet, covering, params.getPruningMeasure());
+		double weight = calculateActionQuality(covering, params.getPruningMeasure());
 		rule.setWeight(weight);
 		
 		return covering;

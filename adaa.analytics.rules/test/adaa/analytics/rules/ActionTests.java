@@ -27,6 +27,8 @@ import com.rapidminer.tools.OperatorService;
 import adaa.analytics.rules.logic.induction.AbstractSeparateAndConquer;
 import adaa.analytics.rules.logic.induction.ActionFinder;
 import adaa.analytics.rules.logic.induction.ActionSnC;
+import adaa.analytics.rules.logic.induction.ClassificationFinder;
+import adaa.analytics.rules.logic.induction.ClassificationSnC;
 import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.*;
@@ -46,9 +48,9 @@ public class ActionTests {
 		return Arrays.asList(new Object[][]{
 			//fileName, labelName, measure, pruningEnabled, ignoreMissing, minCov, maxUncov, maxGrowing
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Accuracy), true, true, 5.0, 0.05, 0.9},
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9},
-			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9},
-			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Accuracy), true, true, 5.0, 0.05, 0.9}
+		//	{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9},
+			//{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9},
+			//{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Accuracy), true, true, 5.0, 0.05, 0.9}
 		});
 	}
 	
@@ -119,6 +121,7 @@ public class ActionTests {
 		
 		System.out.println("File name: " + testFile);
 		System.out.println("Pruning: " + params.isPruningEnabled());
+	//	System.out.println("Measure: " + ((ClassificationMeasure)params.getPruningMeasure()).getName(params.getPruningMeasure()));
 		System.out.println(actions.toString());
 	}
 

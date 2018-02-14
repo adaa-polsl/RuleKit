@@ -82,14 +82,14 @@ public class ActionRule extends Rule {
 			double w) {
 		
 	
-		boolean consequenceAgree = this.actionConsequence.evaluate(ex);
+		boolean consequenceAgree = rule.getConsequence().evaluate(ex);
 		if (consequenceAgree) {
 			cov.weighted_P += w;
 		} else {
 			cov.weighted_N += w;
 		}
 		
-		if (this.getPremise().evaluate(ex)) {
+		if (rule.getPremise().evaluate(ex)) {
 			if (consequenceAgree) {
 				cov.positives.add(id);
 				cov.weighted_p += w;
@@ -166,6 +166,9 @@ public class ActionRule extends Rule {
 		
 		CompoundCondition premise = new CompoundCondition();
 		for (ConditionBase a : this.getPremise().getSubconditions()) {
+			if (a.isDisabled()) {
+				continue;
+			}
 			Action ac = (Action)a;
 			premise.addSubcondition(new ElementaryCondition(ac.getAttribute(), ac.getLeftValue()));
 		}
@@ -179,6 +182,9 @@ public class ActionRule extends Rule {
 		
 		CompoundCondition premise = new CompoundCondition();
 		for (ConditionBase a : this.getPremise().getSubconditions()) {
+			if (a.isDisabled()){
+				continue;
+			}
 			Action ac = (Action)a;
 			if (ac.getRightValue() != null && !ac.getActionNil()) {
 				premise.addSubcondition(new ElementaryCondition(ac.getAttribute(), ac.getRightValue()));

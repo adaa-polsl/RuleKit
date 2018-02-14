@@ -48,6 +48,14 @@ public class Action extends ElementaryCondition {
 	public IValueSet getLeftValue() { return leftValue; }
 	public IValueSet getRightValue() { return rightValue;};
 	
+	public ConditionBase getLeftCondition() {
+		return new ElementaryCondition(this.attribute, this.leftValue);
+	}
+	
+	public ConditionBase getRightCondition() {
+		return new ElementaryCondition(this.attribute, this.rightValue);
+	}
+	
 	@Override
 	public boolean equals(Object ref) {
 		
