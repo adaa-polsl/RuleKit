@@ -23,6 +23,10 @@ public class ClassificationMeasure implements IQualityMeasure {
 		this.criterion = criterion;
 	}
 	
+	public String getName() {
+		return ClassificationMeasure.getName(criterion);
+	}
+	
 	public static String getName(int criterion) {
 		switch(criterion) {
 		case Accuracy: return "Accuracy";

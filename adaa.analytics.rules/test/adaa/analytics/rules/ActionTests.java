@@ -3,9 +3,14 @@ package adaa.analytics.rules;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -39,6 +44,7 @@ public class ActionTests {
 	
 	protected InductionParameters params;
 	protected String testFile;
+	protected String outputFileName;
 	protected com.rapidminer.Process process;
 	protected ExampleSet exampleSet;
 	protected String labelParameter;
@@ -47,10 +53,25 @@ public class ActionTests {
 	public static Collection<Object[]> testData(){
 		return Arrays.asList(new Object[][]{
 			//fileName, labelName, measure, pruningEnabled, ignoreMissing, minCov, maxUncov, maxGrowing
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Accuracy), true, true, 5.0, 0.05, 0.9},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9},
 		//	{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9},
 			//{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9},
 			//{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Accuracy), true, true, 5.0, 0.05, 0.9}
+			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9},
+			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9},
+			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Accuracy), true, true, 5.0, 0.05, 0.9},
+			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9},
+			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9},
+			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9},
+			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9},
+			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9},
 		});
 	}
 	
@@ -60,6 +81,9 @@ public class ActionTests {
 			double maximumUncoveredFraction, double maxGrowingConditions) {
 		testFile = testFileName;
 		labelParameter = labelParameterName;
+		
+		outputFileName = testFileName.substring(0, testFileName.indexOf('.'));
+		outputFileName += "-rules-" + measure.getName() + (enablePruning  ? "-pruned" : "")  + ".arff";
 		
 		params = new InductionParameters();
 		params.setInductionMeasure(measure);
@@ -108,7 +132,7 @@ public class ActionTests {
 	}
 	
 	@Test
-	public void test() throws OperatorCreationException, OperatorException {
+	public void test() throws OperatorCreationException, OperatorException, IOException {
 		
 		ExampleSet exampleSet = parseArffFile();
 		
@@ -118,6 +142,13 @@ public class ActionTests {
 		//AbstractSeparateAndConquer snc = new ClassificationSnC(new ClassificationFinder(params), params);
 		//RuleSetBase set = snc.run(exampleSet);
 		//System.out.println(set.toString());
+		File arffFile = Paths.get(testDirectory, this.outputFileName).toFile();
+		FileWriter fw = new FileWriter(arffFile);
+		fw.write("File name: " + testFile);
+		fw.write("Pruning: " + params.isPruningEnabled());
+		fw.write(actions.toString());
+		fw.close();
+		
 		
 		System.out.println("File name: " + testFile);
 		System.out.println("Pruning: " + params.isPruningEnabled());
