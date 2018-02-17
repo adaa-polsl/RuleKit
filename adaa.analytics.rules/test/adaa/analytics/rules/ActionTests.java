@@ -53,6 +53,7 @@ public class ActionTests {
 	public static Collection<Object[]> testData(){
 		return Arrays.asList(new Object[][]{
 			//fileName, labelName, measure, pruningEnabled, ignoreMissing, minCov, maxUncov, maxGrowing
+		
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Accuracy), true, true, 5.0, 0.05, 0.9},
@@ -61,9 +62,22 @@ public class ActionTests {
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9},
-		//	{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9},
-			//{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9},
-			//{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Accuracy), true, true, 5.0, 0.05, 0.9}
+			
+			////
+			////  Wine dataset
+			////
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9},
+			
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Accuracy), true, true, 5.0, 0.05, 0.9},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9},
+			////
+			////  Sonar dataset
+			////
 			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9},
 			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9},
 			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Accuracy), true, true, 5.0, 0.05, 0.9},
@@ -72,6 +86,7 @@ public class ActionTests {
 			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9},
 			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9},
 			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9},
+			
 		});
 	}
 	
@@ -143,15 +158,24 @@ public class ActionTests {
 		//RuleSetBase set = snc.run(exampleSet);
 		//System.out.println(set.toString());
 		File arffFile = Paths.get(testDirectory, this.outputFileName).toFile();
+		
+		Long loosedActionsCount = actions.getRules().stream().map(x -> (ActionRule)x).
+			mapToLong(x -> x.getPremise().
+							getSubconditions().
+							stream().
+							map(y -> (Action)y).mapToLong(z -> (z.getActionNil() ? 1L : 0L)).sum()).sum();
+		
 		FileWriter fw = new FileWriter(arffFile);
-		fw.write("File name: " + testFile);
-		fw.write("Pruning: " + params.isPruningEnabled());
+		fw.write("File name: " + testFile + "\r\n");
+		fw.write("Pruning: " + params.isPruningEnabled() + "\r\n");
+		fw.write("Loosed actions count" + loosedActionsCount + "\r\n");
 		fw.write(actions.toString());
 		fw.close();
 		
 		
 		System.out.println("File name: " + testFile);
 		System.out.println("Pruning: " + params.isPruningEnabled());
+		//System.out.println("Loosed actions count" + loosedActionsCount);
 	//	System.out.println("Measure: " + ((ClassificationMeasure)params.getPruningMeasure()).getName(params.getPruningMeasure()));
 		System.out.println(actions.toString());
 	}

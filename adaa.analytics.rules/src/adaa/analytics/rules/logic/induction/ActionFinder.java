@@ -409,7 +409,8 @@ public class ActionFinder extends AbstractFinder {
 					looseCondition = false;
 				}
 				
-				if (loose_q > bestQuality) {
+				//prevent multiple loosing of loosed condition
+				if (!cnd.getActionNil() && loose_q > bestQuality) {
 					bestQuality = loose_q;
 					toRemove = cnd;
 					looseCondition = true;
