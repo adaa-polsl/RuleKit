@@ -383,12 +383,19 @@ public class ActionFinder extends AbstractFinder {
 				double qualityLeft = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
 						pLeft, nLeft, leftRule.getWeighted_P(), leftRule.getWeighted_N());
 				
-				if (qualityRight > bestQualityRight) {
-					bestQualityRight = qualityRight;
-					bestQualityLeft = qualityLeft;
-					toRemove = cnd;
+				if (cnd.getActionNil()) {
+					//don't even consider right quality - it does not exists now
+					if (qualityLeft > bestQualityLeft) {
+						bestQualityLeft = qualityLeft;
+						toRemove = cnd;
+					}
+				} else {
+					if (qualityRight > bestQualityRight) {
+						bestQualityRight = qualityRight;
+						bestQualityLeft = qualityLeft;
+						toRemove = cnd;
+					}
 				}
-				
 				
 				
 			/*	double q = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
@@ -411,16 +418,15 @@ public class ActionFinder extends AbstractFinder {
 				}
 				*/
 			}
+			Action act = (Action)toRemove;
+			boolean wasActionNil = act.getActionNil();
+			boolean leftActionPruning = bestQualityLeft >= initialQualityL;
 			
-			if (bestQualityRight >= initialQualityR){
-				initialQualityR = bestQualityRight;
-				
-				Action act = (Action)toRemove;
-				boolean wasActionNil = act.getActionNil();
-				boolean leftActionPruning = bestQualityLeft >= initialQualityL;
+			if (bestQualityRight >= initialQualityR || (wasActionNil && leftActionPruning)){
+	
 				// can loose action anymore when already loosed
 				if (!wasActionNil) {
-				
+					initialQualityR = bestQualityRight;
 					presentConditions.remove(toRemove);
 					presentCondRight.remove(((Action)toRemove).getRightCondition());
 					
