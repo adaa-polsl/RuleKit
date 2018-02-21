@@ -303,7 +303,7 @@ public class ActionFinder extends AbstractFinder {
 				
 				if (!cnd.isPrunable()) continue;
 				
-				if (cnd.getActionNil()) continue;
+				//if (cnd.getActionNil()) continue;
 				
 				presentConditions.remove(cnd);
 				presentCondLeft.remove(cnd.getLeftCondition());
@@ -415,19 +415,27 @@ public class ActionFinder extends AbstractFinder {
 			if (bestQualityRight >= initialQualityR){
 				initialQualityR = bestQualityRight;
 				
-				presentConditions.remove(toRemove);
-				presentCondRight.remove(((Action)toRemove).getRightCondition());
-				
-				rule.getPremise().removeSubcondition(toRemove);
 				Action act = (Action)toRemove;
-				act.setActionNil(true);
-				rule.getPremise().addSubcondition(toRemove);
+				boolean wasActionNil = act.getActionNil();
+				boolean leftActionPruning = bestQualityLeft >= initialQualityL;
+				// can loose action anymore when already loosed
+				if (!wasActionNil) {
 				
-				//action loosed. Now check if complete removal needed?
-				if (bestQualityLeft >= initialQualityL) {
+					presentConditions.remove(toRemove);
+					presentCondRight.remove(((Action)toRemove).getRightCondition());
+					
+					rule.getPremise().removeSubcondition(toRemove);
+					act.setActionNil(true);
+					rule.getPremise().addSubcondition(toRemove);
+				}
+				// Now check if complete removal needed? but only if wasn't already
+				if (leftActionPruning) {
 					initialQualityL = bestQualityLeft;
 					presentCondLeft.remove(((Action)toRemove).getLeftCondition());
 					rule.getPremise().removeSubcondition(toRemove);
+				}
+				if (wasActionNil && !leftActionPruning) {
+					climbing = false;
 				}
 				
 				if (rule.getPremise().getSubconditions().size() == 1) {
