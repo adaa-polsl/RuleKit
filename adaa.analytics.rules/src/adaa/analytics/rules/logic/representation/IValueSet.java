@@ -18,6 +18,7 @@ public interface IValueSet {
 	
 	public IValueSet getIntersection(IValueSet set);
 	
+	
 	public boolean equals(Object obj);
 	
 	public String toString();

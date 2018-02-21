@@ -5,6 +5,7 @@ import java.util.Set;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 
+import adaa.analytics.rules.logic.induction.ActionCovering;
 import adaa.analytics.rules.logic.induction.Covering;
 
 public class ActionRule extends Rule {
@@ -15,6 +16,7 @@ public class ActionRule extends Rule {
 	private static final long serialVersionUID = -7552850511136098386L;
 
 	protected Action actionConsequence;
+	protected ActionCovering coveringInformation;
 	
 	public String toString() {
 		String s = "IF " + premise == null ? "" :premise.toString() + " THEN " + actionConsequence.toString();	
@@ -42,37 +44,12 @@ public class ActionRule extends Rule {
 		this.weighted_P = ref.weighted_P;
 		this.weighted_N = ref.weighted_N;
 		
+		this.coveringInformation = rref.coveringInformation;
+		
 		this.premise = ref.premise;
 		actionConsequence = rref.actionConsequence;
 	}
-	
-	@Override
-	public Covering covers(ExampleSet set, Set<Integer> ids) {
-		Covering covering = new Covering();
-		
-		for (int id : ids) {
-			Example ex = set.getExample(id);
-			double weight = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
-			
-			boolean consAgree = this.actionConsequence.evaluate(ex);
-			if (consAgree) {
-				covering.weighted_P += weight;
-			} else {
-				covering.weighted_N += weight;
-			}
-			
-			if (this.getPremise().evaluate(ex)) {
-				if (consAgree) {
-					covering.positives.add(id);
-					covering.weighted_p += weight;
-				} else {
-					covering.negatives.add(id);
-					covering.weighted_n += weight;
-				}
-			}
-		}
-		return covering;
-	}
+
 	
 	private void updateCoveringForSubrule(
 			Covering cov,
@@ -100,8 +77,9 @@ public class ActionRule extends Rule {
 		}
 	}
 	
-	public Covering actionCovers(ExampleSet set, Set<Integer> ids) {
-		Covering covered = new Covering();
+	@Override
+	public Covering covers(ExampleSet set, Set<Integer> ids) {
+		ActionCovering covered = new ActionCovering();
 		
 		Rule rightRule = this.getRightRule();
 		Rule leftRule = this.getLeftRule();
@@ -117,8 +95,10 @@ public class ActionRule extends Rule {
 			updateCoveringForSubrule(rightCov, ex, rightRule, id, w);
 		}
 		
-		covered.weighted_p = Math.min(leftCov.weighted_p, rightCov.weighted_p);
-		covered.weighted_n = Math.max(leftCov.weighted_n, rightCov.weighted_n);
+		covered.weighted_p = leftCov.weighted_p;
+		covered.weighted_pRight =  rightCov.weighted_p;
+		covered.weighted_n = leftCov.weighted_n;
+		covered.weighted_nRight =  rightCov.weighted_n;
 		covered.weighted_P = leftCov.weighted_P;
 		covered.weighted_N = leftCov.weighted_N;
 		
@@ -128,9 +108,10 @@ public class ActionRule extends Rule {
 		return covered;
 	}
 	
-	public Covering actionCovers(ExampleSet set) {
+	@Override
+	public Covering covers(ExampleSet set) {
 		
-		Covering covered = new Covering();
+		ActionCovering covered = new ActionCovering();
 		
 		Rule rightRule = this.getRightRule();
 		Rule leftRule = this.getLeftRule();
@@ -148,44 +129,16 @@ public class ActionRule extends Rule {
 			
 		}
 		
-		covered.weighted_p = Math.min(leftCov.weighted_p, rightCov.weighted_p);
-		covered.weighted_n = Math.max(leftCov.weighted_n, rightCov.weighted_n);
+		covered.weighted_p = leftCov.weighted_p;
+		covered.weighted_pRight =  rightCov.weighted_p;
+		covered.weighted_n = leftCov.weighted_n;
+		covered.weighted_nRight =  rightCov.weighted_n;
 		covered.weighted_P = leftCov.weighted_P;
 		covered.weighted_N = leftCov.weighted_N;
 		
 		covered.positives = leftCov.positives;
 		covered.negatives = leftCov.negatives;
 		
-		return covered;
-	}
-
-	@Override
-	public Covering covers(ExampleSet set) {
-		
-		Covering covered = new Covering();
-		
-		for (int id = 0; id < set.size(); ++id) {
-			
-			Example ex = set.getExample(id);
-			double w = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
-			
-			boolean consequenceAgree = this.actionConsequence.evaluate(ex);
-			if (consequenceAgree) {
-				covered.weighted_P += w;
-			} else {
-				covered.weighted_N += w;
-			}
-			
-			if (this.getPremise().evaluate(ex)) {
-				if (consequenceAgree) {
-					covered.positives.add(id);
-					covered.weighted_p += w;
-				} else {
-					covered.negatives.add(id);
-					covered.weighted_n += w;
-				}
-			}
-		}
 		return covered;
 	}
 
@@ -225,5 +178,18 @@ public class ActionRule extends Rule {
 		Rule r = new ClassificationRule(premise, new ElementaryCondition(actionConsequence.getAttribute(), actionConsequence.getRightValue()));
 		
 		return r;
+	}
+	
+	@Override
+	public void setCoveringInformation(Covering cov) {
+		super.setCoveringInformation(cov);
+		if (cov instanceof ActionCovering)
+			this.coveringInformation = (ActionCovering)cov;
+	}
+	
+	public String printStats() {
+		return "(pl=" + weighted_p + ", nl=" + weighted_n + ", pr=" + this.coveringInformation.weighted_pRight + 
+				", nr=" + this.coveringInformation.weighted_nRight + ", P=" + weighted_P + ", N=" + weighted_N + 
+				", weight=" + getWeight() + ")";
 	}
 }

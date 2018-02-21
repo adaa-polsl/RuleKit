@@ -216,7 +216,7 @@ public class ActionTests {
 		junit.framework.Assert.assertEquals(cov.weighted_n, 0.0);
 		junit.framework.Assert.assertEquals(cov.weighted_N, 2.0);
 		
-		Covering actionCov = rule.actionCovers(set);
+		Covering actionCov = rule.covers(set);
 		junit.framework.Assert.assertEquals(actionCov.weighted_p, 2.0);
 		junit.framework.Assert.assertEquals(actionCov.weighted_P, 2.0);
 		junit.framework.Assert.assertEquals(actionCov.weighted_n, 0.0);
@@ -231,7 +231,7 @@ public class ActionTests {
 		junit.framework.Assert.assertEquals(cov.weighted_n, 0.0);
 		junit.framework.Assert.assertEquals(cov.weighted_N, 2.0);
 		
-		actionCov = rule.actionCovers(set);
+		actionCov = rule.covers(set);
 		junit.framework.Assert.assertEquals(actionCov.weighted_p, 2.0);
 		junit.framework.Assert.assertEquals(actionCov.weighted_P, 2.0);
 		junit.framework.Assert.assertEquals(actionCov.weighted_n, 0.0);

@@ -280,8 +280,11 @@ public class ActionFinder extends AbstractFinder {
 			presentConditions.add(cnd);
 		}
 		
-		Covering covering = rule.actionCovers(trainSet);
+		Covering covering = rule.covers(trainSet);
+		
 		double initialQuality = this.calculateActionQuality(covering, params.getPruningMeasure());
+		double initialQualityR = this.calculateQuality(trainSet, rule.getRightRule().covers(trainSet), params.getPruningMeasure());
+		double initialQualityL = this.calculateQuality(trainSet, rule.getLeftRule().covers(trainSet), params.getPruningMeasure());
 		boolean climbing = true;
 		
 		while(climbing) {
@@ -380,16 +383,10 @@ public class ActionFinder extends AbstractFinder {
 				double qualityLeft = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
 						pLeft, nLeft, leftRule.getWeighted_P(), leftRule.getWeighted_N());
 				
-				//prune right rule ?
 				if (qualityRight > bestQualityRight) {
 					bestQualityRight = qualityRight;
+					bestQualityLeft = qualityLeft;
 					toRemove = cnd;
-					looseCondition = true;
-					// prune also left rule ?
-					if (qualityLeft > bestQualityLeft) {
-						bestQualityLeft = qualityLeft;
-						looseCondition = false;
-					}
 				}
 				
 				
@@ -415,7 +412,32 @@ public class ActionFinder extends AbstractFinder {
 				*/
 			}
 			
-			if (bestQuality >= initialQuality) {
+			if (bestQualityRight >= initialQualityR){
+				initialQualityR = bestQualityRight;
+				
+				presentConditions.remove(toRemove);
+				presentCondRight.remove(((Action)toRemove).getRightCondition());
+				
+				rule.getPremise().removeSubcondition(toRemove);
+				Action act = (Action)toRemove;
+				act.setActionNil(true);
+				rule.getPremise().addSubcondition(toRemove);
+				
+				//action loosed. Now check if complete removal needed?
+				if (bestQualityLeft >= initialQualityL) {
+					initialQualityL = bestQualityLeft;
+					presentCondLeft.remove(((Action)toRemove).getLeftCondition());
+					rule.getPremise().removeSubcondition(toRemove);
+				}
+				
+				if (rule.getPremise().getSubconditions().size() == 1) {
+					climbing = false;
+				}
+			} else {
+				climbing = false;
+			}
+			
+			/*if (bestQuality >= initialQuality) {
 				initialQuality = bestQuality;
 				
 				presentConditions.remove(toRemove);
@@ -425,7 +447,6 @@ public class ActionFinder extends AbstractFinder {
 					rule.getPremise().removeSubcondition(toRemove);
 					Action act = (Action)toRemove;
 					act.setActionNil(true);
-					//act.setPrunable(false); ???
 					rule.getPremise().addSubcondition(act);
 				} else {
 					presentCondLeft.remove(((Action)toRemove).getLeftCondition());
@@ -436,11 +457,11 @@ public class ActionFinder extends AbstractFinder {
 				}
 			} else {
 				climbing = false;
-			}
+			}*/
 		}
 		
-		covering = rule.actionCovers(trainSet);
-		rule.setCoveringInformation(covering);
+		covering = rule.covers(trainSet);
+		rule.setCoveringInformation((ActionCovering)covering);
 		
 		double weight = calculateActionQuality(covering, params.getPruningMeasure());
 		rule.setWeight(weight);
@@ -470,7 +491,7 @@ public class ActionFinder extends AbstractFinder {
 			throw new IllegalArgumentException();
 		}
 		
-		Covering covering = rule.actionCovers(trainSet);
+		Covering covering = rule.covers(trainSet);
 		double initialQuality = calculateActionQuality(covering, params.getPruningMeasure());
 		boolean continueClimbing = true;
 		boolean shouldActionBeNil = false;
@@ -486,7 +507,7 @@ public class ActionFinder extends AbstractFinder {
 				
 				// disable subcondition to calculate measure
 				cnd.setDisabled(true);
-				covering = rule.actionCovers(trainSet);
+				covering = rule.covers(trainSet);
 				cnd.setDisabled(false);
 				
 				double q = calculateActionQuality(covering, params.getPruningMeasure());
@@ -538,7 +559,7 @@ public class ActionFinder extends AbstractFinder {
 			}
 		}
 		
-		covering = rule.actionCovers(trainSet);
+		covering = rule.covers(trainSet);
 		rule.setCoveringInformation(covering);
 		double weight = calculateActionQuality(covering, params.getPruningMeasure());
 		rule.setWeight(weight);

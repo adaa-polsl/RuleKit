@@ -1,8 +1,13 @@
 package adaa.analytics.rules.logic.induction;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
@@ -13,6 +18,8 @@ import adaa.analytics.rules.logic.representation.Action;
 import adaa.analytics.rules.logic.representation.ActionRule;
 import adaa.analytics.rules.logic.representation.ActionRuleSet;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
+import adaa.analytics.rules.logic.representation.ConditionBase;
+import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
@@ -84,6 +91,53 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 			carryOn = (finder.grow(rule, dataset, uncoveredPositives) > 0);
 			double uncovered_p = weightedP;
 			
+			
+			//try merge conditions
+			
+			Map<Attribute, HashSet<Integer>> atrToCondition = new HashMap<Attribute, HashSet<Integer>>();
+			
+	//		rule.getPremise().getSubconditions().stream()
+				
+		/*	for (int i = 0; i < rule.getPremise().getSubconditions().size(); i++) {
+				ConditionBase curr = rule.getPremise().getSubconditions().get(i);
+				Attribute currAttribute = dataset.getAttributes().get(((ElementaryCondition)curr).getAttribute());
+				
+				if (!atrToCondition.containsKey(currAttribute)) {
+					atrToCondition.put(currAttribute, new HashSet<Integer>());
+				}
+				
+				atrToCondition.get(currAttribute).add(i);
+			}
+			
+			for (Map.Entry<Attribute, HashSet<Integer>> pair : atrToCondition.entrySet()) {
+				
+				Attribute atr = pair.getKey();
+				HashSet<Integer> ids = pair.getValue();
+				
+				List<ConditionBase> newConds = new LinkedList<ConditionBase>();
+				List<ConditionBase> presentConds = ids.stream().map(x -> rule.getPremise().getSubconditions().get(x))
+						.collect(Collectors.toList());
+				
+				boolean kontinue = true;
+				
+				while (kontinue) {
+					
+					ElementaryCondition curr = (ElementaryCondition)presentConds.get(0);
+					presentConds.remove(curr);
+					
+					for (ConditionBase cand_ : presentConds) {
+						ElementaryCondition cand = (ElementaryCondition)cand_;
+						
+						if (curr.getValueSet().intersects(cand.getValueSet())){
+							
+							
+						}
+						
+					}
+				}
+			}
+			*/
+			
 			if (carryOn) {
 				if (params.isPruningEnabled()) {
 					Logger.log("Before prunning:" + rule.toString() + "\n" , Level.FINE);
@@ -93,7 +147,7 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 				
 				ActionRule aRule = (ActionRule)rule;
 				
-				Covering covered = aRule.actionCovers(dataset, uncovered);
+				Covering covered = aRule.covers(dataset, uncovered);
 				
 				// remove covered examples
 				int previouslyUncovered = uncoveredPositives.size();
