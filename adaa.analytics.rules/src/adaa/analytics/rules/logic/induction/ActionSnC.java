@@ -90,7 +90,10 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 					finder.prune(rule, dataset);
 				}
 				Logger.log("Candidate rule" + ruleset.getRules().size() +  ":" + rule.toString() + "\n", Level.INFO);
-				Covering covered = rule.covers(dataset, uncovered);
+				
+				ActionRule aRule = (ActionRule)rule;
+				
+				Covering covered = aRule.actionCovers(dataset, uncovered);
 				
 				// remove covered examples
 				int previouslyUncovered = uncoveredPositives.size();
@@ -113,7 +116,7 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 				if (uncoveredPositives.size() == previouslyUncovered) {
 					carryOn = false; 
 				} else {
-					ruleset.addRule(rule);
+					ruleset.addRule(aRule);
 				}
 			}
 		}

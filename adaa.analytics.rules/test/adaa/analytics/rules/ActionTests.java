@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,13 +21,18 @@ import org.junit.runners.Parameterized.Parameters;
 import org.junit.Test;
 
 import com.rapidminer.RapidMiner;
+import com.rapidminer.example.Attribute;
+import com.rapidminer.example.AttributeRole;
 import com.rapidminer.example.Attributes;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.ExampleSetFactory;
+import com.rapidminer.example.table.AttributeFactory;
 import com.rapidminer.operator.IOContainer;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.io.ArffExampleSource;
 import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
+import com.rapidminer.tools.Ontology;
 import com.rapidminer.tools.OperatorService;
 
 import adaa.analytics.rules.logic.induction.AbstractSeparateAndConquer;
@@ -34,9 +40,11 @@ import adaa.analytics.rules.logic.induction.ActionFinder;
 import adaa.analytics.rules.logic.induction.ActionSnC;
 import adaa.analytics.rules.logic.induction.ClassificationFinder;
 import adaa.analytics.rules.logic.induction.ClassificationSnC;
+import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.*;
+import common.Assert;
 
 @RunWith(Parameterized.class)
 public class ActionTests {
@@ -56,8 +64,8 @@ public class ActionTests {
 		
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9},
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Accuracy), true, true, 5.0, 0.05, 0.9},
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9},
@@ -68,25 +76,37 @@ public class ActionTests {
 			////
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9},
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9},
-			
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Accuracy), true, true, 5.0, 0.05, 0.9},
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9},
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9},
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9},
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9},
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9},
+
+			///
+			/// Monks 1 dataset
+			///
+			{"monks1.arff", "Class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9},
+			{"monks1.arff", "Class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9},
+			{"monks1.arff", "Class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9},
+			{"monks1.arff", "Class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9},
+			{"monks1.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9},
+			{"monks1.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9},
+			{"monks1.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9},
+			{"monks1.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9},
+			
 			////
 			////  Sonar dataset
 			////
-			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9},
+			/*{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9},
 			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9},
-			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Accuracy), true, true, 5.0, 0.05, 0.9},
-			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Accuracy), false, true, 5.0, 0.05, 0.9},
+			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9},
+			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9},
 			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9},
 			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9},
 			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9},
 			{"sonar.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9},
-			
+			*/
 		});
 	}
 	
@@ -144,6 +164,78 @@ public class ActionTests {
 		IOContainer c = process.run();
 		//parsed arff file
 		return (ExampleSet)c.getElementAt(0);
+	}
+	
+	@Test
+	public void testActionRuleCoverage() {
+		List<String> mapping = Arrays.asList(new String[]{"v0", "v1", "v2"});
+		List<String> mapping2 = Arrays.asList(new String[]{"vA", "vB", "vC"});
+		SingletonSet s1 = new SingletonSet(0, mapping);
+		SingletonSet s2 = new SingletonSet(1, mapping);
+		Action fullAction = new Action("a1", s1, s2);
+		SingletonSet s3 = new SingletonSet(0, mapping2);
+		Action loosedAction = new Action("a2", s3, s3);
+		loosedAction.setActionNil(true);
+		
+		CompoundCondition cc = new CompoundCondition();
+		cc.addSubcondition(fullAction);
+	
+		List<String> klass = Arrays.asList(new String[]{"class1", "class2"});
+		SingletonSet c1 = new SingletonSet(0, klass);
+		SingletonSet c2 = new SingletonSet(1, klass);
+		Action con = new Action("class", c1, c2);
+		
+		ActionRule rule = new ActionRule(cc, con);
+		
+		Object[][] data =// new Object[0][0]; 
+			{
+					{"v0", "vA", "class1"},
+					{"v0", "vA", "class1"},
+					{"v1", "vC", "class2"},
+					{"v1", "vB", "class2"}
+			};
+		
+		ExampleSet set = ExampleSetFactory.createExampleSet(data);
+		
+		Iterator<Attribute> atr = set.getAttributes().allAttributes();
+		Attribute atr0 = atr.next();
+		Attribute atr1 = atr.next();
+		Attribute atrclass = atr.next();
+		
+		atr0.setName("a1");
+		atr1.setName("a2");
+		
+		atrclass.setName("class");
+		
+		set.getAttributes().setLabel(atrclass);
+		set.getAttributes().setSpecialAttribute(atrclass, "label");
+		
+		Covering cov = rule.covers(set);
+		junit.framework.Assert.assertEquals(cov.weighted_p, 2.0);
+		junit.framework.Assert.assertEquals(cov.weighted_P, 2.0);
+		junit.framework.Assert.assertEquals(cov.weighted_n, 0.0);
+		junit.framework.Assert.assertEquals(cov.weighted_N, 2.0);
+		
+		Covering actionCov = rule.actionCovers(set);
+		junit.framework.Assert.assertEquals(actionCov.weighted_p, 2.0);
+		junit.framework.Assert.assertEquals(actionCov.weighted_P, 2.0);
+		junit.framework.Assert.assertEquals(actionCov.weighted_n, 0.0);
+		junit.framework.Assert.assertEquals(actionCov.weighted_N, 2.0);
+		
+		
+		rule.getPremise().addSubcondition(loosedAction);
+		
+		cov = rule.covers(set);
+		junit.framework.Assert.assertEquals(cov.weighted_p, 2.0);
+		junit.framework.Assert.assertEquals(cov.weighted_P, 2.0);
+		junit.framework.Assert.assertEquals(cov.weighted_n, 0.0);
+		junit.framework.Assert.assertEquals(cov.weighted_N, 2.0);
+		
+		actionCov = rule.actionCovers(set);
+		junit.framework.Assert.assertEquals(actionCov.weighted_p, 2.0);
+		junit.framework.Assert.assertEquals(actionCov.weighted_P, 2.0);
+		junit.framework.Assert.assertEquals(actionCov.weighted_n, 0.0);
+		junit.framework.Assert.assertEquals(actionCov.weighted_N, 2.0);
 	}
 	
 	@Test

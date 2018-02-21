@@ -100,6 +100,34 @@ public class ActionRule extends Rule {
 		}
 	}
 	
+	public Covering actionCovers(ExampleSet set, Set<Integer> ids) {
+		Covering covered = new Covering();
+		
+		Rule rightRule = this.getRightRule();
+		Rule leftRule = this.getLeftRule();
+		
+		Covering leftCov = new Covering();
+		Covering rightCov = new Covering();
+		
+		for (int id : ids) {
+			Example ex = set.getExample(id);
+			double w = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
+			
+			updateCoveringForSubrule(leftCov, ex, leftRule, id, w);
+			updateCoveringForSubrule(rightCov, ex, rightRule, id, w);
+		}
+		
+		covered.weighted_p = Math.min(leftCov.weighted_p, rightCov.weighted_p);
+		covered.weighted_n = Math.max(leftCov.weighted_n, rightCov.weighted_n);
+		covered.weighted_P = leftCov.weighted_P;
+		covered.weighted_N = leftCov.weighted_N;
+		
+		covered.positives = leftCov.positives;
+		covered.negatives = leftCov.negatives;
+		
+		return covered;
+	}
+	
 	public Covering actionCovers(ExampleSet set) {
 		
 		Covering covered = new Covering();
@@ -124,6 +152,9 @@ public class ActionRule extends Rule {
 		covered.weighted_n = Math.max(leftCov.weighted_n, rightCov.weighted_n);
 		covered.weighted_P = leftCov.weighted_P;
 		covered.weighted_N = leftCov.weighted_N;
+		
+		covered.positives = leftCov.positives;
+		covered.negatives = leftCov.negatives;
 		
 		return covered;
 	}

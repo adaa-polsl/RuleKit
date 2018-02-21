@@ -186,34 +186,6 @@ public class ActionFinder extends AbstractFinder {
 			return null;
 		}
 		
-		if (rule.getPremise().getSubconditions().size() == 0) {
-			//first time rule growing
-			return proposedAction;
-		} else {
-			
-			Action nilAction = null;
-			try {
-				nilAction = this.buildAction((ElementaryCondition)best, null);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-			
-
-			aRule.getPremise().addSubcondition((ElementaryCondition)proposedAction);
-			Covering normalCovering = aRule.covers(trainSet, uncoveredByRuleset);
-			double normalQ = this.calculateQuality(trainSet, normalCovering, params.getInductionMeasure());
-			aRule.getPremise().removeSubcondition((ElementaryCondition)proposedAction);
-			
-			aRule.getPremise().addSubcondition((ElementaryCondition)nilAction);
-			Covering nilCovering = aRule.covers(trainSet, uncoveredByRuleset);
-			double nilQ = this.calculateQuality(trainSet, nilCovering, params.getInductionMeasure());
-			aRule.getPremise().removeSubcondition((ElementaryCondition)nilAction);
-			
-			if (normalQ < nilQ) {
-				proposedAction = nilAction;
-			}
-		}
 		return proposedAction;
 	}
 	
@@ -316,6 +288,8 @@ public class ActionFinder extends AbstractFinder {
 			
 			ConditionBase toRemove = null;
 			double bestQuality = Double.NEGATIVE_INFINITY;
+			double bestQualityLeft = Double.NEGATIVE_INFINITY;
+			double bestQualityRight = Double.NEGATIVE_INFINITY;
 			boolean looseCondition = false;
 			for (ConditionBase cnd_ : rule.getPremise().getSubconditions()) {
 				
@@ -325,6 +299,8 @@ public class ActionFinder extends AbstractFinder {
 				}
 				
 				if (!cnd.isPrunable()) continue;
+				
+				if (cnd.getActionNil()) continue;
 				
 				presentConditions.remove(cnd);
 				presentCondLeft.remove(cnd.getLeftCondition());
@@ -397,7 +373,28 @@ public class ActionFinder extends AbstractFinder {
 				presentCondLeft.add(cnd.getLeftCondition());
 				presentCondRight.add(cnd.getRightCondition());
 				
-				double q = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
+				
+				double qualityRight = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
+						pRight, nRight, leftRule.getWeighted_N(), leftRule.getWeighted_P());
+				
+				double qualityLeft = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
+						pLeft, nLeft, leftRule.getWeighted_P(), leftRule.getWeighted_N());
+				
+				//prune right rule ?
+				if (qualityRight > bestQualityRight) {
+					bestQualityRight = qualityRight;
+					toRemove = cnd;
+					looseCondition = true;
+					// prune also left rule ?
+					if (qualityLeft > bestQualityLeft) {
+						bestQualityLeft = qualityLeft;
+						looseCondition = false;
+					}
+				}
+				
+				
+				
+			/*	double q = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
 						Math.min(pLeft, pRight), Math.max(nLeft, nRight), leftRule.getWeighted_P(), leftRule.getWeighted_N());
 				
 				double loose_q = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
@@ -415,7 +412,7 @@ public class ActionFinder extends AbstractFinder {
 					toRemove = cnd;
 					looseCondition = true;
 				}
-				
+				*/
 			}
 			
 			if (bestQuality >= initialQuality) {
