@@ -181,6 +181,9 @@ public class ActionFinder extends AbstractFinder {
 		Action proposedAction = null;
 		try {
 			proposedAction = this.buildAction((ElementaryCondition)best, (ElementaryCondition)otherBest);
+			if (otherBest == null) {
+				proposedAction.setActionNil(true);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -225,7 +228,7 @@ public class ActionFinder extends AbstractFinder {
 		long[] masksLeft = new long[maskCountLeft * maskLength]; 
 		long[] labelMaskLeft = new long[maskLength];
 		
-		int maskCountRight = maskCount;//rightRule.getPremise().getSubconditions().size();
+		int maskCountRight =/* maskCount;//*/rightRule.getPremise().getSubconditions().size();
 		long[] masksRight = new long[maskCountRight * maskLength];
 		long[] labelMaskRight = new long[maskLength];
 		
@@ -271,10 +274,11 @@ public class ActionFinder extends AbstractFinder {
 			condToMaskLeft.put(cndLeft, i);
 			presentCondLeft.add(cndLeft);
 			
-			ConditionBase cndRight = rightRule.getPremise().getSubconditions().get(i);
-			condToMaskRight.put(cndRight, i);
-			presentCondRight.add(cndRight);
-			
+			if (i < maskCountRight) {
+				ConditionBase cndRight = rightRule.getPremise().getSubconditions().get(i);
+				condToMaskRight.put(cndRight, i);
+				presentCondRight.add(cndRight);
+			}
 			ConditionBase cnd = rule.getPremise().getSubconditions().get(i);
 			conditionToMask.put(cnd, i);
 			presentConditions.add(cnd);
@@ -307,7 +311,9 @@ public class ActionFinder extends AbstractFinder {
 				
 				presentConditions.remove(cnd);
 				presentCondLeft.remove(cnd.getLeftCondition());
-				presentCondRight.remove(cnd.getRightCondition());
+				if (!cnd.getActionNil()) {
+					presentCondRight.remove(cnd.getRightCondition());
+				}
 				
 				double pLeft = 0.0, nLeft = 0.0;
 				double pRight = 0.0, nRight = 0.0;
@@ -374,8 +380,9 @@ public class ActionFinder extends AbstractFinder {
 				
 				presentConditions.add(cnd);
 				presentCondLeft.add(cnd.getLeftCondition());
-				presentCondRight.add(cnd.getRightCondition());
-				
+				if (!cnd.getActionNil()){
+					presentCondRight.add(cnd.getRightCondition());
+				}
 				
 				double qualityRight = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
 						pRight, nRight, leftRule.getWeighted_N(), leftRule.getWeighted_P());
