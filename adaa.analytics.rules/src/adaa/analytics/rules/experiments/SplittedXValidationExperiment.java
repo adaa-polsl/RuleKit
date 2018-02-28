@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.representation.Logger;
+import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.RuleGenerator;
 import adaa.analytics.rules.operator.SurvivalPerformanceEvaluator;
@@ -177,15 +178,26 @@ public class SplittedXValidationExperiment extends ExperimentBase {
 				long t2 = System.nanoTime();
 		    	double elapsedSec = (double)(t2 - t1) / 1e9;
 		    	
+		    	PerformanceVector performance = (PerformanceVector)objs[0];	
+		    	
 		    	if (modelFile.length() > 0) {
 		    		FileWriter fw = new FileWriter(modelFile);
 					BufferedWriter bw = new BufferedWriter(fw);
 		    		Model model = (Model)objs[1];
 		    		bw.write(model.toString());
+		    		
+		    		bw.write("\n");
+		    		
+		    		// add performance
+			    	for (String name : performance.getCriteriaNames()) {
+			    		double avg = performance.getCriterion(name).getAverage();
+			    		bw.write(name + ": " + avg + "\n");	
+			    	}
+			    	
 		    		bw.close();
 		    	}
 		    	
-		    	PerformanceVector performance = (PerformanceVector)objs[0];	
+		    
 		    	String[] columns = performance.getCriteriaNames();
 		    	
 		    	Logger.log(performance + "\n", Level.FINE);

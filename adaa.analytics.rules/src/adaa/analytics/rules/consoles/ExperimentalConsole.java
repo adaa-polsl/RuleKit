@@ -158,8 +158,8 @@ public class ExperimentalConsole {
 	            	
 	            	File file = new File(path);
 	            	
-	            	String reportFile = reportPath + "/" + name + (file.isDirectory() ? ", ext-10cv" : ", 10cv") + paramString + ".csv";
-	            	String modelFile =  reportPath + "/" + name + ", full" + paramString + ".res";
+	            	String reportFile = reportPath + "/" + name + paramString + ".csv";
+	            	String modelFile =  reportPath + "/" + name + paramString + ".res";
 	            	
 	            	ExperimentBase exp;
 	            	
