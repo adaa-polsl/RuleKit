@@ -243,29 +243,39 @@ public class ClassificationFinder extends AbstractFinder {
 						}
 					}
 			
+					// calculate precisions
+					double apriori_prec = rule.getWeighted_P() / (rule.getWeighted_P() + rule.getWeighted_N());
+					double left_prec = left_p / (left_p + left_n);
+					double right_prec = right_p / (right_p + right_n);
+					
 					// evaluate left-side condition: a in (-inf, v)
-					double quality = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
-							left_p, left_n, rule.getWeighted_P(), rule.getWeighted_N());
-					if ((quality > bestQuality || (quality == bestQuality && left_p > mostCovered)) && (toCover_left_p > 0)) {	
-						ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_le(midpoint)); 
-						if (checkCondition(candidate, classId, left_p + left_n)) {
-							bestQuality = quality;
-							mostCovered = left_p;
-							bestCondition = candidate;
-							ignoreCandidate = null;
+					if (left_prec > apriori_prec) {
+						double quality = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
+								left_p, left_n, rule.getWeighted_P(), rule.getWeighted_N());
+						
+						if ((quality > bestQuality || (quality == bestQuality && left_p > mostCovered)) && (toCover_left_p > 0)) {	
+							ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_le(midpoint)); 
+							if (checkCondition(candidate, classId, left_p + left_n)) {
+								bestQuality = quality;
+								mostCovered = left_p;
+								bestCondition = candidate;
+								ignoreCandidate = null;
+							}
 						}
 					}
 					
 					// evaluate right-side condition: a in <v, inf)
-					quality = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
-							right_p, right_n, rule.getWeighted_P(), rule.getWeighted_N());
-					if ((quality > bestQuality || (quality == bestQuality && right_p > mostCovered)) && (toCover_right_p > 0)) {
-						ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_geq(midpoint));
-						if (checkCondition(candidate, classId, right_p + right_n)) {
-							bestQuality = quality;
-							mostCovered = right_p;
-							bestCondition = candidate;
-							ignoreCandidate = null;
+					if (right_prec > apriori_prec) {
+						double quality = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
+								right_p, right_n, rule.getWeighted_P(), rule.getWeighted_N());
+						if ((quality > bestQuality || (quality == bestQuality && right_p > mostCovered)) && (toCover_right_p > 0)) {
+							ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_geq(midpoint));
+							if (checkCondition(candidate, classId, right_p + right_n)) {
+								bestQuality = quality;
+								mostCovered = right_p;
+								bestCondition = candidate;
+								ignoreCandidate = null;
+							}
 						}
 					}
 				}
