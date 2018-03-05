@@ -15,6 +15,7 @@ public class ClassificationMeasure implements IQualityMeasure {
 	public static final int	Sensitivity = 8;
 	public static final int	Specificity = 9;
 	public static final int BinaryEntropy = 10;
+	public static final int GeoRSS = 11;
 	
 	
 	protected int criterion = Correlation;
@@ -36,6 +37,7 @@ public class ClassificationMeasure implements IQualityMeasure {
 		case LogicalSufficiency: return "LogicalSufficiency";
 		case Precision: return "Precision";
 		case RSS: return "RSS";
+		case GeoRSS: return "GeoRSS";
 		case SBayesian: return "SBayesian";
 		case Sensitivity: return "Sensitivity";
 		case Specificity: return "Specificity";
@@ -61,6 +63,8 @@ public class ClassificationMeasure implements IQualityMeasure {
 			return p / (p+n);
 		case RSS:
 			return p/P - n/N;
+		case GeoRSS:
+			return Math.sqrt(p/P * (1 - n/N));
 		case SBayesian:
 			return p / (p+n) - (P-p)/(P-p + N-n); 
 		case Sensitivity:

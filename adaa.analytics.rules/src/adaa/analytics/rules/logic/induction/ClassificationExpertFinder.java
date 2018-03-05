@@ -141,6 +141,7 @@ public class ClassificationExpertFinder extends ClassificationFinder {
 					knowledge.getPreferredAttributes((int)classId).remove(condition.getAttribute());
 					localAllowed.remove(dataset.getAttributes().get(condition.getAttribute()));
 					used.add(dataset.getAttributes().get(condition.getAttribute()));
+					condition.setType(ConditionBase.Type.PREFERRED);
 					
 					if (--preferredCounter == 0) {
 						carryOn = false;

@@ -181,14 +181,14 @@ public class Knowledge implements Serializable {
 		for (int key: preferredConditions.keySet()) {
 			out += "\tClass " + key + "\n";
 			for (CompoundCondition r: preferredConditions.get(key)) {
-				out += "\t\t" + r.toString() + "\n";
+				out += "\t\t" + preferredConditions.get(key).getCount(r) + ": " + r.toString() + "\n";
 			}
 		}
 		out += "Preferred attributes:\n";
 		for (int key: preferredAttributes.keySet()) {
 			out += "\tClass " + key + "\n";
 			for (String r: preferredAttributes.get(key)) {
-				out += "\t\t" + r.toString() + "\n";
+				out += "\t\t" + preferredAttributes.get(key).getCount(r) + ": " + r.toString() + "\n";
 			}
 		}
 		out += "Forbidden conditions:\n";
