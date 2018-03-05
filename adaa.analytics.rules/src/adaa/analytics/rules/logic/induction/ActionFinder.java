@@ -426,6 +426,12 @@ public class ActionFinder extends AbstractFinder {
 				*/
 			}
 			Action act = (Action)toRemove;
+			
+			if (act == null) {
+				climbing = false;
+				continue;
+			}
+			
 			boolean wasActionNil = act.getActionNil();
 			boolean leftActionPruning = bestQualityLeft >= initialQualityL;
 			
