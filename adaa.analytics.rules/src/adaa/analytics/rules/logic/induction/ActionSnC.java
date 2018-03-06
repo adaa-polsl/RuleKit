@@ -37,6 +37,17 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 		this.factory = new RuleFactory(RuleFactory.ACTION, false, null);
 	}
 
+	private int sourceId;
+	private int targetId;
+	
+	public void setSourceClassId(int id) {
+		sourceId = id;
+	}
+	
+	public void setTargetClassId(int id) {
+		targetId = id;
+	}
+	
 	@Override
 	public RuleSetBase run(ExampleSet dataset) {
 		
@@ -61,7 +72,7 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 			Example ex = dataset.getExample(i);
 			double w = dataset.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
 			
-			if ((int)ex.getLabel() == 0) {
+			if ((int)ex.getLabel() == sourceId) {
 				weightedP += w;
 				uncoveredPositives.add(i);
 			} else {
@@ -78,8 +89,8 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 			Rule rule = new ActionRule(new CompoundCondition(), 
 					new Action(
 							label.getName(),
-							new SingletonSet((double)0, mapping.getValues()),
-							new SingletonSet((double)1, mapping.getValues())
+							new SingletonSet((double)sourceId, mapping.getValues()),
+							new SingletonSet((double)targetId, mapping.getValues())
 							)
 					);
 			

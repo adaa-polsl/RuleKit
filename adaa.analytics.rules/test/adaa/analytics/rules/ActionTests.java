@@ -56,13 +56,15 @@ public class ActionTests {
 	protected com.rapidminer.Process process;
 	protected ExampleSet exampleSet;
 	protected String labelParameter;
+	protected int sourceId;
+	protected int targetId;
 	
 	@Parameters
 	public static Collection<Object[]> testData(){
 		return Arrays.asList(new Object[][]{
 			//fileName, labelName, measure, pruningEnabled, ignoreMissing, minCov, maxUncov, maxGrowing
 		
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9},
+		/*	{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9},
@@ -82,18 +84,18 @@ public class ActionTests {
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9},
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9},
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9},
-
+*/
 			///
 			/// Monks 1 dataset
 			///
-			{"monks1.arff", "Class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9},
-			{"monks1.arff", "Class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9},
-			{"monks1.arff", "Class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9},
-			{"monks1.arff", "Class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9},
-			{"monks1.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9},
-			{"monks1.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9},
-			{"monks1.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9},
-			{"monks1.arff", "Class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9},
+			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, 1, 0},
+			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9, 1, 0},
+			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, 1, 0},
+			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9, 1, 0},
+			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9, 1, 0},
+			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9, 1, 0},
+			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9, 1, 0},
+			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9, 1, 0},
 			
 			////
 			////  Sonar dataset
@@ -113,7 +115,8 @@ public class ActionTests {
 	public ActionTests(String testFileName, String labelParameterName,
 			ClassificationMeasure measure,
 			boolean enablePruning, boolean ignoreMissing, double minimumCovered,
-			double maximumUncoveredFraction, double maxGrowingConditions) {
+			double maximumUncoveredFraction, double maxGrowingConditions,
+			int sourceClassId, int targetClassId) {
 		testFile = testFileName;
 		labelParameter = labelParameterName;
 		
@@ -129,6 +132,8 @@ public class ActionTests {
 		params.setMaximumUncoveredFraction(maximumUncoveredFraction);
 		params.setMaxGrowingConditions(maxGrowingConditions);
 		
+		sourceId = sourceClassId;
+		targetId = targetClassId;
 	}
 	
 	@BeforeClass
@@ -167,83 +172,13 @@ public class ActionTests {
 	}
 	
 	@Test
-	public void testActionRuleCoverage() {
-		List<String> mapping = Arrays.asList(new String[]{"v0", "v1", "v2"});
-		List<String> mapping2 = Arrays.asList(new String[]{"vA", "vB", "vC"});
-		SingletonSet s1 = new SingletonSet(0, mapping);
-		SingletonSet s2 = new SingletonSet(1, mapping);
-		Action fullAction = new Action("a1", s1, s2);
-		SingletonSet s3 = new SingletonSet(0, mapping2);
-		Action loosedAction = new Action("a2", s3, s3);
-		loosedAction.setActionNil(true);
-		
-		CompoundCondition cc = new CompoundCondition();
-		cc.addSubcondition(fullAction);
-	
-		List<String> klass = Arrays.asList(new String[]{"class1", "class2"});
-		SingletonSet c1 = new SingletonSet(0, klass);
-		SingletonSet c2 = new SingletonSet(1, klass);
-		Action con = new Action("class", c1, c2);
-		
-		ActionRule rule = new ActionRule(cc, con);
-		
-		Object[][] data =// new Object[0][0]; 
-			{
-					{"v0", "vA", "class1"},
-					{"v0", "vA", "class1"},
-					{"v1", "vC", "class2"},
-					{"v1", "vB", "class2"}
-			};
-		
-		ExampleSet set = ExampleSetFactory.createExampleSet(data);
-		
-		Iterator<Attribute> atr = set.getAttributes().allAttributes();
-		Attribute atr0 = atr.next();
-		Attribute atr1 = atr.next();
-		Attribute atrclass = atr.next();
-		
-		atr0.setName("a1");
-		atr1.setName("a2");
-		
-		atrclass.setName("class");
-		
-		set.getAttributes().setLabel(atrclass);
-		set.getAttributes().setSpecialAttribute(atrclass, "label");
-		
-		Covering cov = rule.covers(set);
-		junit.framework.Assert.assertEquals(cov.weighted_p, 2.0);
-		junit.framework.Assert.assertEquals(cov.weighted_P, 2.0);
-		junit.framework.Assert.assertEquals(cov.weighted_n, 0.0);
-		junit.framework.Assert.assertEquals(cov.weighted_N, 2.0);
-		
-		Covering actionCov = rule.covers(set);
-		junit.framework.Assert.assertEquals(actionCov.weighted_p, 2.0);
-		junit.framework.Assert.assertEquals(actionCov.weighted_P, 2.0);
-		junit.framework.Assert.assertEquals(actionCov.weighted_n, 0.0);
-		junit.framework.Assert.assertEquals(actionCov.weighted_N, 2.0);
-		
-		
-		rule.getPremise().addSubcondition(loosedAction);
-		
-		cov = rule.covers(set);
-		junit.framework.Assert.assertEquals(cov.weighted_p, 2.0);
-		junit.framework.Assert.assertEquals(cov.weighted_P, 2.0);
-		junit.framework.Assert.assertEquals(cov.weighted_n, 0.0);
-		junit.framework.Assert.assertEquals(cov.weighted_N, 2.0);
-		
-		actionCov = rule.covers(set);
-		junit.framework.Assert.assertEquals(actionCov.weighted_p, 2.0);
-		junit.framework.Assert.assertEquals(actionCov.weighted_P, 2.0);
-		junit.framework.Assert.assertEquals(actionCov.weighted_n, 0.0);
-		junit.framework.Assert.assertEquals(actionCov.weighted_N, 2.0);
-	}
-	
-	@Test
 	public void test() throws OperatorCreationException, OperatorException, IOException {
 		
 		ExampleSet exampleSet = parseArffFile();
 		
-		AbstractSeparateAndConquer snc = new ActionSnC(new ActionFinder(params), params);
+		ActionSnC snc = new ActionSnC(new ActionFinder(params), params);
+		snc.setSourceClassId(sourceId);
+		snc.setTargetClassId(targetId);
 		ActionRuleSet actions = (ActionRuleSet)snc.run(exampleSet);
 		
 		//AbstractSeparateAndConquer snc = new ClassificationSnC(new ClassificationFinder(params), params);
