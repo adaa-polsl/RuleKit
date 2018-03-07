@@ -63,31 +63,32 @@ public class ActionTests {
 	public static Collection<Object[]> testData(){
 		return Arrays.asList(new Object[][]{
 			//fileName, labelName, measure, pruningEnabled, ignoreMissing, minCov, maxUncov, maxGrowing
-		
-		/*	{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9},
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9},
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9},
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9},
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9},
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9},
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9},
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9},
-			
+		/*
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, 0, 1},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9, 0, 1},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, 0, 1},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9, 0, 1},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9, 0, 1},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9, 0, 1},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9, 0, 1},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9, 0, 1},
+			*/
 			////
 			////  Wine dataset
 			////
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9},
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9},
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9},
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9},
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9},
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9},
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9},
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9},
-*/
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9, 0, 1},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, 0, 1},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, 0, 1},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9, 0, 1},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9, 0, 1},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9, 0, 1},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9, 0, 1},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9, 0, 1},
+
 			///
 			/// Monks 1 dataset
 			///
+			/*
 			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, 1, 0},
 			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9, 1, 0},
 			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, 1, 0},
@@ -96,7 +97,7 @@ public class ActionTests {
 			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9, 1, 0},
 			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9, 1, 0},
 			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9, 1, 0},
-			
+			*/
 			////
 			////  Sonar dataset
 			////
@@ -180,10 +181,11 @@ public class ActionTests {
 		snc.setSourceClassId(sourceId);
 		snc.setTargetClassId(targetId);
 		ActionRuleSet actions = (ActionRuleSet)snc.run(exampleSet);
-		
-		//AbstractSeparateAndConquer snc = new ClassificationSnC(new ClassificationFinder(params), params);
-		//RuleSetBase set = snc.run(exampleSet);
-		//System.out.println(set.toString());
+	/*
+		AbstractSeparateAndConquer snc = new ClassificationSnC(new ClassificationFinder(params), params);
+		RuleSetBase set = snc.run(exampleSet);
+		System.out.println(set.toString());
+		*/
 		File arffFile = Paths.get(testDirectory, this.outputFileName).toFile();
 		
 		Long loosedActionsCount = actions.getRules().stream().map(x -> (ActionRule)x).
@@ -194,9 +196,19 @@ public class ActionTests {
 		
 		FileWriter fw = new FileWriter(arffFile);
 		fw.write("File name: " + testFile + "\r\n");
+		fw.write("Positive (source) class name: " + exampleSet.getAttributes().getLabel().getMapping().getValues().get(sourceId) + "\r\n");
+		fw.write("Negative (target) class name: " + exampleSet.getAttributes().getLabel().getMapping().getValues().get(targetId) + "\r\n");
+		fw.write("Mincov: " + params.getMinimumCovered() + "\r\n");
+		fw.write("Maximum uncovered fraction: " + params.getMaximumUncoveredFraction() + "\r\n");
+		fw.write("Max growing: " + params.getMaxGrowingConditions() + "\r\n");
+		fw.write("Induction measure used: " + ((ClassificationMeasure)params.getInductionMeasure()).getName() + "\r\n");
+		fw.write("Pruning measure used: " + ((ClassificationMeasure)params.getPruningMeasure()).getName() + "\r\n");
+		fw.write("Ruleset size: " + actions.getRules().size() + "\r\n");
 		fw.write("Pruning: " + params.isPruningEnabled() + "\r\n");
-		fw.write("Loosed actions count" + loosedActionsCount + "\r\n");
-		fw.write(actions.toString());
+		fw.write("Conditions (actions) count: " + actions.calculateConditionsCount() + "\r\n");
+		fw.write("Pruned actions count: " + loosedActionsCount + "\r\n");
+		fw.write("Average actions per rule: " + (double)actions.calculateConditionsCount() / (double)actions.getRules().size() + "\r\n");
+		fw.write(actions.toString() + "\r\n");
 		fw.close();
 		
 		
@@ -205,6 +217,7 @@ public class ActionTests {
 		//System.out.println("Loosed actions count" + loosedActionsCount);
 	//	System.out.println("Measure: " + ((ClassificationMeasure)params.getPruningMeasure()).getName(params.getPruningMeasure()));
 		System.out.println(actions.toString());
+		
 	}
 
 }
