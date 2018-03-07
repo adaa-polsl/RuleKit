@@ -512,6 +512,8 @@ public class ActionFinder extends AbstractFinder {
 					toRemove = cnd;
 					shouldActionBeNil = false;
 				}
+
+			}
 			
 			// if there is something to remove
 			if (bestQuality >= initialQuality) {
