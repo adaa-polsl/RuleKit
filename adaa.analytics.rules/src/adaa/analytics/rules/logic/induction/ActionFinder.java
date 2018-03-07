@@ -294,10 +294,14 @@ public class ActionFinder extends AbstractFinder {
 		while(climbing) {
 			
 			ConditionBase toRemove = null;
-			double bestQuality = Double.NEGATIVE_INFINITY;
+			ConditionBase toCompleteRemoval = null;
+			ConditionBase toPrune = null;
+			ConditionBase toRemoveAlreadyNil = null;
+			double bestQualityAlreadyNil = Double.NEGATIVE_INFINITY;
 			double bestQualityLeft = Double.NEGATIVE_INFINITY;
 			double bestQualityRight = Double.NEGATIVE_INFINITY;
 			boolean looseCondition = false;
+			boolean alreadyNilPruning = false;
 			for (ConditionBase cnd_ : rule.getPremise().getSubconditions()) {
 				
 				Action cnd = cnd_ instanceof Action ? (Action)cnd_ : null;
@@ -391,40 +395,25 @@ public class ActionFinder extends AbstractFinder {
 						pLeft, nLeft, leftRule.getWeighted_P(), leftRule.getWeighted_N());
 				
 				if (cnd.getActionNil()) {
-					//don't even consider right quality - it does not exists now
 					if (qualityLeft > bestQualityLeft) {
-						bestQualityLeft = qualityLeft;
-						toRemove = cnd;
+						bestQualityAlreadyNil = qualityLeft;
+						toRemoveAlreadyNil = cnd;
+						alreadyNilPruning = true;
 					}
 				} else {
 					if (qualityRight > bestQualityRight) {
+						looseCondition = false;
+						alreadyNilPruning = false;
 						bestQualityRight = qualityRight;
-						bestQualityLeft = qualityLeft;
 						toRemove = cnd;
+						if (qualityLeft > bestQualityLeft) {
+							bestQualityLeft = qualityLeft;
+							looseCondition = true;
+						}
 					}
 				}
-				
-				
-			/*	double q = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
-						Math.min(pLeft, pRight), Math.max(nLeft, nRight), leftRule.getWeighted_P(), leftRule.getWeighted_N());
-				
-				double loose_q = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
-						Math.min(loosePLeft, pRight), Math.max(looseNLeft, nRight), leftRule.getWeighted_P(), leftRule.getWeighted_N());
-				
-				if (q > bestQuality) {
-					bestQuality = q;
-					toRemove = cnd;
-					looseCondition = false;
-				}
-				
-				//prevent multiple loosing of loosed condition
-				if (!cnd.getActionNil() && loose_q > bestQuality) {
-					bestQuality = loose_q;
-					toRemove = cnd;
-					looseCondition = true;
-				}
-				*/
 			}
+			
 			Action act = (Action)toRemove;
 			
 			if (act == null) {
@@ -432,59 +421,38 @@ public class ActionFinder extends AbstractFinder {
 				continue;
 			}
 			
-			boolean wasActionNil = act.getActionNil();
-			boolean leftActionPruning = bestQualityLeft >= initialQualityL;
+			boolean leftBetter = bestQualityLeft >= initialQualityL && looseCondition;
+			boolean rightBetter = bestQualityRight >= initialQualityR;
 			
-			if (bestQualityRight >= initialQualityR || (wasActionNil && leftActionPruning)){
-	
-				// can loose action anymore when already loosed
-				if (!wasActionNil) {
-					initialQualityR = bestQualityRight;
-					presentConditions.remove(toRemove);
-					presentCondRight.remove(((Action)toRemove).getRightCondition());
+			if (alreadyNilPruning && bestQualityAlreadyNil > initialQualityL) {
+				
+				initialQualityL = bestQualityLeft;
+				presentConditions.remove(toRemoveAlreadyNil);
+				presentCondLeft.remove(((Action)toRemoveAlreadyNil).getLeftCondition());
+				rule.getPremise().removeSubcondition(toRemoveAlreadyNil);
+			} else if (rightBetter) {
+				initialQualityR = bestQualityRight;
+				presentConditions.remove(toRemove);
+				presentCondRight.remove(((Action)toRemove).getRightCondition());
+				
+				if (leftBetter) {
 					
+					initialQualityL = bestQualityLeft;
+					presentCondLeft.remove(((Action)toRemove).getLeftCondition());
+					rule.getPremise().removeSubcondition(toRemove);
+				} else {
+				
 					rule.getPremise().removeSubcondition(toRemove);
 					act.setActionNil(true);
 					rule.getPremise().addSubcondition(toRemove);
 				}
-				// Now check if complete removal needed? but only if wasn't already
-				if (leftActionPruning) {
-					initialQualityL = bestQualityLeft;
-					presentCondLeft.remove(((Action)toRemove).getLeftCondition());
-					rule.getPremise().removeSubcondition(toRemove);
-				}
-				if (wasActionNil && !leftActionPruning) {
-					climbing = false;
-				}
-				
-				if (rule.getPremise().getSubconditions().size() == 1) {
-					climbing = false;
-				}
-			} else {
+			} else  {
 				climbing = false;
 			}
 			
-			/*if (bestQuality >= initialQuality) {
-				initialQuality = bestQuality;
-				
-				presentConditions.remove(toRemove);
-				presentCondRight.remove(((Action)toRemove).getRightCondition());
-				
-				if (looseCondition) {
-					rule.getPremise().removeSubcondition(toRemove);
-					Action act = (Action)toRemove;
-					act.setActionNil(true);
-					rule.getPremise().addSubcondition(act);
-				} else {
-					presentCondLeft.remove(((Action)toRemove).getLeftCondition());
-					rule.getPremise().removeSubcondition(toRemove);
-				}
-				if (rule.getPremise().getSubconditions().size() == 1) {
-					climbing = false;
-				}
-			} else {
+			if (rule.getPremise().getSubconditions().size() == 1) {
 				climbing = false;
-			}*/
+			}
 		}
 		
 		covering = rule.covers(trainSet);
@@ -544,26 +512,6 @@ public class ActionFinder extends AbstractFinder {
 					toRemove = cnd;
 					shouldActionBeNil = false;
 				}
-				
-			/*	Action actionCondition = cnd instanceof Action ? (Action)cnd : null;
-				if (actionCondition == null) {
-					Logger.log("Non-action condition in ActionFinder.prune", Level.ALL);
-					continue;
-				}
-				
-				actionCondition.setActionNil(true);
-				covering = rule.actionCovers(trainSet);
-				actionCondition.setActionNil(false);
-				
-				q = calculateActionQuality(covering, params.getPruningMeasure());
-				
-				if (q > bestQuality) {
-					bestQuality = q;
-					//with disabled right part of action
-					toRemove = actionCondition;
-					shouldActionBeNil = true;
-				}*/
-			}
 			
 			// if there is something to remove
 			if (bestQuality >= initialQuality) {
