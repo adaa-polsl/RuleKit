@@ -18,16 +18,27 @@ public class Action extends ElementaryCondition {
 	public Action(String attribute, IValueSet sourceValue, IValueSet targetValue)  {
 		
 		this.attribute = attribute;
-	//	if (!sourceValue.getClass().equals(targetValue.getClass())) {
-	//		leftValue = rightValue = null;
-	//	}
 		leftValue = sourceValue;
 		rightValue = targetValue;
 	}
+	
+	public boolean isLeftEqualRight() {
+		if (rightValue == null) {
+			return leftValue == null;
+		}
+		return leftValue.equals(rightValue);
+	}
 		
 	public String toString() {
-		
-		return "(" + attribute + ", " + leftValue.toString() + "->" + ((rightValue == null || this.isNilAction) ? " " : rightValue.toString() ) + ")";
+		String rightPart = new String();
+		if (rightValue != null && !this.isNilAction) {
+			if (rightValue.equals(leftValue)) {
+				rightPart = "";
+			} else {
+				rightPart = "->" + rightValue.toString();
+			}
+		}
+		return "(" + attribute + ", " + leftValue.toString() + rightPart + ")";
 	}
 	
 	public ElementaryCondition intersect(ElementaryCondition other) {
