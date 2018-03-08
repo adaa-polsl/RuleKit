@@ -190,11 +190,16 @@ public class ActionTests {
 		*/
 		File arffFile = Paths.get(testDirectory, this.outputFileName).toFile();
 		
-		Long loosedActionsCount = actions.getRules().stream().map(x -> (ActionRule)x).
-			mapToLong(x -> x.getPremise().
-							getSubconditions().
-							stream().
-							map(y -> (Action)y).mapToLong(z -> (z.getActionNil() ? 1L : 0L)).sum()).sum();
+		
+		
+		Long actionsCount = actions.getRules().stream().map(z -> (ActionRule)z).
+				mapToLong(x -> x.getPremise()
+								.getSubconditions()
+								.stream()
+								.map(y -> (Action)y)
+								.mapToLong(v -> (v.getActionNil() || v.isLeftEqualRight()) ? 1L : 0L)
+								.sum()
+						 ).sum();
 		
 		FileWriter fw = new FileWriter(arffFile);
 		fw.write("File name: " + testFile + "\r\n");
@@ -207,9 +212,10 @@ public class ActionTests {
 		fw.write("Pruning measure used: " + ((ClassificationMeasure)params.getPruningMeasure()).getName() + "\r\n");
 		fw.write("Ruleset size: " + actions.getRules().size() + "\r\n");
 		fw.write("Pruning: " + params.isPruningEnabled() + "\r\n");
-		fw.write("Conditions (actions) count: " + actions.calculateConditionsCount() + "\r\n");
-		fw.write("Pruned actions count: " + loosedActionsCount + "\r\n");
-		fw.write("Average actions per rule: " + (double)actions.calculateConditionsCount() / (double)actions.getRules().size() + "\r\n");
+		fw.write("Conditions count: " + actions.calculateConditionsCount() + "\r\n");
+		fw.write("Actions count: " + actionsCount + "\r\n");
+		fw.write("Average actions per rule: " + (double)actionsCount / (double)actions.getRules().size() + "\r\n");
+		fw.write("Average conditions per rule: " + (double)actions.calculateConditionsCount() / (double)actions.getRules().size() + "\r\n");
 		fw.write(actions.toString() + "\r\n");
 		fw.close();
 		
