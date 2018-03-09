@@ -62,8 +62,8 @@ public class ActionTests {
 	@Parameters
 	public static Collection<Object[]> testData(){
 		return Arrays.asList(new Object[][]{
-			//fileName, labelName, measure, pruningEnabled, ignoreMissing, minCov, maxUncov, maxGrowing
-		
+			//fileName, labelName, measure, pruningEnabled, ignoreMissing, minCov, maxUncov, maxGrowing, sourceID, targetID
+	
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, 0, 1},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9, 0, 1},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, 0, 1},
@@ -78,10 +78,14 @@ public class ActionTests {
 			////
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9, 0, 1},
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, 0, 1},
+			
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, 0, 1},
+			
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9, 0, 1},
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9, 0, 1},
+			
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9, 0, 1},
+			
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9, 0, 1},
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9, 0, 1},
 
@@ -197,9 +201,11 @@ public class ActionTests {
 								.getSubconditions()
 								.stream()
 								.map(y -> (Action)y)
-								.mapToLong(v -> (v.getActionNil() || v.isLeftEqualRight()) ? 1L : 0L)
+								.mapToLong(v -> (v.getActionNil() || v.isLeftEqualRight()) ? 0L : 1L)
 								.sum()
 						 ).sum();
+		
+		Long conditionCount = actions.calculateConditionsCount() - actionsCount;
 		
 		FileWriter fw = new FileWriter(arffFile);
 		fw.write("File name: " + testFile + "\r\n");
@@ -212,10 +218,10 @@ public class ActionTests {
 		fw.write("Pruning measure used: " + ((ClassificationMeasure)params.getPruningMeasure()).getName() + "\r\n");
 		fw.write("Ruleset size: " + actions.getRules().size() + "\r\n");
 		fw.write("Pruning: " + params.isPruningEnabled() + "\r\n");
-		fw.write("Conditions count: " + actions.calculateConditionsCount() + "\r\n");
+		fw.write("Conditions count: " + conditionCount + "\r\n");
 		fw.write("Actions count: " + actionsCount + "\r\n");
 		fw.write("Average actions per rule: " + (double)actionsCount / (double)actions.getRules().size() + "\r\n");
-		fw.write("Average conditions per rule: " + (double)actions.calculateConditionsCount() / (double)actions.getRules().size() + "\r\n");
+		fw.write("Average conditions per rule: " + (double)conditionCount / (double)actions.getRules().size() + "\r\n");
 		fw.write(actions.toString() + "\r\n");
 		fw.close();
 		
