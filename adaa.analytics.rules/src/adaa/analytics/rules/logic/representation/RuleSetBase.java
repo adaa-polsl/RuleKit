@@ -53,6 +53,14 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 		return cov / rules.size();
 	}
 	
+	public double calculateAvgRulePrecision() {
+		double prec = 0;
+		for (Rule r : rules) {
+			prec += r.weighted_p / (r.weighted_p + r.weighted_n);
+		}
+		return prec / rules.size();
+	}
+	
 	public double calculateAvgRuleQuality() {
 		double q = 0.0;
 		for (Rule rule : rules) {

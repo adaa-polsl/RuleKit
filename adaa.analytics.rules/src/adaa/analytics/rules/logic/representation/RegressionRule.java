@@ -17,6 +17,8 @@ public class RegressionRule extends Rule {
 	 */
 	private static final long serialVersionUID = -6597003506869205514L;
 	
+	private double stddev = 0.0;
+	
 	public double getConsequenceValue() { return ((SingletonSet)getConsequence().getValueSet()).getValue(); }
 	public void setConsequenceValue(double v) {
 		((SingletonSet)getConsequence().getValueSet()).setValue(v);
@@ -31,9 +33,11 @@ public class RegressionRule extends Rule {
 		return covers(set);
 	}
 	
+	@Override
 	public void setCoveringInformation(Covering cov) {
 		super.setCoveringInformation(cov);
 		this.setConsequenceValue(cov.median_y);
+		this.stddev = cov.stddev_y;
 	}
 
 	@Override
@@ -103,4 +107,12 @@ public class RegressionRule extends Rule {
 
 		return cov;
 	}	
+	
+	@Override
+	public String toString() {
+		double lo = getConsequenceValue() - stddev;
+		double hi = getConsequenceValue() + stddev;
+		String s = "IF " + premise.toString() + " THEN " + consequence.toString() + " [" + lo + "," + hi + "]";	
+		return s;
+	}
 }

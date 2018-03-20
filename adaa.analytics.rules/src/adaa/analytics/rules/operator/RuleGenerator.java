@@ -255,6 +255,9 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		pv.addCriterion(new EstimatedPerformance("#conditions", rs.calculateConditionsCount(), 1, false));
 		pv.addCriterion(new EstimatedPerformance("#induced conditions", rs.calculateInducedCondtionsCount(), 1, false));
 		pv.addCriterion(new EstimatedPerformance("avg rule coverage", rs.calculateAvgRuleCoverage(), 1, false));
+		pv.addCriterion(new EstimatedPerformance("avg rule precision", rs.calculateAvgRulePrecision(), 1, false));
+		pv.addCriterion(new EstimatedPerformance("avg rule quality", rs.calculateAvgRuleQuality(), 1, false));
+		
 
 		if (rs instanceof SurvivalRuleSet ) {
 			SurvivalRuleSet srs = (SurvivalRuleSet)rs;
