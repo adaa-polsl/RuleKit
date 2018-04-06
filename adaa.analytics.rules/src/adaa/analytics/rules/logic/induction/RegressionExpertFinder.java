@@ -49,11 +49,9 @@ public class RegressionExpertFinder extends RegressionFinder {
 		covered.addAll(covering.negatives);
 		Set<Attribute> allowedAttributes = new TreeSet<Attribute>(new AttributeComparator());
 		
-		// add all attributes omitting forbidden ones
+		// add all attributes 
 		for (Attribute a: dataset.getAttributes()) {
-			if (!knowledge.getForbiddenAttributes().contains(a.getName())) {
-				allowedAttributes.add(a);
-			}
+			allowedAttributes.add(a);
 		}
 		
 		// remove existing attributes from allowed list
@@ -165,6 +163,11 @@ public class RegressionExpertFinder extends RegressionFinder {
 		
 
 		// try to extend using automatic conditions
+		// eliminate forbidden attributes
+		for (String a: knowledge.getForbiddenAttributes()) {
+			allowedAttributes.remove(dataset.getAttributes().get(a));
+		}
+		
 		if ((isRuleEmpty && knowledge.isInduceUsingAutomatic()) ||
 			(!isRuleEmpty && knowledge.isExtendUsingAutomatic())) {
 			boolean carryOn = true;
