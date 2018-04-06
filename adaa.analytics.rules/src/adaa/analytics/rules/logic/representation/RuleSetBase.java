@@ -5,6 +5,7 @@ import java.util.List;
 
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 
+import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.learner.SimplePredictionModel;
 
@@ -86,11 +87,29 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 		}
 		
 		sb.append("Rules:\n");
-		int i = 1;
+		int rid = 1;
 		for (Rule r : rules) {
-			sb.append("r" + i + ": " + r.toString() + " " + r.printStats() + "\n");
-			++i;
+			sb.append("r" + rid + ": " + r.toString() + " " + r.printStats() + "\n");
+			++rid;
 		}
+		
+		sb.append("\nBest rules covering examples from training set (1-based):\n");
+		for (int eid = 0; eid < trainingSet.size(); ++eid){
+			Example ex = trainingSet.getExample(eid);
+			int bestRuleId = -1;
+			Double bestWeight = Double.NEGATIVE_INFINITY;
+			
+			rid = 1;
+			for (Rule r: rules) {
+				if (r.getPremise().evaluate(ex) && r.getWeight() > bestWeight) {
+					bestRuleId = rid;
+					bestWeight = r.getWeight();
+				}
+				++rid;
+			}
+			sb.append((bestRuleId > 0 ? bestRuleId : "-") + ",");
+		}
+		sb.append("\n");
 		
 	//	sb.append("General information:\n");
 	//	sb.append("voting: " + (getIsVoting() ? "true" : "false") + "\n");
