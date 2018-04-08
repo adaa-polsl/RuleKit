@@ -37,6 +37,7 @@ import com.rapidminer.tools.OperatorService;
 
 import adaa.analytics.rules.logic.induction.AbstractSeparateAndConquer;
 import adaa.analytics.rules.logic.induction.ActionFinder;
+import adaa.analytics.rules.logic.induction.ActionInductionParameters;
 import adaa.analytics.rules.logic.induction.ActionSnC;
 import adaa.analytics.rules.logic.induction.ClassificationFinder;
 import adaa.analytics.rules.logic.induction.ClassificationSnC;
@@ -50,7 +51,7 @@ import common.Assert;
 public class ActionTests {
 	protected static String testDirectory =  "C:/Users/pmatyszok/Desktop/dane/";
 	
-	protected InductionParameters params;
+	protected ActionInductionParameters params;
 	protected String testFile;
 	protected String outputFileName;
 	protected com.rapidminer.Process process;
@@ -64,6 +65,10 @@ public class ActionTests {
 		return Arrays.asList(new Object[][]{
 			//fileName, labelName, measure, pruningEnabled, ignoreMissing, minCov, maxUncov, maxGrowing, sourceID, targetID
 	
+			///
+			/// car - reduced : only two classes
+			///
+			/*
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, 0, 1},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9, 0, 1},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, 0, 1},
@@ -72,10 +77,23 @@ public class ActionTests {
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9, 0, 1},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9, 0, 1},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9, 0, 1},
+			*/
+			///
+			///	car - 4 classes
+			///
+			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, 0, 0},
+			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9, 0, 0},
+			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, 0, 0},
+			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9, 0, 0},
+			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9, 0, 0},
+			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9, 0, 0},
+			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9, 0, 0},
+			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9, 0, 0},
 			
 			////
 			////  Wine dataset
 			////
+			/*
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9, 0, 1},
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, 0, 1},
 			
@@ -88,11 +106,11 @@ public class ActionTests {
 			
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9, 0, 1},
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9, 0, 1},
-
+			*/
 			///
 			/// Monks 1 dataset
 			///
-			
+			/*
 			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, 1, 0},
 			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9, 1, 0},
 			
@@ -103,7 +121,7 @@ public class ActionTests {
 			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9, 1, 0},
 			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9, 1, 0},
 			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9, 1, 0},
-			
+			*/
 			////
 			////  Sonar dataset
 			////
@@ -130,7 +148,7 @@ public class ActionTests {
 		outputFileName = testFileName.substring(0, testFileName.indexOf('.'));
 		outputFileName += "-rules-" + measure.getName() + (enablePruning  ? "-pruned" : "")  + ".arff";
 		
-		params = new InductionParameters();
+		params = new ActionInductionParameters();
 		params.setInductionMeasure(measure);
 		params.setPruningMeasure(measure);
 		params.setEnablePruning(enablePruning);
@@ -138,9 +156,14 @@ public class ActionTests {
 		params.setMinimumCovered(minimumCovered);
 		params.setMaximumUncoveredFraction(maximumUncoveredFraction);
 		params.setMaxGrowingConditions(maxGrowingConditions);
-		
 		sourceId = sourceClassId;
 		targetId = targetClassId;
+		if (sourceId == targetId) {
+			params.setGenerateAllTransitions();
+		} else {
+			params.setClasswiseTransition(sourceClassId, targetClassId);
+		}
+		
 	}
 	
 	@BeforeClass
@@ -184,8 +207,6 @@ public class ActionTests {
 		ExampleSet exampleSet = parseArffFile();
 		
 		ActionSnC snc = new ActionSnC(new ActionFinder(params), params);
-		snc.setSourceClassId(sourceId);
-		snc.setTargetClassId(targetId);
 		ActionRuleSet actions = (ActionRuleSet)snc.run(exampleSet);
 	/*
 		AbstractSeparateAndConquer snc = new ClassificationSnC(new ClassificationFinder(params), params);
@@ -205,7 +226,7 @@ public class ActionTests {
 								.sum()
 						 ).sum();
 		
-		Long conditionCount = actions.calculateConditionsCount() - actionsCount;
+		int conditionCount = actions.calculateConditionsCount();
 		
 		FileWriter fw = new FileWriter(arffFile);
 		fw.write("File name: " + testFile + "\r\n");
