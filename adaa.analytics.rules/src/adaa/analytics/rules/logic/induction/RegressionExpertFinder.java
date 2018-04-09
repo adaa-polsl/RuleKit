@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
+import adaa.analytics.rules.logic.induction.RegressionFinder.ConditionEvaluation;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ConditionBase;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
@@ -82,7 +83,7 @@ public class RegressionExpertFinder extends RegressionFinder {
 						continue;
 					}
 						
-					checkCandidate(dataset, rule, candidate, uncovered, bestEvaluation);
+					checkCandidateCoverage(dataset, rule, candidate, uncovered, bestEvaluation);
 				}
 				
 				if (bestEvaluation.condition != null) {
@@ -201,5 +202,16 @@ public class RegressionExpertFinder extends RegressionFinder {
 		int addedConditionsCount = rule.getPremise().getSubconditions().size() - initialConditionsCount;
 		rule.setInducedContitionsCount(addedConditionsCount);
 		return addedConditionsCount;
+	}
+	
+	@Override
+	protected boolean checkCandidate(
+			ExampleSet dataset, 
+			Rule rule,
+			ElementaryCondition candidate,
+			Set<Integer> uncovered, 
+			ConditionEvaluation currentBest) {
+		return super.checkCandidate(dataset, rule, candidate, uncovered, currentBest) &&
+				!knowledge.isForbidden(candidate.getAttribute(), candidate.getValueSet());
 	}
 }

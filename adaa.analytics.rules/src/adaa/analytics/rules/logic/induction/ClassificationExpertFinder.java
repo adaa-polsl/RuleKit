@@ -87,15 +87,19 @@ public class ClassificationExpertFinder extends ClassificationFinder {
 					rule.getPremise().addSubcondition(candidate);
 					Covering cov = rule.covers(dataset, covered);
 					rule.getPremise().removeSubcondition(candidate);
-					double q = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
-							cov.weighted_p, cov.weighted_n, rule.getWeighted_P(), rule.getWeighted_N());
 					
-					// analyse condition only if coverage decreased 
-					// select better quality or same quality with higher coverage
-					if ((cov.getSize() < covered.size()) && (q > bestQuality || (q == bestQuality && cov.positives.size() > mostCovered))) {
-						bestCondition = candidate;
-						bestQuality = q;
-						mostCovered = cov.positives.size();
+					if (checkCandidateCoverage(cov.weighted_p + cov.weighted_n)) {
+					
+						double q = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
+								cov.weighted_p, cov.weighted_n, rule.getWeighted_P(), rule.getWeighted_N());
+						
+						// analyse condition only if coverage decreased 
+						// select better quality or same quality with higher coverage
+						if ((cov.getSize() < covered.size()) && (q > bestQuality || (q == bestQuality && cov.positives.size() > mostCovered))) {
+							bestCondition = candidate;
+							bestQuality = q;
+							mostCovered = cov.positives.size();
+						}
 					}
 				}
 				
@@ -186,8 +190,8 @@ public class ClassificationExpertFinder extends ClassificationFinder {
 	}
 	
 	@Override
-	protected boolean checkCondition(ElementaryCondition cnd, double classId, double covered) {
-		return super.checkCondition(cnd, classId, covered) &&
+	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double covered) {
+		return super.checkCandidate(cnd, classId, covered) &&
 			!knowledge.isForbidden(cnd.getAttribute(), cnd.getValueSet(), (int)classId);
 	}
 	

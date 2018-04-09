@@ -255,7 +255,7 @@ public class ClassificationFinder extends AbstractFinder {
 						
 						if ((quality > bestQuality || (quality == bestQuality && left_p > mostCovered)) && (toCover_left_p > 0)) {	
 							ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_le(midpoint)); 
-							if (checkCondition(candidate, classId, left_p + left_n)) {
+							if (checkCandidate(candidate, classId, left_p + left_n)) {
 								bestQuality = quality;
 								mostCovered = left_p;
 								bestCondition = candidate;
@@ -270,7 +270,7 @@ public class ClassificationFinder extends AbstractFinder {
 								right_p, right_n, rule.getWeighted_P(), rule.getWeighted_N());
 						if ((quality > bestQuality || (quality == bestQuality && right_p > mostCovered)) && (toCover_right_p > 0)) {
 							ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_geq(midpoint));
-							if (checkCondition(candidate, classId, right_p + right_n)) {
+							if (checkCandidate(candidate, classId, right_p + right_n)) {
 								bestQuality = quality;
 								mostCovered = right_p;
 								bestCondition = candidate;
@@ -316,7 +316,7 @@ public class ClassificationFinder extends AbstractFinder {
 					if ((quality > bestQuality || (quality == bestQuality && p[i] > mostCovered)) && (toCover_p[i] > 0)) {
 						ElementaryCondition candidate = 
 								new ElementaryCondition(attr.getName(), new SingletonSet((double)i, attr.getMapping().getValues())); 
-						if (checkCondition(candidate, classId, p[i] + n[i])) {
+						if (checkCandidate(candidate, classId, p[i] + n[i])) {
 							bestQuality = quality;
 							mostCovered = p[i];
 							bestCondition = candidate;
@@ -335,11 +335,15 @@ public class ClassificationFinder extends AbstractFinder {
 	}
 	
 	
-	protected boolean checkCondition(ElementaryCondition cnd, double classId, double covered_pn) {
+	protected boolean checkCandidateCoverage(double covered_pn) {
 		if (covered_pn >= params.getMinimumCovered()) {
 			return true;
 		} else {
 			return false;
 		}
+	}
+	
+	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double covered_pn) {
+		return checkCandidateCoverage(covered_pn);
 	}
 }

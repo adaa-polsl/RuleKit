@@ -110,7 +110,17 @@ public class RegressionFinder extends AbstractFinder {
 		return (ElementaryCondition)bestEvaluation.condition;
 	}
 
+	
 	protected boolean checkCandidate(
+			ExampleSet dataset, 
+			Rule rule,
+			ElementaryCondition candidate,
+			Set<Integer> uncovered, 
+			ConditionEvaluation currentBest) {
+		return checkCandidateCoverage(dataset, rule, candidate, uncovered, currentBest);
+	}
+	
+	protected boolean checkCandidateCoverage(
 			ExampleSet dataset, 
 			Rule rule,
 			ConditionBase candidate,

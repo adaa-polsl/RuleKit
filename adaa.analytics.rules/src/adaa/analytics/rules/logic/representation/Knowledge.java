@@ -122,6 +122,10 @@ public class Knowledge implements Serializable {
 		}
 	}
 	
+	public boolean isForbidden(String attribute, IValueSet set) {
+		return isForbidden(attribute, set, 0);
+	}
+	
 	public boolean isForbidden(String attribute, IValueSet set, int classId) {
 		boolean out = false;
 		
