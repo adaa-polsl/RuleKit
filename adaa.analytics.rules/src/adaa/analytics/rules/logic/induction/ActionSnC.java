@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.set.Condition;
+import com.rapidminer.example.set.ConditionCreationException;
+import com.rapidminer.example.set.ConditionedExampleSet;
 import com.rapidminer.example.table.NominalMapping;
 
 import adaa.analytics.rules.logic.representation.Action;
@@ -24,28 +27,62 @@ import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.representation.SingletonSet;
-
+import java.util.Optional;
+import java.util.stream.*;
 public class ActionSnC extends AbstractSeparateAndConquer {
 	
 	protected ActionFinder finder;
 
+	private Optional<Integer> sourceId;
+	private Optional<Integer> targetId;	
 	
-	
-	public ActionSnC(ActionFinder finder_, InductionParameters params) {
+	public ActionSnC(ActionFinder finder_, ActionInductionParameters params) {
 		super(params);
 		finder = finder_;
+		sourceId = params.getSourceClassId();
+		targetId = params.getTargetClassId();
 		this.factory = new RuleFactory(RuleFactory.ACTION, false, null);
 	}
-
-	private int sourceId;
-	private int targetId;
 	
-	public void setSourceClassId(int id) {
-		sourceId = id;
-	}
-	
-	public void setTargetClassId(int id) {
-		targetId = id;
+	protected List<ClassIdPair> getClassPairs(ExampleSet dataset) {
+		List<ClassIdPair> ret = new LinkedList<ClassIdPair>();
+		
+		NominalMapping mapping = dataset.getAttributes().getLabel().getMapping();
+		int mappingSize = mapping.getValues().size();
+		
+		if (sourceId.isPresent()) {
+			
+			if (targetId.isPresent()) {
+				ret.add(new ClassIdPair(sourceId.get(), targetId.get()));
+			} else {
+			
+				ret = IntStream.range(0, mappingSize).
+					filter(x -> x != sourceId.get()).
+					mapToObj(z -> new ClassIdPair(sourceId.get(), z)).
+					collect(Collectors.toList());
+			}
+		} else if (targetId.isPresent()) {
+			
+			ret = IntStream.range(0, mappingSize).
+					filter(x -> x != targetId.get()).
+					mapToObj(z -> new ClassIdPair(z, targetId.get())).
+					collect(Collectors.toList());
+		} else {
+			//all possible transitions:
+			// [1,2,3] -> {{1,2}, {1,3}, {2,1}, {2,3}, {3,1}, {3,2}}
+			int[] indices = IntStream.range(0, mappingSize).toArray();
+			
+			for (int index : indices) {
+				ret.addAll(
+						IntStream.range(0, mappingSize)
+						.filter(x -> x != index)
+						.mapToObj(x -> new ClassIdPair(index, x))
+						.collect(Collectors.toList()));
+			}
+			
+		}
+		
+		return ret;
 	}
 	
 	@Override
@@ -57,133 +94,114 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 		Attribute label = dataset.getAttributes().getLabel();
 		NominalMapping mapping = label.getMapping();
 		
-		//iteration 1: we have only two classes. Assume that first class is the positive one
-		if (mapping.size() > 2) {
-			Logger.log("Only two classes supported for action rules", Level.ALL);
+		List<ClassIdPair> pairs = this.getClassPairs(dataset);
+		
+		if (pairs.isEmpty()) {
+			Logger.log("No valid transitions provided for action generation", Level.ALL);
 			return null;
 		}
 		
-		double weightedP = 0, weightedN = 0;
-		Set<Integer> uncoveredPositives = new HashSet<Integer>(), uncovered = new HashSet<Integer>();
-		Set<Integer> uncoveredNegatives = new HashSet<Integer>();
-		//iterate over all examples
-		for (int i = 0; i < dataset.size(); i++) {
-			
-			Example ex = dataset.getExample(i);
-			double w = dataset.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
-			
-			if ((int)ex.getLabel() == sourceId) {
-				weightedP += w;
-				uncoveredPositives.add(i);
-			} else {
-				weightedN += w;
-				uncoveredNegatives.add(i);
-			}
-			uncovered.add(i);
-		}
-		finder.setUncoveredNegatives(uncoveredNegatives);
-		boolean carryOn = uncoveredPositives.size() > 0;
+		//iteration 2: generate for all possible (demanded) transitions.
 		
-		while(carryOn) {
+		for (ClassIdPair pair : pairs) {
 			
-			Rule rule = new ActionRule(new CompoundCondition(), 
-					new Action(
-							label.getName(),
-							new SingletonSet((double)sourceId, mapping.getValues()),
-							new SingletonSet((double)targetId, mapping.getValues())
+			ConditionedExampleSet filtered = null;
+			try {
+			
+				filtered = new ConditionedExampleSet(dataset, 
+					ConditionedExampleSet.createCondition(
+							ConditionedExampleSet.KNOWN_CONDITION_NAMES[ConditionedExampleSet.CONDITION_ATTRIBUTE_VALUE_FILTER],
+							dataset, 
+							String.format("%1$s = %2$s || %1$s = %3$s", label.getName(), 
+									mapping.getValues().get(pair.getSourceId()),
+									mapping.getValues().get(pair.getTargetId())
+									)
 							)
 					);
-			
-			Logger.log(rule.toString(), Level.FINER);
-			
-			rule.setWeighted_P(weightedP);
-			rule.setWeighted_N(weightedN);
-			
-			carryOn = (finder.grow(rule, dataset, uncoveredPositives) > 0);
-			double uncovered_p = weightedP;
-			
-			
-			//try merge conditions
-			
-			Map<Attribute, HashSet<Integer>> atrToCondition = new HashMap<Attribute, HashSet<Integer>>();
-			
-	//		rule.getPremise().getSubconditions().stream()
 				
-		/*	for (int i = 0; i < rule.getPremise().getSubconditions().size(); i++) {
-				ConditionBase curr = rule.getPremise().getSubconditions().get(i);
-				Attribute currAttribute = dataset.getAttributes().get(((ElementaryCondition)curr).getAttribute());
+			} catch (ConditionCreationException ex) {
 				
-				if (!atrToCondition.containsKey(currAttribute)) {
-					atrToCondition.put(currAttribute, new HashSet<Integer>());
-				}
-				
-				atrToCondition.get(currAttribute).add(i);
+				Logger.log(String.format("Couldn't create subdataset for source class id %1$s and target class id %2$s ", pair.getSourceId(), pair.getTargetId()), 
+						Level.ALL);
+				return null;
 			}
 			
-			for (Map.Entry<Attribute, HashSet<Integer>> pair : atrToCondition.entrySet()) {
+			double weightedP = 0, weightedN = 0;
+			Set<Integer> uncoveredPositives = new HashSet<Integer>(), uncovered = new HashSet<Integer>();
+			Set<Integer> uncoveredNegatives = new HashSet<Integer>();
+			//iterate over all examples
+			for (int i = 0; i < filtered.size(); i++) {
 				
-				Attribute atr = pair.getKey();
-				HashSet<Integer> ids = pair.getValue();
+				Example ex = filtered.getExample(i);
+				double w = filtered.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
 				
-				List<ConditionBase> newConds = new LinkedList<ConditionBase>();
-				List<ConditionBase> presentConds = ids.stream().map(x -> rule.getPremise().getSubconditions().get(x))
-						.collect(Collectors.toList());
+				if ((int)ex.getLabel() == pair.getSourceId()) {
+					weightedP += w;
+					uncoveredPositives.add(i);
+				} else {
+					weightedN += w;
+					uncoveredNegatives.add(i);
+				}
+				uncovered.add(i);
+			}
+			finder.setUncoveredNegatives(uncoveredNegatives);
+			boolean carryOn = uncoveredPositives.size() > 0;
+			
+			while(carryOn) {
 				
-				boolean kontinue = true;
+				Rule rule = new ActionRule(new CompoundCondition(), 
+						new Action(
+								label.getName(),
+								new SingletonSet((double)pair.getSourceId(), mapping.getValues()),
+								new SingletonSet((double)pair.getTargetId(), mapping.getValues())
+								)
+						);
 				
-				while (kontinue) {
+				Logger.log(rule.toString(), Level.FINER);
+				
+				rule.setWeighted_P(weightedP);
+				rule.setWeighted_N(weightedN);
+				
+				carryOn = (finder.grow(rule, filtered, uncoveredPositives) > 0);
+				double uncovered_p = weightedP;
+				
+				if (carryOn) {
+					if (params.isPruningEnabled()) {
+						Logger.log("Before prunning:" + rule.toString() + "\n" , Level.FINE);
+						finder.prune(rule, dataset);
+					}
+					Logger.log("Candidate rule" + ruleset.getRules().size() +  ":" + rule.toString() + "\n", Level.INFO);
 					
-					ElementaryCondition curr = (ElementaryCondition)presentConds.get(0);
-					presentConds.remove(curr);
+					ActionRule aRule = (ActionRule)rule;
 					
-					for (ConditionBase cand_ : presentConds) {
-						ElementaryCondition cand = (ElementaryCondition)cand_;
-						
-						if (curr.getValueSet().intersects(cand.getValueSet())){
-							
-							
-						}
-						
+					Covering covered = aRule.covers(filtered, uncovered);
+					
+					// remove covered examples
+					int previouslyUncovered = uncoveredPositives.size();
+					uncoveredPositives.removeAll(covered.positives);
+					uncovered.removeAll(covered.positives);
+					uncovered.removeAll(covered.negatives);
+					
+					uncovered_p = 0;
+					for (int id : uncoveredPositives) {
+						Example e = filtered.getExample(id);
+						uncovered_p += filtered.getAttributes().getWeight() == null ? 1.0 : e.getWeight();
+					}
+					
+					// stop if number of positive examples remaining is less than threshold
+					if (uncovered_p <= params.getMaximumUncoveredFraction() * weightedP) {
+						carryOn = false;
+					}
+					
+					// stop and ignore last rule if no new positive examples covered
+					if (uncoveredPositives.size() == previouslyUncovered) {
+						carryOn = false; 
+					} else {
+						ruleset.addRule(aRule);
 					}
 				}
 			}
-			*/
 			
-			if (carryOn) {
-				if (params.isPruningEnabled()) {
-					Logger.log("Before prunning:" + rule.toString() + "\n" , Level.FINE);
-					finder.prune(rule, dataset);
-				}
-				Logger.log("Candidate rule" + ruleset.getRules().size() +  ":" + rule.toString() + "\n", Level.INFO);
-				
-				ActionRule aRule = (ActionRule)rule;
-				
-				Covering covered = aRule.covers(dataset, uncovered);
-				
-				// remove covered examples
-				int previouslyUncovered = uncoveredPositives.size();
-				uncoveredPositives.removeAll(covered.positives);
-				uncovered.removeAll(covered.positives);
-				uncovered.removeAll(covered.negatives);
-				
-				uncovered_p = 0;
-				for (int id : uncoveredPositives) {
-					Example e = dataset.getExample(id);
-					uncovered_p += dataset.getAttributes().getWeight() == null ? 1.0 : e.getWeight();
-				}
-				
-				// stop if number of positive examples remaining is less than threshold
-				if (uncovered_p <= params.getMaximumUncoveredFraction() * weightedP) {
-					carryOn = false;
-				}
-				
-				// stop and ignore last rule if no new positive examples covered
-				if (uncoveredPositives.size() == previouslyUncovered) {
-					carryOn = false; 
-				} else {
-					ruleset.addRule(aRule);
-				}
-			}
 		}
 		
 		return ruleset;
