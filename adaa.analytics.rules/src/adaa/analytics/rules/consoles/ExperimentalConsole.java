@@ -177,8 +177,9 @@ public class ExperimentalConsole {
 		 for (Future f : futures) {
 			f.get();
 		}
-		 
-		 Logger.getInstance().log("Experiments finished", Level.INFO);
+
+		Logger.getInstance().log("Experiments finished", Level.INFO);
+		RapidMiner.quit(RapidMiner.ExitMode.NORMAL);
 	}
 	
 	
