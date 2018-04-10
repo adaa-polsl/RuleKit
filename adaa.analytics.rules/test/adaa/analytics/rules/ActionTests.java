@@ -21,6 +21,7 @@ import org.junit.runners.Parameterized.Parameters;
 import org.junit.Test;
 
 import com.rapidminer.RapidMiner;
+import com.rapidminer.RapidMiner.ExitMode;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.AttributeRole;
 import com.rapidminer.example.Attributes;
@@ -173,6 +174,7 @@ public class ActionTests {
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		RapidMiner.quit(ExitMode.NORMAL);
 	}
 
 	protected ExampleSet parseArffFile() throws OperatorException, OperatorCreationException {
