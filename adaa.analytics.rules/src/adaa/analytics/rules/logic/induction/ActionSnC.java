@@ -31,58 +31,12 @@ import java.util.Optional;
 import java.util.stream.*;
 public class ActionSnC extends AbstractSeparateAndConquer {
 	
-	protected ActionFinder finder;
-
-	private Optional<Integer> sourceId;
-	private Optional<Integer> targetId;	
+	protected ActionFinder finder;	
 	
 	public ActionSnC(ActionFinder finder_, ActionInductionParameters params) {
 		super(params);
 		finder = finder_;
-		sourceId = params.getSourceClassId();
-		targetId = params.getTargetClassId();
 		this.factory = new RuleFactory(RuleFactory.ACTION, false, null);
-	}
-	
-	protected List<ClassIdPair> getClassPairs(ExampleSet dataset) {
-		List<ClassIdPair> ret = new LinkedList<ClassIdPair>();
-		
-		NominalMapping mapping = dataset.getAttributes().getLabel().getMapping();
-		int mappingSize = mapping.getValues().size();
-		
-		if (sourceId.isPresent()) {
-			
-			if (targetId.isPresent()) {
-				ret.add(new ClassIdPair(sourceId.get(), targetId.get()));
-			} else {
-			
-				ret = IntStream.range(0, mappingSize).
-					filter(x -> x != sourceId.get()).
-					mapToObj(z -> new ClassIdPair(sourceId.get(), z)).
-					collect(Collectors.toList());
-			}
-		} else if (targetId.isPresent()) {
-			
-			ret = IntStream.range(0, mappingSize).
-					filter(x -> x != targetId.get()).
-					mapToObj(z -> new ClassIdPair(z, targetId.get())).
-					collect(Collectors.toList());
-		} else {
-			//all possible transitions:
-			// [1,2,3] -> {{1,2}, {1,3}, {2,1}, {2,3}, {3,1}, {3,2}}
-			int[] indices = IntStream.range(0, mappingSize).toArray();
-			
-			for (int index : indices) {
-				ret.addAll(
-						IntStream.range(0, mappingSize)
-						.filter(x -> x != index)
-						.mapToObj(x -> new ClassIdPair(index, x))
-						.collect(Collectors.toList()));
-			}
-			
-		}
-		
-		return ret;
 	}
 	
 	@Override
@@ -94,7 +48,7 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 		Attribute label = dataset.getAttributes().getLabel();
 		NominalMapping mapping = label.getMapping();
 		
-		List<ClassIdPair> pairs = this.getClassPairs(dataset);
+		List<ClassPair> pairs = ((ActionInductionParameters)params).generateClassPairs(mapping);
 		
 		if (pairs.isEmpty()) {
 			Logger.log("No valid transitions provided for action generation", Level.ALL);
@@ -103,7 +57,7 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 		
 		//iteration 2: generate for all possible (demanded) transitions.
 		
-		for (ClassIdPair pair : pairs) {
+		for (ClassPair pair : pairs) {
 			
 			ConditionedExampleSet filtered = null;
 			try {
@@ -113,15 +67,15 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 							ConditionedExampleSet.KNOWN_CONDITION_NAMES[ConditionedExampleSet.CONDITION_ATTRIBUTE_VALUE_FILTER],
 							dataset, 
 							String.format("%1$s = %2$s || %1$s = %3$s", label.getName(), 
-									mapping.getValues().get(pair.getSourceId()),
-									mapping.getValues().get(pair.getTargetId())
+									pair.getSourceLabel(),
+									pair.getTargetLabel())
 									)
-							)
+							
 					);
 				
 			} catch (ConditionCreationException ex) {
 				
-				Logger.log(String.format("Couldn't create subdataset for source class id %1$s and target class id %2$s ", pair.getSourceId(), pair.getTargetId()), 
+				Logger.log(String.format("Couldn't create subdataset for source class id %1$s and target class id %2$s ", pair.getSourceLabel(), pair.getTargetLabel()), 
 						Level.ALL);
 				return null;
 			}

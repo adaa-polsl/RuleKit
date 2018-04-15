@@ -60,6 +60,8 @@ public class ActionTests {
 	protected String labelParameter;
 	protected int sourceId;
 	protected int targetId;
+	protected String sourceClass;
+	protected String targetClass;
 	
 	@Parameters
 	public static Collection<Object[]> testData(){
@@ -82,14 +84,14 @@ public class ActionTests {
 			///
 			///	car - 4 classes
 			///
-			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, 0, 0},
-			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9, 0, 0},
-			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, 0, 0},
-			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9, 0, 0},
-			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9, 0, 0},
-			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9, 0, 0},
-			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9, 0, 0},
-			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9, 0, 0},
+			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, "unacc", "acc"},
+			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
+			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
+			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
+			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
+			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
+			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
+			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
 			
 			////
 			////  Wine dataset
@@ -142,7 +144,7 @@ public class ActionTests {
 			ClassificationMeasure measure,
 			boolean enablePruning, boolean ignoreMissing, double minimumCovered,
 			double maximumUncoveredFraction, double maxGrowingConditions,
-			int sourceClassId, int targetClassId) {
+			String sourceClass, String targetClass) {
 		testFile = testFileName;
 		labelParameter = labelParameterName;
 		
@@ -157,13 +159,8 @@ public class ActionTests {
 		params.setMinimumCovered(minimumCovered);
 		params.setMaximumUncoveredFraction(maximumUncoveredFraction);
 		params.setMaxGrowingConditions(maxGrowingConditions);
-		sourceId = sourceClassId;
-		targetId = targetClassId;
-		if (sourceId == targetId) {
-			params.setGenerateAllTransitions();
-		} else {
-			params.setClasswiseTransition(sourceClassId, targetClassId);
-		}
+		
+		params.addClasswiseTransition(sourceClass, targetClass);
 		
 	}
 	
