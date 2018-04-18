@@ -249,7 +249,14 @@ public class ActionTests {
 		fw.write("Average actions per rule: " + (double)actionsCount / (double)actions.getRules().size() + "\r\n");
 		fw.write("Average conditions per rule: " + (double)conditionCount / (double)actions.getRules().size() + "\r\n");
 		fw.write(actions.toString() + "\r\n");
+		
+		RuleSerializer serializer = new RuleSerializer(exampleSet, ';', "");
+		fw.write(serializer.serializeToCsv(actions));
+		
+		
 		fw.close();
+		
+		
 		
 		
 		System.out.println("File name: " + testFile);

@@ -187,6 +187,12 @@ public class ActionRule extends Rule {
 			this.coveringInformation = (ActionCovering)cov;
 	}
 	
+	@Override
+	public Covering getCoveringInformation() {
+		
+		return this.coveringInformation;
+	}
+	
 	public String printStats() {
 		return "(pl=" + weighted_p + ", nl=" + weighted_n + ", pr=" + this.coveringInformation.weighted_pRight + 
 				", nr=" + this.coveringInformation.weighted_nRight + ", P=" + weighted_P + ", N=" + weighted_N + 
