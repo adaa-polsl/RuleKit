@@ -40,6 +40,7 @@ import adaa.analytics.rules.logic.induction.AbstractSeparateAndConquer;
 import adaa.analytics.rules.logic.induction.ActionFinder;
 import adaa.analytics.rules.logic.induction.ActionInductionParameters;
 import adaa.analytics.rules.logic.induction.ActionSnC;
+import adaa.analytics.rules.logic.induction.ClassPair;
 import adaa.analytics.rules.logic.induction.ClassificationFinder;
 import adaa.analytics.rules.logic.induction.ClassificationSnC;
 import adaa.analytics.rules.logic.induction.Covering;
@@ -71,16 +72,16 @@ public class ActionTests {
 			///
 			/// car - reduced : only two classes
 			///
-			/*
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, 0, 1},
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9, 0, 1},
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, 0, 1},
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9, 0, 1},
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9, 0, 1},
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9, 0, 1},
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9, 0, 1},
-			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9, 0, 1},
-			*/
+			
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
+			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
+			
 			///
 			///	car - 4 classes
 			///
@@ -229,8 +230,13 @@ public class ActionTests {
 		
 		FileWriter fw = new FileWriter(arffFile);
 		fw.write("File name: " + testFile + "\r\n");
-		fw.write("Positive (source) class name: " + exampleSet.getAttributes().getLabel().getMapping().getValues().get(sourceId) + "\r\n");
-		fw.write("Negative (target) class name: " + exampleSet.getAttributes().getLabel().getMapping().getValues().get(targetId) + "\r\n");
+		
+		List<ClassPair> pairs = params.generateClassPairs(exampleSet.getAttributes().getLabel().getMapping());
+		fw.write("Transitions generated: \r\n");
+		for (ClassPair pair : pairs) {
+			fw.write(pair.getSourceLabel() + " -> " + pair.getTargetLabel() + "\r\n");
+		}
+		
 		fw.write("Mincov: " + params.getMinimumCovered() + "\r\n");
 		fw.write("Maximum uncovered fraction: " + params.getMaximumUncoveredFraction() + "\r\n");
 		fw.write("Max growing: " + params.getMaxGrowingConditions() + "\r\n");

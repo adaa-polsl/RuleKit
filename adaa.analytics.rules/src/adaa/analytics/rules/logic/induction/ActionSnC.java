@@ -55,31 +55,12 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 			return null;
 		}
 		
-		//iteration 2: generate for all possible (demanded) transitions.
+		//iteration 2: generate for all (demanded) transitions.
 		
 		for (ClassPair pair : pairs) {
 			
-			ConditionedExampleSet filtered = null;
-			try {
-			
-				filtered = new ConditionedExampleSet(dataset, 
-					ConditionedExampleSet.createCondition(
-							ConditionedExampleSet.KNOWN_CONDITION_NAMES[ConditionedExampleSet.CONDITION_ATTRIBUTE_VALUE_FILTER],
-							dataset, 
-							String.format("%1$s = %2$s || %1$s = %3$s", label.getName(), 
-									pair.getSourceLabel(),
-									pair.getTargetLabel())
-									)
-							
-					);
-				
-			} catch (ConditionCreationException ex) {
-				
-				Logger.log(String.format("Couldn't create subdataset for source class id %1$s and target class id %2$s ", pair.getSourceLabel(), pair.getTargetLabel()), 
-						Level.ALL);
-				return null;
-			}
-			
+			ExampleSet filtered = dataset;
+
 			double weightedP = 0, weightedN = 0;
 			Set<Integer> uncoveredPositives = new HashSet<Integer>(), uncovered = new HashSet<Integer>();
 			Set<Integer> uncoveredNegatives = new HashSet<Integer>();
