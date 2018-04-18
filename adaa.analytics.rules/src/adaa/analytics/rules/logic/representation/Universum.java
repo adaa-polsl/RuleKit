@@ -25,7 +25,12 @@ public class Universum implements IValueSet, Serializable {
 	public String toString() {
 		return "Any";
 	}
-	
+
+	@Override
+	public int hashCode() {
+		return 1;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		return (obj instanceof Universum);
