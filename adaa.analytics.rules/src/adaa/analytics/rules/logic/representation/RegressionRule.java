@@ -29,11 +29,6 @@ public class RegressionRule extends Rule {
 	}
 	
 	@Override
-	public double getPValue() {
-		return 1.0;
-	}
-
-	@Override
 	public Covering covers(ExampleSet set, Set<Integer> ids) {
 		return covers(set);
 	}

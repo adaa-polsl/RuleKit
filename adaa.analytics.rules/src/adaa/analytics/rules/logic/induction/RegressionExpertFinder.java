@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
+import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.induction.RegressionFinder.ConditionEvaluation;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ConditionBase;
@@ -140,9 +141,10 @@ public class RegressionExpertFinder extends RegressionFinder {
 					covered.clear();
 					covered.addAll(covering.positives);
 					covered.addAll(covering.negatives);
-					double v = calculateQuality(dataset, covering, params.getInductionMeasure());
 					rule.setCoveringInformation(covering);
-					rule.setWeight(v);	
+					QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getInductionMeasure());
+					rule.setWeight(qp.quality);
+					rule.setPValue(qp.pvalue);
 					Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
 							+ rule.toString() + "\n", Level.FINER);
 					

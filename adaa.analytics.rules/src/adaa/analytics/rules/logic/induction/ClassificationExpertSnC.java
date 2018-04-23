@@ -6,6 +6,7 @@ import java.util.logging.Level;
 
 import org.apache.commons.lang.SerializationUtils;
 
+import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.representation.ClassificationRule;
 import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
@@ -97,9 +98,10 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 			for (Rule r : knowledge.getRules(classId)) {
 				Rule rule = (Rule) SerializationUtils.clone(r);
 				Covering cov = rule.covers(dataset, uncovered);
-				double q = finder.calculateQuality(dataset, cov, params.getInductionMeasure());
 				rule.setCoveringInformation(cov);
-				rule.setWeight(q);
+				QualityAndPValue qp = finder.calculateQualityAndPValue(dataset, cov, params.getInductionMeasure());
+				rule.setWeight(qp.quality);
+				rule.setPValue(qp.pvalue);
 				Logger.log("Expert rule: " + rule.toString() + "\n", Level.FINE);
 				
 

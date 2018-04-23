@@ -3,6 +3,7 @@ package adaa.analytics.rules.logic.induction;
 import java.util.HashSet;
 import java.util.Set;
 
+import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
@@ -38,4 +39,12 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 		return quality;
 	}
 
+	
+	protected QualityAndPValue calculateQualityAndPValue(ExampleSet trainSet, Covering cov, IQualityMeasure measure) {
+		QualityAndPValue res = new QualityAndPValue();
+		res.quality = calculateQuality(trainSet, cov, measure);
+		res.pvalue = 1 - res.quality;
+		
+		return res;
+	}
 }

@@ -24,8 +24,10 @@ public abstract class Rule implements Serializable {
 	protected double weighted_N = Double.NaN;
 	
 	protected double weight = 1.0;
+	protected double pvalue = 1.0;
 	
 	protected int inducedConditionsCount = 0;
+	
 	
 	public CompoundCondition getPremise() { return premise; }
 	public void setPremise(CompoundCondition v) { this.premise = v; }
@@ -50,6 +52,9 @@ public abstract class Rule implements Serializable {
 	
 	public int getInducedConditionsCount() { return inducedConditionsCount;}
 	public void setInducedContitionsCount(int v) { inducedConditionsCount = v; }
+	
+	public double getPValue() { return pvalue; }
+	public void setPValue(double v) { pvalue = v; }
 	
 	public Rule() {}
 	
@@ -90,8 +95,6 @@ public abstract class Rule implements Serializable {
 	public abstract Covering covers(ExampleSet set, Set<Integer> ids);
 	
 	public abstract Covering covers(ExampleSet set);
-	
-	public abstract double getPValue();
 	
 	public String toString() {
 		String s = "IF " + premise.toString() + " THEN " + consequence.toString();	

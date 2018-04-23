@@ -9,7 +9,10 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
+import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
+import adaa.analytics.rules.logic.quality.Hypergeometric;
+import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.representation.ConditionBase;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Interval;
@@ -32,6 +35,16 @@ public class ClassificationFinder extends AbstractFinder {
 	public ClassificationFinder(InductionParameters params) {
 		super(params);
 		MissingValuesHandler.ignore = params.isIgnoreMissing();
+	}
+	
+	protected QualityAndPValue calculateQualityAndPValue(ExampleSet trainSet, Covering cov, IQualityMeasure measure) {
+		QualityAndPValue res = new QualityAndPValue();
+		res.quality = calculateQuality(trainSet, cov, measure);
+		
+		Hypergeometric test = new Hypergeometric();
+		res.pvalue = test.calculate(cov);
+		
+		return res;
 	}
 	
 	
@@ -152,8 +165,9 @@ public class ClassificationFinder extends AbstractFinder {
 		
 		covering = rule.covers(trainSet);
 		rule.setCoveringInformation(covering);
-		double weight = calculateQuality(trainSet, covering, params.getPruningMeasure());
-		rule.setWeight(weight);
+		QualityAndPValue qp = calculateQualityAndPValue(trainSet, covering, params.getPruningMeasure());
+		rule.setWeight(qp.quality);
+		rule.setPValue(qp.pvalue);
 		
 		return covering;
 	}
