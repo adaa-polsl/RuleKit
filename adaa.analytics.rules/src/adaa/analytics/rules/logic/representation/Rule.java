@@ -91,6 +91,8 @@ public abstract class Rule implements Serializable {
 	
 	public abstract Covering covers(ExampleSet set);
 	
+	public abstract double getPValue();
+	
 	public String toString() {
 		String s = "IF " + premise.toString() + " THEN " + consequence.toString();	
 		return s;

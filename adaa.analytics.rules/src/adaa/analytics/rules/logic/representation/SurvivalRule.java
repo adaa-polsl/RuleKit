@@ -64,4 +64,10 @@ public class SurvivalRule extends Rule {
 		return covered;
 	}
 	
+	@Override
+	public double getPValue() {
+		return 1.0 - getWeight();
+	}
+	
+	
 }

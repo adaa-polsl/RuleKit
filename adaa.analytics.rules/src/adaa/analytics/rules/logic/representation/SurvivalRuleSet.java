@@ -13,11 +13,6 @@ import com.rapidminer.operator.OperatorException;
 
 public class SurvivalRuleSet extends RuleSetBase {
 
-	public class Significance {
-		public double p = 0;
-		public double fraction = 0;
-	};
-	
 	/**
 	 * 
 	 */
@@ -28,77 +23,7 @@ public class SurvivalRuleSet extends RuleSetBase {
 	public KaplanMeierEstimator getTrainingEstimator() { return trainingEstimator; }
 	
 	
-	public Significance calculateSignificance(double alpha) {
-		Significance out = new Significance();
-		
-		for (Rule rule : rules) {
-			double p = 1.0 - rule.getWeight();
-			out.p += p; 
-			
-			if (p < alpha) {
-				out.fraction += 1.0;
-			}
-		}
-		
-		out.p /= rules.size();
-		out.fraction /= rules.size();
-		return out;
-	}
-	
-	public Significance calculateSignificanceFDR(double alpha) {
-		Significance out = new Significance();
-		
-		int N = rules.size();
-		double[] pvals = new double[N];
-		int k = 0;
-		for (Rule rule : rules) {
-			pvals[k] = 1.0 - rule.getWeight();
-			++k;
-		}
-		Arrays.sort(pvals);
-		
-		k = 1;
-		for (double p : pvals) { // from smallest to largest p-value
-			double adj_p = p * N / k;
-			out.p += adj_p;
-			if (adj_p < alpha) {
-				out.fraction += 1.0;
-			}
-			++k;
-		}
-		
-		out.p /= rules.size();
-		out.fraction /= rules.size();
-		return out;
-	}
-	
-	public Significance calculateSignificanceFWER(double alpha) {
-		Significance out = new Significance();
-		
-		int N = rules.size();
-		double[] pvals = new double[N];
-		int k = 0;
-		for (Rule rule : rules) {
-			pvals[k] = 1.0 - rule.getWeight();
-			++k;
-		}
-		Arrays.sort(pvals);
-		
-		k = 1;
-		for (double p : pvals) { // from smallest to largest p-value
-			double adj_p = p * (N + 1 - k); 
-			out.p += adj_p;
-			if (adj_p < alpha) {
-				out.fraction += 1.0;
-			}
-			++k;
-		}
-		
-		out.p /= rules.size();
-		out.fraction /= rules.size();
-		return out;
-	}
-	
+
 	
 	public SurvivalRuleSet(ExampleSet exampleSet, boolean isVoting, Knowledge knowledge) {
 		super(exampleSet, isVoting, knowledge);

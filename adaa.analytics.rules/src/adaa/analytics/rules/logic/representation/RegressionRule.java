@@ -27,6 +27,11 @@ public class RegressionRule extends Rule {
 	public RegressionRule(CompoundCondition premise, ElementaryCondition consequence) {
 		super(premise, consequence);
 	}
+	
+	@Override
+	public double getPValue() {
+		return 1.0;
+	}
 
 	@Override
 	public Covering covers(ExampleSet set, Set<Integer> ids) {

@@ -29,6 +29,11 @@ public class ClassificationRule extends Rule {
 		super(premise, consequence);
 	}
 
+	@Override
+	public double getPValue() {
+		return 1.0;
+	}
+	
 	/**
 	 * Gets identifiers of examples covered by the rule. 
 	 * @param set Example set.
