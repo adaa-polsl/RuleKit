@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
+import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ConditionBase;
@@ -180,9 +181,11 @@ public class ClassificationExpertFinder extends ClassificationFinder {
 	
 		if (addedConditionsCount > 0) {
 			covering = rule.covers(dataset);
-			double v = calculateQuality(dataset, covering, params.getInductionMeasure());
 			rule.setCoveringInformation(covering);
-			rule.setWeight(v);
+			
+			QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getInductionMeasure());
+			rule.setWeight(qp.quality);
+			rule.setPValue(qp.pvalue);
 		}
 		
 		rule.setInducedContitionsCount(addedConditionsCount);
@@ -241,8 +244,9 @@ public class ClassificationExpertFinder extends ClassificationFinder {
 				covered.addAll(covering.negatives);
 
 				rule.setCoveringInformation(covering);
-				double v = calculateQuality(trainSet, covering, params.getInductionMeasure());
-				rule.setWeight(v);
+				QualityAndPValue qp = calculateQualityAndPValue(trainSet, covering, params.getInductionMeasure());
+				rule.setWeight(qp.quality);
+				rule.setPValue(qp.pvalue);
 				
 				Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
 						+ rule.toString() + "\n", Level.FINER);

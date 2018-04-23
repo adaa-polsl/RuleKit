@@ -6,6 +6,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
+import adaa.analytics.rules.logic.quality.Hypergeometric;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.representation.ConditionBase;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
@@ -21,6 +22,12 @@ import com.rapidminer.example.ExampleSet;
  *
  */
 public abstract class AbstractFinder {
+	
+	class QualityAndPValue {
+		public double quality;
+		public double pvalue;
+	}
+	
 	
 	/**
 	 * Rule induction parameters.
@@ -77,8 +84,9 @@ public abstract class AbstractFinder {
 				covered.addAll(covering.negatives);
 
 				rule.setCoveringInformation(covering);
-				double v = calculateQuality(dataset, covering, params.getInductionMeasure());
-				rule.setWeight(v);
+				QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getInductionMeasure());
+				rule.setWeight(qp.quality);
+				rule.setPValue(qp.pvalue);
 				
 				Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
 						+ rule.toString() + "\n", Level.FINER);
@@ -159,8 +167,9 @@ public abstract class AbstractFinder {
 		
 		covering = rule.covers(trainSet);
 		rule.setCoveringInformation(covering);
-		double weight = calculateQuality(trainSet, covering, params.getPruningMeasure());
-		rule.setWeight(weight);
+		QualityAndPValue qp = calculateQualityAndPValue(trainSet, covering, params.getPruningMeasure());
+		rule.setWeight(qp.quality);
+		rule.setPValue(qp.pvalue);
 		
 		return covering;
 	}
@@ -172,9 +181,15 @@ public abstract class AbstractFinder {
 	 * @return
 	 */
 	protected double calculateQuality(ExampleSet trainSet, Covering cov, IQualityMeasure measure) {
-		return ((ClassificationMeasure)measure).calculate(
-				cov.weighted_p, cov.weighted_n, 
-				cov.weighted_P, cov.weighted_N);
+		return ((ClassificationMeasure)measure).calculate(cov);
+	}
+	
+	protected QualityAndPValue calculateQualityAndPValue(ExampleSet trainSet, Covering cov, IQualityMeasure measure) {
+		QualityAndPValue res = new QualityAndPValue();
+		res.quality = calculateQuality(trainSet, cov, measure);
+		res.pvalue = 1.0;
+		
+		return res;
 	}
 	
 	/**
