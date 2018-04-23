@@ -1,57 +1,46 @@
 package adaa.analytics.rules;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.junit.Test;
 
 import com.rapidminer.RapidMiner;
 import com.rapidminer.RapidMiner.ExitMode;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.AttributeRole;
 import com.rapidminer.example.Attributes;
 import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.ExampleSetFactory;
-import com.rapidminer.example.table.AttributeFactory;
 import com.rapidminer.operator.IOContainer;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.io.ArffExampleSource;
 import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
-import com.rapidminer.tools.Ontology;
 import com.rapidminer.tools.OperatorService;
 
-import adaa.analytics.rules.logic.induction.AbstractSeparateAndConquer;
 import adaa.analytics.rules.logic.induction.ActionFinder;
 import adaa.analytics.rules.logic.induction.ActionInductionParameters;
 import adaa.analytics.rules.logic.induction.ActionSnC;
+import adaa.analytics.rules.logic.induction.BackwardActionSnC;
 import adaa.analytics.rules.logic.induction.ClassPair;
-import adaa.analytics.rules.logic.induction.ClassificationFinder;
-import adaa.analytics.rules.logic.induction.ClassificationSnC;
-import adaa.analytics.rules.logic.induction.Covering;
-import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
-import adaa.analytics.rules.logic.representation.*;
-import common.Assert;
+import adaa.analytics.rules.logic.representation.Action;
+import adaa.analytics.rules.logic.representation.ActionRule;
+import adaa.analytics.rules.logic.representation.ActionRuleSet;
+import adaa.analytics.rules.logic.representation.RuleSerializer;
 
 @RunWith(Parameterized.class)
 public class ActionTests {
 	protected static String testDirectory =  "C:/Users/pmatyszok/Desktop/dane/";
+	private final String outputExtension = ".rules";
 	
 	protected ActionInductionParameters params;
 	protected String testFile;
@@ -97,35 +86,35 @@ public class ActionTests {
 			////
 			////  Wine dataset
 			////
-			/*
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9, 0, 1},
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, 0, 1},
 			
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, 0, 1},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9, "1", "2"},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, "1", "2"},
 			
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9, 0, 1},
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9, 0, 1},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "1", "2"},
 			
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9, 0, 1},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9, "1", "2"},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9, "1", "2"},
 			
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9, 0, 1},
-			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9, 0, 1},
-			*/
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9, "1", "2"},
+			
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9, "1", "2"},
+			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9, "1", "2"},
+			
 			///
 			/// Monks 1 dataset
 			///
-			/*
-			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, 1, 0},
-			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9, 1, 0},
 			
-			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, 1, 0},
+			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, "0", "1"},
+			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9, "0", "1"},
+			
+			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "0", "1"},
 		
-			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9, 1, 0},
-			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9, 1, 0},
-			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9, 1, 0},
-			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9, 1, 0},
-			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9, 1, 0},
-			*/
+			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9, "0", "1"},
+			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9, "0", "1"},
+			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9, "0", "1"},
+			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9, "0", "1"},
+			{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9, "0", "1"},
+			/*
 			////
 			////  Sonar dataset
 			////
@@ -141,6 +130,10 @@ public class ActionTests {
 		});
 	}
 	
+	private String getOutputFileName() {
+		return outputFileName + outputExtension;
+	}
+	
 	public ActionTests(String testFileName, String labelParameterName,
 			ClassificationMeasure measure,
 			boolean enablePruning, boolean ignoreMissing, double minimumCovered,
@@ -150,7 +143,7 @@ public class ActionTests {
 		labelParameter = labelParameterName;
 		
 		outputFileName = testFileName.substring(0, testFileName.indexOf('.'));
-		outputFileName += "-rules-" + measure.getName() + (enablePruning  ? "-pruned" : "")  + ".arff";
+		outputFileName += "-rules-" + measure.getName() + (enablePruning  ? "-pruned" : "");
 		
 		params = new ActionInductionParameters();
 		params.setInductionMeasure(measure);
@@ -201,6 +194,8 @@ public class ActionTests {
 		return (ExampleSet)c.getElementAt(0);
 	}
 	
+	
+	
 	@Test
 	public void test() throws OperatorCreationException, OperatorException, IOException {
 		
@@ -213,7 +208,25 @@ public class ActionTests {
 		RuleSetBase set = snc.run(exampleSet);
 		System.out.println(set.toString());
 		*/
-		File arffFile = Paths.get(testDirectory, this.outputFileName).toFile();
+		dumpData(exampleSet, actions);
+		
+	}
+	
+	@Test
+	public void testBackwardRules() throws OperatorCreationException, OperatorException, IOException {
+		ExampleSet exampleSet = parseArffFile();
+		
+		params.reverseTransitions();
+		
+		BackwardActionSnC snc = new BackwardActionSnC(new ActionFinder(params), params);
+		ActionRuleSet actions = (ActionRuleSet)snc.run(exampleSet);
+		
+		this.outputFileName += "-backward";
+		dumpData(exampleSet, actions);
+	}
+
+	protected void dumpData(ExampleSet exampleSet, ActionRuleSet actions) throws IOException {
+		File arffFile = Paths.get(testDirectory, getOutputFileName()).toFile();
 		
 		
 		
@@ -264,7 +277,6 @@ public class ActionTests {
 		//System.out.println("Loosed actions count" + loosedActionsCount);
 	//	System.out.println("Measure: " + ((ClassificationMeasure)params.getPruningMeasure()).getName(params.getPruningMeasure()));
 		System.out.println(actions.toString());
-		
 	}
 
 }
