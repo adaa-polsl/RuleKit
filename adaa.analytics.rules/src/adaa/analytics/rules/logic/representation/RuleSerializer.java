@@ -122,6 +122,8 @@ public class RuleSerializer {
 			}
 			
 		}
+		Action consequence = (Action)rule.getConsequence();
+		builder.append(consequence.leftValue).append(consequence.rightValue);
 		
 		return builder.build();
 	}
