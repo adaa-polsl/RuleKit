@@ -102,7 +102,7 @@ public abstract class Rule implements Serializable {
 	}
 	
 	public String printStats() {
-		String s ="(p=" + weighted_p + ", n=" + weighted_n + ", P=" + weighted_P + ", N=" + weighted_N + ", weight=" + getWeight() + ")";
+		String s ="(p=" + weighted_p + ", n=" + weighted_n + ", P=" + weighted_P + ", N=" + weighted_N + ", weight=" + getWeight() + ", pvalue=" + pvalue + ")";
 		return s;
 	}
 }

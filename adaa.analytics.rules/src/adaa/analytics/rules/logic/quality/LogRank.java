@@ -3,6 +3,8 @@ package adaa.analytics.rules.logic.quality;
 import java.util.HashSet;
 import java.util.Set;
 
+import junit.framework.TestResult;
+
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
@@ -11,7 +13,9 @@ public class LogRank implements IQualityMeasure {
 	
 	protected ChiSquaredDistribution dist = new ChiSquaredDistribution(1.0);
 	
-	public double calculate(KaplanMeierEstimator kme1, KaplanMeierEstimator kme2) {
+	public StatisticalTestResult calculate(KaplanMeierEstimator kme1, KaplanMeierEstimator kme2) {
+		
+		StatisticalTestResult res = new StatisticalTestResult();
 		
 		Set<Double> eventTimes = new HashSet<Double>();
 		eventTimes.addAll(kme1.getTimes());
@@ -19,7 +23,7 @@ public class LogRank implements IQualityMeasure {
 		
 		// fixme:
 		if (kme1.getTimes().size() == 0 || kme2.getTimes().size() == 0) {
-			return 0;
+			return res;
 		}
 		
         double x = 0;
@@ -41,9 +45,9 @@ public class LogRank implements IQualityMeasure {
             y += (n1 * n2 * (m1 + m2) * (n - m1 - m2)) / (n * n * (n - 1));
         }
 
-        double chi = (x * x) / y;
-        double p = dist.cumulativeProbability(chi);
+        res.stats = (x * x) / y;
+        res.pvalue = 1.0 - dist.cumulativeProbability(res.stats);
         
-		return p;
+		return res;
 	}
 }

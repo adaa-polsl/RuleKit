@@ -6,6 +6,7 @@ import java.util.logging.Level;
 
 import org.apache.commons.lang.SerializationUtils;
 
+import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Knowledge;
@@ -68,8 +69,11 @@ public class RegressionExpertSnC extends RegressionSnC {
 			Logger.log("Uncovered positive weight: " + uncovered_pn +  "/" + weighted_PN + "\n", Level.FINE);
 			Rule rule = (Rule) SerializationUtils.clone(r);
 			Covering cov = rule.covers(ses);
-			double q = finder.calculateQuality(ses, cov, params.getInductionMeasure());
-			rule.setWeight(q);
+			
+			QualityAndPValue qp = finder.calculateQualityAndPValue(dataset, cov, params.getInductionMeasure());
+			rule.setWeight(qp.quality);
+			rule.setPValue(qp.pvalue);
+		
 			rule.setCoveringInformation(cov);
 			Logger.log("Expert rule: " + rule.toString() + "\n", Level.FINE);
 			

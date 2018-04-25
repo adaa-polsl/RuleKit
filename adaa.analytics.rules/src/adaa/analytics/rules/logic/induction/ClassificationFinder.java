@@ -13,6 +13,7 @@ import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.Hypergeometric;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
+import adaa.analytics.rules.logic.quality.StatisticalTestResult;
 import adaa.analytics.rules.logic.representation.ConditionBase;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Interval;
@@ -42,7 +43,9 @@ public class ClassificationFinder extends AbstractFinder {
 		res.quality = calculateQuality(trainSet, cov, measure);
 		
 		Hypergeometric test = new Hypergeometric();
-		res.pvalue = test.calculate(cov);
+		StatisticalTestResult sts = test.calculate(cov);
+		
+		res.pvalue = sts.pvalue;
 		
 		return res;
 	}

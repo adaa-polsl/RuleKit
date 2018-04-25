@@ -6,19 +6,22 @@ import adaa.analytics.rules.logic.induction.Covering;
 
 public class Hypergeometric implements IQualityMeasure {
 	
-	public double calculate(Covering cov) {
+	public StatisticalTestResult calculate(Covering cov) {
 		return this.calculate(cov.weighted_p, cov.weighted_n,
 				cov.weighted_P, cov.weighted_N);
 	}
 	
-	public double calculate(double p, double n, double P, double N) {
+	public StatisticalTestResult calculate(double p, double n, double P, double N) {
+		
+		StatisticalTestResult res = new StatisticalTestResult();
 		
 		int count = (int)(P + N);
 		int consequent = (int)P;
 	    int antecedentAndConsequent = (int)p;
 	    int antecedentButNotConsequent = (int)n;
-		
-	    int limit = (int)Math.min((int)P - p, n);
+	    int notAntecedentButConsequent = (int)(P - p);
+	    
+	    int limit = Math.min(notAntecedentButConsequent, antecedentButNotConsequent);
 
 	    double pVal = 0.0;
 	    for (int k = 0; k <= limit; k++)
@@ -35,7 +38,11 @@ public class Hypergeometric implements IQualityMeasure {
 
 	    assert(q >= -1.0 / 10000000000.0);
 	    assert(!Double.isNaN(q));
-	    return q;
+	    
+	    res.stats = q;
+	    res.pvalue = pVal;
+	    
+	    return res;
 	}
 	
 	

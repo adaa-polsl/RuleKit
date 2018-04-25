@@ -6,6 +6,7 @@ import java.util.Set;
 import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
+import adaa.analytics.rules.logic.quality.StatisticalTestResult;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 
 import com.rapidminer.example.ExampleSet;
@@ -17,11 +18,6 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 		// TODO Auto-generated constructor stub
 	}
 
-	/**
-	 * 
-	 * @param cov
-	 * @return
-	 */
 	protected double calculateQuality(ExampleSet trainSet, Covering cov, IQualityMeasure measure) {
 		Set<Integer> coveredIndices = cov.positives; // in survival rules all examples are classified as positives
 		Set<Integer> uncoveredIndices = new HashSet<Integer>();
@@ -34,9 +30,8 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 		KaplanMeierEstimator coveredEstimator = new KaplanMeierEstimator(trainSet, coveredIndices);
 		KaplanMeierEstimator uncoveredEstimator = new KaplanMeierEstimator(trainSet, uncoveredIndices);
 		
-		double quality = ((LogRank)measure).calculate(coveredEstimator, uncoveredEstimator);
-		
-		return quality;
+		StatisticalTestResult res = ((LogRank)measure).calculate(coveredEstimator, uncoveredEstimator);
+		return 1 - res.pvalue;
 	}
 
 	

@@ -107,11 +107,14 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 		Arrays.sort(pvals);
 		
 		k = 1;
+		boolean ok = true;
 		for (double p : pvals) { // from smallest to largest p-value
 			double adj_p = p * N / k;
 			out.p += adj_p;
-			if (adj_p < alpha) {
+			if (adj_p < alpha && ok) {
 				out.fraction += 1.0;
+			} else {
+				ok = false;
 			}
 			++k;
 		}
@@ -134,11 +137,14 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 		Arrays.sort(pvals);
 		
 		k = 1;
+		boolean ok = true;
 		for (double p : pvals) { // from smallest to largest p-value
 			double adj_p = p * (N + 1 - k); 
 			out.p += adj_p;
-			if (adj_p < alpha) {
+			if (adj_p < alpha && ok) {
 				out.fraction += 1.0;
+			} else {
+				ok = false;
 			}
 			++k;
 		}

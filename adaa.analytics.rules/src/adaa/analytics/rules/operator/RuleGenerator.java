@@ -254,22 +254,19 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		pv.addCriterion(new EstimatedPerformance("#rules", rs.getRules().size(), 1, false));
 		pv.addCriterion(new EstimatedPerformance("#conditions", rs.calculateConditionsCount(), 1, false));
 		pv.addCriterion(new EstimatedPerformance("#induced conditions", rs.calculateInducedCondtionsCount(), 1, false));
+		
 		pv.addCriterion(new EstimatedPerformance("avg rule coverage", rs.calculateAvgRuleCoverage(), 1, false));
 		pv.addCriterion(new EstimatedPerformance("avg rule precision", rs.calculateAvgRulePrecision(), 1, false));
 		pv.addCriterion(new EstimatedPerformance("avg rule quality", rs.calculateAvgRuleQuality(), 1, false));
 		
-
-		if (rs instanceof SurvivalRuleSet ) {
-			SurvivalRuleSet srs = (SurvivalRuleSet)rs;
-			pv.addCriterion(new EstimatedPerformance("avg p-value", srs.calculateSignificance(0.05).p , 1, false));
-			pv.addCriterion(new EstimatedPerformance("avg FDR adj. p-value", srs.calculateSignificanceFDR(0.05).p, 1, false));
-			pv.addCriterion(new EstimatedPerformance("avg FWER adj. p-value", srs.calculateSignificanceFWER(0.05).p, 1, false));
-			
-			pv.addCriterion(new EstimatedPerformance("fraction 0.05 significant", srs.calculateSignificance(0.05).fraction, 1, false));
-			pv.addCriterion(new EstimatedPerformance("fraction 0.05 FDR significant", srs.calculateSignificanceFDR(0.05).fraction, 1, false));
-			pv.addCriterion(new EstimatedPerformance("fraction 0.05 FWER significant", srs.calculateSignificanceFWER(0.05).fraction, 1, false));
-		}	
+		pv.addCriterion(new EstimatedPerformance("avg p-value", rs.calculateSignificance(0.05).p , 1, false));
+		pv.addCriterion(new EstimatedPerformance("avg FDR adj. p-value", rs.calculateSignificanceFDR(0.05).p, 1, false));
+		pv.addCriterion(new EstimatedPerformance("avg FWER adj. p-value", rs.calculateSignificanceFWER(0.05).p, 1, false));
 		
+		pv.addCriterion(new EstimatedPerformance("fraction 0.05 significant", rs.calculateSignificance(0.05).fraction, 1, false));
+		pv.addCriterion(new EstimatedPerformance("fraction 0.05 FDR significant", rs.calculateSignificanceFDR(0.05).fraction, 1, false));
+		pv.addCriterion(new EstimatedPerformance("fraction 0.05 FWER significant", rs.calculateSignificanceFWER(0.05).fraction, 1, false));
+			
 		return pv;
 	 }
 }
