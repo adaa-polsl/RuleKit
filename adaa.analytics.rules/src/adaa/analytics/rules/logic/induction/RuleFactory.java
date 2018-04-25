@@ -1,7 +1,7 @@
 package adaa.analytics.rules.logic.induction;
 
-//import adaa.analytics.rules.logic.representation.ActionRule;
-//import adaa.analytics.rules.logic.representation.ActionRuleSet;
+import adaa.analytics.rules.logic.representation.ActionRule;
+import adaa.analytics.rules.logic.representation.ActionRuleSet;
 import adaa.analytics.rules.logic.representation.ClassificationRule;
 import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
@@ -47,7 +47,7 @@ public class RuleFactory {
 		case SURVIVAL:
 			return new SurvivalRule(premise, consequence);
 		case ACTION:
-	//		return new ActionRule();
+			return new ActionRule();
 		}
 		
 		return null;
@@ -62,7 +62,7 @@ public class RuleFactory {
 		case SURVIVAL:
 			return new SurvivalRuleSet(set, isVoting, knowledge);
 		case ACTION:
-//			return new ActionRuleSet(set, isVoting, knowledge);
+			return new ActionRuleSet(set, isVoting, knowledge);
 		}
 		
 		return null;

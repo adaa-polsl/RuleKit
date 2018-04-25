@@ -26,6 +26,12 @@ public class ActionInductionParameters extends InductionParameters {
 		transitions.put(ALL_CLASSES_LABEL, ALL_CLASSES_LABEL);
 	}
 	
+	public void reverseTransitions() {
+		Map<String, String> newTransitions = new HashMap<String, String>();
+		transitions.entrySet().stream().forEach(x -> newTransitions.put(x.getValue(), x.getKey()));
+		transitions = newTransitions;
+	}
+	
 	public void addClasswiseTransition(String source, String target) {
 		transitions.put(source, target);
 	}

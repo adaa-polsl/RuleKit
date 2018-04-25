@@ -31,6 +31,7 @@ public class Action extends ElementaryCondition {
 		
 	public String toString() {
 		String rightPart = new String();
+		String leftPart = new String();
 		if (rightValue != null && !this.isNilAction) {
 			if (rightValue.equals(leftValue)) {
 				rightPart = "";
@@ -38,7 +39,12 @@ public class Action extends ElementaryCondition {
 				rightPart = "->" + rightValue.toString();
 			}
 		}
-		return "(" + attribute + ", " + leftValue.toString() + rightPart + ")";
+		if (leftValue == null) {
+			leftPart = "";
+		} else {
+			leftPart = leftValue.toString();
+		}
+		return "(" + attribute + ", " + leftPart + rightPart + ")";
 	}
 	
 	public ElementaryCondition intersect(ElementaryCondition other) {
