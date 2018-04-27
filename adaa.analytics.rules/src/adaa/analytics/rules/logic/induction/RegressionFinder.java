@@ -7,6 +7,14 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
+import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.stat.inference.KolmogorovSmirnovTest;
+import org.apache.commons.math3.stat.inference.MannWhitneyUTest;
+
+import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
+import adaa.analytics.rules.logic.quality.ChiSquareVarianceTest;
+import adaa.analytics.rules.logic.quality.IQualityMeasure;
+import adaa.analytics.rules.logic.quality.StatisticalTestResult;
 import adaa.analytics.rules.logic.representation.ConditionBase;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Interval;
@@ -17,6 +25,7 @@ import adaa.analytics.rules.logic.representation.SingletonSet;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.Statistics;
 
 /**
  * Algorithm for growing and pruning regression rules.
@@ -165,5 +174,40 @@ public class RegressionFinder extends AbstractFinder {
 		
 		Logger.log("\n", Level.FINEST);
 		return false;
+	}
+	
+	@Override
+	protected QualityAndPValue calculateQualityAndPValue(ExampleSet trainSet, Covering cov, IQualityMeasure measure) {
+		QualityAndPValue res = new QualityAndPValue();
+		res.quality = super.calculateQuality(trainSet, cov, measure);
+		
+/*		double[] covY = new double[cov.getSize()];
+		double[] uncovY = new double[trainSet.size() - cov.getSize()];
+		
+		int ic = 0;
+		int iuc = 0;
+		
+		for (int ie = 0; ie < trainSet.size(); ++ie) {
+			 
+			if (cov.positives.contains(ie) || cov.negatives.contains(ie)) {
+				covY[ic++] = trainSet.getExample(ie).getLabel();
+			} else {
+				uncovY[iuc++] = trainSet.getExample(ie).getLabel();
+			}
+		}
+		
+		MannWhitneyUTest test = new MannWhitneyUTest();
+		res.pvalue = test.mannWhitneyUTest(covY, uncovY);
+		
+		//KolmogorovSmirnovTest test = new KolmogorovSmirnovTest();
+		//res.pvalue = test.kolmogorovSmirnovTest(covY, uncovY);
+*/
+		ChiSquareVarianceTest test = new ChiSquareVarianceTest();
+		double expectedDev = Math.sqrt(trainSet.getStatistics(trainSet.getAttributes().getLabel(), Statistics.VARIANCE));
+		StatisticalTestResult sts = test.calculateLower(expectedDev, cov.stddev_y, cov.getSize());
+		
+		res.pvalue =  sts.pvalue;
+		
+		return res;
 	}
 }

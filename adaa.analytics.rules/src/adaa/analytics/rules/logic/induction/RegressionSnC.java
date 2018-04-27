@@ -40,6 +40,7 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 		RuleSetBase ruleset = factory.create(dataset);
 		Attribute label = dataset.getAttributes().getLabel();
 		SortedExampleSet ses = new SortedExampleSet(dataset, label, SortedExampleSet.INCREASING);
+		ses.recalculateAttributeStatistics(ses.getAttributes().getLabel());
 			
 		if (factory.getType() == RuleFactory.REGRESSION) {
 			double median = ses.getExample(ses.size() / 2).getLabel();
