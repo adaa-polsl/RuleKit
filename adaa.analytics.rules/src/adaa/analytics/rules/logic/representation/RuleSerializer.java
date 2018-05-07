@@ -83,7 +83,7 @@ public class RuleSerializer {
 			
 			builder
 				.append(atr.getName() + "_L")
-				.append(atr.getName() + "_P");
+				.append(atr.getName() + "_R");
 			
 		}
 		return builder.build();
