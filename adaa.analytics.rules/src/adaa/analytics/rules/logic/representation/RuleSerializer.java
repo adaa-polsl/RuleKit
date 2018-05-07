@@ -41,6 +41,11 @@ public class RuleSerializer {
 			return this;
 		}
 		
+		public <T> StringBuilderBuilder appendWithoutSep(T data) {
+			builder.append(data);
+			return this;
+		}
+		
 		public String build() {
 			return builder.toString();
 		}
@@ -117,13 +122,14 @@ public class RuleSerializer {
 					.append(action.getLeftValue() == null ? nullString : action.getLeftValue())
 					.append(action.getRightValue() == null ? nullString : action.getRightValue());
 				
-			} else {
+			} else if (!atr.getName().equals(rule.getConsequence().getAttribute())) {
+				
 				builder.append(nullString).append(nullString);
 			}
 			
 		}
 		Action consequence = (Action)rule.getConsequence();
-		builder.append(consequence.leftValue).append(consequence.rightValue);
+		builder.append(consequence.leftValue).appendWithoutSep(consequence.rightValue);
 		
 		return builder.build();
 	}
