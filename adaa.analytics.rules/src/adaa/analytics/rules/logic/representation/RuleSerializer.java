@@ -120,7 +120,7 @@ public class RuleSerializer {
 				
 				builder
 					.append(action.getLeftValue() == null ? nullString : action.getLeftValue())
-					.append(action.getRightValue() == null ? nullString : action.getRightValue());
+					.append(action.getRightValue() == null || action.getActionNil() ? nullString : action.getRightValue());
 				
 			} else if (!atr.getName().equals(rule.getConsequence().getAttribute())) {
 				
