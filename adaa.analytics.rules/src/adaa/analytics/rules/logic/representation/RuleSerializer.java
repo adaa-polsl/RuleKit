@@ -93,7 +93,7 @@ public class RuleSerializer {
 		
 		StringBuilderBuilder builder = new StringBuilderBuilder(new StringBuilder(), sep);
 		
-		ActionCovering cov = (ActionCovering) rule.getCoveringInformation();
+		ActionCovering cov = rule.coveringInformation;
 		
 		builder
 			.append(cov.weighted_p)
