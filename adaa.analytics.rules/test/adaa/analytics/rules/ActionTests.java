@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -35,6 +36,7 @@ import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.Action;
 import adaa.analytics.rules.logic.representation.ActionRule;
 import adaa.analytics.rules.logic.representation.ActionRuleSet;
+import adaa.analytics.rules.logic.representation.CompressedCompoundCondition;
 import adaa.analytics.rules.logic.representation.RuleSerializer;
 
 @RunWith(Parameterized.class)
@@ -61,7 +63,7 @@ public class ActionTests {
 			///
 			/// car - reduced : only two classes
 			///
-			
+			/*
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
@@ -70,34 +72,38 @@ public class ActionTests {
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
 			{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
-			
+			*/
 			///
 			///	car - 4 classes
 			///
+			/*
 			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, "unacc", "acc"},
 			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
 			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
 			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
+			
 			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
-			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
+			/*{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
 			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
 			{"car.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9,  "unacc", "acc"},
 			
 			////
 			////  Wine dataset
 			////
-			
+			/*
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), false, true, 5.0, 0.05, 0.9, "1", "2"},
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, "1", "2"},
 			
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "1", "2"},
 			
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9, "1", "2"},
+			
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9, "1", "2"},
 			
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9, "1", "2"},
-			
+			*/
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), true, true, 5.0, 0.05, 0.9, "1", "2"},
+			/*
 			{"wine.arff", "class", new ClassificationMeasure(ClassificationMeasure.Precision), false, true, 5.0, 0.05, 0.9, "1", "2"},
 			
 			///
@@ -228,18 +234,30 @@ public class ActionTests {
 	protected void dumpData(ExampleSet exampleSet, ActionRuleSet actions) throws IOException {
 		File arffFile = Paths.get(testDirectory, getOutputFileName()).toFile();
 		
+		List<CompressedCompoundCondition> premises = new ArrayList<CompressedCompoundCondition>();
 		
+		actions.getRules().stream().forEach(x -> premises.add(new CompressedCompoundCondition(x.getPremise())));
 		
-		Long actionsCount = actions.getRules().stream().map(z -> (ActionRule)z).
-				mapToLong(x -> x.getPremise()
-								.getSubconditions()
+		Long actionsCount = premises.stream().
+				mapToLong(x -> x.getSubconditions()
 								.stream()
 								.map(y -> (Action)y)
 								.mapToLong(v -> (v.getActionNil() || v.isLeftEqualRight()) ? 0L : 1L)
 								.sum()
 						 ).sum();
 		
-		int conditionCount = actions.calculateConditionsCount();
+		Long conditionCount = premises
+				.stream()
+				.mapToLong(x -> x.getSubconditions()
+						.stream()
+						.map(Action.class::cast)
+						.mapToLong(v -> (v.getActionNil() || v.isLeftEqualRight()) ? 1L : 0L)
+						.sum()
+						).sum();
+						
+				
+		
+	//	int conditionCount = actions.calculateConditionsCount();
 		
 		FileWriter fw = new FileWriter(arffFile);
 		fw.write("File name: " + testFile + "\r\n");

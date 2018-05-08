@@ -104,7 +104,7 @@ public class RuleSerializer {
 			.append(cov.weighted_N);
 		
 		Iterator<Attribute> iter = set.getAttributes().allAttributes();
-		List<Action> conds = rule.getPremise().getSubconditions().stream().map(Action.class::cast).collect(Collectors.toList());
+		List<Action> conds = (new CompressedCompoundCondition(rule.getPremise())).getSubconditions().stream().map(Action.class::cast).collect(Collectors.toList());
 		
 		while (iter.hasNext()) {
 			
