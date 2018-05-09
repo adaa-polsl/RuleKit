@@ -256,9 +256,8 @@ public class ActionTests {
 						.sum()
 						).sum();
 						
-				
-		
-	//	int conditionCount = actions.calculateConditionsCount();
+		conditionCount += actionsCount;
+
 		
 		FileWriter fw = new FileWriter(arffFile);
 		fw.write("File name: " + testFile + "\r\n");
