@@ -82,8 +82,13 @@ public class RuleSerializer {
 			Attribute atr = iter.next();
 			
 			builder
-				.append(atr.getName() + "_L")
-				.append(atr.getName() + "_R");
+				.append(atr.getName() + "_L");
+			
+			if (iter.hasNext()) {
+				builder.append(atr.getName() + "_R");
+			} else {
+				builder.appendWithoutSep(atr.getName() + "_R");
+			}
 			
 		}
 		return builder.build();
