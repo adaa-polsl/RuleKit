@@ -22,18 +22,19 @@ public class Action extends ElementaryCondition {
 		rightValue = targetValue;
 	}
 	
-	public static Action ReversedAction(Action act) {
+	public static Action ReversedAction(Action act) {	
 		
-		IValueSet left = act.leftValue;
-		IValueSet right = act.rightValue;
+		if (act.getActionNil() || act.rightValue == null) {
+			return new Action(act.attribute, new AnyValueSet(), act.leftValue);
+		}
 		
-		if (act.isNilAction || act.rightValue == null || act.isLeftEqualRight()) {
-			Action a = new Action(act.attribute, left, left);
+		if (act.isLeftEqualRight()) {
+			Action a = new Action(act.attribute, act.leftValue, act.leftValue);
 			a.setActionNil(true);
 			return a;
 		}
 		
-		return new Action(act.attribute, right, left );
+		return new Action(act.attribute, act.rightValue, act.leftValue );
 	}
 	
 	public boolean isLeftEqualRight() {

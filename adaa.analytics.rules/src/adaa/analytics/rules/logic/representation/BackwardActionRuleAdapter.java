@@ -24,7 +24,7 @@ public class BackwardActionRuleAdapter {
 			.getSubconditions()
 			.stream()
 			.map(Action.class::cast)
-			.filter(x -> !(x.getActionNil() || x.isLeftEqualRight() || x.rightValue == null))
+			/*.filter(x -> !(x.getActionNil() || x.isLeftEqualRight() || x.rightValue == null))*/
 			.map(x -> Action.ReversedAction(x))
 			.forEach(x -> premise.addSubcondition(x));
 		
