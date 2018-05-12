@@ -93,11 +93,11 @@ public class CompoundCondition extends ConditionBase {
 				// compare subconditions
 				Iterator<ConditionBase> it1 = this.subconditions.listIterator();
 				Iterator<ConditionBase> it2 = ref.subconditions.listIterator();
-				
+
 				while (res && it1.hasNext() && it2.hasNext()) {
 					ConditionBase c1 = it1.next();
 					ConditionBase c2 = it2.next();
-					res &= c1.equals(c2);
+					res &= this.subconditions.contains(c2) && ref.subconditions.contains(c1);
 				}
 				return res;
 				
@@ -109,7 +109,10 @@ public class CompoundCondition extends ConditionBase {
 	
 	@Override
 	public int hashCode() {
-		int result = subconditions.hashCode();
+		int result = 0;
+		for (ConditionBase condition : subconditions) {
+			result += condition.hashCode();
+		}
 		result = 31 * result + operator.hashCode();
 		return result;
 	}
