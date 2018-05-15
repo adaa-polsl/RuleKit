@@ -6,7 +6,7 @@ Expert-rules is distributed as a standalone JAR package (see Release tab for dow
 ```
 java -jar expert-rules experiments.xml
 ```
-where `experiments.xml` is an XML file with a description of experimental setting. It describes parameter sets and datasets to be examined: 
+where *experiments.xml* is an XML file with a description of experimental setting. It describes parameter sets and datasets to be examined: 
 ```
 </experiment>
   <parameter_sets>
@@ -45,7 +45,7 @@ The meaning of the tags:
       * *dataset name, parameter_set name.csv* - table with numerical characteristics for all investigated train-test pairs (row per pair).
       * *dataset name, parameter_set name.res* - models in the text form (rule sets) and tabularized survival function estimators for all rules (applies to survival problems only).
 
-An example dataset definition have the following form:
+Below one can find an example dataset definition:
 ```
 <dataset name="seismic-bumps">
   <path>./datasets/seismic-bumps</path>
@@ -54,6 +54,14 @@ An example dataset definition have the following form:
   <report_path>./reports/seismic-bumps</report_path>
 </dataset>
 ```
+Depending on the content of the *./datasets/seismic-bumps* directory, different experimental methodologies are available: 
+1. separate training and testing sets - directory contains a single pair of files, e.g:
+    * *seismic-bumps-train.arff* + *seismic-bumps-test.arff*,
+2. cross-validation - directory contains several pairs of files, one per each split (fold), e.g:
+    * *seismic-bumps-train-fold0.arff* + *seismic-bumps-test-fold0.arff*,
+    * *seismic-bumps-train-fold1.arff* + *seismic-bumps-test-fold1.arff*,
+    * ...
+3. training and testing on the same set - same as in (1), but with identical files.
 
 
 ## Citing
