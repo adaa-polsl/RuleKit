@@ -24,6 +24,22 @@ where *experiments.xml* is an XML file with a description of experimental settin
 ```
 ### Parameter set description
 
+As each algorithm parameter has its default value, only selected parameters may specified by the user. In automatic mode, following parameters apply:
+
+```
+<parameter_set name="paramset_1">
+  <param name="min_rule_covered">...</param>
+  <param name="induction_measure">...</param>
+  <param name="pruning_measure">...</param>
+</parameter_set>
+```    
+
+The meaning of the tags:
+* `min_rule_covered` - minimum number of previously uncovered examples a new rule has to cover,
+* `induction_measure` - rule quality measure used during growing, one of the following: *Accuracy*, *C2*, *Correlation*, 		*Lift*,	*LogicalSufficiency*,	*Precision*, *RSS*,	*GeoRSS*, *SBayesian*, *BinaryEntropy*,
+* `pruning_measure` - rule quality measure used during pruning, one of the aforementioned values.
+
+
 ### Dataset definition
 
 Definition of the dataset has the following form:
@@ -42,7 +58,7 @@ The meaning of the tags:
  * `label` - name of a label attribute.
  * `type` - experiment type, one of the following: *BinaryClassification*, *Classification*, *Regression*, *Survival*. In the last case, the dataset must contain an attribute named *survival_time*. 
  * `report_path` - directory where experiment reports are to be stored. For each parameter set, the tool generates two files named: 
-      * *dataset name, parameter_set name.csv* - table with numerical characteristics for all investigated train-test pairs (row per pair).
+      * *dataset name, parameter_set name.csv* - table with numerical characteristics for all investigated train-test pairs (row per pair, named after testing set).
       * *dataset name, parameter_set name.res* - models in the text form (rule sets) and tabularized survival function estimators for all rules (applies to survival problems only).
 
 Below one can find an example dataset definition:
