@@ -10,15 +10,15 @@ where *experiments.xml* is an XML file with a description of experimental settin
 ```
 </experiment>
   <parameter_sets>
-      <parameter_set name="paramset_1">...</parameter_set>
-      <parameter_set name="paramset_2">...</parameter_set>
-      ...
+    <parameter_set name="paramset_1">...</parameter_set>
+    <parameter_set name="paramset_2">...</parameter_set>
+    ...
   </parameter_sets>
 
   <datasets>
-      <dataset name="dataset_1">...</dataset>
-      <dataset name="dataset_2">...</dataset>
-      ...
+    <dataset name="dataset_1">...</dataset>
+    <dataset name="dataset_2">...</dataset>
+    ...
   </datasets>
 </experiment>
 ```
@@ -33,11 +33,52 @@ As each algorithm parameter has its default value, only selected parameters may 
   <param name="pruning_measure">...</param>
 </parameter_set>
 ```    
-
-The meaning of the tags:
+where:
 * `min_rule_covered` - minimum number of previously uncovered examples a new rule has to cover,
-* `induction_measure` - rule quality measure used during growing, one of the following: *Accuracy*, *C2*, *Correlation*, 		*Lift*,	*LogicalSufficiency*,	*Precision*, *RSS*,	*GeoRSS*, *SBayesian*, *BinaryEntropy*,
-* `pruning_measure` - rule quality measure used during pruning, one of the aforementioned values.
+* `induction_measure` - rule quality measure used during growing; one of the following: *Accuracy*, *C2*, *Correlation*, 		*Lift*,	*LogicalSufficiency*,	*Precision*, *RSS*,	*GeoRSS*, *SBayesian*, *BinaryEntropy*,
+* `pruning_measure` - rule quality measure used during pruning; same as for `induction_measure`.
+
+Expert knowledge is also specified through parameters:
+```
+<parameter_set name="paramset_1">
+  <param name="min_rule_covered">...</param>
+  <param name="induction_measure">...</param>
+  <param name="pruning_measure">...</param>
+  <param name="use_expert">true</param>
+  <param name="extend_using_preferred">...</param>
+  <param name="extend_using_automatic">...</param>
+  <param name="induce_using_preferred">...</param>
+  <param name="induce_using_automatic">...</param>
+  <param name="preferred_conditions_per_rule">...</param>
+  <param name="preferred_attributes_per_rule>...</param>
+   <param name="consider_other_classes">false</param>
+  <param name ="expert_rules">
+    <entry name="rule-0">...</entry>
+    <entry name="rule-1">...</entry>
+    ...
+  </param>
+  <param name ="expert_preferred_conditions">
+    <entry name="preferred-condition-0">...</entry>
+    <entry name="preferred-condition-1">...</entry>
+    ...
+  </param>
+  <param name ="expert_forbidden_conditions">
+    <entry name="forbidden-condition-0">...</entry>
+    <entry name="forbidden-condition-1">...</entry>
+    ...
+  </param>
+</parameter_set>
+``` 
+
+where:
+* `use_expert` - boolean indicating whether expert knowledge should be used,
+* `extend_using_preferred`/`extend_using_automatic` - boolean indicating whether expert rules should be extended with a use of preferred/automatic conditions and attributes,
+* `induce_using_preferred`/`induce_using_automatic` - boolean indicating whether new rules should be induced with a use of preferred/automatic conditions and attributes,
+* `preferred_conditions_per_rule`/`preferred_attributes_per_rule` - maximum number of preferred conditions/attributes per rule,
+* `consider_other_classes` - boolean indicating whether automatic induction should be performed for classes for which no expert knowledge has been defined (classification only),
+* `expert_rules` - set of expert rules,
+* `expert_preferred_conditions` - set of preferred conditions (used also for specyfying preferred attributes),
+* `expert_forbidden_conditions` - set of forbidden conditions (used also for specyfying forbidden attributes).
 
 
 ### Dataset definition
