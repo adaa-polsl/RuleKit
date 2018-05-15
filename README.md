@@ -41,8 +41,10 @@ The meaning of the tags:
  * `path` - directory with training and testing files in ARFF format. A model is learned on every file containing *train* phrase in its name, and then validated on a file with *train* phrase replaced by *test*. 
  * `label` - name of a label attribute.
  * `type` - experiment type, one of the following: *BinaryClassification*, *Classification*, *Regression*, *Survival*. In the last case, the dataset must contain an attribute named *survival_time*. 
- * `report_path` - directory where experiment reports are to be stored. For each parameter set, the tool generates two files named: *<dataset name>, <parameter_set name>.csv* and *<dataset name>, <parameter_set name>.res*. The former contains table with numerical characteristics for all investigated train-test pairs (row per pair). The latter contains corresponding models in text form (rule sets) and survival function estimators for all rules (applies to survival problems only).
- 
+ * `report_path` - directory where experiment reports are to be stored. For each parameter set, the tool generates two files named: 
+      * *dataset name, parameter_set name.csv* - table with numerical characteristics for all investigated train-test pairs (row per pair).
+      * *dataset name, parameter_set name.res* - models in the text form (rule sets) and tabularized survival function estimators for all rules (applies to survival problems only).
+
 An example dataset definition have the following form:
 ```
 <dataset name="seismic-bumps">
