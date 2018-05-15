@@ -70,15 +70,15 @@ Expert knowledge is also specified through parameters:
 </parameter_set>
 ``` 
 
-where:
+Parameter meaning (symbols from the paper are given in parentheses):
 * `use_expert` - boolean indicating whether expert knowledge should be used,
-* `extend_using_preferred`/`extend_using_automatic` - boolean indicating whether expert rules should be extended with a use of preferred/automatic conditions and attributes,
-* `induce_using_preferred`/`induce_using_automatic` - boolean indicating whether new rules should be induced with a use of preferred/automatic conditions and attributes,
-* `preferred_conditions_per_rule`/`preferred_attributes_per_rule` - maximum number of preferred conditions/attributes per rule,
+* `extend_using_preferred`(&Sigma;<sub>pref</sub>)/`extend_using_automatic`(&Sigma;<sub>auto</sub>) - boolean indicating whether expert rules should be extended with a use of preferred/automatic conditions and attributes,
+* `induce_using_preferred`(&Upsilon;<sub>pref</sub>)/`induce_using_automatic`(&Upsilon;<sub>auto</sub>) - boolean indicating whether new rules should be induced with a use of preferred/automatic conditions and attributes,
+* `preferred_conditions_per_rule`(K<sub>C</sub>)/`preferred_attributes_per_rule`(K<sub>A</sub>) - maximum number of preferred conditions/attributes per rule,
 * `consider_other_classes` - boolean indicating whether automatic induction should be performed for classes for which no expert knowledge has been defined (classification only),
-* `expert_rules` - set of expert rules,
-* `expert_preferred_conditions` - set of preferred conditions (used also for specyfying preferred attributes),
-* `expert_forbidden_conditions` - set of forbidden conditions (used also for specyfying forbidden attributes).
+* `expert_rules`(R<sub>exp</sub>) - set of expert rules,
+* `expert_preferred_conditions`(C<sub>&oplus;</sub>, A<sub>&oplus;</sub>) - set of preferred conditions (used also for specifying preferred attributes),
+* `expert_forbidden_conditions`(C<sub>&ominus;</sub>, A<sub>&ominus;</sub>) - set of forbidden conditions (used also for specifying forbidden attributes).
 
 
 ### Dataset definition
