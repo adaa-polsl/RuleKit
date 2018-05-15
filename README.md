@@ -51,7 +51,7 @@ Expert knowledge is also specified through parameters:
   <param name="induce_using_automatic">...</param>
   <param name="preferred_conditions_per_rule">...</param>
   <param name="preferred_attributes_per_rule>...</param>
-   <param name="consider_other_classes">false</param>
+   <param name="consider_other_classes">...</param>
   <param name ="expert_rules">
     <entry name="rule-0">...</entry>
     <entry name="rule-1">...</entry>
@@ -77,10 +77,28 @@ Parameter meaning (symbols from the paper are given in parentheses):
 * `preferred_conditions_per_rule`(K<sub>C</sub>)/`preferred_attributes_per_rule`(K<sub>A</sub>) - maximum number of preferred conditions/attributes per rule,
 * `consider_other_classes` - boolean indicating whether automatic induction should be performed for classes for which no expert knowledge has been defined (classification only),
 * `expert_rules`(R<sub>exp</sub>) - set of expert rules,
-* `expert_preferred_conditions`(C<sub>&oplus;</sub>, A<sub>&oplus;</sub>) - set of preferred conditions (used also for specifying preferred attributes),
-* `expert_forbidden_conditions`(C<sub>&ominus;</sub>, A<sub>&ominus;</sub>) - set of forbidden conditions (used also for specifying forbidden attributes).
+* `expert_preferred_conditions`(C<sub>&oplus;</sub>, A<sub>&oplus;</sub>) - set of preferred conditions (used also for specifying preferred attributes by using special value `Any`),
+* `expert_forbidden_conditions`(C<sub>&ominus;</sub>, A<sub>&ominus;</sub>) - set of forbidden conditions (used also for specifying forbidden attributes by using special valye `Any`).
 
-
+Let us consider the following expert knowledge:
+* R<sub>exp</sub> = { (**IF** gimpuls < 750 **THEN** class = 0), (**IF** gimpuls >= 750 **THEN** class = 1)},
+* C<sub>&oplus;</sub><sup>0</sup> = { (seismic = a)<sup>2</sup> } 
+* C<sub>&oplus;</sub><sup>1</sup> = { (seismic = b)<sup>3</sup> } 
+```
+<param name ="expert_rules">
+  <entry name="rule-0">IF [[gimpuls = (-inf, 750)]] THEN class = {0}</entry>
+	<entry name="rule-1">IF [[gimpuls = &lt;750, inf)]] THEN class = {1}</entry>
+</param>
+<param name ="expert_preferred_conditions">
+  <entry name="preferred-condition-1">2: IF [[seismic = {a}]] THEN class = {0}</entry>
+  <entry name="preferred-condition-2">3: IF [[seismic = {b}]] THEN class = {1}</entry>
+  <entry name="preferred-attribute-1">1: IF [[gimpuls = Any]] THEN class = {1}</entry>
+</param>
+<param name ="expert_forbidden_conditions">
+	<entry name="forbidden-condition-1">1: IF [[seismoacoustic = Any]] THEN class = {0}</entry>
+  <entry name="forbidden-condition-1">1: IF [[seismoacoustic = Any]] THEN class = {0}</entry>
+</param>
+```
 ### Dataset definition
 
 Definition of the dataset has the following form:
