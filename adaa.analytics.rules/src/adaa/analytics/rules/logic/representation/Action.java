@@ -22,6 +22,21 @@ public class Action extends ElementaryCondition {
 		rightValue = targetValue;
 	}
 	
+	public static Action ReversedAction(Action act) {	
+		
+		if (act.getActionNil() || act.rightValue == null) {
+			return new Action(act.attribute, new AnyValueSet(), act.leftValue);
+		}
+		
+		if (act.isLeftEqualRight()) {
+			Action a = new Action(act.attribute, act.leftValue, act.leftValue);
+			a.setActionNil(true);
+			return a;
+		}
+		
+		return new Action(act.attribute, act.rightValue, act.leftValue );
+	}
+	
 	public boolean isLeftEqualRight() {
 		if (rightValue == null) {
 			return leftValue == null;
@@ -51,9 +66,31 @@ public class Action extends ElementaryCondition {
 		if (other instanceof Action)
 		{
 			Action ac = (Action)other;
+			
+			IValueSet left, right;
+			
+			left = this.leftValue.getIntersection(ac.getLeftValue());
+			boolean dontUseOtherActionRightSide = ac.isNilAction || ac.isLeftEqualRight() || ac.rightValue == null;
+			
+			if (this.isNilAction || this.isLeftEqualRight() || this.rightValue == null) {
+				
+				if (dontUseOtherActionRightSide) {
+					right = null;
+				} else {
+					right = ac.getRightValue();
+				}
+			} else {
+				
+				if (dontUseOtherActionRightSide) {
+					right = this.rightValue;
+				} else {
+					right = this.rightValue.getIntersection(ac.rightValue);
+				}
+			}
+			
 			return (ElementaryCondition) new Action(attribute, 
-					this.leftValue.getIntersection(ac.getLeftValue()), 
-					rightValue.getIntersection(ac.getRightValue())); 
+					left, 
+					right); 
 		}
 		return new ElementaryCondition(attribute, this.valueSet.getIntersection(other.getValueSet()));
 	}
@@ -100,7 +137,7 @@ public class Action extends ElementaryCondition {
 	}
 	
 	public boolean getActionNil() {
-		return isNilAction;
+		return isNilAction ;
 	}
 	
 	@Override

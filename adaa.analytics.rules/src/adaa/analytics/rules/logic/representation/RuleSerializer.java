@@ -41,6 +41,11 @@ public class RuleSerializer {
 			return this;
 		}
 		
+		public <T> StringBuilderBuilder appendWithoutSep(T data) {
+			builder.append(data);
+			return this;
+		}
+		
 		public String build() {
 			return builder.toString();
 		}
@@ -77,8 +82,13 @@ public class RuleSerializer {
 			Attribute atr = iter.next();
 			
 			builder
-				.append(atr.getName() + "_L")
-				.append(atr.getName() + "_P");
+				.append(atr.getName() + "_L");
+			
+			if (iter.hasNext()) {
+				builder.append(atr.getName() + "_R");
+			} else {
+				builder.appendWithoutSep(atr.getName() + "_R");
+			}
 			
 		}
 		return builder.build();
@@ -88,7 +98,7 @@ public class RuleSerializer {
 		
 		StringBuilderBuilder builder = new StringBuilderBuilder(new StringBuilder(), sep);
 		
-		ActionCovering cov = (ActionCovering) rule.getCoveringInformation();
+		ActionCovering cov = rule.coveringInformation;
 		
 		builder
 			.append(cov.weighted_p)
@@ -99,7 +109,7 @@ public class RuleSerializer {
 			.append(cov.weighted_N);
 		
 		Iterator<Attribute> iter = set.getAttributes().allAttributes();
-		List<Action> conds = rule.getPremise().getSubconditions().stream().map(Action.class::cast).collect(Collectors.toList());
+		List<Action> conds = (new CompressedCompoundCondition(rule.getPremise())).getSubconditions().stream().map(Action.class::cast).collect(Collectors.toList());
 		
 		while (iter.hasNext()) {
 			
@@ -115,15 +125,16 @@ public class RuleSerializer {
 				
 				builder
 					.append(action.getLeftValue() == null ? nullString : action.getLeftValue())
-					.append(action.getRightValue() == null ? nullString : action.getRightValue());
+					.append(action.getRightValue() == null || action.getActionNil() || action.isLeftEqualRight() ? nullString : action.getRightValue());
 				
-			} else {
+			} else if (!atr.getName().equals(rule.getConsequence().getAttribute())) {
+				
 				builder.append(nullString).append(nullString);
 			}
 			
 		}
 		Action consequence = (Action)rule.getConsequence();
-		builder.append(consequence.leftValue).append(consequence.rightValue);
+		builder.append(consequence.leftValue).appendWithoutSep(consequence.rightValue);
 		
 		return builder.build();
 	}

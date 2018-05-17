@@ -1,5 +1,7 @@
 package adaa.analytics.rules.logic.representation;
 
+import java.util.logging.Level;
+
 public class BackwardActionRuleAdapter {
 
 	protected ActionRule aRule;
@@ -13,6 +15,7 @@ public class BackwardActionRuleAdapter {
 		Action oldConsequence = ((Action)(aRule.getConsequence()));
 		Action consequence = new Action(oldConsequence.attribute, oldConsequence.rightValue, oldConsequence.leftValue);
 		
+		Logger.log(aRule.toString(), Level.ALL);
 		
 		CompoundCondition premise = new CompoundCondition();
 		
@@ -21,7 +24,8 @@ public class BackwardActionRuleAdapter {
 			.getSubconditions()
 			.stream()
 			.map(Action.class::cast)
-			.map(x -> new Action(x.attribute, x.rightValue == null || x.getActionNil() ? x.leftValue : x.rightValue, x.leftValue))
+			/*.filter(x -> !(x.getActionNil() || x.isLeftEqualRight() || x.rightValue == null))*/
+			.map(x -> Action.ReversedAction(x))
 			.forEach(x -> premise.addSubcondition(x));
 		
 		

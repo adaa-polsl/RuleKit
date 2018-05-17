@@ -31,6 +31,8 @@ class DiscreteSet implements IValueSet, Serializable {
 	@Override
 	public boolean intersects(IValueSet set) {
 		DiscreteSet ds = (set instanceof DiscreteSet) ? (DiscreteSet)set : null;
+		if (set instanceof AnyValueSet)
+			return true;
 		if (ds != null) {
 			return this.values.containsAll(ds.getValues());
 		}

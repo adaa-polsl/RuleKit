@@ -65,6 +65,9 @@ public class Interval implements IValueSet, Serializable {
 	
 	@Override
 	public boolean intersects(IValueSet set) {
+		if (set instanceof AnyValueSet) {
+			return true;
+		}
 		Interval ds = (set instanceof Interval) ? (Interval)set : null;
 		if (ds != null) {
 			if (this.right < ds.left || (this.right == ds.left && !ds.leftClosed) || 
@@ -79,6 +82,9 @@ public class Interval implements IValueSet, Serializable {
 	
 	@Override
 	public IValueSet getIntersection(IValueSet set) {
+		if (set instanceof AnyValueSet) {
+			return set;
+		}
 		if (set instanceof Interval) {
 			Interval other = (Interval)set;
 			return new Interval(
