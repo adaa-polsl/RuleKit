@@ -9,17 +9,17 @@ java -jar expert-rules experiments.xml
 where *experiments.xml* is an XML file with a description of experimental setting. It describes parameter sets and datasets to be examined: 
 ```
 </experiment>
-  <parameter_sets>
-    <parameter_set name="paramset_1">...</parameter_set>
-    <parameter_set name="paramset_2">...</parameter_set>
-    ...
-  </parameter_sets>
+	<parameter_sets>
+		<parameter_set name="paramset_1">...</parameter_set>
+    	<parameter_set name="paramset_2">...</parameter_set>
+    	...
+  	</parameter_sets>
 
-  <datasets>
-    <dataset name="dataset_1">...</dataset>
-    <dataset name="dataset_2">...</dataset>
-    ...
-  </datasets>
+  	<datasets>
+    	<dataset name="dataset_1">...</dataset>
+    	<dataset name="dataset_2">...</dataset>
+    	...
+  	</datasets>
 </experiment>
 ```
 ### Parameter set description
@@ -28,9 +28,9 @@ As each algorithm parameter has its default value, only selected parameters may 
 
 ```
 <parameter_set name="paramset_1">
-  <param name="min_rule_covered">...</param>
-  <param name="induction_measure">...</param>
-  <param name="pruning_measure">...</param>
+  	<param name="min_rule_covered">...</param>
+  	<param name="induction_measure">...</param>
+  	<param name="pruning_measure">...</param>
 </parameter_set>
 ```    
 where:
@@ -41,32 +41,32 @@ where:
 Expert knowledge is also specified through parameters:
 ```
 <parameter_set name="paramset_1">
-  <param name="min_rule_covered">...</param>
-  <param name="induction_measure">...</param>
-  <param name="pruning_measure">...</param>
-  <param name="use_expert">true</param>
-  <param name="extend_using_preferred">...</param>
-  <param name="extend_using_automatic">...</param>
-  <param name="induce_using_preferred">...</param>
-  <param name="induce_using_automatic">...</param>
-  <param name="preferred_conditions_per_rule">...</param>
-  <param name="preferred_attributes_per_rule>...</param>
-   <param name="consider_other_classes">...</param>
-  <param name ="expert_rules">
-    <entry name="rule-0">...</entry>
-    <entry name="rule-1">...</entry>
-    ...
-  </param>
-  <param name ="expert_preferred_conditions">
-    <entry name="preferred-condition-0">...</entry>
-    <entry name="preferred-condition-1">...</entry>
-    ...
-  </param>
-  <param name ="expert_forbidden_conditions">
-    <entry name="forbidden-condition-0">...</entry>
-    <entry name="forbidden-condition-1">...</entry>
-    ...
-  </param>
+  	<param name="min_rule_covered">...</param>
+  	<param name="induction_measure">...</param>
+  	<param name="pruning_measure">...</param>
+  	<param name="use_expert">true</param>
+  	<param name="extend_using_preferred">...</param>
+  	<param name="extend_using_automatic">...</param>
+  	<param name="induce_using_preferred">...</param>
+  	<param name="induce_using_automatic">...</param>
+  	<param name="preferred_conditions_per_rule">...</param>
+  	<param name="preferred_attributes_per_rule>...</param>
+   	<param name="consider_other_classes">...</param>
+  	<param name ="expert_rules">
+		<entry name="rule-0">...</entry>
+		<entry name="rule-1">...</entry>
+		...
+  	</param>
+  	<param name ="expert_preferred_conditions">
+		<entry name="preferred-condition-0">...</entry>
+		<entry name="preferred-condition-1">...</entry>
+		...
+  	</param>
+  	<param name ="expert_forbidden_conditions">
+		<entry name="forbidden-condition-0">...</entry>
+		<entry name="forbidden-condition-1">...</entry>
+		...
+  	</param>
 </parameter_set>
 ``` 
 
@@ -80,35 +80,45 @@ Parameter meaning (symbols from the paper are given in parentheses):
 * `expert_preferred_conditions`(C<sub>&oplus;</sub>, A<sub>&oplus;</sub>) - set of preferred conditions (used also for specifying preferred attributes by using special value `Any`),
 * `expert_forbidden_conditions`(C<sub>&ominus;</sub>, A<sub>&ominus;</sub>) - set of forbidden conditions (used also for specifying forbidden attributes by using special valye `Any`).
 
-Let us consider the following expert knowledge:
+Let us consider the following expert knowledge (superscripts next to C<sub>&oplus;</sub>, A<sub>&oplus;</sub>, C<sub>&ominus;</sub>, and A<sub>&ominus;</sub> symbols indicate class label):
 * R<sub>exp</sub> = { (**IF** gimpuls < 750 **THEN** class = 0), (**IF** gimpuls >= 750 **THEN** class = 1)},
-* C<sub>&oplus;</sub><sup>0</sup> = { (seismic = a)<sup>2</sup> } 
-* C<sub>&oplus;</sub><sup>1</sup> = { (seismic = b)<sup>3</sup> } 
+* C<sub>&oplus;</sub><sup>0</sup> = { (seismic = a) }, 
+* C<sub>&oplus;</sub><sup>1</sup> = { (seismic = b &wedge; seismoacoustic = c)<sup>5</sup> }, 
+* A<sub>&oplus;</sub><sup>1</sup> = { gimpuls<sup>&infty;</sup> },
+* C<sub>&ominus;</sub><sup>0</sup> = { seismoacoustic = b },
+* A<sub>&ominus;</sub><sup>1</sup> = { ghazard }.
+The XML definition of this knowledge is presented below.
 ```
 <param name ="expert_rules">
-  <entry name="rule-0">IF [[gimpuls = (-inf, 750)]] THEN class = {0}</entry>
-	<entry name="rule-1">IF [[gimpuls = &lt;750, inf)]] THEN class = {1}</entry>
+	<entry name="rule-1">IF [[gimpuls = (-inf, 750)]] THEN class = {0}</entry>
+	<entry name="rule-2">IF [[gimpuls = &lt;750, inf)]] THEN class = {1}</entry>
 </param>
 <param name ="expert_preferred_conditions">
-  <entry name="preferred-condition-1">2: IF [[seismic = {a}]] THEN class = {0}</entry>
-  <entry name="preferred-condition-2">3: IF [[seismic = {b}]] THEN class = {1}</entry>
-  <entry name="preferred-attribute-1">1: IF [[gimpuls = Any]] THEN class = {1}</entry>
+	<entry name="preferred-condition-1">1: IF [[seismic = {a}]] THEN class = {0}</entry>
+	<entry name="preferred-condition-2">5: IF [[seismic = {b} AND seismoacoustic = {c}]] THEN class = {1}</entry>
+	<entry name="preferred-attribute-1">inf: IF [[gimpuls = Any]] THEN class = {1}</entry>
 </param>
 <param name ="expert_forbidden_conditions">
-	<entry name="forbidden-condition-1">1: IF [[seismoacoustic = Any]] THEN class = {0}</entry>
-  <entry name="forbidden-condition-1">1: IF [[seismoacoustic = Any]] THEN class = {0}</entry>
+	<entry name="forbidden-condition-1">IF [[seismoacoustic = b]] THEN class = {0}</entry>
+	<entry name="forbidden-attribute-1">IF [[ghazard = Any]] THEN class = {1}</entry>
 </param>
 ```
+Please note several remarks:
+* Inifinity is represented as `inf` string (`rule-1`, `preferred-attribute-1` ).
+* Conditions based on continuous attributes are represented as intervals. Left-closed intervals are specified using `&lt;` symbol as `<` is reserved by XML syntax (`rule-2`).
+* Multiplicity is specified before multiset element (`preferred-condition-1` and `preferred-condition-2`),
+* Preferred/forbidden attributes are defined as conditions with special value `Any` (`preferred-attribute-1`, `forbidden-attribute-1`).
+
 ### Dataset definition
 
 Definition of the dataset has the following form:
 
 ```
 <dataset name="dataset_1">
-  <path>...</path>
-  <label>...</label>
-  <type>...</type>
-  <report_path>...</report_path>
+  	<path>...</path>
+  	<label>...</label>
+  	<type>...</type>
+  	<report_path>...</report_path>
 </dataset>
 ```
 
@@ -123,10 +133,10 @@ The meaning of the tags:
 Below one can find an example dataset definition:
 ```
 <dataset name="seismic-bumps">
-  <path>./datasets/seismic-bumps</path>
-  <label>class</label>
-  <type>BinaryClassification</type>
-  <report_path>./reports/seismic-bumps</report_path>
+  	<path>./datasets/seismic-bumps</path>
+  	<label>class</label>
+  	<type>BinaryClassification</type>
+  	<report_path>./reports/seismic-bumps</report_path>
 </dataset>
 ```
 Depending on the content of the *./datasets/seismic-bumps* directory, different experimental methodologies are available: 
