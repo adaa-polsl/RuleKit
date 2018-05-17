@@ -168,7 +168,7 @@ public class ExpertRuleGenerator extends RuleGenerator {
 				rules.add(r);
 			}
 		
-			Pattern pattern = Pattern.compile("(?<number>\\d+):\\s*(?<rule>.*)");
+			Pattern pattern = Pattern.compile("(?<number>(\\d+)|(inf)):\\s*(?<rule>.*)");
 			ruleList = getParameterList(ExpertRuleGenerator.PARAMETER_EXPERT_PREFERRED_CONDITIONS);
 			for (String[] e: ruleList) {
 				Matcher matcher = pattern.matcher(e[1]);
@@ -178,7 +178,8 @@ public class ExpertRuleGenerator extends RuleGenerator {
 				Rule r = RuleParser.parseRule(ruleDesc, setMeta);
 				if (r != null) {
 					r.getPremise().setType(ConditionBase.Type.PREFERRED); // set it manually
-					preferredConditions.add(r, Integer.parseInt(count));
+					int parsedCount = (count.equals("inf")) ? Integer.MAX_VALUE : Integer.parseInt(count);
+					preferredConditions.add(r, parsedCount);
 				}
 			}
 			
