@@ -19,7 +19,19 @@ public class ActionRule extends Rule {
 	protected ActionCovering coveringInformation;
 	
 	public String toString() {
-		String s = "IF " + premise == null ? "" :premise.toString() + " THEN " + actionConsequence.toString();	
+		String premiseText = premise == null ? "" :premise.toString(); 
+		boolean degenerated = premise.subconditions.stream()
+			.map(Action.class::cast)
+			.allMatch(x -> x.getActionNil() || x.isLeftEqualRight() || x.isDisabled());
+			
+		String consequenceText = null;
+		if (degenerated) {
+			consequenceText = actionConsequence.getLeftCondition().toString();
+		} else {
+			consequenceText = actionConsequence.toString();
+		}
+		
+		String s = "IF " + premiseText + " THEN " + consequenceText;	
 		return s;
 	}
 	
