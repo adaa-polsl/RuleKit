@@ -37,20 +37,20 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 	public boolean getIsVoting() { return isVoting; }
 	public void setIsVoting(boolean v) { isVoting = v; }
 	
-	public int calculateConditionsCount() {
-		int cnt = 0;
+	public double calculateConditionsCount() {
+		double cnt = 0;
 		for (Rule r : rules) {
 			cnt += r.getPremise().getSubconditions().size();
 		}
-		return cnt;
+		return cnt / rules.size();
 	}
 	
-	public int calculateInducedCondtionsCount() {
-		int cnt = 0;
+	public double calculateInducedCondtionsCount() {
+		double cnt = 0;
 		for (Rule r : rules) {
 			cnt += r.getInducedConditionsCount();
 		}
-		return cnt;
+		return cnt / rules.size();
 	}
 	
 	public double calculateAvgRuleCoverage() {

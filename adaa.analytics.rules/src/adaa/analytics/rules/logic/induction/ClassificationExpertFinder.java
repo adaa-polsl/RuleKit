@@ -183,7 +183,7 @@ public class ClassificationExpertFinder extends ClassificationFinder {
 			covering = rule.covers(dataset);
 			rule.setCoveringInformation(covering);
 			
-			QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getInductionMeasure());
+			QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
 			rule.setWeight(qp.quality);
 			rule.setPValue(qp.pvalue);
 		}
@@ -244,7 +244,7 @@ public class ClassificationExpertFinder extends ClassificationFinder {
 				covered.addAll(covering.negatives);
 
 				rule.setCoveringInformation(covering);
-				QualityAndPValue qp = calculateQualityAndPValue(trainSet, covering, params.getInductionMeasure());
+				QualityAndPValue qp = calculateQualityAndPValue(trainSet, covering, params.getVotingMeasure());
 				rule.setWeight(qp.quality);
 				rule.setPValue(qp.pvalue);
 				

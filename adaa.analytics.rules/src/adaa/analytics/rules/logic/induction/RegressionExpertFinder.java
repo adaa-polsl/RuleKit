@@ -97,7 +97,10 @@ public class RegressionExpertFinder extends RegressionFinder {
 					
 					rule.getPremise().addSubcondition(bestEvaluation.condition);
 					rule.setCoveringInformation(bestEvaluation.covering);
-					rule.setWeight(bestEvaluation.quality);
+
+					QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
+					rule.setWeight(qp.quality);
+					
 					carryOn = true;
 					Logger.log("Preferred condition " + rule.getPremise().getSubconditions().size() + " added: " 
 							+ rule.toString() + "\n", Level.FINER);
@@ -142,7 +145,7 @@ public class RegressionExpertFinder extends RegressionFinder {
 					covered.addAll(covering.positives);
 					covered.addAll(covering.negatives);
 					rule.setCoveringInformation(covering);
-					QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getInductionMeasure());
+					QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
 					rule.setWeight(qp.quality);
 					rule.setPValue(qp.pvalue);
 					Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
@@ -187,7 +190,7 @@ public class RegressionExpertFinder extends RegressionFinder {
 					covered.addAll(covering.positives);
 					covered.addAll(covering.negatives);
 
-					double v = calculateQuality(dataset, covering, params.getInductionMeasure());
+					double v = calculateQuality(dataset, covering, params.getVotingMeasure());
 					rule.setCoveringInformation(covering);
 					rule.setWeight(v);
 					

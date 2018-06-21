@@ -72,7 +72,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 			Rule rule = (Rule) SerializationUtils.clone(r);
 			Covering cov = rule.covers(ses);
 			
-			QualityAndPValue qp = finder.calculateQualityAndPValue(dataset, cov, params.getInductionMeasure());
+			QualityAndPValue qp = finder.calculateQualityAndPValue(dataset, cov, params.getVotingMeasure());
 			rule.setWeight(qp.quality);
 			rule.setPValue(qp.pvalue);
 		

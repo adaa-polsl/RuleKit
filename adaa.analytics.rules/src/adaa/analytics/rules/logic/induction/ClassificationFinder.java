@@ -168,7 +168,7 @@ public class ClassificationFinder extends AbstractFinder {
 		
 		covering = rule.covers(trainSet);
 		rule.setCoveringInformation(covering);
-		QualityAndPValue qp = calculateQualityAndPValue(trainSet, covering, params.getPruningMeasure());
+		QualityAndPValue qp = calculateQualityAndPValue(trainSet, covering, params.getVotingMeasure());
 		rule.setWeight(qp.quality);
 		rule.setPValue(qp.pvalue);
 		

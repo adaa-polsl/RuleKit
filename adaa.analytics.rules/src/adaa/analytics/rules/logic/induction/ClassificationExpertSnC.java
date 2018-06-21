@@ -99,7 +99,7 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 				Rule rule = (Rule) SerializationUtils.clone(r);
 				Covering cov = rule.covers(dataset, uncovered);
 				rule.setCoveringInformation(cov);
-				QualityAndPValue qp = finder.calculateQualityAndPValue(dataset, cov, params.getInductionMeasure());
+				QualityAndPValue qp = finder.calculateQualityAndPValue(dataset, cov, params.getVotingMeasure());
 				rule.setWeight(qp.quality);
 				rule.setPValue(qp.pvalue);
 				Logger.log("Expert rule: " + rule.toString() + "\n", Level.FINE);

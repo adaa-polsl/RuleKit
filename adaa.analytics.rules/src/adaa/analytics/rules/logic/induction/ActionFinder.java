@@ -458,7 +458,7 @@ public class ActionFinder extends AbstractFinder {
 		covering = rule.covers(trainSet);
 		rule.setCoveringInformation((ActionCovering)covering);
 		
-		double weight = calculateActionQuality(covering, params.getPruningMeasure());
+		double weight = calculateActionQuality(covering, params.getVotingMeasure());
 		rule.setWeight(weight);
 		
 		return covering;
@@ -538,7 +538,7 @@ public class ActionFinder extends AbstractFinder {
 		
 		covering = rule.covers(trainSet);
 		rule.setCoveringInformation(covering);
-		double weight = calculateActionQuality(covering, params.getPruningMeasure());
+		double weight = calculateActionQuality(covering, params.getVotingMeasure());
 		rule.setWeight(weight);
 		
 		return covering;

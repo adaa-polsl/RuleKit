@@ -52,6 +52,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	public static final String PARAMETER_INDUCTION_MEASURE = "induction_measure";
 	public static final String PARAMETER_PRUNING_ENABLED = "pruning_enabled";
 	public static final String PARAMETER_PRUNING_MEASURE = "pruning_measure";
+	public static final String PARAMETER_VOTING_MEASURE = "voting_measure";
 	public static final String PARAMETER_USE_VOTING = "use_voting";
 	public static final String PARAMETER_IGNORE_MISSING = "ignore_missing";
 	public static final String PARAMETER_LOGRANK_SURVIVAL = "use_logrank";
@@ -104,6 +105,8 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 			InductionParameters params = new InductionParameters();
 			params.setInductionMeasure(this.createMeasure(PARAMETER_INDUCTION_MEASURE));
 			params.setPruningMeasure(this.createMeasure(PARAMETER_PRUNING_MEASURE)); 
+			params.setVotingMeasure(this.createMeasure(PARAMETER_VOTING_MEASURE));
+			
 			params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
 			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MIN_RULE_COVERED));
 			params.setEnablePruning(getParameterAsBoolean(PARAMETER_PRUNING_ENABLED));
@@ -117,6 +120,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 				if (getParameterAsBoolean(PARAMETER_LOGRANK_SURVIVAL)) {
 					params.setInductionMeasure(new LogRank());
 					params.setPruningMeasure(new LogRank());
+					params.setVotingMeasure(new LogRank());
 					SurvivalLogRankFinder finder = new SurvivalLogRankFinder(params);
 					snc = new SurvivalLogRankSnC(finder, params);
 				} else {
@@ -207,6 +211,12 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 				PARAMETER_PRUNING_MEASURE, getParameterDescription(PARAMETER_PRUNING_MEASURE), 
 				QUALITY_MEASURE_NAMES, QUALITY_MEASURE_NAMES[0], false);
 		tmp.registerDependencyCondition(new BooleanParameterCondition(this, PARAMETER_PRUNING_ENABLED, true, true));
+		
+		tmp = new ParameterTypeStringCategory(
+				PARAMETER_VOTING_MEASURE, getParameterDescription(PARAMETER_VOTING_MEASURE), 
+				QUALITY_MEASURE_NAMES, QUALITY_MEASURE_NAMES[0], false);
+		tmp.registerDependencyCondition(measuresCondition);
+	
 		types.add(tmp);
 		
 		return types;

@@ -206,6 +206,9 @@ public class ExpertRuleGenerator extends RuleGenerator {
 			InductionParameters params = new InductionParameters();
 			params.setInductionMeasure(createMeasure(PARAMETER_INDUCTION_MEASURE));
 			params.setPruningMeasure(createMeasure(PARAMETER_INDUCTION_MEASURE)); 
+			params.setVotingMeasure(this.createMeasure(PARAMETER_VOTING_MEASURE));
+			
+			
 			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MIN_RULE_COVERED));
 			params.setEnablePruning(getParameterAsBoolean(PARAMETER_PRUNING_ENABLED));
 			params.setIgnoreMissing(getParameterAsBoolean(PARAMETER_IGNORE_MISSING));

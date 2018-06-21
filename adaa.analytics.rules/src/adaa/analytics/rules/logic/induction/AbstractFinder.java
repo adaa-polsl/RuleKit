@@ -84,7 +84,7 @@ public abstract class AbstractFinder {
 				covered.addAll(covering.negatives);
 
 				rule.setCoveringInformation(covering);
-				QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getInductionMeasure());
+				QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
 				rule.setWeight(qp.quality);
 				rule.setPValue(qp.pvalue);
 				
@@ -167,7 +167,7 @@ public abstract class AbstractFinder {
 		
 		covering = rule.covers(trainSet);
 		rule.setCoveringInformation(covering);
-		QualityAndPValue qp = calculateQualityAndPValue(trainSet, covering, params.getPruningMeasure());
+		QualityAndPValue qp = calculateQualityAndPValue(trainSet, covering, params.getVotingMeasure());
 		rule.setWeight(qp.quality);
 		rule.setPValue(qp.pvalue);
 		

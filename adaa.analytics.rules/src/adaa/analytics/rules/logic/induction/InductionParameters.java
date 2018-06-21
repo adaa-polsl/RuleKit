@@ -7,6 +7,8 @@ public class InductionParameters {
 	
 	private IQualityMeasure inductionMeasure = new ClassificationMeasure(ClassificationMeasure.Correlation);
 	private IQualityMeasure pruningMeasure = new ClassificationMeasure(ClassificationMeasure.Correlation);
+	private IQualityMeasure votingMeasure = new ClassificationMeasure(ClassificationMeasure.Correlation);
+	
 	private double minimumCovered = 5.0;
 	private double maximumUncoveredFraction = 0.01;
 	private boolean ignoreMissing = false;
@@ -18,6 +20,9 @@ public class InductionParameters {
 
 	public IQualityMeasure getPruningMeasure() {return pruningMeasure;}
 	public void setPruningMeasure(IQualityMeasure pruningMeasure) {this.pruningMeasure = pruningMeasure;}
+	
+	public IQualityMeasure getVotingMeasure() {return votingMeasure;}
+	public void setVotingMeasure(IQualityMeasure pruningMeasure) {this.votingMeasure = pruningMeasure;}
 
 	public double getMinimumCovered() {return minimumCovered;}
 	public void setMinimumCovered(double minimumCovered) {this.minimumCovered = minimumCovered;}
