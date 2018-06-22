@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.lang.model.element.QualifiedNameable;
+
 import com.rapidminer.operator.ports.metadata.AttributeMetaData;
 import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 
@@ -62,6 +64,7 @@ public class RuleParser {
 		// remove surrounding white characters
 		Pattern regex = Pattern.compile("\\s*(?<internal>.+)\\s*");
 		Matcher matcher = regex.matcher(s);
+		boolean adjustable = false;
 	//	s = matcher.group("internal");
 		
 		// remove surrounding [] or [[]]
@@ -75,12 +78,17 @@ public class RuleParser {
 	    	s = matcher.group("internal");
     	}
 		
-		regex = Pattern.compile("(?<attribute>[\\w\\-]+)\\s*=\\s*(?<value>.+)");
+		regex = Pattern.compile("(?<attribute>[\\w\\-]+)\\s*(?<equality>(=|@=))\\s*(?<value>.+)");
     	matcher = regex.matcher(s);
     	
     	if (matcher.find()) {
 	    	String attribute = matcher.group("attribute");
 	    	String valueString = matcher.group("value");
+	    	String equality = matcher.group("equality");
+	    	
+	    	if (equality.equals("@=")) {
+	    		adjustable = true;
+	    	}
 	    	
 	    	IValueSet valueSet = null;
 			
@@ -133,8 +141,11 @@ public class RuleParser {
 		    	}
 	    	}
 	    	
-	    	out = new ElementaryCondition(attribute, valueSet);
-	    	out.setType(type);
+	    	if (valueSet != null) {
+	    		out = new ElementaryCondition(attribute, valueSet);
+	    		out.setType(type);
+	    		out.setAdjustable(adjustable);
+	    	}
     	}
     	
 		return out;

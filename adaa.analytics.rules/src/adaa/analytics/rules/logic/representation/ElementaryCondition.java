@@ -13,9 +13,13 @@ public class ElementaryCondition extends ConditionBase {
 	
 	protected String attribute;
 	protected IValueSet valueSet;
+	protected boolean adjustable = false;
 	
 	public String getAttribute() { return attribute; }
 	public IValueSet getValueSet() { return valueSet; }
+	
+	public boolean isAdjustable() { return adjustable; }
+	public void setAdjustable(boolean b) { adjustable = b; }	
 	
 	protected ElementaryCondition() {
 		;
@@ -35,7 +39,8 @@ public class ElementaryCondition extends ConditionBase {
 	
 	
 	public String toString() {
-		String s = attribute + " = " + valueSet.toString();
+		
+		String s = attribute + (adjustable ? " @= " : " = ") + valueSet.toString();	
 		if (type == Type.FORCED) {
 			s = "[[" + s + "]]";
 		} else if (type == Type.PREFERRED) {

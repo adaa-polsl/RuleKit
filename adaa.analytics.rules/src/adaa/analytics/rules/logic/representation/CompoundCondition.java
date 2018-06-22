@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import adaa.analytics.rules.logic.representation.ConditionBase.Type;
+
 import com.rapidminer.example.Example;
 
 public class CompoundCondition extends ConditionBase {
@@ -75,6 +77,13 @@ public class CompoundCondition extends ConditionBase {
 		}
 		
 		s = s.substring(0, Math.max(0, s.length() - op.length()));
+		
+		if (type == Type.FORCED) {
+			s = "[[" + s + "]]";
+		} else if (type == Type.PREFERRED) {
+			s = "[" + s + "]";
+		}
+		
 		return s;
 	}
 	
