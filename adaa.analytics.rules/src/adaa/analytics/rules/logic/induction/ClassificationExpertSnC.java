@@ -97,6 +97,11 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 			Logger.log("Processing expert rules...\n", Level.INFO);
 			for (Rule r : knowledge.getRules(classId)) {
 				Rule rule = (Rule) SerializationUtils.clone(r);
+				
+				ClassificationExpertFinder erf = (ClassificationExpertFinder)finder;
+				
+				erf.adjust(rule, dataset, uncoveredPositives);
+				
 				Covering cov = rule.covers(dataset, uncovered);
 				rule.setCoveringInformation(cov);
 				QualityAndPValue qp = finder.calculateQualityAndPValue(dataset, cov, params.getVotingMeasure());
@@ -104,8 +109,6 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 				rule.setPValue(qp.pvalue);
 				Logger.log("Expert rule: " + rule.toString() + "\n", Level.FINE);
 				
-
-				ClassificationExpertFinder erf = (ClassificationExpertFinder)finder;
 				erf.setKnowledge(classKnowledge);
 				finder.grow(rule, dataset, uncoveredPositives);
 				

@@ -6,15 +6,19 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.SerializationUtils;
+
 import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ConditionBase;
+import adaa.analytics.rules.logic.representation.ConditionBase.Type;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Knowledge;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.SingletonSet;
+import adaa.analytics.rules.logic.representation.Universum;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
@@ -31,6 +35,54 @@ public class ClassificationExpertFinder extends ClassificationFinder {
 		super(params);
 		this.knowledge = knowledge;
 	}
+	
+	public void adjust(
+		Rule rule,
+		ExampleSet dataset, 
+		Set<Integer> uncoveredPositives) {
+		
+		CompoundCondition expertPremise = rule.getPremise();
+		rule.setPremise(new CompoundCondition());
+
+		for (ConditionBase cnd : expertPremise.getSubconditions()) {
+			ElementaryCondition ec = (ElementaryCondition)cnd;
+			if (ec.isAdjustable()) {
+				
+				// update covering information - needed for automatic induction
+				Covering covering = rule.covers(dataset);
+				Set<Integer> covered = new HashSet<Integer>();
+				covered.addAll(covering.positives);
+				covered.addAll(covering.negatives);
+				rule.setCoveringInformation(covering);
+				
+				if (ec.getValueSet() instanceof Universum) {
+					
+					Set<Attribute> attr = new TreeSet<Attribute>(new AttributeComparator());
+					attr.add(dataset.getAttributes().get(ec.getAttribute()));
+					
+					ElementaryCondition newCondition = induceCondition(
+							rule, dataset, uncoveredPositives, covered, attr);
+					
+					boolean carryOn = tryAddCondition(rule, newCondition, dataset, covered);
+					
+					if (carryOn) {
+						newCondition.setType(Type.FORCED);
+						rule.getPremise().addSubcondition(newCondition);
+					}
+				}
+			} else {
+				rule.getPremise().addSubcondition((ElementaryCondition)SerializationUtils.clone(ec));
+			}
+		}
+		
+		Covering covering = rule.covers(dataset);
+		rule.setCoveringInformation(covering);
+		
+		QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
+		rule.setWeight(qp.quality);
+		rule.setPValue(qp.pvalue);		
+	}
+	
 	
 	@Override 
 	public int grow(
