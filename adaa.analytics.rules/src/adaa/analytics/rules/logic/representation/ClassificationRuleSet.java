@@ -1,12 +1,18 @@
 package adaa.analytics.rules.logic.representation;
 
 import com.rapidminer.example.Attribute;
+import com.rapidminer.example.Attributes;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.table.AttributeFactory;
+import com.rapidminer.example.table.ExampleTable;
 import com.rapidminer.operator.OperatorException;
+import com.rapidminer.tools.Ontology;
 
 public class ClassificationRuleSet extends RuleSetBase {
 
+	public static String ATTRIBUTE_VOTING_RESULTS = "voting_results";
+	
 	private static final long serialVersionUID = -767459208536480802L;
 
 	private int defaultClass = -1;
@@ -24,7 +30,7 @@ public class ClassificationRuleSet extends RuleSetBase {
 		Attribute label = example.getAttributes().getLabel();
 		assert(label.isNominal());
 		int result = defaultClass;
-
+		
 		double[] votes = new double[label.getMapping().size()];
 		
 		for (Rule rule : rules) {
@@ -45,11 +51,13 @@ public class ClassificationRuleSet extends RuleSetBase {
 			}
 		}
 		
+		String votingResults = "";
 		
 		// select decision with highest voting power 
 		if (isVoting) {
 			double maxVote = 0;
 			for (int i = 0; i < votes.length; ++i) {
+				votingResults += "" + i + ":" + votes[i] + ",";
 				if (votes[i] > maxVote) {
 					maxVote = votes[i];
 					result = i;
@@ -57,7 +65,20 @@ public class ClassificationRuleSet extends RuleSetBase {
 			}
 		}
 		
+		example.setValue(example.getAttributes().getSpecial(ATTRIBUTE_VOTING_RESULTS), votingResults);
+		
 		return (double)result;
 	}
-
+	
+	@Override
+	protected Attribute createPredictionAttributes(ExampleSet exampleSet, Attribute label) {
+		Attribute predictedLabel = super.createPredictionAttributes(exampleSet, label);
+		
+		ExampleTable table = exampleSet.getExampleTable();
+		Attribute attr = AttributeFactory.createAttribute(ATTRIBUTE_VOTING_RESULTS, Ontology.STRING);
+		table.addAttribute(attr);
+		exampleSet.getAttributes().setSpecialAttribute(attr, attr.getName());
+		
+		return predictedLabel;
+	}
 }

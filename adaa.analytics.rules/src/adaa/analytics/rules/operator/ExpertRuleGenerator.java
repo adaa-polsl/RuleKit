@@ -243,6 +243,7 @@ public class ExpertRuleGenerator extends RuleGenerator {
 				// survival problem
 				params.setInductionMeasure(new LogRank());
 				params.setPruningMeasure(new LogRank());
+				params.setVotingMeasure(new LogRank());
 				finder = new SurvivalLogRankExpertFinder(params);
 				snc = new SurvivalLogRankExpertSnC((SurvivalLogRankExpertFinder)finder, params, knowledge);
 			} else if (exampleSet.getAttributes().getLabel().isNominal()) {

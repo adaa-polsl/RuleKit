@@ -79,6 +79,38 @@ public class KaplanMeierEstimator {
 
         this.calculateProbability();
     }
+    
+    public String save() {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append(survInfo.size() + ":");
+    	for (SurvInfo si: survInfo) {
+    		sb.append(si.time + " " + si.eventsCount + " " + si.censoredCount + " " + si.atRiskCount + ";" );
+    	}
+    	return sb.toString();
+    }
+    
+    public void load(String s) {
+    	int idx = s.indexOf(':');
+    	int count = Integer.parseInt(s.substring(0, idx));
+    	s = s.substring(idx);
+    	
+    	survInfo = new ArrayList<SurvInfo>(count);
+    	
+    	String[] parts = s.split(";");
+    	
+    	for (int i = 0; i < count; ++i) {
+    		String[] numbers = parts[i].split(" ");
+    		
+    		survInfo.set(i, new SurvInfo(
+				Double.parseDouble(numbers[0]),
+				Integer.parseInt(numbers[1]),
+				Integer.parseInt(numbers[2]),
+				Integer.parseInt(numbers[3])
+				));
+    	}
+    	
+    	this.calculateProbability();
+    }
      
     public KaplanMeierEstimator(ExampleSet data, Set<Integer> indices) {
 		Attribute survTime = data.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE); 
@@ -299,6 +331,11 @@ public class KaplanMeierEstimator {
             this.time = time;
             this.eventsCount = eventsCount;
             this.censoredCount = censoredCount;
+        }
+        
+        public SurvInfo(double time, int eventsCount, int censoredCount, int atRiskCount) {
+            this(time, eventsCount, censoredCount);
+            this.atRiskCount = atRiskCount;
         }
     	
         public SurvInfo(double time, double probability) {
