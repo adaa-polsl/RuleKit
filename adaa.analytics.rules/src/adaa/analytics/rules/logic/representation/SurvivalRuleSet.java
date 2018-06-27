@@ -9,7 +9,10 @@ import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.set.RemappedExampleSet;
+import com.rapidminer.example.table.AttributeFactory;
+import com.rapidminer.example.table.ExampleTable;
 import com.rapidminer.operator.OperatorException;
+import com.rapidminer.tools.Ontology;
 
 public class SurvivalRuleSet extends RuleSetBase {
 
@@ -17,6 +20,11 @@ public class SurvivalRuleSet extends RuleSetBase {
 	 * 
 	 */
 	private static final long serialVersionUID = -1186396337399240471L;
+	
+	public static final String ATTRIBUTE_ESTIMATOR = "estimator";
+	
+	public static final String ANNOTATION_TRAINING_ESTIMATOR = "training_estimator";
+	public static final String ANNOTATION_TRAINING_ESTIMATOR_REV = "training_estimator_rev";
 
 	protected KaplanMeierEstimator trainingEstimator;
 	
@@ -33,45 +41,8 @@ public class SurvivalRuleSet extends RuleSetBase {
 
 	@Override 
 	public double predict(Example example) throws OperatorException {
-		throw new OperatorException("SurvivalRuleSet: use performPrediction() method instead of predict()");
-	}
-	
-	
-	/**
-	 * Applies the model by creating a predicted label attribute and setting the
-	 * predicted label values.
-	 */
-	@Override
-	public ExampleSet apply(ExampleSet exampleSet) throws OperatorException {
-        ExampleSet mappedExampleSet = new RemappedExampleSet(exampleSet, getTrainingHeader(), false);
-        checkCompatibility(mappedExampleSet);
-		Attribute predictedLabel = createPredictionAttributes(mappedExampleSet, getLabel());
-		ExampleSet result = performPrediction(mappedExampleSet, predictedLabel);
 		
-		// Copy in order to avoid RemappedExampleSets wrapped around each other accumulating over time
-		//copyPredictedLabel(result, exampleSet);
-		
-        return result;
-	}
-	
-	@Override
-	public ExampleSet performPrediction(ExampleSet exampleSet, Attribute predictedLabel) throws OperatorException {
-		
-		SurvivalExampleSet outSet = new SurvivalExampleSet((RemappedExampleSet)exampleSet, trainingEstimator);
-		
-		Iterator<Example> r = exampleSet.iterator();
-		for (int i = 0; i < exampleSet.size(); ++i) {
-			Example example = r.next();
-			KaplanMeierEstimator kme = predictEstimator(example);
-			example.setValue(predictedLabel, i);
-			outSet.getEstimators()[i] = kme;
-			// fixme:
-		//	outSet.getEstimators()[i] = trainingEstimator;
-		}
-		return outSet;
-	}
-	
-	protected KaplanMeierEstimator predictEstimator(Example example) throws OperatorException {
+		// predict estimator
 		List<SurvivalRule> matchingRules = new ArrayList<SurvivalRule>();
 		
 		for (Rule rule : rules) {
@@ -81,19 +52,54 @@ public class SurvivalRuleSet extends RuleSetBase {
 			}
 		}
 		
- 	    KaplanMeierEstimator pred;
+ 	    KaplanMeierEstimator kaplan;
  	    if (matchingRules.size() == 0) {
- 	        pred = trainingEstimator;
+ 	        kaplan = trainingEstimator;
  	    } else {
  	        KaplanMeierEstimator[] survfits = new KaplanMeierEstimator[matchingRules.size()];
  	        for (int ruleidx = 0; ruleidx < matchingRules.size(); ruleidx++) {
  	        	survfits[ruleidx] = matchingRules.get(ruleidx).getEstimator();
  	        }
  	
- 	        pred = KaplanMeierEstimator.average(survfits);
+ 	        kaplan = KaplanMeierEstimator.average(survfits);
  	    }
  	    
- 	    return pred;
+ 	    String textKaplan = kaplan.save();
+		example.setValue(example.getAttributes().getSpecial(ATTRIBUTE_ESTIMATOR), textKaplan);
+	
+		return 0;
+	}
+	
+	
+	@Override
+	public ExampleSet apply(ExampleSet exampleSet) throws OperatorException {
+		ExampleSet mappedExampleSet = new RemappedExampleSet(exampleSet, getTrainingHeader(), false);
+        checkCompatibility(mappedExampleSet);
+		Attribute predictedLabel = createPredictionAttributes(mappedExampleSet, getLabel());
+		ExampleSet result = performPrediction(mappedExampleSet, predictedLabel);
+		
+		// Copy in order to avoid RemappedExampleSets wrapped around each other accumulating over time
+		//copyPredictedLabel(result, exampleSet);
+
+        // add annotation
+		KaplanMeierEstimator revEstimator = trainingEstimator.reverse();
+		result.getAnnotations().setAnnotation(ANNOTATION_TRAINING_ESTIMATOR, trainingEstimator.save());
+		result.getAnnotations().setAnnotation(ANNOTATION_TRAINING_ESTIMATOR_REV, revEstimator.save());
+		
+        return result;
+	}
+	
+	
+	@Override
+	protected Attribute createPredictionAttributes(ExampleSet exampleSet, Attribute label) {
+		Attribute predictedLabel = super.createPredictionAttributes(exampleSet, label);
+		
+		ExampleTable table = exampleSet.getExampleTable();
+		Attribute attr = AttributeFactory.createAttribute(ATTRIBUTE_ESTIMATOR, Ontology.STRING);
+		table.addAttribute(attr);
+		exampleSet.getAttributes().setSpecialAttribute(attr, attr.getName());
+		
+		return predictedLabel;
 	}
 	
 	@Override

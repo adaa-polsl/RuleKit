@@ -11,10 +11,10 @@ import com.rapidminer.tools.Ontology;
 
 public class ClassificationRuleSet extends RuleSetBase {
 
-	public static String ATTRIBUTE_VOTING_RESULTS = "voting_results";
-	
 	private static final long serialVersionUID = -767459208536480802L;
 
+	public static final String ATTRIBUTE_VOTING_RESULTS = "voting_results";
+	
 	private int defaultClass = -1;
 	
 	public int getDefaultClass() { return defaultClass; }

@@ -84,7 +84,7 @@ public class KaplanMeierEstimator {
     	StringBuilder sb = new StringBuilder();
     	sb.append(survInfo.size() + ":");
     	for (SurvInfo si: survInfo) {
-    		sb.append(si.time + " " + si.eventsCount + " " + si.censoredCount + " " + si.atRiskCount + ";" );
+    		sb.append(si.time + " " + si.probability + " " );
     	}
     	return sb.toString();
     }
@@ -92,24 +92,20 @@ public class KaplanMeierEstimator {
     public void load(String s) {
     	int idx = s.indexOf(':');
     	int count = Integer.parseInt(s.substring(0, idx));
-    	s = s.substring(idx);
+    	s = s.substring(idx + 1);
     	
     	survInfo = new ArrayList<SurvInfo>(count);
     	
-    	String[] parts = s.split(";");
+    	String[] numbers = s.split(" ");
+    	int num_idx = 0;
     	
     	for (int i = 0; i < count; ++i) {
-    		String[] numbers = parts[i].split(" ");
     		
-    		survInfo.set(i, new SurvInfo(
-				Double.parseDouble(numbers[0]),
-				Integer.parseInt(numbers[1]),
-				Integer.parseInt(numbers[2]),
-				Integer.parseInt(numbers[3])
-				));
+    		survInfo.add(new SurvInfo(
+				Double.parseDouble(numbers[num_idx++]),
+				Double.parseDouble(numbers[num_idx++])
+			));
     	}
-    	
-    	this.calculateProbability();
     }
      
     public KaplanMeierEstimator(ExampleSet data, Set<Integer> indices) {
@@ -333,11 +329,6 @@ public class KaplanMeierEstimator {
             this.censoredCount = censoredCount;
         }
         
-        public SurvInfo(double time, int eventsCount, int censoredCount, int atRiskCount) {
-            this(time, eventsCount, censoredCount);
-            this.atRiskCount = atRiskCount;
-        }
-    	
         public SurvInfo(double time, double probability) {
             this(time);
         	this.probability = probability;

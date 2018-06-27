@@ -17,12 +17,13 @@ import org.apache.commons.lang.StringUtils;
 
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.SurvivalExampleSet;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
+import adaa.analytics.rules.logic.representation.SurvivalRuleSet;
 import adaa.analytics.rules.operator.RuleGenerator;
 
 import com.rapidminer.RapidMiner;
 import com.rapidminer.example.Attributes;
+import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.IOContainer;
 import com.rapidminer.operator.Model;
@@ -194,12 +195,15 @@ public class LogRankConsole {
     	Logger.log("Applying a model...\n", Level.INFO);	
     	IOContainer out = process.run();
     	ExampleSet set = out.get(ExampleSet.class, 0);
-    	SurvivalExampleSet survSet = (SurvivalExampleSet)set;
-    	
+    
     	File file = new File(predictionsFile);
     	BufferedWriter buf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "utf-8"));
     	
-    	List<Double> times = survSet.getTrainingEstimator().getTimes();
+    	String s = set.getAnnotations().getAnnotation(SurvivalRuleSet.ANNOTATION_TRAINING_ESTIMATOR);
+    	KaplanMeierEstimator kme = new KaplanMeierEstimator();
+    	kme.load(s);
+    	List<Double> times = kme.getTimes();
+    	
     	buf.write("times");
     	for (double t : times) {
     		buf.write( "," + t );
@@ -207,8 +211,12 @@ public class LogRankConsole {
     	buf.write("\n"); 
     	
     	for (int i = 0; i < set.size(); ++i) {
+    		Example e = set.getExample(i);
+    		s = e.getValueAsString(e.getAttributes().getSpecial(SurvivalRuleSet.ATTRIBUTE_ESTIMATOR));
+    		kme = new KaplanMeierEstimator();
+        	kme.load(s);
+    		
     		buf.write("instance_" + (i+1) );
-    		KaplanMeierEstimator kme = survSet.getEstimators()[i];
     		for (double t : times) {
         		buf.write("," + kme.getProbabilityAt(t));
         	} 

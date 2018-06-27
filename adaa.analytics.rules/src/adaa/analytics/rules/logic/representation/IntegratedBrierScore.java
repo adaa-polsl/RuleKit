@@ -26,8 +26,7 @@ public class IntegratedBrierScore extends MeasuredPerformance {
 	 }
 	 
 	 @Override
-	 public void startCounting(ExampleSet exampleSet, boolean useExampleWeights) throws OperatorException {
-		SurvivalExampleSet testSet = (SurvivalExampleSet)exampleSet;
+	 public void startCounting(ExampleSet testSet, boolean useExampleWeights) throws OperatorException {
 		 	 
 		Attribute survTime = testSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE); 
 		Attribute survStat = testSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_STATUS_ROLE);
@@ -40,8 +39,12 @@ public class IntegratedBrierScore extends MeasuredPerformance {
 			Example e = testSet.getExample(i);
 			double t = e.getValue(survTime);
 			boolean isCensored = e.getValue(survStat) == 0;
+			
+			String textKaplan = e.getValueAsString(e.getAttributes().getSpecial(SurvivalRuleSet.ATTRIBUTE_ESTIMATOR));
+			KaplanMeierEstimator kaplan = new KaplanMeierEstimator();
+			kaplan.load(textKaplan);
 		
-			info.add(new SurvInfo(t, isCensored, testSet.getEstimators()[i]));
+			info.add(new SurvInfo(t, isCensored, kaplan));
 		}
     	
 		info.sort(new Comparator<SurvInfo>() {
@@ -52,7 +55,9 @@ public class IntegratedBrierScore extends MeasuredPerformance {
 		});
 
 	 // get KM from training set
-		KaplanMeierEstimator censoringKM = testSet.getTrainingEstimator().reverse();
+		String textKM = testSet.getAnnotations().getAnnotation(SurvivalRuleSet.ANNOTATION_TRAINING_ESTIMATOR_REV);
+		KaplanMeierEstimator censoringKM = new KaplanMeierEstimator();
+		censoringKM.load(textKM);
 		
         List<Double> brierScores = new ArrayList<Double>();
         
