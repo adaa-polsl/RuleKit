@@ -31,7 +31,7 @@ import adaa.analytics.rules.experiments.Report;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.RuleGenerator;
-import adaa.analytics.rules.operator.SurvivalPerformanceEvaluator;
+import adaa.analytics.rules.operator.RulePerformanceEvaluator;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.stream.RuleGeneratorFromStream;
 
@@ -282,7 +282,7 @@ public class PluginTests {
     	ChangeAttributeRole roleSetter = (ChangeAttributeRole)OperatorService.createOperator(ChangeAttributeRole.class);
     	RuleGenerator ruleGenerator = new RuleGenerator(new OperatorDescription("", "", null, null, "", null));
     	ModelApplier applier = (ModelApplier)OperatorService.createOperator(ModelApplier.class);
-    	SurvivalPerformanceEvaluator evaluator = new SurvivalPerformanceEvaluator(new OperatorDescription("", "", null, null, "", null));
+    	RulePerformanceEvaluator evaluator = new RulePerformanceEvaluator(new OperatorDescription("", "", null, null, "", null));
     	
     	// configure main process
     	com.rapidminer.Process process = new com.rapidminer.Process();

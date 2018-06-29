@@ -16,6 +16,7 @@ import adaa.analytics.rules.logic.induction.RegressionExpertFinder;
 import adaa.analytics.rules.logic.induction.RegressionExpertSnC;
 import adaa.analytics.rules.logic.induction.SurvivalLogRankExpertFinder;
 import adaa.analytics.rules.logic.induction.SurvivalLogRankExpertSnC;
+import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.representation.ConditionBase;
 import adaa.analytics.rules.logic.representation.ConditionBase.Type;
@@ -225,11 +226,10 @@ public class ExpertRuleGenerator extends RuleGenerator {
 			knowledge.setPreferredAttributesPerRule(getParameterAsInt(PARAMETER_PREFERRED_ATTRIBUTES_PER_RULE));
 			
 			InductionParameters params = new InductionParameters();
-			params.setInductionMeasure(createMeasure(PARAMETER_INDUCTION_MEASURE));
-			params.setPruningMeasure(createMeasure(PARAMETER_INDUCTION_MEASURE)); 
-			params.setVotingMeasure(this.createMeasure(PARAMETER_VOTING_MEASURE));
-			
-			
+			params.setInductionMeasure(createMeasure(PARAMETER_INDUCTION_MEASURE, new ClassificationMeasure(ClassificationMeasure.Correlation)));
+			params.setPruningMeasure(createMeasure(PARAMETER_INDUCTION_MEASURE, params.getInductionMeasure() )); 
+			params.setVotingMeasure(createMeasure(PARAMETER_VOTING_MEASURE, params.getInductionMeasure()));
+				
 			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MIN_RULE_COVERED));
 			params.setEnablePruning(getParameterAsBoolean(PARAMETER_PRUNING_ENABLED));
 			params.setIgnoreMissing(getParameterAsBoolean(PARAMETER_IGNORE_MISSING));

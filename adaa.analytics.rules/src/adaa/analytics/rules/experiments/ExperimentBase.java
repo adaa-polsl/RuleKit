@@ -7,7 +7,7 @@ import java.util.Map;
 
 import adaa.analytics.rules.operator.ExpertRuleGenerator;
 import adaa.analytics.rules.operator.RuleGenerator;
-import adaa.analytics.rules.operator.SurvivalPerformanceEvaluator;
+import adaa.analytics.rules.operator.RulePerformanceEvaluator;
 import adaa.analytics.rules.stream.RuleGeneratorFromStream;
 
 import com.rapidminer.operator.OperatorDescription;
@@ -42,9 +42,8 @@ public abstract class ExperimentBase implements Runnable {
 	
 	public ExperimentBase(
 			Report report,
-			Type type,
 			Map<String,Object> params) {
-		this(report, type, (List<Map<String,Object>>)null);
+		this(report, (List<Map<String,Object>>)null);
 		
 		this.paramsSets = new ArrayList<Map<String, Object>>();
 		paramsSets.add(params);
@@ -52,7 +51,6 @@ public abstract class ExperimentBase implements Runnable {
 	
 	public ExperimentBase (
 			Report report,
-			Type type,
 			List<Map<String,Object>> paramsSets) {
 
 		try {
@@ -64,34 +62,15 @@ public abstract class ExperimentBase implements Runnable {
 			ruleGenerator = new ExpertRuleGenerator(new OperatorDescription("", "", null, null, "", null));
 		//	ruleGenerator = new RuleGeneratorFromStream(new OperatorDescription("","",null,null, "", null));
 			
-			switch (type) {
-	    	case CLASSIFICATION:
-	    		validationEvaluator = (AbstractPerformanceEvaluator)OperatorService.createOperator(PolynominalClassificationPerformanceEvaluator.class);
-	    		globalEvaluator = (AbstractPerformanceEvaluator)OperatorService.createOperator(PolynominalClassificationPerformanceEvaluator.class);
-	    		break;
-	    	case BINARY_CLASSIFICATION:
-	    		validationEvaluator = (AbstractPerformanceEvaluator)OperatorService.createOperator(BinominalClassificationPerformanceEvaluator.class);
-	    		globalEvaluator = (AbstractPerformanceEvaluator)OperatorService.createOperator(BinominalClassificationPerformanceEvaluator.class);
-	    		break;
-	    	case REGRESSION:
-	    		validationEvaluator = (AbstractPerformanceEvaluator)OperatorService.createOperator(RegressionPerformanceEvaluator.class); 
-	    		globalEvaluator = (AbstractPerformanceEvaluator)OperatorService.createOperator(RegressionPerformanceEvaluator.class);
-	    		break;
-	    	case SURVIVAL_BY_CLASSIFICATION:
-	    		validationEvaluator = new SurvivalPerformanceEvaluator(new OperatorDescription("", "", null, null, "", null)); 
-	    		globalEvaluator = new SurvivalPerformanceEvaluator(new OperatorDescription("", "", null, null, "", null));
-	    		break;
-	    	case SURVIVAL_BY_REGRESSION:
-	    		validationEvaluator = new SurvivalPerformanceEvaluator(new OperatorDescription("", "", null, null, "", null));
-	    		globalEvaluator = new SurvivalPerformanceEvaluator(new OperatorDescription("", "", null, null, "", null));
-	    		break;
-	    	}
-			
-			List<PerformanceCriterion> criteria = validationEvaluator.getCriteria();
+    		validationEvaluator = new RulePerformanceEvaluator(new OperatorDescription("", "", null, null, "", null)); 
+    		globalEvaluator = new RulePerformanceEvaluator(new OperatorDescription("", "", null, null, "", null));
+	    	
+	/*		List<PerformanceCriterion> criteria = validationEvaluator.getCriteria();
 	    	for (PerformanceCriterion c: criteria) {
 	    		validationEvaluator.setParameter(c.getName(), "true");
 	    		globalEvaluator.setParameter(c.getName(), "true");
 	    	}
+	    	*/
 		}
 		catch (Exception ex){
 			ex.printStackTrace();

@@ -18,7 +18,7 @@ import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.RuleGenerator;
-import adaa.analytics.rules.operator.SurvivalPerformanceEvaluator;
+import adaa.analytics.rules.operator.RulePerformanceEvaluator;
 
 import com.rapidminer.example.Attributes;
 import com.rapidminer.operator.IOContainer;
@@ -54,7 +54,7 @@ public class SplittedXValidationExperiment extends ExperimentBase {
 		Map<String, Object> params,
 		String modelFile) {
 		
-		super(report, experimentType, params); 
+		super(report, params); 
 		
 		try {
 			this.arffDir = arffDir;

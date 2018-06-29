@@ -11,6 +11,7 @@ import adaa.analytics.rules.logic.induction.RegressionSnC;
 import adaa.analytics.rules.logic.induction.SurvivalClassificationSnC;
 import adaa.analytics.rules.logic.induction.SurvivalLogRankFinder;
 import adaa.analytics.rules.logic.induction.SurvivalLogRankSnC;
+import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
@@ -44,8 +45,10 @@ public class RuleGeneratorFromStream extends ExpertRuleGenerator {
 		
 		try{
 			InductionParameters params = new InductionParameters();
-			params.setInductionMeasure(this.createMeasure(PARAMETER_INDUCTION_MEASURE));
-			params.setPruningMeasure(this.createMeasure(PARAMETER_PRUNING_MEASURE)); 
+			params.setInductionMeasure(createMeasure(PARAMETER_INDUCTION_MEASURE, new ClassificationMeasure(ClassificationMeasure.Correlation)));
+			params.setPruningMeasure(createMeasure(PARAMETER_INDUCTION_MEASURE, params.getInductionMeasure() )); 
+			params.setVotingMeasure(createMeasure(PARAMETER_VOTING_MEASURE, params.getInductionMeasure()));
+
 			params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
 			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MIN_RULE_COVERED));
 			params.setEnablePruning(getParameterAsBoolean(PARAMETER_PRUNING_ENABLED));
@@ -58,6 +61,7 @@ public class RuleGeneratorFromStream extends ExpertRuleGenerator {
 				if (getParameterAsBoolean(PARAMETER_LOGRANK_SURVIVAL)) {
 					params.setInductionMeasure(new LogRank());
 					params.setPruningMeasure(new LogRank());
+					params.setVotingMeasure(new LogRank());
 					SurvivalLogRankFinder finder = new SurvivalLogRankFinder(params);
 					snc = new SurvivalLogRankSnC(finder, params);
 				} else {

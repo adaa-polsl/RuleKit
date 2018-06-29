@@ -50,4 +50,9 @@ public class LogRank implements IQualityMeasure {
         
 		return res;
 	}
+
+	@Override
+	public String getName() {
+		return "LogRankStatistics";
+	}
 }

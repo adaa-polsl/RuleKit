@@ -103,9 +103,9 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		
 		try {
 			InductionParameters params = new InductionParameters();
-			params.setInductionMeasure(this.createMeasure(PARAMETER_INDUCTION_MEASURE));
-			params.setPruningMeasure(this.createMeasure(PARAMETER_PRUNING_MEASURE)); 
-			params.setVotingMeasure(this.createMeasure(PARAMETER_VOTING_MEASURE));
+			params.setInductionMeasure(createMeasure(PARAMETER_INDUCTION_MEASURE, new ClassificationMeasure(ClassificationMeasure.Correlation)));
+			params.setPruningMeasure(createMeasure(PARAMETER_INDUCTION_MEASURE, params.getInductionMeasure() )); 
+			params.setVotingMeasure(createMeasure(PARAMETER_VOTING_MEASURE, params.getVotingMeasure()));
 			
 			params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
 			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MIN_RULE_COVERED));
@@ -209,12 +209,12 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		
 		tmp = new ParameterTypeStringCategory(
 				PARAMETER_PRUNING_MEASURE, getParameterDescription(PARAMETER_PRUNING_MEASURE), 
-				QUALITY_MEASURE_NAMES, QUALITY_MEASURE_NAMES[0], false);
+				QUALITY_MEASURE_NAMES, "", false);
 		tmp.registerDependencyCondition(new BooleanParameterCondition(this, PARAMETER_PRUNING_ENABLED, true, true));
 		
 		tmp = new ParameterTypeStringCategory(
 				PARAMETER_VOTING_MEASURE, getParameterDescription(PARAMETER_VOTING_MEASURE), 
-				QUALITY_MEASURE_NAMES, QUALITY_MEASURE_NAMES[0], false);
+				QUALITY_MEASURE_NAMES, "", false);
 		tmp.registerDependencyCondition(measuresCondition);
 	
 		types.add(tmp);
@@ -223,7 +223,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
     }
 	 
 	 
-	 protected IQualityMeasure createMeasure(String measureParameter) throws UndefinedParameterError, IllegalAccessException {
+	 protected IQualityMeasure createMeasure(String measureParameter, IQualityMeasure defaultMeasure) throws UndefinedParameterError, IllegalAccessException {
 		String measureName = getParameterAsString(measureParameter);
 		int variant = -1;
 		for (int i = 0; i < QUALITY_MEASURE_NAMES.length; i++) {
@@ -235,8 +235,8 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		if (variant != -1) {	
 			return new ClassificationMeasure(variant);
 		} else {
-			log("No quality measure defined, using Correlation...");
-			return new ClassificationMeasure(ClassificationMeasure.Correlation);
+			log("No quality measure defined, using default (" + defaultMeasure.getName() + ")");
+			return defaultMeasure;
 		}
 	}
 	 
@@ -263,19 +263,19 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		PerformanceVector pv = new PerformanceVector();
 		pv.addCriterion(new EstimatedPerformance("#rules", rs.getRules().size(), 1, false));
 		pv.addCriterion(new EstimatedPerformance("#conditions", rs.calculateConditionsCount(), 1, false));
-		pv.addCriterion(new EstimatedPerformance("#induced conditions", rs.calculateInducedCondtionsCount(), 1, false));
+		pv.addCriterion(new EstimatedPerformance("#induced_conditions", rs.calculateInducedCondtionsCount(), 1, false));
 		
-		pv.addCriterion(new EstimatedPerformance("avg rule coverage", rs.calculateAvgRuleCoverage(), 1, false));
-		pv.addCriterion(new EstimatedPerformance("avg rule precision", rs.calculateAvgRulePrecision(), 1, false));
-		pv.addCriterion(new EstimatedPerformance("avg rule quality", rs.calculateAvgRuleQuality(), 1, false));
+		pv.addCriterion(new EstimatedPerformance("avg_rule_coverage", rs.calculateAvgRuleCoverage(), 1, false));
+		pv.addCriterion(new EstimatedPerformance("avg_rule_precision", rs.calculateAvgRulePrecision(), 1, false));
+		pv.addCriterion(new EstimatedPerformance("avg_rule_quality", rs.calculateAvgRuleQuality(), 1, false));
 		
-		pv.addCriterion(new EstimatedPerformance("avg p-value", rs.calculateSignificance(0.05).p , 1, false));
-		pv.addCriterion(new EstimatedPerformance("avg FDR adj. p-value", rs.calculateSignificanceFDR(0.05).p, 1, false));
-		pv.addCriterion(new EstimatedPerformance("avg FWER adj. p-value", rs.calculateSignificanceFWER(0.05).p, 1, false));
+		pv.addCriterion(new EstimatedPerformance("avg_p-value", rs.calculateSignificance(0.05).p , 1, false));
+		pv.addCriterion(new EstimatedPerformance("avg_FDR_adj_p-value", rs.calculateSignificanceFDR(0.05).p, 1, false));
+		pv.addCriterion(new EstimatedPerformance("avg_FWER_adj_p-value", rs.calculateSignificanceFWER(0.05).p, 1, false));
 		
-		pv.addCriterion(new EstimatedPerformance("fraction 0.05 significant", rs.calculateSignificance(0.05).fraction, 1, false));
-		pv.addCriterion(new EstimatedPerformance("fraction 0.05 FDR significant", rs.calculateSignificanceFDR(0.05).fraction, 1, false));
-		pv.addCriterion(new EstimatedPerformance("fraction 0.05 FWER significant", rs.calculateSignificanceFWER(0.05).fraction, 1, false));
+		pv.addCriterion(new EstimatedPerformance("fraction_0.05_significant", rs.calculateSignificance(0.05).fraction, 1, false));
+		pv.addCriterion(new EstimatedPerformance("fraction_0.05_FDR_significant", rs.calculateSignificanceFDR(0.05).fraction, 1, false));
+		pv.addCriterion(new EstimatedPerformance("fraction_0.05_FWER_significant", rs.calculateSignificanceFWER(0.05).fraction, 1, false));
 			
 		return pv;
 	 }

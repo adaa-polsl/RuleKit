@@ -19,7 +19,7 @@ import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.RuleGenerator;
-import adaa.analytics.rules.operator.SurvivalPerformanceEvaluator;
+import adaa.analytics.rules.operator.RulePerformanceEvaluator;
 
 import com.rapidminer.example.Attributes;
 import com.rapidminer.example.set.SplittedExampleSet;
@@ -72,7 +72,7 @@ public class InternalXValidationExperiment extends ExperimentBase {
 			List<Map<String,Object>> paramsSets,
 			String modelFile) {
 		
-		super(report, experimentType, paramsSets);
+		super(report, paramsSets);
 		
 		try {
 			this.arffFile = arffFile;

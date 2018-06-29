@@ -4,6 +4,7 @@ import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Attributes;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.set.RemappedExampleSet;
 import com.rapidminer.example.table.AttributeFactory;
 import com.rapidminer.example.table.ExampleTable;
 import com.rapidminer.operator.OperatorException;
@@ -51,13 +52,13 @@ public class ClassificationRuleSet extends RuleSetBase {
 			}
 		}
 		
-		String votingResults = "";
+		StringBuilder sb = new StringBuilder(); 
 		
 		// select decision with highest voting power 
 		if (isVoting) {
 			double maxVote = 0;
 			for (int i = 0; i < votes.length; ++i) {
-				votingResults += "" + i + ":" + votes[i] + ",";
+				sb.append(votes[i] + " ");
 				if (votes[i] > maxVote) {
 					maxVote = votes[i];
 					result = i;
@@ -65,9 +66,21 @@ public class ClassificationRuleSet extends RuleSetBase {
 			}
 		}
 		
-		example.setValue(example.getAttributes().getSpecial(ATTRIBUTE_VOTING_RESULTS), votingResults);
+		example.setValue(example.getAttributes().getSpecial(ATTRIBUTE_VOTING_RESULTS), sb.toString());
 		
 		return (double)result;
+	}
+	
+	@Override
+	public ExampleSet apply(ExampleSet exampleSet) throws OperatorException {
+		ExampleSet mappedExampleSet = new RemappedExampleSet(exampleSet, getTrainingHeader(), false);
+        checkCompatibility(mappedExampleSet);
+		Attribute predictedLabel = createPredictionAttributes(mappedExampleSet, getLabel());
+		ExampleSet result = performPrediction(mappedExampleSet, predictedLabel);
+		
+		// Copy in order to avoid RemappedExampleSets wrapped around each other accumulating over time
+		//copyPredictedLabel(result, exampleSet);
+        return result;
 	}
 	
 	@Override

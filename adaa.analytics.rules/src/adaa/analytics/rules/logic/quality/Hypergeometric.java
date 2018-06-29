@@ -63,4 +63,9 @@ public class Hypergeometric implements IQualityMeasure {
 
 	    return a + b - c;
 	}
+
+	@Override
+	public String getName() {
+		return "HyperGeometricStatistics";
+	}
 }
