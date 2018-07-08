@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
+import adaa.analytics.rules.logic.quality.ClassificationRulesPerformance;
 import adaa.analytics.rules.logic.quality.IntegratedBrierScore;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 
@@ -112,6 +113,9 @@ public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 		new CriterionClassWrapper(MultiClassificationPerformance.class, MultiClassificationPerformance.ACCURACY),
 		new CriterionClassWrapper(MultiClassificationPerformance.class, MultiClassificationPerformance.ERROR),
 		new CriterionClassWrapper(MultiClassificationPerformance.class, MultiClassificationPerformance.KAPPA),
+		new CriterionClassWrapper(ClassificationRulesPerformance.class, ClassificationRulesPerformance.COVERING_RULES),
+		new CriterionClassWrapper(ClassificationRulesPerformance.class, ClassificationRulesPerformance.VOTING_CONFLICTS),
+		
 	};
 	
 	private static final CriterionClassWrapper[] BINARY_CRITERIA_CLASSES = { 
@@ -155,7 +159,7 @@ public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 		super(description);
 		
 		criteriaNames = new ArrayList<ArrayList<String>>();
-		for (int i = 0; i <= TYPE_SURVIVAL; ++i) {
+		for (int i = 0; i <= 3; ++i) {
 			criteriaNames.add(new ArrayList<String>());
 		}
 		

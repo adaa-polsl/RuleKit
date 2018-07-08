@@ -14,7 +14,9 @@ public class ClassificationRuleSet extends RuleSetBase {
 
 	private static final long serialVersionUID = -767459208536480802L;
 
-	public static final String ATTRIBUTE_VOTING_RESULTS = "voting_results";
+	public static final String ATTRIBUTE_VOTING_RESULTS_WEIGHTS = "voting_result_weights";
+	
+	public static final String ATTRIBUTE_VOTING_RESULTS_COUNTS = "voting_results_count";
 	
 	private int defaultClass = -1;
 	
@@ -33,6 +35,7 @@ public class ClassificationRuleSet extends RuleSetBase {
 		int result = defaultClass;
 		
 		double[] votes = new double[label.getMapping().size()];
+		int[] voteCounts = new int[label.getMapping().size()];
 		
 		for (Rule rule : rules) {
 			if (rule.getPremise().evaluate(example)) {
@@ -46,19 +49,22 @@ public class ClassificationRuleSet extends RuleSetBase {
 				
 				if (isVoting) {
 					votes[result] += rule.getWeight();
+					++voteCounts[result];
 				} else {
 					break;
 				}
 			}
 		}
 		
-		StringBuilder sb = new StringBuilder(); 
+		StringBuilder sb_weights = new StringBuilder(); 
+		StringBuilder sb_counts = new StringBuilder(); 
 		
 		// select decision with highest voting power 
 		if (isVoting) {
 			double maxVote = 0;
 			for (int i = 0; i < votes.length; ++i) {
-				sb.append(votes[i] + " ");
+				sb_weights.append(votes[i] + " ");
+				sb_counts.append(voteCounts[i] + " ");
 				if (votes[i] > maxVote) {
 					maxVote = votes[i];
 					result = i;
@@ -66,7 +72,8 @@ public class ClassificationRuleSet extends RuleSetBase {
 			}
 		}
 		
-		example.setValue(example.getAttributes().getSpecial(ATTRIBUTE_VOTING_RESULTS), sb.toString());
+		example.setValue(example.getAttributes().getSpecial(ATTRIBUTE_VOTING_RESULTS_WEIGHTS), sb_weights.toString());
+		example.setValue(example.getAttributes().getSpecial(ATTRIBUTE_VOTING_RESULTS_COUNTS), sb_counts.toString());
 		
 		return (double)result;
 	}
@@ -88,7 +95,11 @@ public class ClassificationRuleSet extends RuleSetBase {
 		Attribute predictedLabel = super.createPredictionAttributes(exampleSet, label);
 		
 		ExampleTable table = exampleSet.getExampleTable();
-		Attribute attr = AttributeFactory.createAttribute(ATTRIBUTE_VOTING_RESULTS, Ontology.STRING);
+		Attribute attr = AttributeFactory.createAttribute(ATTRIBUTE_VOTING_RESULTS_WEIGHTS, Ontology.STRING);
+		table.addAttribute(attr);
+		exampleSet.getAttributes().setSpecialAttribute(attr, attr.getName());
+		
+		attr = AttributeFactory.createAttribute(ATTRIBUTE_VOTING_RESULTS_COUNTS, Ontology.STRING);
 		table.addAttribute(attr);
 		exampleSet.getAttributes().setSpecialAttribute(attr, attr.getName());
 		
