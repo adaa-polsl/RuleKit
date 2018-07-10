@@ -262,16 +262,16 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	 public static PerformanceVector recalculatePerformance(RuleSetBase rs) {
 		PerformanceVector pv = new PerformanceVector();
 		pv.addCriterion(new EstimatedPerformance("#rules", rs.getRules().size(), 1, false));
-		pv.addCriterion(new EstimatedPerformance("#conditions", rs.calculateConditionsCount(), 1, false));
-		pv.addCriterion(new EstimatedPerformance("#induced_conditions", rs.calculateInducedCondtionsCount(), 1, false));
+		pv.addCriterion(new EstimatedPerformance("#conditions_per_rule", rs.calculateConditionsCount(), 1, false));
+		pv.addCriterion(new EstimatedPerformance("#induced_conditions_per_rule", rs.calculateInducedCondtionsCount(), 1, false));
 		
 		pv.addCriterion(new EstimatedPerformance("avg_rule_coverage", rs.calculateAvgRuleCoverage(), 1, false));
 		pv.addCriterion(new EstimatedPerformance("avg_rule_precision", rs.calculateAvgRulePrecision(), 1, false));
 		pv.addCriterion(new EstimatedPerformance("avg_rule_quality", rs.calculateAvgRuleQuality(), 1, false));
 		
-		pv.addCriterion(new EstimatedPerformance("avg_p-value", rs.calculateSignificance(0.05).p , 1, false));
-		pv.addCriterion(new EstimatedPerformance("avg_FDR_adj_p-value", rs.calculateSignificanceFDR(0.05).p, 1, false));
-		pv.addCriterion(new EstimatedPerformance("avg_FWER_adj_p-value", rs.calculateSignificanceFWER(0.05).p, 1, false));
+		pv.addCriterion(new EstimatedPerformance("avg_pvalue", rs.calculateSignificance(0.05).p , 1, false));
+		pv.addCriterion(new EstimatedPerformance("avg_FDR_pvalue", rs.calculateSignificanceFDR(0.05).p, 1, false));
+		pv.addCriterion(new EstimatedPerformance("avg_FWER_pvalue", rs.calculateSignificanceFWER(0.05).p, 1, false));
 		
 		pv.addCriterion(new EstimatedPerformance("fraction_0.05_significant", rs.calculateSignificance(0.05).fraction, 1, false));
 		pv.addCriterion(new EstimatedPerformance("fraction_0.05_FDR_significant", rs.calculateSignificanceFDR(0.05).fraction, 1, false));

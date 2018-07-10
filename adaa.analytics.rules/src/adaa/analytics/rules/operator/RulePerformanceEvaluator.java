@@ -113,9 +113,10 @@ public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 		new CriterionClassWrapper(MultiClassificationPerformance.class, MultiClassificationPerformance.ACCURACY),
 		new CriterionClassWrapper(MultiClassificationPerformance.class, MultiClassificationPerformance.ERROR),
 		new CriterionClassWrapper(MultiClassificationPerformance.class, MultiClassificationPerformance.KAPPA),
-		new CriterionClassWrapper(ClassificationRulesPerformance.class, ClassificationRulesPerformance.COVERING_RULES),
+		new CriterionClassWrapper(ClassificationRulesPerformance.class, ClassificationRulesPerformance.RULES_PER_EXAMPLE),
 		new CriterionClassWrapper(ClassificationRulesPerformance.class, ClassificationRulesPerformance.VOTING_CONFLICTS),
-		
+		new CriterionClassWrapper(ClassificationRulesPerformance.class, ClassificationRulesPerformance.NEGATIVE_VOTING_CONFLICTS),
+		new CriterionClassWrapper(ClassificationRulesPerformance.class, ClassificationRulesPerformance.BALANCED_ACCURACY)	
 	};
 	
 	private static final CriterionClassWrapper[] BINARY_CRITERIA_CLASSES = { 
