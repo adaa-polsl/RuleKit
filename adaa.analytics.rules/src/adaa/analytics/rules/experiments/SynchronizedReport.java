@@ -8,14 +8,20 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
-public class Report {
+public class SynchronizedReport {
 	
 	protected Writer writer;
 	
 	protected boolean empty = true;
 	
-	public Report(String name) throws UnsupportedEncodingException, FileNotFoundException {
+	public SynchronizedReport(String name) throws UnsupportedEncodingException, FileNotFoundException {
     	writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(name), "utf-8"));
+	}
+	
+	
+	public synchronized void append(String text) throws IOException {
+		writer.write(text);
+		writer.flush();
 	}
 	
 	public synchronized void add(String[] headers, String row) throws IOException {

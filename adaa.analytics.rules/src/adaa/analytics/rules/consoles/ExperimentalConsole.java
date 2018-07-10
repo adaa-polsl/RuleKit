@@ -24,7 +24,7 @@ import org.xml.sax.SAXException;
 
 import adaa.analytics.rules.experiments.ExperimentBase;
 import adaa.analytics.rules.experiments.InternalXValidationExperiment;
-import adaa.analytics.rules.experiments.Report;
+import adaa.analytics.rules.experiments.SynchronizedReport;
 import adaa.analytics.rules.experiments.SplittedXValidationExperiment;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.operator.ExpertRuleGenerator;
@@ -164,9 +164,9 @@ public class ExperimentalConsole {
 	            	ExperimentBase exp;
 	            	
 	            	if (file.isDirectory()) {
-	            		exp = new SplittedXValidationExperiment(file, new Report(reportFile), label, type, wrapper.map, modelFile);	
+	            		exp = new SplittedXValidationExperiment(file, new SynchronizedReport(reportFile), new SynchronizedReport(modelFile), label, type, wrapper.map);	
 	            	} else {
-	            		exp = new InternalXValidationExperiment(file, new Report(reportFile), label, 10, type, wrapper.map, modelFile);
+	            		exp = new InternalXValidationExperiment(file, new SynchronizedReport(reportFile), new SynchronizedReport(modelFile), label, 10, type, wrapper.map);
 	            	}
 					Future f = pool.submit(exp);
 	    			futures.add(f);
@@ -181,51 +181,5 @@ public class ExperimentalConsole {
 		Logger.getInstance().log("Experiments finished", Level.INFO);
 		RapidMiner.quit(RapidMiner.ExitMode.NORMAL);
 	}
-	
-	
-	public void testSurvivalSplitted(String testDir, String reportDirPrefix, float[] minCovs) throws IOException, InterruptedException, ExecutionException {
-		RapidMiner.init();
-    	Logger.getInstance().addStream(System.out, Level.FINE);
-    	
-    	int threadCount = Runtime.getRuntime().availableProcessors();
-    
-    	ExecutorService pool = Executors.newFixedThreadPool(threadCount);
-		List<Future> futures = new ArrayList<Future>();
-    	
-    	for (float cov: minCovs) {
-    		Map<String, Object> params = new HashMap<String, Object>();
-    		params.put(RuleGenerator.PARAMETER_LOGRANK_SURVIVAL, "true");
-    		params.put(RuleGenerator.PARAMETER_MIN_RULE_COVERED, "" + cov);
-    		
-    		File reportDir = new File(reportDirPrefix + "-minCov_" + cov);
-    		if (!reportDir.exists()) {
-    			reportDir.mkdirs();
-    		}
-    		
-	    	File dir = new File(testDir);
-	    	File[] directoryListing = dir.listFiles();
-	    	
-	    	if (directoryListing == null) {
-	    		throw new IOException();
-	    	}
-    	
-			for (File child : directoryListing) {
-				if (child.isFile()) {
-					continue;
-				} 
-			
-				String reportFile = reportDir + "/" + child.getName() + ".csv";
-				String modelFile = reportDir + "/" + child.getName() + ".res";
-				
-				SplittedXValidationExperiment exp = new SplittedXValidationExperiment(
-						child, new Report(reportFile), "survival_status", SplittedXValidationExperiment.Type.SURVIVAL_BY_REGRESSION, params, modelFile);	
-				Future f = pool.submit(exp);
-    			futures.add(f);
-    	    }	
-		}
-    	
-    	for (Future f : futures) {
-			f.get();
-		}
-	}
+
 }

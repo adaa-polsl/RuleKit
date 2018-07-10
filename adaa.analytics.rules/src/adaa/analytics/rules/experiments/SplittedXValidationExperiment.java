@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.StringUtils;
+
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
@@ -40,25 +42,23 @@ public class SplittedXValidationExperiment extends ExperimentBase {
 
 	protected File arffDir;
 		
-	protected String modelFile;
-	
 	protected ArffExampleSource trainArff;
 	
 	protected ArffExampleSource testArff;
 	
 	public SplittedXValidationExperiment(
 		File arffDir,
-		Report report,
+		SynchronizedReport qualityReport,
+		SynchronizedReport modelReport,
 		String labelAttribute,
 		Type experimentType,
-		Map<String, Object> params,
-		String modelFile) {
+		Map<String, Object> params) {
 		
-		super(report, params); 
+		super(qualityReport, modelReport, params); 
 		
 		try {
 			this.arffDir = arffDir;
-			this.modelFile = modelFile;
+		
 			this.paramsSets = new ArrayList<Map<String, Object>>();
 			paramsSets.add(params);
 			
@@ -180,24 +180,27 @@ public class SplittedXValidationExperiment extends ExperimentBase {
 		    	
 		    	PerformanceVector performance = (PerformanceVector)objs[0];	
 		    	
-		    	if (modelFile.length() > 0) {
-		    		FileWriter fw = new FileWriter(modelFile);
-					BufferedWriter bw = new BufferedWriter(fw);
+		    	if (modelReport != null) {
+		    		StringBuilder sb = new StringBuilder();
+		    		sb.append(StringUtils.repeat("=", 80));
+		    		sb.append("\n");
+		    		sb.append(testFile);
+		    		sb.append("\n\n");
 		    		Model model = (Model)objs[1];
-		    		bw.write(model.toString());
+		    		sb.append(model.toString());
 		    		
-		    		bw.write("\n");
+		    		sb.append("\n");
 		    		
 		    		// add performance
 			    	for (String name : performance.getCriteriaNames()) {
 			    		double avg = performance.getCriterion(name).getAverage();
-			    		bw.write(name + ": " + avg + "\n");	
+			    		sb.append(name + ": " + avg + "\n");	
 			    	}
 			    	
-		    		bw.close();
+			    	sb.append("\n\n");
+			    	modelReport.append(sb.toString());
 		    	}
 		    	
-		    
 		    	String[] columns = performance.getCriteriaNames();
 		    	
 		    	Logger.log(performance + "\n", Level.FINE);
@@ -215,7 +218,7 @@ public class SplittedXValidationExperiment extends ExperimentBase {
 		    		row +=  avg + ", ";
 		    	}
 		
-				report.add(new String[] {ruleGenerator.toString(), performanceHeader}, row);	
+				qualityReport.add(new String[] {ruleGenerator.toString(), performanceHeader}, row);	
 			}
 
 		} catch (Exception e) {

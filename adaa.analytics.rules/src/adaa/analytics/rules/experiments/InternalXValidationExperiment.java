@@ -49,13 +49,13 @@ public class InternalXValidationExperiment extends ExperimentBase {
 
 	public InternalXValidationExperiment(
 			File arffFile, 
-			Report report,
+			SynchronizedReport qualityReport,
+			SynchronizedReport modelReport,
 			String labelParameter,
 			int foldCount,
 			Type experimentType,
-			Map<String,Object> params,
-			String modelFile) {
-		this(arffFile, report, labelParameter, foldCount, experimentType, (List<Map<String,Object>>)null, modelFile);
+			Map<String,Object> params) {
+		this(arffFile, qualityReport, modelReport, labelParameter, foldCount, experimentType, (List<Map<String,Object>>)null);
 		
 		this.paramsSets = new ArrayList<Map<String, Object>>();
 		this.modelFile = modelFile;
@@ -65,19 +65,18 @@ public class InternalXValidationExperiment extends ExperimentBase {
 	
 	public InternalXValidationExperiment(
 			File arffFile, 
-			Report report,
+			SynchronizedReport qualityReport,
+			SynchronizedReport modelReport,
 			String labelParameter,
 			int foldCount,
 			Type experimentType,
-			List<Map<String,Object>> paramsSets,
-			String modelFile) {
+			List<Map<String,Object>> paramsSets) {
 		
-		super(report, paramsSets);
+		super(qualityReport, modelReport, paramsSets);
 		
 		try {
 			this.arffFile = arffFile;
-			this.modelFile = modelFile;
-
+			
 			ArffExampleSource arffSource = (ArffExampleSource)OperatorService.createOperator(ArffExampleSource.class);
 	    	ChangeAttributeRole roleSetter = (ChangeAttributeRole)OperatorService.createOperator(ChangeAttributeRole.class);
 	    	XValidation validation = (XValidation)OperatorService.createOperator(XValidation.class);
@@ -255,7 +254,7 @@ public class InternalXValidationExperiment extends ExperimentBase {
 		    	}
 			}
 	
-			report.add(new String[] {paramsHeader, performanceHeader}, row);	
+			qualityReport.add(new String[] {paramsHeader, performanceHeader}, row);	
 			
 		} catch (OperatorException | IOException e) {
 			// TODO Auto-generated catch block

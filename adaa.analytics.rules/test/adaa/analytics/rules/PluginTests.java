@@ -27,7 +27,7 @@ import org.junit.Test;
 import adaa.analytics.rules.consoles.ExperimentalConsole;
 import adaa.analytics.rules.experiments.ExperimentBase;
 import adaa.analytics.rules.experiments.InternalXValidationExperiment;
-import adaa.analytics.rules.experiments.Report;
+import adaa.analytics.rules.experiments.SynchronizedReport;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.RuleGenerator;
@@ -105,84 +105,6 @@ public class PluginTests {
     	crossValidate("class", nFolds, ExperimentBase.Type.CLASSIFICATION, testDirectory, logPrefix, parameterSets, 4);
     }
     
-    @Test 
-    public void runClassification() throws OperatorCreationException, OperatorException, UnsupportedEncodingException, FileNotFoundException, InterruptedException {
-    	
-    	RapidMiner.init();
-    	Logger.getInstance().addStream(System.out, Level.FINE);
-    	//Logger.getInstance().addStream(System.out, Level.WARNING);
-    	
-    	int folds = 5;
-    	String testDirectory = "E:/Disesor/Workspace/tst/arff/classification";
-    	String logPrefix = "D:/classification_cv_";
-    	
-    	Object [][] parameterSets = {
-    			// minimum rule coverage, pruning enabled, induction quality measure, pruning quality(optional)
-    		//	{5, 0.0, false, ClassificationMeasure.Correlation},
-    		//	{5, 0.0, true, ClassificationMeasure.Correlation},
-    		//	{5, 0.0, false, ClassificationMeasure.C2},
-    	
-    	//		{5, 0.0, true, 0, ClassificationMeasure.C2},
-    	//		{5, 0.0, true, 1, ClassificationMeasure.C2},
-    	//		{5, 0.0, true, 3, ClassificationMeasure.C2},
-    	//		{5, 0.0, true, 5, ClassificationMeasure.C2},
-    		//	{5, 0.0, false, ClassificationMeasure.RSS},
-    		//	{5, 0.0, true, ClassificationMeasure.RSS},
-    	//		{5, 0.0, false, 0, ClassificationMeasure.Lift},
-    	//		{5, 0.0, false, 1, ClassificationMeasure.Lift},
-    	//		{5, 0.0, false, 3, ClassificationMeasure.Lift},
-    	//		{5, 0.0, false, 5, ClassificationMeasure.Lift},
-    		//	{5, 0.0, true, ClassificationMeasure.Lift},
-    		//	{5, 0.0, false, ClassificationMeasure.SBayesian},
-    		//	{5, 0.0, true, ClassificationMeasure.SBayesian},
-    			
-    			{5, 0.0, true, 0, ClassificationMeasure.BinaryEntropy, ClassificationMeasure.Correlation},
- 
-    	};
-
-    	int cores = Runtime.getRuntime().availableProcessors();
-    	crossValidate("class", folds, ExperimentBase.Type.CLASSIFICATION, testDirectory, logPrefix, parameterSets, 4);
-    }
-    
-    
-    @Test 
-    public void runRegression() throws OperatorCreationException, OperatorException, UnsupportedEncodingException, FileNotFoundException, InterruptedException {
-    	
-    	RapidMiner.init();
-    	Logger.getInstance().addStream(System.out, Level.FINER);
-    	
-    	int folds = 5;
-    	String testDirectory = "E:/Disesor/Workspace/tst/arff/regression";
-    	String logPrefix = "D:/regression_cv_";
-    	
-    	Object [][] parameterSets = {
-    			// minimum rule coverage, pruning enabled, induction quality measure, pruning quality(optional)
-    	//		{5, 0.1, false, ClassificationMeasure.Correlation},
-    			{5, 0.1, true, ClassificationMeasure.Correlation},
-    	};
-
-    	int cores = Runtime.getRuntime().availableProcessors();
-    	crossValidate("class", folds, ExperimentBase.Type.REGRESSION, testDirectory, logPrefix, parameterSets, 1);
-    }
-    
-    @Test
-    public void runSurvival() throws Exception {
-    	RapidMiner.init();
-    	Logger.getInstance().addStream(System.out, Level.FINE);
-    	
-    	int folds = 5;
-    	String testDirectory = "E:/Disesor/Workspace/tst/miary-kombinacje/przezycie/cases/";
-    	String logPrefix = "D:/survival_cv_";
-    	
-    	Object [][] parameterSets = {
-    			// minimum rule coverage, pruning enabled
-    			{5, 0.1, true, ClassificationMeasure.SBayesian},
-    	};
-
-    	int cores = Runtime.getRuntime().availableProcessors();
-    	crossValidate("survival_status", folds, ExperimentBase.Type.SURVIVAL_BY_REGRESSION, testDirectory, logPrefix, parameterSets, 1);
-    }
-    
     protected void crossValidate(String labelAttribute, int folds, ExperimentBase.Type experimentType, 
     		String testDirectory, String logPrefix, Object[][] paramsArray, int threadCount) 
     		throws OperatorCreationException, OperatorException, UnsupportedEncodingException, FileNotFoundException, InterruptedException { 
@@ -195,7 +117,7 @@ public class PluginTests {
     	String dateString = dateFormat.format(begin);
     	String logFile = logPrefix + "_t" + threadCount + "_" + dateString + ".csv";	
     	
-    	Report report = new Report(logFile);
+    	SynchronizedReport report = new SynchronizedReport(logFile);
     	
     	try {
 	    	for (Object[] params : paramsArray) {
@@ -231,11 +153,11 @@ public class PluginTests {
 				InternalXValidationExperiment exp = new InternalXValidationExperiment(
 						child, 
 						report,
+						null,
 						labelAttribute, 
 						folds, 
 						experimentType, 
-						paramSets,
-						null);
+						paramSets);
 			//	Future f = pool.submit(exp);
 			//	futures.add(f);
 				exp.run();
@@ -250,112 +172,5 @@ public class PluginTests {
 		}
     }
     
-    @Test
-    public void runSurvivalSplitted() throws Exception {
-      	String testDir = "E:/Disesor/Workspace/prv/dat/survival/10x10cv";
-    	String reportDirPrefix =  "E:/Disesor/Workspace/survival_rules/res/10x10cv";
-    	
-    	float[] minCovs = {1, 2, 3};
-    	
-    	ExperimentalConsole console = new ExperimentalConsole();
-    	console.testSurvivalSplitted(testDir, reportDirPrefix, minCovs);
-   
-    }
-
-    @Test
-    public void runSurvivalTraining() throws Exception {
-    	RapidMiner.init();
-    	Logger.getInstance().addStream(System.out, Level.FINER);
-    	
-     	DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss");
-        int threads = 1;
-    	Date begin = new Date();
-    	String dateString = dateFormat.format(begin);
-    	String reportFile = "D:/survival_report_t" + threads + "_" + dateString + ".csv";	
-    	Report report = new Report(reportFile);
-    	String logFile = "D:/survival_log_t" + threads + "_" + dateString + ".log";	
-    	Logger.getInstance().addStream(new PrintStream(new FileOutputStream(logFile, true)), Level.FINE);
-
-    	String testDirectory = "E:/Disesor/Workspace/tst/miary-kombinacje/przezycie/cases/";
-    	
-    	ArffExampleSource arffSource = (ArffExampleSource)OperatorService.createOperator(ArffExampleSource.class);
-    	ChangeAttributeRole roleSetter = (ChangeAttributeRole)OperatorService.createOperator(ChangeAttributeRole.class);
-    	RuleGenerator ruleGenerator = new RuleGenerator(new OperatorDescription("", "", null, null, "", null));
-    	ModelApplier applier = (ModelApplier)OperatorService.createOperator(ModelApplier.class);
-    	RulePerformanceEvaluator evaluator = new RulePerformanceEvaluator(new OperatorDescription("", "", null, null, "", null));
-    	
-    	// configure main process
-    	com.rapidminer.Process process = new com.rapidminer.Process();
-    	process.getRootOperator().getSubprocess(0).addOperator(arffSource);
-    	process.getRootOperator().getSubprocess(0).addOperator(roleSetter);
-    	process.getRootOperator().getSubprocess(0).addOperator(ruleGenerator);
-    	process.getRootOperator().getSubprocess(0).addOperator(applier);
-    	process.getRootOperator().getSubprocess(0).addOperator(evaluator);
-    	
-    	arffSource.getOutputPorts().getPortByName("output").connectTo(roleSetter.getInputPorts().getPortByName("example set input"));	
-    	roleSetter.getOutputPorts().getPortByName("example set output").connectTo(ruleGenerator.getInputPorts().getPortByName("training set"));
-    	
-    	ruleGenerator.getOutputPorts().getPortByName("model").connectTo(applier.getInputPorts().getPortByName("model"));
-    	ruleGenerator.getOutputPorts().getPortByName("exampleSet").connectTo(applier.getInputPorts().getPortByName("unlabelled data"));
-    	 
-    	applier.getOutputPorts().getPortByName("labelled data").connectTo(
-    			evaluator.getInputPorts().getPortByName("labelled data"));
-   	
-    	// pass estimated performance to 
-    	ruleGenerator.getOutputPorts().getPortByName("estimated performance").connectTo(
-    			evaluator.getInputPorts().getPortByName("performance"));
-    	
-    	evaluator.getOutputPorts().getPortByName("performance").connectTo(
-    			process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(0));
-    
-    	// configure role setter
-    	roleSetter.setParameter(roleSetter.PARAMETER_NAME, "survival_status");
-    	roleSetter.setParameter(roleSetter.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
-    	List<String[]> roles = new ArrayList<String[]>();
-    	roles.add(new String[]{"survival_time", SurvivalRule.SURVIVAL_TIME_ROLE});
-    	roleSetter.setListParameter(roleSetter.PARAMETER_CHANGE_ATTRIBUTES, roles);
-    	
-    	ruleGenerator.setParameter(ruleGenerator.PARAMETER_LOGRANK_SURVIVAL, "true");
-    	ruleGenerator.setParameter(ruleGenerator.PARAMETER_MIN_RULE_COVERED, "" + 4);
-    	
-    	File dir = new File(testDirectory);
-    	File[] directoryListing = dir.listFiles();
-    	
-    	if (directoryListing == null) {
-    		throw new IOException();
-    	}
-    	
-		for (File child : directoryListing) {
-			if (!child.isFile()) {
-				continue;
-			}
-			Logger.log("Processing: " + child.getName() + "\n", Level.FINE);
-			
-			arffSource.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, child.getAbsolutePath());
-	    	IOContainer out = process.run();
-	    	
-	    	PerformanceVector performance = out.get(PerformanceVector.class, 0);	
-	    	String[] columns = performance.getCriteriaNames();
-	    	
-	    	Logger.log(performance + "\n", Level.FINE);
-	    	
-
-	    	// generate headers
-    		String performanceHeader = "Dataset, ";
-    		String row = child.getName() + ",";
-    		
-    		for (String name : columns) {
-    			performanceHeader += "avg (" +  name + "), std(" + name + "),";
-    		}
-
-	    	for (String name : performance.getCriteriaNames()) {
-	    		double avg = performance.getCriterion(name).getAverage();
-	    		double std = Math.sqrt(performance.getCriterion(name).getVariance());
-	    		row +=  avg + ", " + std + ", ";
-	    	}
-	
-			report.add(new String[] {"", performanceHeader}, row);	
-		}
-    }
 }
 
