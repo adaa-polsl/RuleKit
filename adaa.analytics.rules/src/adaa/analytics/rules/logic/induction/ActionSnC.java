@@ -32,11 +32,16 @@ import java.util.stream.*;
 public class ActionSnC extends AbstractSeparateAndConquer {
 	
 	protected ActionFinder finder;	
+	protected ActionRuleSet unprunedRules;
 	
 	public ActionSnC(ActionFinder finder_, ActionInductionParameters params) {
 		super(params);
 		finder = finder_;
 		this.factory = new RuleFactory(RuleFactory.ACTION, false, null);
+	}
+	
+	public ActionRuleSet getUnprunedRules() throws Exception {
+		return unprunedRules;
 	}
 	
 	@Override
@@ -45,6 +50,7 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 		Logger.log("ActionSnC.run", Level.FINE);
 		
 		ActionRuleSet ruleset = (ActionRuleSet) factory.create(dataset);
+		unprunedRules = (ActionRuleSet)factory.create(dataset);
 		Attribute label = dataset.getAttributes().getLabel();
 		NominalMapping mapping = label.getMapping();
 		
@@ -101,6 +107,7 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 				double uncovered_p = weightedP;
 				
 				if (carryOn) {
+					Rule unpruned = new ActionRule(rule);
 					if (params.isPruningEnabled()) {
 						Logger.log("Before prunning:" + rule.toString() + "\n" , Level.FINE);
 						finder.prune(rule, dataset);
@@ -133,6 +140,7 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 						carryOn = false; 
 					} else {
 						ruleset.addRule(aRule);
+						unprunedRules.addRule(unpruned);
 					}
 				}
 			}

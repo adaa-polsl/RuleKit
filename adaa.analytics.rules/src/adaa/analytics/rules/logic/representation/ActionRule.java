@@ -58,8 +58,11 @@ public class ActionRule extends Rule {
 		
 		this.coveringInformation = rref.coveringInformation;
 		
-		this.premise = ref.premise;
-		actionConsequence = rref.actionConsequence;
+		this.premise = new CompoundCondition();
+		
+		rref.premise.getSubconditions().stream().forEach(x -> this.premise.addSubcondition(x));
+		
+		actionConsequence = new Action(rref.actionConsequence.attribute, rref.actionConsequence.leftValue, rref.actionConsequence.rightValue);
 	}
 
 	

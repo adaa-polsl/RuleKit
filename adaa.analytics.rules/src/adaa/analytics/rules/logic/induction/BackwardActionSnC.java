@@ -35,6 +35,7 @@ public class BackwardActionSnC extends ActionSnC {
 		Logger.log("ActionSnC.run", Level.FINE);
 		
 		ActionRuleSet ruleset = (ActionRuleSet) factory.create(dataset);
+		this.unprunedRules = (ActionRuleSet) factory.create(dataset);
 		Attribute label = dataset.getAttributes().getLabel();
 		NominalMapping mapping = label.getMapping();
 		
@@ -143,7 +144,10 @@ public class BackwardActionSnC extends ActionSnC {
 					reversed.addRule(x);
 				});
 		
-		
+		reversed
+			.getRules()
+			.stream()
+			.forEach(x -> unprunedRules.addRule(x));
 		
 		if (params.isPruningEnabled()) {
 			ActionRuleSet pruned = (ActionRuleSet) factory.create(dataset);
@@ -168,6 +172,7 @@ public RuleSetBase run2(ExampleSet dataset) {
 		Logger.log("ActionSnC.run", Level.FINE);
 		
 		ActionRuleSet ruleset = (ActionRuleSet) factory.create(dataset);
+		unprunedRules = (ActionRuleSet) factory.create(dataset);
 		Attribute label = dataset.getAttributes().getLabel();
 		NominalMapping mapping = label.getMapping();
 		
@@ -230,7 +235,7 @@ public RuleSetBase run2(ExampleSet dataset) {
 					ActionRule aRule = (ActionRule)rule;
 					Covering cov = aRule.covers(filtered);
 					aRule.setCoveringInformation(cov);
-					
+					ActionRule unpruned = new ActionRule(aRule);
 					if (params.isPruningEnabled()) {
 						Logger.log("Before prunning:" + rule.toString() + "\n" , Level.FINE);
 						finder.prune(rule, dataset);
@@ -265,6 +270,7 @@ public RuleSetBase run2(ExampleSet dataset) {
 						carryOn = false; 
 					} else {
 						ruleset.addRule(aRule);
+						unprunedRules.addRule(unpruned);
 					}
 				}
 			}

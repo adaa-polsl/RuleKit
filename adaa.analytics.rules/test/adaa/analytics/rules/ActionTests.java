@@ -61,6 +61,8 @@ public class ActionTests {
 	protected int targetId;
 	protected String sourceClass;
 	protected String targetClass;
+	protected ActionRuleSet unprunedRules;
+	protected boolean dumpUnprunedRules;
 	
 	private String getOutputFileName() {
 		return outputFileName + outputExtension;
@@ -87,6 +89,8 @@ public class ActionTests {
 		params.setMaxGrowingConditions(maxGrowingConditions);
 		
 		params.addClasswiseTransition(sourceClass, targetClass);
+		
+		dumpUnprunedRules = true;
 		
 	}
 	
@@ -115,32 +119,41 @@ public class ActionTests {
 	}
 	
 	@Test
-	public void test() throws OperatorCreationException, OperatorException, IOException {
+	public void test() throws Exception {
 		
 		ActionSnC snc = new ActionSnC(new ActionFinder(params), params);
 		actions = (ActionRuleSet)snc.run(exampleSet);
+		
+		if (params.isPruningEnabled()) {
+			unprunedRules = snc.getUnprunedRules();
+		}
 			
 	}
 	
 	@Test
-	public void testBackwardRules2() throws OperatorCreationException, OperatorException, IOException {
+	public void testBackwardRules2() throws Exception {
 		
 		BackwardActionSnC snc = new BackwardActionSnC(new ActionFinder(params), params);
 
 		actions = (ActionRuleSet)snc.run2(exampleSet);
 
 		this.outputFileName += "-backward2";
-		
+		if (params.isPruningEnabled()) {
+			unprunedRules = snc.getUnprunedRules();
+		}
 	}
 	
 	@Test
-	public void testBackwardRules() throws OperatorCreationException, OperatorException, IOException {		
+	public void testBackwardRules() throws Exception {		
 		
 		BackwardActionSnC snc = new BackwardActionSnC(new ActionFinder(params), params);
 		actions = (ActionRuleSet)snc.run(exampleSet);
 		
 		this.outputFileName += "-backward";
 	
+		if (params.isPruningEnabled()) {
+			unprunedRules = snc.getUnprunedRules();
+		}
 	}
 
 	protected ExampleSet parseArffFile() throws OperatorException, OperatorCreationException {
@@ -238,6 +251,14 @@ public class ActionTests {
 		RuleSerializer serializer = new RuleSerializer(exampleSet, ';', "");
 		fw.write(serializer.serializeToCsv(actions));
 		
+		if (params.isPruningEnabled() && dumpUnprunedRules) {
+	
+			fw.write("\r\n\r\n");
+			fw.write("******UNPRUNED RULES******");
+			fw.write(this.unprunedRules.toString() + "\r\n");
+			serializer = new RuleSerializer(exampleSet, ';', "");
+			fw.write(serializer.serializeToCsv(unprunedRules));
+		}
 		
 		fw.close();
 		

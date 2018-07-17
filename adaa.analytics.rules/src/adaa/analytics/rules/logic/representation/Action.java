@@ -21,6 +21,7 @@ public class Action extends ElementaryCondition {
 		leftValue = sourceValue;
 		rightValue = targetValue;
 	}
+
 	
 	public static Action ReversedAction(Action act) {	
 		
