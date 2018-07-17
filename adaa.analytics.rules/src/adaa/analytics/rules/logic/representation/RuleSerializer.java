@@ -74,8 +74,10 @@ public class RuleSerializer {
 			.append("pr")
 			.append("nl")
 			.append("nr")
-			.append("P")
-			.append("N");
+			.append("Pl")
+			.append("Nl")
+			.append("Pr")
+			.append("Nr");
 		
 		while (iter.hasNext()) {
 			
@@ -106,7 +108,9 @@ public class RuleSerializer {
 			.append(cov.weighted_n)
 			.append(cov.weighted_nRight)
 			.append(cov.weighted_P)
-			.append(cov.weighted_N);
+			.append(cov.weighted_N)
+			.append(cov.weighted_P_right)
+			.append(cov.weighted_N_right);
 		
 		Iterator<Attribute> iter = set.getAttributes().allAttributes();
 		List<Action> conds = (new CompressedCompoundCondition(rule.getPremise())).getSubconditions().stream().map(Action.class::cast).collect(Collectors.toList());

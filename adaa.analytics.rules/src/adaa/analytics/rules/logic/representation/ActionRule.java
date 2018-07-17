@@ -17,6 +17,8 @@ public class ActionRule extends Rule {
 
 	protected Action actionConsequence;
 	protected ActionCovering coveringInformation;
+	protected double weighted_P_right;
+	protected double weighted_N_right;
 	
 	public String toString() {
 		String premiseText = premise == null ? "" :premise.toString(); 
@@ -50,11 +52,13 @@ public class ActionRule extends Rule {
 		if (rref == null)
 			throw new RuntimeException("Cannot copy ordinary rule to action rule!");
 		
-		this.weight = ref.weight;
-		this.weighted_p = ref.weighted_p;
-		this.weighted_n = ref.weighted_n;
-		this.weighted_P = ref.weighted_P;
-		this.weighted_N = ref.weighted_N;
+		this.weight = rref.weight;
+		this.weighted_p = rref.weighted_p;
+		this.weighted_n = rref.weighted_n;
+		this.weighted_P = rref.weighted_P;
+		this.weighted_N = rref.weighted_N;
+		this.weighted_P_right = rref.weighted_P_right;
+		this.weighted_N_right = rref.weighted_N_right;
 		
 		this.coveringInformation = rref.coveringInformation;
 		
@@ -116,6 +120,8 @@ public class ActionRule extends Rule {
 		covered.weighted_nRight =  rightCov.weighted_n;
 		covered.weighted_P = leftCov.weighted_P;
 		covered.weighted_N = leftCov.weighted_N;
+		covered.weighted_P_right = rightCov.weighted_P;
+		covered.weighted_N_right = rightCov.weighted_N;
 		
 		covered.positives = leftCov.positives;
 		covered.negatives = leftCov.negatives;
@@ -150,6 +156,8 @@ public class ActionRule extends Rule {
 		covered.weighted_nRight =  rightCov.weighted_n;
 		covered.weighted_P = leftCov.weighted_P;
 		covered.weighted_N = leftCov.weighted_N;
+		covered.weighted_P_right = rightCov.weighted_P;
+		covered.weighted_N_right = rightCov.weighted_N;
 		
 		covered.positives = leftCov.positives;
 		covered.negatives = leftCov.negatives;
@@ -198,8 +206,11 @@ public class ActionRule extends Rule {
 	@Override
 	public void setCoveringInformation(Covering cov) {
 		super.setCoveringInformation(cov);
-		if (cov instanceof ActionCovering)
+		if (cov instanceof ActionCovering) {
 			this.coveringInformation = (ActionCovering)cov;
+			this.weighted_N_right = coveringInformation.weighted_N_right;
+			this.weighted_P_right = coveringInformation.weighted_P_right;
+		}
 	}
 	
 	@Override
@@ -210,7 +221,8 @@ public class ActionRule extends Rule {
 	
 	public String printStats() {
 		return "(pl=" + weighted_p + ", nl=" + weighted_n + ", pr=" + this.coveringInformation.weighted_pRight + 
-				", nr=" + this.coveringInformation.weighted_nRight + ", P=" + weighted_P + ", N=" + weighted_N + 
+				", nr=" + this.coveringInformation.weighted_nRight + ", Pl=" + weighted_P + ", Nl=" + weighted_N + 
+				", Pr=" + this.weighted_P_right + ", Nr=" + this.weighted_N_right +
 				", weight=" + getWeight() + ")";
 	}
 }
