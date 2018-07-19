@@ -64,4 +64,9 @@ public class SingletonSet implements IValueSet, Serializable {
 		long temp = Double.doubleToLongBits(value);
 		return (int) (temp ^ (temp >>> 32));
 	}
+	@Override
+	public List<IValueSet> getDifference(IValueSet set) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

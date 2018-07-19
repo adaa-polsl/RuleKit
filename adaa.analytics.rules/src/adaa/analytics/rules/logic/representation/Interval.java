@@ -1,6 +1,8 @@
 package adaa.analytics.rules.logic.representation;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents continuous interval.
@@ -58,6 +60,20 @@ public class Interval implements IValueSet, Serializable {
 	}
 	
 	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		
+		Interval ival = obj instanceof Interval ? (Interval)obj : null;
+		
+		if (ival == null)
+			return false;
+		
+		return left == ival.left && right == ival.right && leftClosed == ival.leftClosed && rightClosed == ival.rightClosed;
+	}
+	
+	@Override
 	public boolean contains(double value) {		
 		return ((value >= left && leftClosed) || value > left) && ((value <= right && rightClosed) || value < right) ||
 				(Double.isNaN(value) && MissingValuesHandler.ignore);
@@ -106,6 +122,32 @@ public class Interval implements IValueSet, Serializable {
 				(rightClosed ? ">" : ")");
 		
 		return s;	
+	}
+
+	@Override
+	public List<IValueSet> getDifference(IValueSet set) {
+		if (set instanceof AnyValueSet) {
+			return null;
+		}
+		Interval ival = set instanceof Interval ? (Interval)set : null;
+		List<IValueSet> ret = new ArrayList<IValueSet>();
+		
+		if ( ival != null && this.intersects(ival) ) {
+			Interval intersection = (Interval) this.getIntersection(set);
+			
+			if (intersection.left > this.left && intersection.right < this.right) {
+				ret.add(new Interval(this.left, intersection.left, this.leftClosed, true));
+				ret.add(new Interval(intersection.right, this.right, true, this.rightClosed));
+			} else if (this.left == intersection.left) {
+				ret.add(new Interval(intersection.right, this.right, true, this.rightClosed));
+			} else if (this.right == intersection.right) {
+				ret.add(new Interval(this.left, intersection.left, this.leftClosed, true));
+			}
+			
+		} else {
+			ret.add(this);
+		}
+		return ret;
 	}
 
 }

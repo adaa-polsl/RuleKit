@@ -66,6 +66,7 @@ public class ElementaryCondition extends ConditionBase {
 	public ElementaryCondition intersect(ElementaryCondition other) {
 		return new ElementaryCondition(attribute, this.valueSet.getIntersection(other.getValueSet())); 
 	}
+
 	
 	@Override
 	public int hashCode() {

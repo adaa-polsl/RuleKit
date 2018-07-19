@@ -1,6 +1,7 @@
 package adaa.analytics.rules.logic.representation;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -76,6 +77,22 @@ class DiscreteSet implements IValueSet, Serializable {
 		DiscreteSet ret = new DiscreteSet();
 		ret.values = new HashSet<Double>(this.values);
 		ret.values.retainAll(ds.getValues());
+		return ret;
+	}
+
+	@Override
+	public List<IValueSet> getDifference(IValueSet set) {
+		DiscreteSet ds = (set instanceof DiscreteSet) ? (DiscreteSet)set : null;
+		List<IValueSet> ret = new ArrayList<IValueSet>(1);
+			
+		if (!this.intersects(set) || set instanceof AnyValueSet) {
+			ret.add(this);
+		} else {
+			DiscreteSet s = new DiscreteSet();
+			s.values = new HashSet<Double>(this.values);
+			s.values.removeAll(ds.values);
+			ret.add(s);
+		}
 		return ret;
 	}
 

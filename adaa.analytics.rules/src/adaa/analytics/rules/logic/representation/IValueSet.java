@@ -1,5 +1,7 @@
 package adaa.analytics.rules.logic.representation;
 
+import java.util.List;
+
 /**
  * Inteface to be implemented by all classes representing set of values (discrete set, interval, sum of sets, etc.).
  * @author Adam
@@ -17,6 +19,8 @@ public interface IValueSet {
 	public boolean intersects(IValueSet set);
 	
 	public IValueSet getIntersection(IValueSet set);
+	
+	public List<IValueSet> getDifference(IValueSet set);
 	
 	
 	public boolean equals(Object obj);

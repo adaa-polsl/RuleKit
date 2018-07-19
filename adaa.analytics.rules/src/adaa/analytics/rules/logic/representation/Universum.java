@@ -1,6 +1,7 @@
 package adaa.analytics.rules.logic.representation;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Universum implements IValueSet, Serializable {
 
@@ -34,5 +35,11 @@ public class Universum implements IValueSet, Serializable {
 	@Override
 	public boolean equals(Object obj) {
 		return (obj instanceof Universum);
+	}
+
+	@Override
+	public List<IValueSet> getDifference(IValueSet set) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
