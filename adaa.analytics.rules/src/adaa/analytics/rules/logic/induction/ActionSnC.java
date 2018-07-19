@@ -1,34 +1,24 @@
 package adaa.analytics.rules.logic.induction;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.Condition;
-import com.rapidminer.example.set.ConditionCreationException;
-import com.rapidminer.example.set.ConditionedExampleSet;
 import com.rapidminer.example.table.NominalMapping;
 
 import adaa.analytics.rules.logic.representation.Action;
 import adaa.analytics.rules.logic.representation.ActionRule;
 import adaa.analytics.rules.logic.representation.ActionRuleSet;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
-import adaa.analytics.rules.logic.representation.ConditionBase;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.representation.SingletonSet;
-import java.util.Optional;
-import java.util.stream.*;
+
 public class ActionSnC extends AbstractSeparateAndConquer {
 	
 	protected ActionFinder finder;	

@@ -14,12 +14,16 @@ import com.rapidminer.example.table.NominalMapping;
 public class ActionInductionParameters extends InductionParameters {
 
 	protected Map<String,String> transitions = new HashMap<String,String>();
+	protected ActionFindingParameters findingParams;
 	public static String ALL_CLASSES_LABEL = "*";
 	
-	public ActionInductionParameters() {
-		// TODO Auto-generated constructor stub
+	public ActionInductionParameters(ActionFindingParameters params) {
+		findingParams = params;
 	}
 	
+	public ActionFindingParameters getActionFindingParameters() {
+		return findingParams;
+	}
 	
 	public void setGenerateAllTransitions() {		
 		transitions.clear();

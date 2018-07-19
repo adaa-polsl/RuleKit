@@ -31,6 +31,8 @@ import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
 import com.rapidminer.tools.OperatorService;
 
 import adaa.analytics.rules.logic.induction.ActionFinder;
+import adaa.analytics.rules.logic.induction.ActionFindingParameters;
+import adaa.analytics.rules.logic.induction.ActionFindingParameters.RangeUsageStrategy;
 import adaa.analytics.rules.logic.induction.ActionInductionParameters;
 import adaa.analytics.rules.logic.induction.ActionSnC;
 import adaa.analytics.rules.logic.induction.BackwardActionSnC;
@@ -79,7 +81,10 @@ public class ActionTests {
 		outputFileName = testFileName.substring(0, testFileName.indexOf('.'));
 		outputFileName += "-rules-" + measure.getName() + (enablePruning  ? "-pruned" : "");
 		
-		params = new ActionInductionParameters();
+		ActionFindingParameters findingParams = new ActionFindingParameters();
+		findingParams.setUseNotIntersectingRangesOnly(RangeUsageStrategy.EXCLUSIVE_ONLY);
+		
+		params = new ActionInductionParameters(findingParams);
 		params.setInductionMeasure(measure);
 		params.setPruningMeasure(measure);
 		params.setEnablePruning(enablePruning);

@@ -6,11 +6,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 
+import adaa.analytics.rules.logic.induction.ActionFindingParameters.RangeUsageStrategy;
 import adaa.analytics.rules.logic.quality.*;
 import adaa.analytics.rules.logic.representation.Action;
 import adaa.analytics.rules.logic.representation.ActionRule;
@@ -33,7 +35,7 @@ public class ActionFinder extends AbstractFinder {
 		return uncoveredNegatives;
 	}
 
-	public ActionFinder(InductionParameters params) {
+	public ActionFinder(ActionInductionParameters params) {
 		super(params);
 	}
 	
@@ -158,12 +160,14 @@ public class ActionFinder extends AbstractFinder {
 		Rule negRule = aRule.getRightRule();
 		
 		Set<ElementaryCondition> conds = this.generateElementaryConditions(trainSet, allowedAttributes, coveredByRule);
-		ConditionBase best = this.getBestElementaryCondition(conds, trainSet, uncoveredByRuleset, posRule);
+		ConditionBase _best = this.getBestElementaryCondition(conds, trainSet, uncoveredByRuleset, posRule);
 		
-		if (best == null)
+		if (_best == null)
 			return null;
 		
-		Attribute usedAttribute = trainSet.getAttributes().get(((ElementaryCondition)best).getAttribute());
+		ElementaryCondition best = (ElementaryCondition)_best;
+		
+		Attribute usedAttribute = trainSet.getAttributes().get(best.getAttribute());
 		if (usedAttribute.isNominal()){
 			allowedAttributes.remove(usedAttribute);
 		}
@@ -171,8 +175,47 @@ public class ActionFinder extends AbstractFinder {
 		Set<Integer> coveredByNegRule = negRule.covers(trainSet).positives;		
 		Set<ElementaryCondition> conditionsForNegativeRule = new HashSet<ElementaryCondition>();
 		
-		this.getElementaryConditionForAttribute(trainSet, coveredByNegRule, conditionsForNegativeRule, ((ElementaryCondition)best).getAttribute());
-		ConditionBase otherBest = this.getBestElementaryCondition(conditionsForNegativeRule, trainSet, uncoveredNegatives, negRule);
+		this.getElementaryConditionForAttribute(trainSet, coveredByNegRule, conditionsForNegativeRule, best.getAttribute());
+		
+		ActionInductionParameters actionParams = (ActionInductionParameters)params;
+		Set<ElementaryCondition> toInduceForNegRule = new HashSet<ElementaryCondition>();
+		if (usedAttribute.isNumerical()) {
+			
+			if (
+				actionParams.getActionFindingParameters().getUseNotIntersectingRangesOnly() == RangeUsageStrategy.NOT_INTERSECTING
+				|| actionParams.getActionFindingParameters().getUseNotIntersectingRangesOnly() == RangeUsageStrategy.EXCLUSIVE_ONLY) {
+			
+				Set<ElementaryCondition> notIntersecting = conditionsForNegativeRule.stream()
+						.filter(x -> !x.getValueSet().intersects(best.getValueSet()))
+						.collect(Collectors.toSet());
+				
+				toInduceForNegRule.addAll(notIntersecting);
+				
+				if (actionParams.getActionFindingParameters().getUseNotIntersectingRangesOnly() == RangeUsageStrategy.EXCLUSIVE_ONLY) {
+					Set<ElementaryCondition> diffs = new HashSet<ElementaryCondition>();
+					
+					conditionsForNegativeRule
+					.stream()
+					.filter(x -> x.getValueSet().intersects(best.getValueSet()))
+					.forEach(
+							x -> diffs.addAll(
+									x.getValueSet().getDifference(best.getValueSet())
+									.stream()
+									.map(y -> new ElementaryCondition(usedAttribute.getName(), y))
+									.collect(Collectors.toList())
+									)
+							);
+					
+					
+					toInduceForNegRule.addAll(diffs);
+				}
+			
+			}
+			
+		} else {
+			toInduceForNegRule = conditionsForNegativeRule;
+		}
+		ConditionBase otherBest = this.getBestElementaryCondition(toInduceForNegRule, trainSet, uncoveredNegatives, negRule);
 
 		/*if (best.equals(otherBest)) {
 			return null;
