@@ -69,8 +69,14 @@ class DiscreteSet implements IValueSet, Serializable {
 
 	@Override
 	public IValueSet getIntersection(IValueSet set) {
-		// TODO Auto-generated method stub
-		return null;
+		if (!(set instanceof DiscreteSet)) {
+			return null;
+		}
+		DiscreteSet ds = (DiscreteSet)set;
+		DiscreteSet ret = new DiscreteSet();
+		ret.values = new HashSet<Double>(this.values);
+		ret.values.retainAll(ds.getValues());
+		return ret;
 	}
 
 	
