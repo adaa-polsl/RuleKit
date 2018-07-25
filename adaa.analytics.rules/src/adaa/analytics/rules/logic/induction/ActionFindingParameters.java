@@ -1,5 +1,13 @@
 package adaa.analytics.rules.logic.induction;
 
+import com.rapidminer.example.ExampleSet;
+
+import adaa.analytics.rules.logic.representation.ElementaryCondition;
+import adaa.analytics.rules.logic.actions.ActionInductionRangeStrategy;
+import adaa.analytics.rules.logic.actions.DefaultActionInductionRangeStrategy;
+import adaa.analytics.rules.logic.actions.ExclusiveOnlyActionInductionRangeStrategy;
+import adaa.analytics.rules.logic.actions.NotIntersectingActionInductionRangeStrategy;
+
 public class ActionFindingParameters {
 	
 	public enum RangeUsageStrategy 
@@ -13,6 +21,15 @@ public class ActionFindingParameters {
 	
 	public RangeUsageStrategy getUseNotIntersectingRangesOnly() {
 		return this.rangeStrategy;
+	}
+	
+	public ActionInductionRangeStrategy getRangeStrategy(ElementaryCondition pattern, ExampleSet dataset) {
+		switch(rangeStrategy) {
+		case ALL: return new DefaultActionInductionRangeStrategy(pattern, dataset);
+		case EXCLUSIVE_ONLY: return new ExclusiveOnlyActionInductionRangeStrategy(pattern, dataset);
+		case NOT_INTERSECTING: return new NotIntersectingActionInductionRangeStrategy(pattern, dataset);
+		default: throw new RuntimeException("Unknown range strategy");
+		}
 	}
 	
 	public void setUseNotIntersectingRangesOnly(RangeUsageStrategy value) {

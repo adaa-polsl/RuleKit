@@ -179,39 +179,9 @@ public class ActionFinder extends AbstractFinder {
 		
 		ActionInductionParameters actionParams = (ActionInductionParameters)params;
 		Set<ElementaryCondition> toInduceForNegRule = new HashSet<ElementaryCondition>();
+		
 		if (usedAttribute.isNumerical()) {
-			
-			if (
-				actionParams.getActionFindingParameters().getUseNotIntersectingRangesOnly() == RangeUsageStrategy.NOT_INTERSECTING
-				|| actionParams.getActionFindingParameters().getUseNotIntersectingRangesOnly() == RangeUsageStrategy.EXCLUSIVE_ONLY) {
-			
-				Set<ElementaryCondition> notIntersecting = conditionsForNegativeRule.stream()
-						.filter(x -> !x.getValueSet().intersects(best.getValueSet()))
-						.collect(Collectors.toSet());
-				
-				toInduceForNegRule.addAll(notIntersecting);
-				
-				if (actionParams.getActionFindingParameters().getUseNotIntersectingRangesOnly() == RangeUsageStrategy.EXCLUSIVE_ONLY) {
-					Set<ElementaryCondition> diffs = new HashSet<ElementaryCondition>();
-					
-					conditionsForNegativeRule
-					.stream()
-					.filter(x -> x.getValueSet().intersects(best.getValueSet()))
-					.forEach(
-							x -> diffs.addAll(
-									x.getValueSet().getDifference(best.getValueSet())
-									.stream()
-									.map(y -> new ElementaryCondition(usedAttribute.getName(), y))
-									.collect(Collectors.toList())
-									)
-							);
-					
-					
-					toInduceForNegRule.addAll(diffs);
-				}
-			
-			}
-			
+			toInduceForNegRule = actionParams.getActionFindingParameters().getRangeStrategy(best, trainSet).filter(conditionsForNegativeRule);
 		} else {
 			toInduceForNegRule = conditionsForNegativeRule;
 		}
