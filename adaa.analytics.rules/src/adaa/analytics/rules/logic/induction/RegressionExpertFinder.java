@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.SerializationUtils;
+
 import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.induction.RegressionFinder.ConditionEvaluation;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
@@ -16,11 +18,13 @@ import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Knowledge;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.Rule;
+import adaa.analytics.rules.logic.representation.Universum;
+import adaa.analytics.rules.logic.representation.ConditionBase.Type;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 
-public class RegressionExpertFinder extends RegressionFinder {
+public class RegressionExpertFinder extends RegressionFinder implements IExpertFinder {
 
 	protected Knowledge knowledge;
 	
@@ -32,6 +36,73 @@ public class RegressionExpertFinder extends RegressionFinder {
 		super(params);
 		// TODO Auto-generated constructor stub
 	}
+	
+	public void adjust(
+			Rule rule,
+			ExampleSet dataset, 
+			Set<Integer> uncovered) {
+			
+			CompoundCondition expertPremise = rule.getPremise();
+			rule.setPremise(new CompoundCondition());
+
+			for (ConditionBase cnd : expertPremise.getSubconditions()) {
+				ElementaryCondition ec = (ElementaryCondition)cnd;
+				if (ec.isAdjustable()) {
+					
+					// update covering information - needed for automatic induction
+					Covering covering = rule.covers(dataset);
+					Set<Integer> covered = new HashSet<Integer>();
+					covered.addAll(covering.positives);
+					covered.addAll(covering.negatives);
+					rule.setCoveringInformation(covering);
+					
+					// determine attribute
+					Set<Attribute> attr = new TreeSet<Attribute>(new AttributeComparator());
+					attr.add(dataset.getAttributes().get(ec.getAttribute()));
+					
+					Set<Integer> mustBeCovered;
+					
+					if (ec.getValueSet() instanceof Universum) {
+						// condition in a form "attribute = Any" - just find best condition using this attribute
+						mustBeCovered = uncovered;
+						
+					} else {
+						// condition in other form - find best condition using this attribute with non-empty intersection with specified condition
+						mustBeCovered = new HashSet<Integer>();
+						for (int i : covering.positives) {
+							if (ec.evaluate(dataset.getExample(i))) {
+								mustBeCovered.add(i);
+							}
+						}	
+						
+						for (int i : covering.negatives) {
+							if (ec.evaluate(dataset.getExample(i))) {
+								mustBeCovered.add(i);
+							}
+						}	
+					}
+					
+					ElementaryCondition newCondition = induceCondition(
+							rule, dataset, mustBeCovered, covered, attr);
+					
+					if (newCondition != null) {
+						newCondition.setType(Type.FORCED);
+						rule.getPremise().addSubcondition(newCondition);
+					}
+					
+				} else {
+					rule.getPremise().addSubcondition((ElementaryCondition)SerializationUtils.clone(ec));
+				}
+			}
+			
+			Covering covering = rule.covers(dataset);
+			rule.setCoveringInformation(covering);
+			
+			QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
+			rule.setWeight(qp.quality);
+			rule.setPValue(qp.pvalue);		
+		}
+	
 	
 	@Override 
 	public int grow(

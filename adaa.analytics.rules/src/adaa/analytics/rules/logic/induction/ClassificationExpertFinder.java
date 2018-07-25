@@ -23,7 +23,7 @@ import adaa.analytics.rules.logic.representation.Universum;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 
-public class ClassificationExpertFinder extends ClassificationFinder {
+public class ClassificationExpertFinder extends ClassificationFinder implements IExpertFinder {
 	
 	protected Knowledge knowledge;
 	
@@ -59,7 +59,7 @@ public class ClassificationExpertFinder extends ClassificationFinder {
 				Set<Attribute> attr = new TreeSet<Attribute>(new AttributeComparator());
 				attr.add(dataset.getAttributes().get(ec.getAttribute()));
 				
-				Set<Integer> mustBeCovered = new HashSet<Integer>();
+				Set<Integer> mustBeCovered;
 				
 				if (ec.getValueSet() instanceof Universum) {
 					// condition in a form "attribute = Any" - just find best condition using this attribute
@@ -67,6 +67,7 @@ public class ClassificationExpertFinder extends ClassificationFinder {
 					
 				} else {
 					// condition in other form - find best condition using this attribute with non-empty intersection with specified condition
+					mustBeCovered = new HashSet<Integer>();
 					for (int i : covering.positives) {
 						if (ec.evaluate(dataset.getExample(i))) {
 							mustBeCovered.add(i);

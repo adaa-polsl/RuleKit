@@ -70,6 +70,11 @@ public class RegressionExpertSnC extends RegressionSnC {
 		for (Rule r : knowledge.getRules()) {
 			Logger.log("Uncovered positive weight: " + uncovered_pn +  "/" + weighted_PN + "\n", Level.FINE);
 			Rule rule = (Rule) SerializationUtils.clone(r);
+			
+			RegressionExpertFinder erf = (RegressionExpertFinder)finder;
+			
+			erf.adjust(rule, dataset, uncovered);
+			
 			Covering cov = rule.covers(ses);
 			
 			QualityAndPValue qp = finder.calculateQualityAndPValue(dataset, cov, params.getVotingMeasure());
