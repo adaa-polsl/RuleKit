@@ -26,6 +26,11 @@ public class AnyValueSet implements IValueSet {
 	}
 
 	@Override
+	public int hashCode() {
+		return 1;
+	}
+	
+	@Override
 	public List<IValueSet> getDifference(IValueSet set) {
 		List<IValueSet> ret = new ArrayList<IValueSet>();
 		return ret; //or throw ?

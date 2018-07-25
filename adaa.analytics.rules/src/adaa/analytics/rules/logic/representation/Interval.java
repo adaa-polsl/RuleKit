@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 /**
  * Represents continuous interval.
  * @author Adam
@@ -148,6 +150,13 @@ public class Interval implements IValueSet, Serializable {
 			ret.add(this);
 		}
 		return ret;
+	}
+
+	@Override
+	public int hashCode() {
+		HashCodeBuilder builder = new HashCodeBuilder(17, 37);
+		builder.append(leftClosed).append(rightClosed).append(left).append(right);
+		return builder.toHashCode();
 	}
 
 }

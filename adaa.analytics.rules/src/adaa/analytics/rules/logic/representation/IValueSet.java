@@ -24,6 +24,7 @@ public interface IValueSet {
 	
 	
 	public boolean equals(Object obj);
+	public int hashCode();
 	
 	public String toString();
 	

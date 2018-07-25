@@ -3,6 +3,9 @@ package adaa.analytics.rules.logic.representation;
 import java.io.Serializable;
 import java.util.List;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 public class SingletonSet implements IValueSet, Serializable {
 
 	/**
@@ -40,8 +43,12 @@ public class SingletonSet implements IValueSet, Serializable {
 	@Override
 	public boolean equals(Object obj) {
 		SingletonSet ref = (obj instanceof SingletonSet) ? (SingletonSet)obj : null;
+		
 		if (ref != null) {
-			return value == ref.value;
+			EqualsBuilder builder = new EqualsBuilder();
+			builder.append(value,  ref.value);
+			builder.append(mapping, ref.mapping);
+			return builder.isEquals();
 		} else {
 			return false;
 		}
@@ -61,8 +68,9 @@ public class SingletonSet implements IValueSet, Serializable {
 	
 	@Override
 	public int hashCode() {
-		long temp = Double.doubleToLongBits(value);
-		return (int) (temp ^ (temp >>> 32));
+		HashCodeBuilder builder = new HashCodeBuilder(19,27);
+		builder.append(value).append(mapping);
+		return builder.toHashCode();
 	}
 	@Override
 	public List<IValueSet> getDifference(IValueSet set) {
