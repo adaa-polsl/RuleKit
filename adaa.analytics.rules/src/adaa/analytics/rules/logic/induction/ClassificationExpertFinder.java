@@ -55,21 +55,35 @@ public class ClassificationExpertFinder extends ClassificationFinder {
 				covered.addAll(covering.negatives);
 				rule.setCoveringInformation(covering);
 				
+				// determine attribute
+				Set<Attribute> attr = new TreeSet<Attribute>(new AttributeComparator());
+				attr.add(dataset.getAttributes().get(ec.getAttribute()));
+				
+				Set<Integer> mustBeCovered = new HashSet<Integer>();
+				
 				if (ec.getValueSet() instanceof Universum) {
+					// condition in a form "attribute = Any" - just find best condition using this attribute
+					mustBeCovered = uncoveredPositives;
 					
-					Set<Attribute> attr = new TreeSet<Attribute>(new AttributeComparator());
-					attr.add(dataset.getAttributes().get(ec.getAttribute()));
-					
-					ElementaryCondition newCondition = induceCondition(
-							rule, dataset, uncoveredPositives, covered, attr);
-					
-					boolean carryOn = tryAddCondition(rule, newCondition, dataset, covered);
-					
-					if (carryOn) {
-						newCondition.setType(Type.FORCED);
-						rule.getPremise().addSubcondition(newCondition);
-					}
+				} else {
+					// condition in other form - find best condition using this attribute with non-empty intersection with specified condition
+					for (int i : covering.positives) {
+						if (ec.evaluate(dataset.getExample(i))) {
+							mustBeCovered.add(i);
+						}
+					}	
 				}
+				
+				ElementaryCondition newCondition = induceCondition(
+						rule, dataset, mustBeCovered, covered, attr);
+				
+				boolean carryOn = tryAddCondition(rule, newCondition, dataset, covered);
+				
+				if (carryOn) {
+					newCondition.setType(Type.FORCED);
+					rule.getPremise().addSubcondition(newCondition);
+				}
+				
 			} else {
 				rule.getPremise().addSubcondition((ElementaryCondition)SerializationUtils.clone(ec));
 			}
