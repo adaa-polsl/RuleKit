@@ -14,6 +14,7 @@ import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.Hypergeometric;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.StatisticalTestResult;
+import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ConditionBase;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Interval;
@@ -49,7 +50,6 @@ public class ClassificationFinder extends AbstractFinder {
 		
 		return res;
 	}
-	
 	
 	/**
 	 * Removes irrelevant conditions from rule using hill-climbing strategy. 
@@ -87,31 +87,32 @@ public class ClassificationFinder extends AbstractFinder {
 				}
 			}
 		}
-		
-		Map<ConditionBase, Integer> conditionToMask = new HashMap<ConditionBase, Integer>();
-		Set<ConditionBase> presentConditions = new HashSet<ConditionBase>();
-		for (int cid = 0; cid < maskCount; ++cid) {
-			ConditionBase cnd = rule.getPremise().getSubconditions().get(cid);
-			presentConditions.add(cnd);
-			conditionToMask.put(cnd, cid);
-		}
+
+		boolean[] removedConditions = new boolean[rule.getPremise().getSubconditions().size()];
+		int conditionsLeft = rule.getPremise().getSubconditions().size();
 		
 		Covering covering = rule.covers(trainSet);
 		double initialQuality = calculateQuality(trainSet, covering, params.getPruningMeasure());
 		boolean continueClimbing = true;
 		
 		while (continueClimbing) {
-			ConditionBase toRemove = null;
+			int toRemove = -1;
 			double bestQuality = Double.NEGATIVE_INFINITY;
 			
-			for (ConditionBase cnd : rule.getPremise().getSubconditions()) {
+			for (int cid = 0; cid < rule.getPremise().getSubconditions().size(); ++cid) {
+				ConditionBase cnd = rule.getPremise().getSubconditions().get(cid);
+				// ignore already removed conditions
+				if (removedConditions[cid]) {
+					continue;
+				}
+				
 				// consider only prunable conditions
 				if (!cnd.isPrunable()) {
 					continue;
 				}
 				
 				// try to remove condition from output set
-				presentConditions.remove(cnd);
+				removedConditions[cid] = true;
 				
 				// iterate over all words
 				double p = 0;
@@ -120,9 +121,11 @@ public class ClassificationFinder extends AbstractFinder {
 					long word = ~(0L);
 					long labelWord = labelMask[wordId];
 					// iterate over all present conditions
-					for (ConditionBase other : presentConditions) {
-						int m = conditionToMask.get(other);
-						word &= masks[m * maskLength + wordId];
+					for (int m = 0; m < rule.getPremise().getSubconditions().size(); ++m ) {
+						//int m = conditionToMask.get(other);
+						if (!removedConditions[m]) {
+							word &= masks[m * maskLength + wordId];
+						}
 					}
 					
 					// no weighting - use popcount
@@ -142,29 +145,40 @@ public class ClassificationFinder extends AbstractFinder {
 					}
 				}
 				
-				presentConditions.add(cnd);
+				removedConditions[cid] = false;
 
 				double q = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
 						p, n, rule.getWeighted_P(), rule.getWeighted_N());
 				
 				if (q > bestQuality) {
 					bestQuality = q;
-					toRemove = cnd;
+					toRemove = cid;
 				}
 			}
 			
 			// if there is something to remove
 			if (bestQuality >= initialQuality) {
 				initialQuality = bestQuality;
-				presentConditions.remove(toRemove);
-				rule.getPremise().removeSubcondition(toRemove);
-				if (rule.getPremise().getSubconditions().size() == 1) {
+				removedConditions[toRemove] = true;
+				--conditionsLeft;
+				
+				if (conditionsLeft == 1) {
 					continueClimbing = false;
 				}
 			} else {
 				continueClimbing = false;
 			}
 		}
+		
+		CompoundCondition prunedPremise = new CompoundCondition();
+	
+		for (int cid = 0; cid < rule.getPremise().getSubconditions().size(); ++cid) {
+			if (!removedConditions[cid]) {
+				prunedPremise.addSubcondition(rule.getPremise().getSubconditions().get(cid));
+			}
+		}
+		
+		rule.setPremise(prunedPremise);
 		
 		covering = rule.covers(trainSet);
 		rule.setCoveringInformation(covering);
