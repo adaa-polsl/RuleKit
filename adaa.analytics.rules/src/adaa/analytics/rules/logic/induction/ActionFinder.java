@@ -149,7 +149,8 @@ public class ActionFinder extends AbstractFinder {
 			ExampleSet trainSet, 
 			Set<Integer> uncoveredByRuleset,
 			Set<Integer> coveredByRule,
-			Set<Attribute> allowedAttributes) {
+			Set<Attribute> allowedAttributes,
+			Object... extraParams) {
 		
 		ActionRule aRule = rule instanceof ActionRule ? (ActionRule)rule : null;
 		

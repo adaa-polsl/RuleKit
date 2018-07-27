@@ -50,12 +50,14 @@ public class RegressionFinder extends AbstractFinder {
 		super(params);
 	}
 	
+	@Override
 	protected ElementaryCondition induceCondition(
 		Rule rule,
 		ExampleSet dataset,
 		Set<Integer> uncovered, 
 		Set<Integer> covered, 
-		Set<Attribute> allowedAttributes) {
+		Set<Attribute> allowedAttributes,
+		Object... extraParams) {
 		
 		ConditionEvaluation bestEvaluation = new ConditionEvaluation();
 		Attribute ignoreCandidate = null;

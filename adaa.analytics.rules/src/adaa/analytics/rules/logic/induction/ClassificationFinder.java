@@ -28,6 +28,8 @@ import adaa.analytics.rules.logic.representation.SingletonSet;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.table.DataRow;
+import com.rapidminer.example.table.ExampleTable;
 
 /**
  * Algorithm for growing and pruning classification rules.
@@ -70,18 +72,17 @@ public class ClassificationFinder extends AbstractFinder {
 		
 		int initialConditionsCount = rule.getPremise().getSubconditions().size();
 		
-		// get current covering
-		IntegerBitSet covered = new IntegerBitSet(dataset.size());
-		IntegerBitSet conditionCovered = new IntegerBitSet(dataset.size());
+		HashSet<Integer> covered = new HashSet<Integer>();
 		
+		// bit vectors for faster operations on coverings
+		IntegerBitSet conditionCovered = new IntegerBitSet(dataset.size());
 		IntegerBitSet positives = new IntegerBitSet(dataset.size());
 		IntegerBitSet negatives = new IntegerBitSet(dataset.size());
 		
-		if (rule.getPremise().getSubconditions().size() == 0) {
-			covered.setAll();
-		} else {
-			rule.getPremise().evaluate(dataset, covered);
-		}
+		// get current covering
+		Covering covering = rule.covers(dataset);
+		covered.addAll(covering.positives);
+		covered.addAll(covering.negatives);
 		
 		int id = 0;
 		for (Example e : dataset) {
@@ -93,10 +94,6 @@ public class ClassificationFinder extends AbstractFinder {
 			++id;
 		}
 	
-		Covering covering = new Covering();
-		covering.weighted_P = positives.size();
-		covering.weighted_N = negatives.size();
-		
 		Set<Attribute> allowedAttributes = new TreeSet<Attribute>(new AttributeComparator());
 		for (Attribute a: dataset.getAttributes()) {
 			allowedAttributes.add(a);
@@ -107,18 +104,17 @@ public class ClassificationFinder extends AbstractFinder {
 		
 		do {
 			ElementaryCondition condition = induceCondition(
-					rule, dataset, uncovered, covered, allowedAttributes);
+					rule, dataset, uncovered, covered, allowedAttributes, positives);
 			
 			if (condition != null) {
 				conditionCovered.clear();
 				condition.evaluate(dataset, conditionCovered);
 				rule.getPremise().addSubcondition(condition);
 				
-				
 				covered.retainAll(conditionCovered);
 				
-				positives.retainAll(covered);
-				negatives.retainAll(covered);
+				positives.retainAll(conditionCovered);
+				negatives.retainAll(conditionCovered);
 			
 				covering.weighted_p = positives.size();
 				covering.weighted_n = negatives.size();
@@ -286,7 +282,9 @@ public class ClassificationFinder extends AbstractFinder {
 		rule.setWeight(qp.quality);
 		rule.setPValue(qp.pvalue);
 		
-		return covering;
+		//System.exit(0);
+		
+		return covering;	
 	}
 
 	@Override
@@ -295,13 +293,19 @@ public class ClassificationFinder extends AbstractFinder {
 		ExampleSet trainSet,
 		Set<Integer> uncoveredPositives,
 		Set<Integer> coveredByRule, 
-		Set<Attribute> allowedAttributes) {
+		Set<Attribute> allowedAttributes,
+		Object... extraParams) {
 			
 		double bestQuality = -Double.MAX_VALUE;
 		ElementaryCondition bestCondition = null;
 		double mostCovered = 0;
 		Attribute ignoreCandidate = null;
 		double classId = ((SingletonSet)rule.getConsequence().getValueSet()).getValue();
+		Attribute weightAttr = trainSet.getAttributes().getWeight();
+		
+		Set<Integer> positives = (Set<Integer>)extraParams[0];
+		
+		ExampleTable table = trainSet.getExampleTable();
 		
 		// iterate over all allowed decision attributes
 		for (Attribute attr : allowedAttributes) {
@@ -322,8 +326,8 @@ public class ClassificationFinder extends AbstractFinder {
 				
 				// get all distinctive values of attribute
 				for (int id : coveredByRule) {
-					Example ex = trainSet.getExample(id);
-					double val = ex.getValue(attr);
+					DataRow dr = table.getDataRow(id);
+					double val = dr.get(attr);
 					
 					// exclude missing values from keypoints
 					if (!Double.isNaN(val)) {
@@ -331,10 +335,10 @@ public class ClassificationFinder extends AbstractFinder {
 							values2ids.put(val, new ArrayList<Integer>());
 						} 
 						values2ids.get(val).add(id);
-						double w = trainSet.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
+						double w = (weightAttr != null) ? dr.get(weightAttr) : 1.0;
 						
 						// put to proper bin depending of class label 
-						if (rule.getConsequence().evaluate(ex)) {
+						if (positives.contains(id)) {
 							right_p += w;
 							if (uncoveredPositives.contains(id)) { 
 								++toCover_right_p; 
@@ -357,11 +361,12 @@ public class ClassificationFinder extends AbstractFinder {
 					
 					List<Integer> ids = values2ids.get(key);
 					for (int id : ids) {
-						Example ex = trainSet.getExample(id);
-						double w = trainSet.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
+						DataRow dr = table.getDataRow(id);
+						double w = (weightAttr != null) ? dr.get(weightAttr) : 1.0;
 						
 						// update p and n statistics 
-						if (rule.getConsequence().evaluate(ex)) {
+						if (positives.contains(id)) {
+					//	if (rule.getConsequence().evaluate(ex)) {
 							left_p += w;
 							right_p -= w;
 							if (uncoveredPositives.contains(id)) { 
@@ -419,15 +424,15 @@ public class ClassificationFinder extends AbstractFinder {
 				
 				// get all distinctive values of attribute
 				for (int id : coveredByRule) {
-					Example ex = trainSet.getExample(id);
-					double value = ex.getValue(attr);
+					DataRow dr = table.getDataRow(id);
+					double value = dr.get(attr);
 					
 					// omit missing values
 					if (!Double.isNaN(value)) {
 						int castedValue = (int)value;
-						double w = trainSet.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
+						double w = (weightAttr != null) ? dr.get(weightAttr) : 1.0;
 						
-						if (rule.getConsequence().evaluate(ex)) {
+						if (positives.contains(id)) {
 							p[castedValue] += w;
 							if (uncoveredPositives.contains(id)) {
 								++toCover_p[castedValue];

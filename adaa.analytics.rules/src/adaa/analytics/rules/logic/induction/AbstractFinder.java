@@ -206,7 +206,8 @@ public abstract class AbstractFinder {
 		final ExampleSet trainSet,
 		final Set<Integer> uncoveredByRuleset,
 		final Set<Integer> coveredByRule, 
-		final Set<Attribute> allowedAttributes);
+		final Set<Attribute> allowedAttributes,
+		Object... extraParams);
 	
 	protected Set<Attribute> names2attributes(Set<String> names, ExampleSet dataset) {
 		Set<Attribute> out = new HashSet<Attribute>();
