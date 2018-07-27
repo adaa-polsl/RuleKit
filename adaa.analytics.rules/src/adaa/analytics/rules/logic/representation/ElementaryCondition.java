@@ -5,7 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
+import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.table.DataRow;
+import com.rapidminer.example.table.DataRowReader;
+import com.rapidminer.example.table.ExampleTable;
 
 public class ElementaryCondition extends ConditionBase {
 
@@ -35,6 +40,25 @@ public class ElementaryCondition extends ConditionBase {
 		double v = ex.getValue(ex.getAttributes().get(attribute));
 		boolean result = valueSet.contains(v);
 		return result;
+	}
+	
+	
+	protected void internalEvaluate(ExampleSet set,  Set<Integer> out) {
+		ExampleTable tab = set.getExampleTable();
+		DataRowReader drr = tab.getDataRowReader();
+		
+		Attribute a = set.getAttributes().get(attribute);
+		
+		int id = 0; 
+		while (drr.hasNext()) {
+			DataRow dr = drr.next();
+			
+			double v = dr.get(a);
+			if (valueSet.contains(v)) {
+				out.add(id);
+			}
+			++id;
+		}
 	}
 	
 	

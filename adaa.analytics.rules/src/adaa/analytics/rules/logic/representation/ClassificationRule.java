@@ -5,6 +5,7 @@ import java.util.Set;
 import adaa.analytics.rules.logic.induction.Covering;
 
 import com.rapidminer.example.Example;
+import com.rapidminer.example.ExampleReader;
 import com.rapidminer.example.ExampleSet;
 
 public class ClassificationRule extends Rule {
@@ -66,8 +67,9 @@ public class ClassificationRule extends Rule {
 	public Covering covers(ExampleSet set) {
 		Covering covered = new Covering();
 		
-		for (int id = 0; id < set.size(); ++id) {
-			Example ex = set.getExample(id);
+		
+		int id = 0;
+		for (Example ex : set) {
 			double w = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
 			
 			boolean consequenceAgree = this.getConsequence().evaluate(ex);
@@ -86,6 +88,7 @@ public class ClassificationRule extends Rule {
 					covered.weighted_n += w;
 				}
 			}
+			++id;
 		}
 		return covered;
 	}

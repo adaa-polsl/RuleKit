@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.rapidminer.example.Example;
+import com.rapidminer.example.ExampleSet;
 
 /**
  * Interface to be implemented by all conditions.
@@ -34,11 +35,24 @@ public abstract class ConditionBase implements Cloneable, Serializable {
 		return disabled ? true : internalEvaluate(ex);
 	}
 	
+	/**
+	 * Checks if condition is fulfilled for given example.
+	 * @param ex An example to be checked.
+	 * @return Test result.
+	 */
+	public void evaluate(ExampleSet set, Set<Integer> outIndices) {
+		if (!disabled) 
+			internalEvaluate(set, outIndices);
+	}
+	
+	
 	public abstract boolean equals(Object ref);
 	
 	public abstract Set<String> getAttributes();
 	
 	protected abstract boolean internalEvaluate(Example ex);
+	
+	protected abstract void internalEvaluate(ExampleSet set,  Set<Integer> outIndices);
 	
 	protected boolean disabled = false;
 	protected Type type = Type.NORMAL;

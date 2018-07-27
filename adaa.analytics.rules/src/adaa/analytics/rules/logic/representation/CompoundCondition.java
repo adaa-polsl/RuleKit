@@ -11,6 +11,7 @@ import java.util.Set;
 import adaa.analytics.rules.logic.representation.ConditionBase.Type;
 
 import com.rapidminer.example.Example;
+import com.rapidminer.example.ExampleSet;
 
 public class CompoundCondition extends ConditionBase {
 
@@ -42,6 +43,25 @@ public class CompoundCondition extends ConditionBase {
 		}
 		return (operator == LogicalOperator.CONJUNCTION) ? true : false;
 	}
+	
+	
+	@Override
+	protected void internalEvaluate(ExampleSet set, Set<Integer> outIndices) {
+		
+		IntegerBitSet temp = new IntegerBitSet(set.size());
+		
+		for (ConditionBase cond : subconditions) {
+			cond.evaluate(set, temp);
+
+			if (operator == LogicalOperator.CONJUNCTION) {
+				outIndices.retainAll(temp);
+			} else if (operator == LogicalOperator.ALTERNATIVE) {
+				outIndices.addAll(temp);
+			}
+		}
+		
+	}
+	
 	
 	public String toString() {
 		String s = "";

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
@@ -17,6 +18,7 @@ import adaa.analytics.rules.logic.quality.StatisticalTestResult;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ConditionBase;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.IntegerBitSet;
 import adaa.analytics.rules.logic.representation.Interval;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.MissingValuesHandler;
@@ -50,6 +52,104 @@ public class ClassificationFinder extends AbstractFinder {
 		
 		return res;
 	}
+	
+	
+	/**
+	 * Grows a rule.
+	 * @param rule Rule to be grown.
+	 * @param trainSet Training set.
+	 * @param uncovered Collection of examples yet to cover (either all or positives).
+	 * @return Number of conditions added.
+	 */
+	public int grow(
+		final Rule rule,
+		final ExampleSet dataset,
+		final Set<Integer> uncovered) {
+
+		Logger.log("AbstractFinder.grow()\n", Level.FINE);
+		
+		int initialConditionsCount = rule.getPremise().getSubconditions().size();
+		
+		// get current covering
+		IntegerBitSet covered = new IntegerBitSet(dataset.size());
+		IntegerBitSet conditionCovered = new IntegerBitSet(dataset.size());
+		
+		IntegerBitSet positives = new IntegerBitSet(dataset.size());
+		IntegerBitSet negatives = new IntegerBitSet(dataset.size());
+		
+		if (rule.getPremise().getSubconditions().size() == 0) {
+			covered.setAll();
+		} else {
+			rule.getPremise().evaluate(dataset, covered);
+		}
+		
+		int id = 0;
+		for (Example e : dataset) {
+			if (rule.getConsequence().evaluate(e)) {
+				positives.add(id);
+			} else {
+				negatives.add(id);
+			}
+			++id;
+		}
+	
+		Covering covering = new Covering();
+		covering.weighted_P = positives.size();
+		covering.weighted_N = negatives.size();
+		
+		Set<Attribute> allowedAttributes = new TreeSet<Attribute>(new AttributeComparator());
+		for (Attribute a: dataset.getAttributes()) {
+			allowedAttributes.add(a);
+		}
+		
+		// add conditions to rule
+		boolean carryOn = true;
+		
+		do {
+			ElementaryCondition condition = induceCondition(
+					rule, dataset, uncovered, covered, allowedAttributes);
+			
+			if (condition != null) {
+				conditionCovered.clear();
+				condition.evaluate(dataset, conditionCovered);
+				rule.getPremise().addSubcondition(condition);
+				
+				
+				covered.retainAll(conditionCovered);
+				
+				positives.retainAll(covered);
+				negatives.retainAll(covered);
+			
+				covering.weighted_p = positives.size();
+				covering.weighted_n = negatives.size();
+				
+				rule.setCoveringInformation(covering);
+				QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
+				rule.setWeight(qp.quality);
+				rule.setPValue(qp.pvalue);
+				
+				Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
+						+ rule.toString() + "\n", Level.FINER);
+				
+				if (params.getMaxGrowingConditions() > 0) {
+					if (rule.getPremise().getSubconditions().size() - initialConditionsCount >= 
+						params.getMaxGrowingConditions() * dataset.getAttributes().size()) {
+						carryOn = false;
+					}
+				}
+				
+			} else {
+				carryOn = false;
+			}
+			
+		} while (carryOn); 
+		
+		// if rule has been successfully grown
+		int addedConditionsCount = rule.getPremise().getSubconditions().size() - initialConditionsCount;
+		rule.setInducedContitionsCount(addedConditionsCount);
+		return addedConditionsCount;
+	}
+	
 	
 	/**
 	 * Removes irrelevant conditions from rule using hill-climbing strategy. 
