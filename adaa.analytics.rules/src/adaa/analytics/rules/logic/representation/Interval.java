@@ -159,4 +159,11 @@ public class Interval implements IValueSet, Serializable {
 		return builder.toHashCode();
 	}
 
+	public double getLeft() {
+		return left;
+	}
+	
+	public double getRight() {
+		return right;
+	}
 }
