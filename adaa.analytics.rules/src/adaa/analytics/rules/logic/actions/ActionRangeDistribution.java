@@ -67,19 +67,23 @@ public class ActionRangeDistribution {
 		}
 	}
 	
-	protected ActionRuleSet actions;
+	protected final ActionRuleSet actions;
+	protected final ExampleSet set;
 	
 	protected Map<IValueSet, DistributionEntry> distribution = new HashMap<IValueSet, DistributionEntry>();
 
 	public ActionRangeDistribution(ActionRuleSet ruleset, ExampleSet dataset) {
 		actions = ruleset;
-		List<String> classValues = dataset.getAttributes().getLabel().getMapping().getValues();
+		set = dataset;
+	}
+	
+	protected void calculateActionDistribution() {
 		
+		List<String> classValues = set.getAttributes().getLabel().getMapping().getValues();
 		
 		//Gather all elementary conditions to one list
-		
 		Stream<ConditionWithClass> conditions = Stream.empty();
-		for (Rule rule : ruleset.getRules() ) {
+		for (Rule rule : actions.getRules() ) {
 			
 			ActionRule actionRule = (ActionRule)rule;
 			
@@ -96,7 +100,6 @@ public class ActionRangeDistribution {
 		}
 		
 		//Split them by attribute
-		
 		Map<String, List<ConditionWithClass>> grouped = 
 				conditions
 				.collect(Collectors.groupingBy(x -> x.getCondition().getAttribute()));
@@ -111,7 +114,7 @@ public class ActionRangeDistribution {
 			String atr = entry.getKey();
 			
 			//extracts just sorted by left and unique intervals
-			if (!dataset.getAttributes().get(atr).isNumerical()) {
+			if (!set.getAttributes().get(atr).isNumerical()) {
 				continue;
 			} else {
 				ivals = cnds.stream()
@@ -123,37 +126,9 @@ public class ActionRangeDistribution {
 						.collect(Collectors.toList());
 			}
 			
-			//finds all intersection point : each with each
-			Set<Double> points = new TreeSet<Double>();
-			for (int i = 0; i < ivals.size() - 1; i++) {
-				int offset = 1;
-				Interval curr = ivals.get(i);
-				Interval next = ivals.get(i+offset);
-				
-				List<Interval> toCheck = new ArrayList<Interval>();
-				List<Interval> res = new ArrayList<Interval>();
-				points.add(curr.getLeft());
-				points.add(curr.getRight());
-				
-				while (curr.intersects(next)) {
-					
-					Interval intersection = (Interval)curr.getIntersection(next);
-					points.add(intersection.getLeft());
-					points.add(intersection.getRight());
-					
-					offset++;
-					next = ivals.get(i+offset);
-				}
-			}
-			
-			//construction of new intervals = all intersections
-			List<Double>  pts = points.stream().distinct().collect(Collectors.toList());
-			
-			for (int i = 0; i < points.size() - 1; i++) {
-				
-				result.add(new Interval(pts.get(i), pts.get(i+1), true, true));
-				
-			}
+			//finds all intersection point 
+			IntersectionFinder finder = new IntersectionFinder();
+			result = finder.calculateAllIntersectionsOf(ivals);
 			
 			//counting the distribution
 			Map<IValueSet, DistributionEntry> split = new HashMap<IValueSet, DistributionEntry>(); 

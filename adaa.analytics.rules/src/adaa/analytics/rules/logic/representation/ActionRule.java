@@ -46,6 +46,18 @@ public class ActionRule extends Rule {
 		this.premise = premise;
 		actionConsequence = consequence;
 	}
+	
+	public ActionRule(CompoundCondition premise, ElementaryCondition consequence) throws Exception {
+		if (consequence instanceof Action) {
+
+			this.premise = premise;
+			actionConsequence = (Action)consequence;
+		} else {
+			throw new Exception("Non action consequence for action rule");
+		}
+		
+	}
+	
 	//can't use super here
 	public ActionRule(Rule ref) {
 		ActionRule rref = (ref instanceof ActionRule) ? (ActionRule)ref : null;
