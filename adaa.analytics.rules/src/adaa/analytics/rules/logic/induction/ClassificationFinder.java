@@ -162,9 +162,9 @@ public class ClassificationFinder extends AbstractFinder {
 			throw new IllegalArgumentException();
 		}
 		
-		int maskCount = rule.getPremise().getSubconditions().size();
+		int conditionsCount = rule.getPremise().getSubconditions().size();
 		int maskLength = (trainSet.size() + Long.SIZE - 1) / Long.SIZE; 
-		long[] masks = new long[maskCount * maskLength]; 
+		long[] masks = new long[conditionsCount * maskLength]; 
 		long[] labelMask = new long[maskLength];
 		
 		for (int i = 0; i < trainSet.size(); ++i) {
@@ -176,7 +176,7 @@ public class ClassificationFinder extends AbstractFinder {
 				labelMask[wordId] |= 1L << wordOffset;
 			}
 			
-			for (int m = 0; m < maskCount; ++m) {
+			for (int m = 0; m < conditionsCount; ++m) {
 				ConditionBase cnd = rule.getPremise().getSubconditions().get(m);
 				if (cnd.evaluate(e)) {
 					masks[m * maskLength + wordId] |= 1L << wordOffset;
@@ -184,21 +184,22 @@ public class ClassificationFinder extends AbstractFinder {
 			}
 		}
 
-		boolean[] removedConditions = new boolean[rule.getPremise().getSubconditions().size()];
+		IntegerBitSet removedConditions = new IntegerBitSet(conditionsCount);
 		int conditionsLeft = rule.getPremise().getSubconditions().size();
 		
 		Covering covering = rule.covers(trainSet);
 		double initialQuality = calculateQuality(trainSet, covering, params.getPruningMeasure());
 		boolean continueClimbing = true;
+		boolean weighting = (trainSet.getAttributes().getWeight() != null);
 		
 		while (continueClimbing) {
 			int toRemove = -1;
 			double bestQuality = Double.NEGATIVE_INFINITY;
 			
-			for (int cid = 0; cid < rule.getPremise().getSubconditions().size(); ++cid) {
+			for (int cid = 0; cid < conditionsCount; ++cid) {
 				ConditionBase cnd = rule.getPremise().getSubconditions().get(cid);
 				// ignore already removed conditions
-				if (removedConditions[cid]) {
+				if (removedConditions.contains(cid)) {
 					continue;
 				}
 				
@@ -208,7 +209,7 @@ public class ClassificationFinder extends AbstractFinder {
 				}
 				
 				// try to remove condition from output set
-				removedConditions[cid] = true;
+				removedConditions.remove(cid);
 				
 				// iterate over all words
 				double p = 0;
@@ -217,15 +218,15 @@ public class ClassificationFinder extends AbstractFinder {
 					long word = ~(0L);
 					long labelWord = labelMask[wordId];
 					// iterate over all present conditions
-					for (int m = 0; m < rule.getPremise().getSubconditions().size(); ++m ) {
+					for (int m = 0; m < conditionsCount; ++m ) {
 						//int m = conditionToMask.get(other);
-						if (!removedConditions[m]) {
+						if (!removedConditions.contains(m)) {
 							word &= masks[m * maskLength + wordId];
 						}
 					}
 					
 					// no weighting - use popcount
-					if (trainSet.getAttributes().getWeight() == null) {
+					if (!weighting) {
 						p += Long.bitCount(word & labelWord);
 						n += Long.bitCount(word & ~labelWord);
 					} else {
@@ -241,7 +242,7 @@ public class ClassificationFinder extends AbstractFinder {
 					}
 				}
 				
-				removedConditions[cid] = false;
+				removedConditions.add(cid);
 
 				double q = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
 						p, n, rule.getWeighted_P(), rule.getWeighted_N());
@@ -255,7 +256,7 @@ public class ClassificationFinder extends AbstractFinder {
 			// if there is something to remove
 			if (bestQuality >= initialQuality) {
 				initialQuality = bestQuality;
-				removedConditions[toRemove] = true;
+				removedConditions.add(toRemove);
 				--conditionsLeft;
 				
 				if (conditionsLeft == 1) {
@@ -268,8 +269,8 @@ public class ClassificationFinder extends AbstractFinder {
 		
 		CompoundCondition prunedPremise = new CompoundCondition();
 	
-		for (int cid = 0; cid < rule.getPremise().getSubconditions().size(); ++cid) {
-			if (!removedConditions[cid]) {
+		for (int cid = 0; cid < conditionsCount; ++cid) {
+			if (!removedConditions.contains(cid)) {
 				prunedPremise.addSubcondition(rule.getPremise().getSubconditions().get(cid));
 			}
 		}
