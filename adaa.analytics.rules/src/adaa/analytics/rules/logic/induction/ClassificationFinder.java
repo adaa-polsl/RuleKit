@@ -144,10 +144,14 @@ public class ClassificationFinder extends AbstractFinder {
 			throw new IllegalArgumentException();
 		}
 		
+		int examplesCount = trainSet.size();
 		int conditionsCount = rule.getPremise().getSubconditions().size();
 		int maskLength = (trainSet.size() + Long.SIZE - 1) / Long.SIZE; 
 		long[] masks = new long[conditionsCount * maskLength]; 
 		long[] labelMask = new long[maskLength];
+		
+		int[] conditionsPerExample = new int[trainSet.size()];
+		
 		
 		for (int i = 0; i < trainSet.size(); ++i) {
 			Example e = trainSet.getExample(i);
@@ -162,13 +166,14 @@ public class ClassificationFinder extends AbstractFinder {
 				ConditionBase cnd = rule.getPremise().getSubconditions().get(m);
 				if (cnd.evaluate(e)) {
 					masks[m * maskLength + wordId] |= 1L << wordOffset;
+					++conditionsPerExample[i];
 				}
 			}
 		}
-
+		
 		IntegerBitSet removedConditions = new IntegerBitSet(conditionsCount);
 		int conditionsLeft = rule.getPremise().getSubconditions().size();
-		
+
 		Covering covering = rule.covers(trainSet);
 		double initialQuality = calculateQuality(trainSet, covering, params.getPruningMeasure());
 		boolean continueClimbing = true;
@@ -190,28 +195,24 @@ public class ClassificationFinder extends AbstractFinder {
 					continue;
 				}
 				
-				// try to remove condition from output set
-				removedConditions.add(cid);
-				
-				// iterate over all words
 				double p = 0;
 				double n = 0;
-				for (int wordId = 0; wordId < maskLength; ++wordId) {
-					long word = ~(0L);
-					long labelWord = labelMask[wordId];
-					// iterate over all present conditions
-					for (int m = 0; m < conditionsCount; ++m ) {
-						//int m = conditionToMask.get(other);
-						if (!removedConditions.contains(m)) {
-							word &= masks[m * maskLength + wordId];
-						}
-					}
+				
+				if (weighting) {
+					// try to remove condition from output set
+					removedConditions.add(cid);
 					
-					// no weighting - use popcount
-					if (!weighting) {
-						p += Long.bitCount(word & labelWord);
-						n += Long.bitCount(word & ~labelWord);
-					} else {
+					// iterate over all words
+					for (int wordId = 0; wordId < maskLength; ++wordId) {
+						long word = ~(0L);
+						long labelWord = labelMask[wordId];
+						// iterate over all present conditions
+						for (int m = 0; m < conditionsCount; ++m ) {
+							if (!removedConditions.contains(m)) {
+								word &= masks[m * maskLength + wordId];
+							}
+						}
+						
 						long posWord = word & labelWord;
 						long negWord = word & ~labelWord;
 						for (int wordOffset = 0; wordOffset < Long.SIZE; ++wordOffset) {
@@ -222,9 +223,36 @@ public class ClassificationFinder extends AbstractFinder {
 							}
 						}
 					}
+					
+					removedConditions.remove(cid);	
+				} else {
+					
+					int id = 0;
+					for (int wordId = 0; wordId < maskLength; ++wordId) {
+					
+						long word = masks[cid * maskLength + wordId];
+						long filteredWord = 0;
+						
+						for (int wordOffset = 0; wordOffset < Long.SIZE && id < examplesCount; ++wordOffset, ++id) {
+							// an example is covered by rule after condition removal in two cases:
+							// - it is covered by all conditions prior the removal
+							// - it is covered by all conditions except the one being removed
+							 
+							if ((conditionsPerExample[id] == conditionsLeft) || 
+								((conditionsPerExample[id] == conditionsLeft - 1) && (word & (1L << wordOffset)) == 0) ) {
+								filteredWord |= 1L << wordOffset;
+							}
+						}
+
+						long labelWord = labelMask[wordId];
+						long posWord = filteredWord & labelWord;
+						long negWord = filteredWord & ~labelWord;
+						
+						p += Long.bitCount(posWord);
+						n += Long.bitCount(negWord);
+					}
 				}
 				
-				removedConditions.remove(cid);
 
 				double q = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
 						p, n, rule.getWeighted_P(), rule.getWeighted_N());
@@ -240,6 +268,18 @@ public class ClassificationFinder extends AbstractFinder {
 				initialQuality = bestQuality;
 				removedConditions.add(toRemove);
 				--conditionsLeft;
+				
+				// decrease counters for examples covered by removed condition
+				int id = 0;
+				for (int wordId = 0; wordId < maskLength; ++wordId) {
+					long word = masks[toRemove * maskLength + wordId];
+					for (int wordOffset = 0; wordOffset < Long.SIZE && id < examplesCount; ++wordOffset, ++id) {
+						
+						if ((word & (1L << wordOffset)) != 0) {
+							--conditionsPerExample[id];
+						}
+					}
+				}
 				
 				if (conditionsLeft == 1) {
 					continueClimbing = false;
@@ -494,7 +534,7 @@ public class ClassificationFinder extends AbstractFinder {
 			} else {
 				// exact rule
 				if (covering.weighted_n == 0) { 
-					carryOn = false; 
+				//	carryOn = false; 
 				}
 				add = true;
 			}
