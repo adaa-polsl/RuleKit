@@ -68,7 +68,7 @@ public class ClassificationFinder extends AbstractFinder {
 		final ExampleSet dataset,
 		final Set<Integer> uncovered) {
 
-		Logger.log("AbstractFinder.grow()\n", Level.FINE);
+		Logger.log("ClassificationFinder.grow()\n", Level.FINE);
 		
 		int initialConditionsCount = rule.getPremise().getSubconditions().size();
 		
@@ -76,8 +76,8 @@ public class ClassificationFinder extends AbstractFinder {
 		
 		// bit vectors for faster operations on coverings
 		IntegerBitSet conditionCovered = new IntegerBitSet(dataset.size());
-		IntegerBitSet positives = new IntegerBitSet(dataset.size());
-		IntegerBitSet negatives = new IntegerBitSet(dataset.size());
+		IntegerBitSet coveredPositives = new IntegerBitSet(dataset.size());
+		IntegerBitSet coveredNegatives = new IntegerBitSet(dataset.size());
 		
 		// get current covering
 		Covering covering = rule.covers(dataset);
@@ -87,9 +87,9 @@ public class ClassificationFinder extends AbstractFinder {
 		int id = 0;
 		for (Example e : dataset) {
 			if (rule.getConsequence().evaluate(e)) {
-				positives.add(id);
+				coveredPositives.add(id);
 			} else {
-				negatives.add(id);
+				coveredNegatives.add(id);
 			}
 			++id;
 		}
@@ -104,28 +104,10 @@ public class ClassificationFinder extends AbstractFinder {
 		
 		do {
 			ElementaryCondition condition = induceCondition(
-					rule, dataset, uncovered, covered, allowedAttributes, positives);
+					rule, dataset, uncovered, covered, allowedAttributes, coveredPositives);
 			
 			if (condition != null) {
-				conditionCovered.clear();
-				condition.evaluate(dataset, conditionCovered);
-				rule.getPremise().addSubcondition(condition);
-				
-				covered.retainAll(conditionCovered);
-				
-				positives.retainAll(conditionCovered);
-				negatives.retainAll(conditionCovered);
-			
-				covering.weighted_p = positives.size();
-				covering.weighted_n = negatives.size();
-				
-				rule.setCoveringInformation(covering);
-				QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
-				rule.setWeight(qp.quality);
-				rule.setPValue(qp.pvalue);
-				
-				Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
-						+ rule.toString() + "\n", Level.FINER);
+				carryOn = tryAddCondition(rule, condition, dataset, covered, coveredPositives, coveredNegatives, conditionCovered);
 				
 				if (params.getMaxGrowingConditions() > 0) {
 					if (rule.getPremise().getSubconditions().size() - initialConditionsCount >= 
@@ -209,7 +191,7 @@ public class ClassificationFinder extends AbstractFinder {
 				}
 				
 				// try to remove condition from output set
-				removedConditions.remove(cid);
+				removedConditions.add(cid);
 				
 				// iterate over all words
 				double p = 0;
@@ -242,7 +224,7 @@ public class ClassificationFinder extends AbstractFinder {
 					}
 				}
 				
-				removedConditions.add(cid);
+				removedConditions.remove(cid);
 
 				double q = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
 						p, n, rule.getWeighted_P(), rule.getWeighted_N());
@@ -278,7 +260,8 @@ public class ClassificationFinder extends AbstractFinder {
 		rule.setPremise(prunedPremise);
 		
 		covering = rule.covers(trainSet);
-		rule.setCoveringInformation(covering);
+		rule.setWeighted_p(covering.weighted_p);
+		rule.setWeighted_n(covering.weighted_n);
 		QualityAndPValue qp = calculateQualityAndPValue(trainSet, covering, params.getVotingMeasure());
 		rule.setWeight(qp.quality);
 		rule.setPValue(qp.pvalue);
@@ -470,6 +453,77 @@ public class ClassificationFinder extends AbstractFinder {
 
 		return bestCondition;
 	}
+	
+	
+	
+	public boolean tryAddCondition(
+		final Rule rule, 
+		final ConditionBase condition, 
+		final ExampleSet trainSet,
+		final Set<Integer> covered,
+		final IntegerBitSet coveredPositives,
+		final IntegerBitSet coveredNegatives,
+		final IntegerBitSet conditionCovered) {
+		
+		boolean carryOn = true;
+		boolean add = false;
+		Covering covering = new Covering();
+		
+		if (condition != null) {
+			conditionCovered.clear();
+			condition.evaluate(trainSet, conditionCovered);
+			
+			covering.weighted_P = rule.getWeighted_P();
+			covering.weighted_N = rule.getWeighted_N();
+			
+			if (trainSet.getAttributes().getWeight() != null) {
+				// calculate weights
+				
+			} else {
+				covering.weighted_p = coveredPositives.calculateIntersectionSize(conditionCovered);
+				covering.weighted_n = coveredNegatives.calculateIntersectionSize(conditionCovered);
+			}
+			
+			// analyse stopping criteria
+			if (covering.weighted_p + covering.weighted_n < params.getMinimumCovered()) {
+				if (rule.getPremise().getSubconditions().size() == 0) {
+					// special case of empty rule - add condition anyway
+					add = true;
+				}
+				carryOn = false;
+			} else {
+				// exact rule
+				if (covering.weighted_n == 0) { 
+					carryOn = false; 
+				}
+				add = true;
+			}
+			
+			// update coverage if condition was added
+			if (add) {
+				rule.getPremise().getSubconditions().add(condition);
+
+				covered.retainAll(conditionCovered);
+				coveredPositives.retainAll(conditionCovered);
+				coveredNegatives.retainAll(conditionCovered);
+				
+				rule.setWeighted_p(covering.weighted_p);
+				rule.setWeighted_n(covering.weighted_n);
+				
+				QualityAndPValue qp = calculateQualityAndPValue(trainSet, covering, params.getVotingMeasure());
+				rule.setWeight(qp.quality);
+				rule.setPValue(qp.pvalue);
+				
+				Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
+						+ rule.toString() + "\n", Level.FINER);
+			}
+		}
+		else {
+			 carryOn = false;
+		}
+	
+		return carryOn;
+	}	
 	
 	
 	protected boolean checkCandidateCoverage(double covered_pn) {

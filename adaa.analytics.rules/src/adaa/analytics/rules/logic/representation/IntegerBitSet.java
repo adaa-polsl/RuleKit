@@ -200,18 +200,6 @@ public class IntegerBitSet implements Set<Integer> {
 	}
 
 	@Override
-	public Object[] toArray() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T> T[] toArray(T[] arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(size() + "[");
@@ -226,5 +214,29 @@ public class IntegerBitSet implements Set<Integer> {
 		
 		return sb.toString();
 	}
+	
+	public int calculateIntersectionSize(IntegerBitSet other) {
+		int s = 0;
+		for (int i = 0; i < words.length; ++i) {
+			long x = words[i] & other.words[i];	
+			s += Long.bitCount(x);
+		}
+		
+		return s;
+	}
+	
+	@Override
+	public Object[] toArray() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T> T[] toArray(T[] arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
 	
 }

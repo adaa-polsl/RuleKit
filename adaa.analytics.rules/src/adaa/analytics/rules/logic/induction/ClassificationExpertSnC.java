@@ -97,6 +97,8 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 			Logger.log("Processing expert rules...\n", Level.INFO);
 			for (Rule r : knowledge.getRules(classId)) {
 				Rule rule = (Rule) SerializationUtils.clone(r);
+				rule.setWeighted_P(weighted_P);
+				rule.setWeighted_N(weighted_N);
 				
 				ClassificationExpertFinder erf = (ClassificationExpertFinder)finder;
 				
