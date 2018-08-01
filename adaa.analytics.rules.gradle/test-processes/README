@@ -1,0 +1,1 @@
+Put test processes for new operators into this folder. Processes with a name that contains 'NOTEST' will be skipped.

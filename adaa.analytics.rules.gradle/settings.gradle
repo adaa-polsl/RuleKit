@@ -1,0 +1,2 @@
+include ':com.rapidminer.migration.5to8'
+project(':com.rapidminer.migration.5to8').projectDir = file('../com.rapidminer.migration.5to8')
