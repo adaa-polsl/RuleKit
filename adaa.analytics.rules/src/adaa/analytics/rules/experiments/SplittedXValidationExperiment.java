@@ -192,6 +192,7 @@ public class SplittedXValidationExperiment extends ExperimentBase {
 		    		sb.append("\n");
 		    		
 		    		// add performance
+		    		sb.append("Time[s]: " + elapsedSec + "\n");
 			    	for (String name : performance.getCriteriaNames()) {
 			    		double avg = performance.getCriterion(name).getAverage();
 			    		sb.append(name + ": " + avg + "\n");	

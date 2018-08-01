@@ -163,7 +163,7 @@ public class IntegerBitSet implements Set<Integer> {
 			// global implementation (slow)
 			Iterator<?> it = arg0.iterator();
 			while (it.hasNext()) {
-				this.remove((int)it.next());
+				this.remove((Integer)it.next());
 			}
 		}
 		
@@ -219,6 +219,16 @@ public class IntegerBitSet implements Set<Integer> {
 		int s = 0;
 		for (int i = 0; i < words.length; ++i) {
 			long x = words[i] & other.words[i];	
+			s += Long.bitCount(x);
+		}
+		
+		return s;
+	}
+	
+	public int calculateIntersectionSize(IntegerBitSet other1, IntegerBitSet other2) {
+		int s = 0;
+		for (int i = 0; i < words.length; ++i) {
+			long x = words[i] & other1.words[i] & other2.words[i];	
 			s += Long.bitCount(x);
 		}
 		
