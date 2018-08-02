@@ -31,7 +31,7 @@ public abstract class DataRowFactory2 {
         for(Attribute t : itr) {
             ret.add(t);
         }
-        return (Attribute[]) ret.toArray();
+        return (Attribute[]) ret.toArray(new Attribute[0]);
     }
     
     public static String[] toArray(Iterable<String> itr) {
@@ -39,7 +39,7 @@ public abstract class DataRowFactory2 {
         for(String t : itr) {
             ret.add(t);
         }
-        return (String[]) ret.toArray();
+        return (String[]) ret.toArray(new String[0]);
     }
     
     private static final class DataRowFactoryImpl extends DataRowFactory2 {

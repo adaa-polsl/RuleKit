@@ -30,6 +30,10 @@ public class InMemoryDataSet {
         dataset = table.createExampleSet(roles);
 	}
 	
+	public ExampleSet getExampleSet() {
+		return dataset;
+	}
+	
 	ExampleTable createExampleTable(List<Attribute> attributes, Iterable<Row> inputRows) {
         MemoryExampleTable table = new MemoryExampleTable(attributes);
         DataRowFactory2 factory = DataRowFactory2.withFullStopDecimalSeparator(attributes);
@@ -84,7 +88,5 @@ public class InMemoryDataSet {
 	        return Collections.unmodifiableMap(map);
 	    }
 
-	public ExampleSet getDataSet() {
-		return dataset;
-	}
+	
 }
