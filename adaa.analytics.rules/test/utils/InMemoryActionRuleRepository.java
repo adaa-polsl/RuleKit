@@ -38,7 +38,7 @@ public class InMemoryActionRuleRepository {
 		Action c1 = new Action("class", new SingletonSet(0.0, m1), new SingletonSet(1.0, m1));
 		
 		CompoundCondition cc1 = new CompoundCondition();
-		cc1.addSubcondition(new Action("nominal", new SingletonSet(1.0, m2), new SingletonSet(2.0, m2) ));
+		cc1.addSubcondition(new Action("nominal", new SingletonSet(0.0, m2), new SingletonSet(1.0, m2) ));
 		Action common = new Action("numerical1", new Interval(12.0, 15.0, true, true), new Interval(-1.0, 1.0, true, true));
 		cc1.addSubcondition(common);
 		

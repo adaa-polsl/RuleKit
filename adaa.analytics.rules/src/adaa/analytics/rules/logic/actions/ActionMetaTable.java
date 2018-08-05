@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import adaa.analytics.rules.logic.actions.ActionMetaTable.Value;
 import adaa.analytics.rules.logic.actions.ActionRangeDistribution.DistributionEntry;
 import adaa.analytics.rules.logic.representation.IValueSet;
 
@@ -33,24 +34,25 @@ public class ActionMetaTable {
 		exampleSize = dist.getDistribution().size();
 		
 		tableSize = dist.getDistribution().entrySet().stream().mapToInt(x -> x.getValue().size()).sum();
+		generate();
 	}
 
 	
-	protected Set<Set<Object>> cartesianProduct(Set<?>... sets) {
-	    if (sets.length < 2)
+	protected Set<Set<Object>> cartesianProduct(List<Set<Value>> sets) {
+	    if (sets.size() < 2)
 	        throw new IllegalArgumentException(
 	                "Can't have a product of fewer than two sets (got " +
-	                sets.length + ")");
+	                sets.size() + ")");
 
 	    return _cartesianProduct(0, sets);
 	}
 
-	private Set<Set<Object>> _cartesianProduct(int index, Set<?>... sets) {
+	private Set<Set<Object>> _cartesianProduct(int index, List<Set<Value>> sets) {
 	    Set<Set<Object>> ret = new HashSet<Set<Object>>();
-	    if (index == sets.length) {
+	    if (index == sets.size()) {
 	        ret.add(new HashSet<Object>());
 	    } else {
-	        for (Object obj : sets[index]) {
+	        for (Object obj : sets.get(index)) {
 	            for (Set<Object> set : _cartesianProduct(index+1, sets)) {
 	                set.add(obj);
 	                ret.add(set);
@@ -64,10 +66,11 @@ public class ActionMetaTable {
 		
 		Map<String, Map<IValueSet, DistributionEntry>> map = dist.getDistribution();
 		
-		String[] attributes = (String[]) map.keySet().stream().toArray();
-		Map<IValueSet, DistributionEntry>[] dists = (Map<IValueSet, DistributionEntry>[]) map.values().toArray();
+	//	String[] attributes = (String[]) map.keySet().toArray(new String[0]);
+	//	Map<IValueSet, DistributionEntry>[] dists = 
+	//			(Map<IValueSet, DistributionEntry>[]) map.values().toArray((Map<IValueSet, DistributionEntry>[])new Map[0]);
 		
-		Set<Set<Value>> sets = new HashSet<Set<Value>>(map.size());
+		List<Set<Value>> sets = new ArrayList<Set<Value>>(map.size());
 		
 		for (String key : map.keySet()) {
 			sets.add(map.get(key).entrySet().stream().map(x -> new Value(x.getKey(), x.getValue())).collect(Collectors.toSet()));

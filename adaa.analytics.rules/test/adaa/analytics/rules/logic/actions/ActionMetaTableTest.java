@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +16,9 @@ import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.AttributeFactory;
 import com.rapidminer.tools.Ontology;
 
+import adaa.analytics.rules.logic.actions.ActionMetaTable.Value;
 import adaa.analytics.rules.logic.representation.ActionRuleSet;
+import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import utils.InMemoryActionRuleRepository;
 import utils.InMemoryDataSet;
 
@@ -54,8 +57,22 @@ public class ActionMetaTableTest {
 		ActionRuleSet actions = repo.getActionRulest();
 		
 		ActionRangeDistribution dist = new ActionRangeDistribution(actions, set);
+		dist.calculateActionDistribution();
 		ActionMetaTable table = new ActionMetaTable(dist);
+	
+		Set<Set<Object>> examples = table.getExamples();
+		System.out.println("Count:" + examples.size());
 		
+		for (Set<Object> ex : examples) {
+			System.out.print("(");
+			for (Object atr : ex) {
+				Value ec = (Value)atr;
+				
+				System.out.print(ec.value.toString());
+				System.out.print(",");
+			}
+			System.out.println(")");
+		}
 		
 	}
 
