@@ -1,0 +1,33 @@
+buildscript {
+	repositories {
+	    jcenter()
+		maven { url 'https://maven.rapidminer.com/content/groups/public/' }
+	}
+}
+
+plugins { id 'com.rapidminer.extension' version '0.9.3' }
+
+// Define Maven artifact repositories
+repositories {
+    jcenter()
+	maven { url 'https://maven.rapidminer.com/content/groups/public/' }
+}
+
+extensionConfig {
+
+    name 'ADAA Analytics Rules'
+    groupId = 'adaa.analytics.rules'
+    vendor = 'Silesion University of Technology'
+    homepage = 'www.polsl.pl'
+	
+    dependencies {
+        rapidminer '8.2.0'
+    }
+}
+
+// Define third party library dependencies
+dependencies {
+	compile group: 'com.miglayout', name: 'miglayout-swing', version: '5.1'
+	
+	compile project(':com.rapidminer.migration.5to8')
+}
