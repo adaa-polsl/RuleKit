@@ -11,6 +11,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.NominalMapping;
@@ -42,6 +45,27 @@ public class ActionRangeDistribution {
 			distribution.get(classValue).add(rule);
 		}
 
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null) { return false; }
+			if (obj == this) { return true; }
+			if (obj.getClass() != getClass()) {
+				return false;
+			}
+			
+			DistributionEntry de = (DistributionEntry)obj;
+			return new EqualsBuilder()
+					.append(distribution, de.distribution)
+					.isEquals();
+		}
+		
+		@Override
+		public int hashCode() {
+			return new HashCodeBuilder(13,17)
+					.append(distribution)
+					.toHashCode();
+		}
+		
 	}
 
 	protected class ConditionWithClass {
