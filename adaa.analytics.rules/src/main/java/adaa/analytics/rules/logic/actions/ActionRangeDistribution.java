@@ -139,20 +139,30 @@ public class ActionRangeDistribution {
 			String atr = entry.getKey();
 			Map<ElementaryCondition, DistributionEntry> split = new HashMap<ElementaryCondition, DistributionEntry>();
 
-			// extracts just sorted by left and unique intervals
-			if (!set.getAttributes().get(atr).isNumerical()) {
+			Attribute currAttribute = set.getAttributes().get(atr);
+			
+			if (!currAttribute.isNumerical()) {
+				NominalMapping mapping = currAttribute.getMapping();
+				
+				mapping.getValues()
+					.stream()
+					.forEach(
+							x -> split.put(
+									new ElementaryCondition(
+											currAttribute.getName(),
+											new SingletonSet(mapping.getIndex(x), mapping.getValues())
+											),
+									new DistributionEntry()
+								)
+							);
 				
 				for (ConditionWithClass cnd : cnds) {
-
-					if (!split.containsKey(cnd.getCondition())) {
-
-						split.put(cnd.getCondition(), new DistributionEntry());
-					}
 					split.get(cnd.getCondition()).add(((SingletonSet) cnd.getKlass()).getValue(),
 							cnd.getRule());
 				}
 
 			} else {
+				// extracts just sorted by left and unique intervals
 				ivals = cnds
 						.stream()
 						.map(ConditionWithClass::getCondition)

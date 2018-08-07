@@ -1,6 +1,7 @@
 package adaa.analytics.rules.logic.actions;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -14,8 +15,16 @@ public class IntersectionFinder {
 		// TODO Auto-generated constructor stub
 	}
 
+	
 	public List<Interval> calculateAllIntersectionsOf(List<Interval> intervals) {
 
+		//create mandatory limits
+		double left = intervals.stream().min(Comparator.comparing(Interval::getLeft)).map(Interval::getLeft).orElseThrow(()->new RuntimeException("Empty interval list!"));
+		double right = intervals.stream().max(Comparator.comparing(Interval::getRight)).map(Interval::getRight).orElseThrow(()->new RuntimeException("Empty interva list!"));
+		
+		Interval lowerBound = Interval.create_le(left);
+		Interval upperBound = Interval.create_geq(right);
+		
 		// finds all intersection point : each with each
 		Set<Double> points = new TreeSet<Double>();
 		for (int i = 0; i < intervals.size() - 1; i++) {
@@ -49,7 +58,9 @@ public class IntersectionFinder {
 			
 			result.add(new Interval(pts.get(i), pts.get(i + 1), true, true));
 		}
-
+		result.add(lowerBound);
+		result.add(upperBound);
+		
 		return result;
 	}
 
