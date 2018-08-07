@@ -16,6 +16,7 @@ import com.rapidminer.example.Attribute;
 
 import adaa.analytics.rules.logic.actions.MetaValue;
 import adaa.analytics.rules.logic.actions.ActionRangeDistribution.DistributionEntry;
+import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.IValueSet;
 
 public class ActionMetaTable {
@@ -49,10 +50,10 @@ public class ActionMetaTable {
 	    if (index == sets.size()) {
 	        ret.add(new MetaExample());
 	    } else {
-	        for (MetaValue obj : sets.get(index)) {
-	            for (MetaExample set : _cartesianProduct(index+1, sets)) {
-	                set.add(obj.attribute, obj);
-	                ret.add(set);
+	        for (MetaValue metaValue : sets.get(index)) {
+	            for (MetaExample metaExample : _cartesianProduct(index+1, sets)) {
+	                metaExample.add(metaValue);
+	                ret.add(metaExample);
 	            }
 	        }
 	    }
@@ -61,7 +62,7 @@ public class ActionMetaTable {
 	
 	private void generate() {
 		
-		Map<String, Map<IValueSet, DistributionEntry>> map = dist.getDistribution();
+		Map<String, Map<ElementaryCondition, DistributionEntry>> map = dist.getDistribution();
 		
 	//	String[] attributes = (String[]) map.keySet().toArray(new String[0]);
 	//	Map<IValueSet, DistributionEntry>[] dists = 
@@ -70,7 +71,7 @@ public class ActionMetaTable {
 		List<Set<MetaValue>> sets = new ArrayList<Set<MetaValue>>(map.size());
 		
 		for (String key : map.keySet()) {
-			sets.add(map.get(key).entrySet().stream().map(x -> new MetaValue(x.getKey(), x.getValue(), key)).collect(Collectors.toSet()));
+			sets.add(map.get(key).entrySet().stream().map(x -> new MetaValue(x.getKey(), x.getValue())).collect(Collectors.toSet()));
 		}
 	
 		

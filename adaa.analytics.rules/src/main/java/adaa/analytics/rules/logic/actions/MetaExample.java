@@ -1,25 +1,46 @@
 package adaa.analytics.rules.logic.actions;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import adaa.analytics.rules.logic.representation.ConditionBase;
+import adaa.analytics.rules.logic.representation.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.Rule;
+
 public class MetaExample {
 	Map<String, MetaValue> data;
+	HashSet<Rule> rules = new HashSet<Rule>();
 	
 	public MetaExample() {
 		data = new HashMap<String,MetaValue>();
 	}
 	
-	public MetaExample(Map<String, MetaValue> inData) {
-		data = inData;
+	private boolean containsInAnyOrder(List<ConditionBase> conditionsA, List<ElementaryCondition> conditionB) {
+		for (ConditionBase cnd : conditionsA) {
+			if (!conditionB.contains(cnd)) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
-	public void add(String attribute, MetaValue value) {
-		data.put(attribute, value);
+	public void add(MetaValue value) {
+		data.put(value.value.getAttribute(), value);
+		
+		rules.addAll(value.distribution.distribution.values().stream().flatMap(x->x.stream()).collect(Collectors.toList()));
+		
+		List<ElementaryCondition> vals = data.values()
+			.stream()
+			.map(x->x.value)
+			.collect(Collectors.toList());
+		
+		rules.removeIf(x -> !containsInAnyOrder(x.getPremise().getSubconditions(), vals));
 	}
 	
 	public MetaValue get(String attribute) {
@@ -39,6 +60,15 @@ public class MetaExample {
 				.map(x->x.value.toString())
 				.collect(Collectors.joining(";"))
 				);
+		
+		sb.append("[ ");
+		sb.append(
+				rules
+				.stream()
+				.map(x -> x.toString())
+				.collect(Collectors.joining(";"))
+		);
+		sb.append(" ]");
 		
 		return sb.toString();
 	}

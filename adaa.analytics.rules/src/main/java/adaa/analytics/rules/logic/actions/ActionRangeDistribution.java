@@ -28,7 +28,7 @@ import adaa.analytics.rules.logic.representation.SingletonSet;
 
 public class ActionRangeDistribution {
 
-	protected Map<String, Map<IValueSet, DistributionEntry>> dist = new HashMap<String, Map<IValueSet, DistributionEntry>>();
+	protected Map<String, Map<ElementaryCondition, DistributionEntry>> dist = new HashMap<String, Map<ElementaryCondition, DistributionEntry>>();
 
 	protected class DistributionEntry {
 
@@ -102,13 +102,11 @@ public class ActionRangeDistribution {
 		set = dataset;
 	}
 
-	public Map<String, Map<IValueSet, DistributionEntry>> getDistribution() {
+	public Map<String, Map<ElementaryCondition, DistributionEntry>> getDistribution() {
 		return dist;
 	}
 
 	protected void calculateActionDistribution() {
-
-		List<String> classValues = set.getAttributes().getLabel().getMapping().getValues();
 
 		// Gather all elementary conditions to one list
 		Stream<ConditionWithClass> conditions = Stream.empty();
@@ -135,30 +133,33 @@ public class ActionRangeDistribution {
 		// Calculate intersections of ranges in each attribute bin
 		for (Map.Entry<String, List<ConditionWithClass>> entry : grouped.entrySet()) {
 
-			Set<ElementaryCondition> uniques = new HashSet<ElementaryCondition>();
 			List<ConditionWithClass> cnds = entry.getValue();
 			List<Interval> ivals = null;
 			List<Interval> result = new ArrayList<Interval>();
 			String atr = entry.getKey();
-			Map<IValueSet, DistributionEntry> split = new HashMap<IValueSet, DistributionEntry>();
+			Map<ElementaryCondition, DistributionEntry> split = new HashMap<ElementaryCondition, DistributionEntry>();
 
 			// extracts just sorted by left and unique intervals
 			if (!set.getAttributes().get(atr).isNumerical()) {
-				// nominal attributes - just put each possible value
-				Attribute atribute = set.getAttributes().get(atr);
+				
 				for (ConditionWithClass cnd : cnds) {
 
-					if (!split.containsKey(cnd.getCondition().getValueSet())) {
+					if (!split.containsKey(cnd.getCondition())) {
 
-						split.put(cnd.getCondition().getValueSet(), new DistributionEntry());
+						split.put(cnd.getCondition(), new DistributionEntry());
 					}
-					split.get(cnd.getCondition().getValueSet()).add(((SingletonSet) cnd.getKlass()).getValue(),
+					split.get(cnd.getCondition()).add(((SingletonSet) cnd.getKlass()).getValue(),
 							cnd.getRule());
 				}
 
 			} else {
-				ivals = cnds.stream().map(ConditionWithClass::getCondition).map(ElementaryCondition::getValueSet)
-						.map(Interval.class::cast).sorted(Comparator.comparing(Interval::getLeft)).distinct()
+				ivals = cnds
+						.stream()
+						.map(ConditionWithClass::getCondition)
+						.map(ElementaryCondition::getValueSet)
+						.map(Interval.class::cast)
+						.sorted(Comparator.comparing(Interval::getLeft))
+						.distinct()
 						.collect(Collectors.toList());
 
 				// finds all intersection point
@@ -168,17 +169,17 @@ public class ActionRangeDistribution {
 				// counting the distribution
 
 				for (Interval i : result) {
-
+					ElementaryCondition ec = new ElementaryCondition(atr, i);
 					for (ConditionWithClass cnd : cnds) {
 
 						if (i.intersects(cnd.getCondition().getValueSet())) {
 
-							if (!split.containsKey(i)) {
+							if (!split.containsKey(ec)) {
 
-								split.put(i, new DistributionEntry());
+								split.put(ec, new DistributionEntry());
 							}
 
-							split.get(i).add(((SingletonSet) cnd.getKlass()).getValue(), cnd.getRule());
+							split.get(ec).add(((SingletonSet) cnd.getKlass()).getValue(), cnd.getRule());
 						}
 					}
 				}
