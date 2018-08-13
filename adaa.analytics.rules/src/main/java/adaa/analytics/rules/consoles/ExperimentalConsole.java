@@ -2,6 +2,8 @@ package adaa.analytics.rules.consoles;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +42,11 @@ public class ExperimentalConsole {
 	}
 	
 	public static void main (String[] args) {
+		
+		// Na sztywno zdefiniowana relatywna sciezka do projektu RapidMiner Studio. Konieczne, aby RapidMiner poprawnie odczytal swoja wersje.
+		// Jezeli nie jest w stanie odczytac sciezki, nie uruchomi sie
+		System.setProperty("rapidminer.home", "../rapidminer-studio");
+		
 		try {
 			if (args.length == 1) {
 	    	  	
