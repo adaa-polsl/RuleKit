@@ -1,13 +1,14 @@
 package adaa.analytics.rules.logic.actions;
 
+import java.util.List;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import adaa.analytics.rules.logic.actions.ActionRangeDistribution.DistributionEntry;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.IValueSet;
 
-public class MetaValue {
+public class MetaValue implements IValueSet {
 
 	public ElementaryCondition value;
 	public DistributionEntry distribution;
@@ -42,4 +43,29 @@ public class MetaValue {
 				.append(distribution, mv.distribution)
 				.isEquals();
 	}
+
+	@Override
+	public boolean contains(double value) {
+		return this.value.getValueSet().contains(value);
+	}
+
+	@Override
+	public boolean intersects(IValueSet set) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public IValueSet getIntersection(IValueSet set) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<IValueSet> getDifference(IValueSet set) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
 }

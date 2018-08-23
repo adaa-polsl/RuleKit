@@ -22,11 +22,13 @@ public class IntersectionFinderTest {
 		intervals.add(new Interval(7, 15, true, true));
 		
 		List<Interval> expected = new ArrayList<Interval>();
+		expected.add(Interval.create_le(-1));
 		expected.add(new Interval(-1, 3, true, true));
 		expected.add(new Interval(3, 5, true, true));
 		expected.add(new Interval(5, 7, true, true));
 		expected.add(new Interval(7, 10, true, true));
 		expected.add(new Interval(10, 15, true, true));
+		expected.add(Interval.create_geq(15));
 		
 		List<Interval> actual = finder.calculateAllIntersectionsOf(intervals);
 		

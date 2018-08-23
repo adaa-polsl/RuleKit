@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.rapidminer.example.Example;
+
 import adaa.analytics.rules.logic.representation.ConditionBase;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Rule;
@@ -48,6 +50,26 @@ public class MetaExample {
 			return data.get(attribute);
 		}
 		return null;
+	}
+	
+	public boolean covers(Example ex) {
+		
+		boolean partial = false;
+		
+		for (Map.Entry<String, MetaValue> mv : data.entrySet()) {
+			
+			double val = ex.getValue(ex.getAttributes().get(mv.getKey()));
+			
+			MetaValue metaVal = mv.getValue();
+			
+			partial = metaVal.contains(val);
+			
+			if (!partial) {
+				return false;
+			}
+		}
+		
+		return partial;
 	}
 	
 	@Override

@@ -54,11 +54,11 @@ public class IntersectionFinder {
 		List<Double> pts = points.stream().distinct().collect(Collectors.toList());
 		List<Interval> result = new ArrayList<Interval>(pts.size());
 		
+		result.add(lowerBound);
 		for (int i = 0; i < points.size() - 1; i++) {
 			
 			result.add(new Interval(pts.get(i), pts.get(i + 1), true, true));
 		}
-		result.add(lowerBound);
 		result.add(upperBound);
 		
 		return result;

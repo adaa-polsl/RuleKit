@@ -13,9 +13,9 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.rapidminer.example.Attribute;
+import com.rapidminer.example.Example;
 
 import adaa.analytics.rules.logic.actions.MetaValue;
-import adaa.analytics.rules.logic.actions.ActionRangeDistribution.DistributionEntry;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.IValueSet;
 
@@ -63,11 +63,7 @@ public class ActionMetaTable {
 	private void generate() {
 		
 		Map<String, Map<ElementaryCondition, DistributionEntry>> map = dist.getDistribution();
-		
-	//	String[] attributes = (String[]) map.keySet().toArray(new String[0]);
-	//	Map<IValueSet, DistributionEntry>[] dists = 
-	//			(Map<IValueSet, DistributionEntry>[]) map.values().toArray((Map<IValueSet, DistributionEntry>[])new Map[0]);
-		
+
 		List<Set<MetaValue>> sets = new ArrayList<Set<MetaValue>>(map.size());
 		
 		for (String key : map.keySet()) {
@@ -81,5 +77,20 @@ public class ActionMetaTable {
 
 	public Set<MetaExample> getExamples() {
 		return examples;
+	}
+	
+	public void analyze(Example ex, int fromClass, int toClass) {
+		MetaExample primeMe = null;
+		MetaExample contraMe = null;
+		
+		for (MetaExample me : examples) {
+			
+			if (me.covers(ex)) {
+				primeMe = me;
+				break;
+			}
+		}
+		
+		
 	}
 }
