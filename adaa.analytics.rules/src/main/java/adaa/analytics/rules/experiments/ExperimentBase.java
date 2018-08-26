@@ -10,6 +10,7 @@ import adaa.analytics.rules.operator.RuleGenerator;
 import adaa.analytics.rules.operator.RulePerformanceEvaluator;
 import adaa.analytics.rules.stream.RuleGeneratorFromStream;
 
+import adaa.analytics.rules.utils.RapidMiner5;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.performance.AbstractPerformanceEvaluator;
 import com.rapidminer.operator.performance.BinaryClassificationPerformance;
@@ -64,11 +65,11 @@ public abstract class ExperimentBase implements Runnable {
 			this.paramsSets = paramsSets;
 		 	process = new com.rapidminer.Process();
 		    
-			ruleGenerator = new ExpertRuleGenerator(new OperatorDescription("", "", null, null, "", null));
+			ruleGenerator = RapidMiner5.createOperator(ExpertRuleGenerator.class);
 		//	ruleGenerator = new RuleGeneratorFromStream(new OperatorDescription("","",null,null, "", null));
 			
-    		validationEvaluator = new RulePerformanceEvaluator(new OperatorDescription("", "", null, null, "", null)); 
-    		globalEvaluator = new RulePerformanceEvaluator(new OperatorDescription("", "", null, null, "", null));
+    		validationEvaluator = RapidMiner5.createOperator(RulePerformanceEvaluator.class);
+    		globalEvaluator = RapidMiner5.createOperator(RulePerformanceEvaluator.class);
 	    	
 	/*		List<PerformanceCriterion> criteria = validationEvaluator.getCriteria();
 	    	for (PerformanceCriterion c: criteria) {

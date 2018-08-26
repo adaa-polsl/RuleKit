@@ -42,11 +42,6 @@ public class ExperimentalConsole {
 	}
 	
 	public static void main (String[] args) {
-		
-		// Na sztywno zdefiniowana relatywna sciezka do projektu RapidMiner Studio. Konieczne, aby RapidMiner poprawnie odczytal swoja wersje.
-		// Jezeli nie jest w stanie odczytac sciezki, nie uruchomi sie
-		System.setProperty("rapidminer.home", "../rapidminer-studio");
-		
 		try {
 			if (args.length == 1) {
 	    	  	
@@ -188,5 +183,4 @@ public class ExperimentalConsole {
 		Logger.getInstance().log("Experiments finished", Level.INFO);
 		RapidMiner.quit(RapidMiner.ExitMode.NORMAL);
 	}
-
 }

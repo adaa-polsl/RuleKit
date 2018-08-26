@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import adaa.analytics.rules.utils.RapidMiner5;
 import org.apache.commons.lang.StringUtils;
 
 import adaa.analytics.rules.logic.representation.Logger;
@@ -28,7 +29,7 @@ import com.rapidminer.operator.IOObject;
 import com.rapidminer.operator.Model;
 import com.rapidminer.operator.ModelApplier;
 import com.rapidminer.operator.OperatorDescription;
-import com.rapidminer.operator.io.ArffExampleSource;
+import com.rapidminer5.operator.io.ArffExampleSource;
 import com.rapidminer.operator.performance.AbstractPerformanceEvaluator;
 import com.rapidminer.operator.performance.MultiClassificationPerformance;
 import com.rapidminer.operator.performance.PerformanceCriterion;
@@ -62,8 +63,8 @@ public class SplittedXValidationExperiment extends ExperimentBase {
 			this.paramsSets = new ArrayList<Map<String, Object>>();
 			paramsSets.add(params);
 			
-			trainArff = (ArffExampleSource)OperatorService.createOperator(ArffExampleSource.class);
-	    	testArff = (ArffExampleSource)OperatorService.createOperator(ArffExampleSource.class);
+			trainArff = RapidMiner5.createOperator(ArffExampleSource.class);
+	    	testArff = RapidMiner5.createOperator(ArffExampleSource.class);
 	    	ChangeAttributeRole trainRoleSetter = (ChangeAttributeRole)OperatorService.createOperator(ChangeAttributeRole.class);
 	    	ChangeAttributeRole testRoleSetter = (ChangeAttributeRole)OperatorService.createOperator(ChangeAttributeRole.class);
 	    	ModelApplier applier = (ModelApplier)OperatorService.createOperator(ModelApplier.class);

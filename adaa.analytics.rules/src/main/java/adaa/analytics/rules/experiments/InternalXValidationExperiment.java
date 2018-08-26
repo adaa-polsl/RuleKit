@@ -21,6 +21,7 @@ import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.RuleGenerator;
 import adaa.analytics.rules.operator.RulePerformanceEvaluator;
 
+import adaa.analytics.rules.utils.RapidMiner5;
 import com.rapidminer.example.Attributes;
 import com.rapidminer.example.set.SplittedExampleSet;
 import com.rapidminer.operator.ExecutionUnit;
@@ -30,7 +31,7 @@ import com.rapidminer.operator.Model;
 import com.rapidminer.operator.ModelApplier;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.io.ArffExampleSource;
+import com.rapidminer5.operator.io.ArffExampleSource;
 import com.rapidminer.operator.performance.AbstractPerformanceEvaluator;
 import com.rapidminer.operator.performance.PerformanceEvaluator;
 import com.rapidminer.operator.performance.PerformanceVector;
@@ -77,7 +78,7 @@ public class InternalXValidationExperiment extends ExperimentBase {
 		try {
 			this.arffFile = arffFile;
 			
-			ArffExampleSource arffSource = (ArffExampleSource)OperatorService.createOperator(ArffExampleSource.class);
+			ArffExampleSource arffSource = RapidMiner5.createOperator(ArffExampleSource.class);
 	    	ChangeAttributeRole roleSetter = (ChangeAttributeRole)OperatorService.createOperator(ChangeAttributeRole.class);
 	    	XValidation validation = (XValidation)OperatorService.createOperator(XValidation.class);
 	    	validation.setParameter(XValidation.PARAMETER_NUMBER_OF_VALIDATIONS, Integer.toString(foldCount));

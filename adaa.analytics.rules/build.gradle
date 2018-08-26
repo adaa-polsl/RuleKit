@@ -12,12 +12,13 @@ jar {
 }
 
 repositories {
-    mavenCentral()
+    jcenter()
+    maven { url 'https://maven.rapidminer.com/content/groups/public/' }
 }
 
 dependencies {
     compile group: 'com.miglayout', name: 'miglayout-swing', version: '5.1'
-	compile project(':com.rapidminer.migration.5to8')
+    compile group: 'com.rapidminer.studio', name: 'rapidminer-studio-core', version: '8.2.1'
 }
 
 uploadArchives {

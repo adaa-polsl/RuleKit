@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import adaa.analytics.rules.utils.RapidMiner5;
 import org.apache.commons.lang.StringUtils;
 
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
@@ -31,9 +32,9 @@ import com.rapidminer.operator.ModelApplier;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.io.ArffExampleSource;
-import com.rapidminer.operator.io.ModelLoader;
-import com.rapidminer.operator.io.ModelWriter;
+import com.rapidminer5.operator.io.ArffExampleSource;
+import com.rapidminer5.operator.io.ModelLoader;
+import com.rapidminer5.operator.io.ModelWriter;
 import com.rapidminer.operator.ports.PortException;
 import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
 import com.rapidminer.tools.LogService;
@@ -102,10 +103,10 @@ public class LogRankConsole {
 	}
 	
 	protected void trainModel(String trainFile, String binaryModel, String textModel) throws OperatorCreationException, OperatorException, PortException, UnsupportedEncodingException, FileNotFoundException, IOException {
-		ArffExampleSource arffSource = (ArffExampleSource)OperatorService.createOperator(ArffExampleSource.class);
+		ArffExampleSource arffSource = RapidMiner5.createOperator(ArffExampleSource.class);
     	ChangeAttributeRole roleSetter = (ChangeAttributeRole)OperatorService.createOperator(ChangeAttributeRole.class);
-    	RuleGenerator ruleGenerator = new RuleGenerator(new OperatorDescription("", "", null, null, "", null));
-    	ModelWriter modelWriter = (ModelWriter)OperatorService.createOperator(ModelWriter.class);
+    	RuleGenerator ruleGenerator = RapidMiner5.createOperator(RuleGenerator.class);
+    	ModelWriter modelWriter = RapidMiner5.createOperator(ModelWriter.class);
     	
     	// configure main process
     	com.rapidminer.Process process = new com.rapidminer.Process();
@@ -153,9 +154,9 @@ public class LogRankConsole {
 	
 	protected void applyModel(String testFile, String binaryModel, String predictionsFile) 
 			throws OperatorCreationException, OperatorException, IOException {
-		ArffExampleSource arffSource = (ArffExampleSource)OperatorService.createOperator(ArffExampleSource.class);
+		ArffExampleSource arffSource = RapidMiner5.createOperator(ArffExampleSource.class);
     	ChangeAttributeRole roleSetter = (ChangeAttributeRole)OperatorService.createOperator(ChangeAttributeRole.class);
-    	ModelLoader loader = (ModelLoader)OperatorService.createOperator(ModelLoader.class);
+    	ModelLoader loader = RapidMiner5.createOperator(ModelLoader.class);
     	ModelApplier applier = (ModelApplier)OperatorService.createOperator(ModelApplier.class);
     	
     	// configure main process
