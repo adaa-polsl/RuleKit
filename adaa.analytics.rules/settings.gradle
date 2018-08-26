@@ -1,3 +1,0 @@
-include ':com.rapidminer.migration.5to8', ':rapidminer-studio'
-project(':com.rapidminer.migration.5to8').projectDir = file('../com.rapidminer.migration.5to8')
-project(':rapidminer-studio').projectDir = file('../rapidminer-studio')
