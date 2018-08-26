@@ -20,7 +20,9 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package com.rapidminer.operator.io;
+package com.rapidminer5.operator.io;
+
+import com.rapidminer.operator.io.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +37,6 @@ import com.rapidminer.operator.UserError;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeFile;
 import com.rapidminer.parameter.UndefinedParameterError;
-
 
 /**
  * Reads a {@link com.rapidminer.operator.Model} from a file that was generated

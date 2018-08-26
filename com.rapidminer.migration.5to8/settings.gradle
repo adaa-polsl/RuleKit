@@ -1,2 +1,0 @@
-include ':rapidminer-studio'
-project(':rapidminer-studio').projectDir = file('../rapidminer-studio')

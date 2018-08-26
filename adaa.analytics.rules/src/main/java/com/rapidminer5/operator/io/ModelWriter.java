@@ -20,7 +20,9 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package com.rapidminer.operator.io;
+package com.rapidminer5.operator.io;
+
+import com.rapidminer.operator.io.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -182,7 +184,7 @@ public class ModelWriter extends AbstractWriter<Model> {
 		List<ParameterType> types = super.getParameterTypes();
 		types.add(new ParameterTypeFile(PARAMETER_MODEL_FILE, "Filename for the model file.", "mod", false));
 		types.add(new ParameterTypeBoolean(PARAMETER_OVERWRITE_EXISTING_FILE, "Overwrite an existing file. If set to false then an index is appended to the filename.", true));
-        types.add(new ParameterTypeCategory(PARAMETER_OUTPUT_TYPE, "Indicates the type of the output", OUTPUT_TYPES, OutputTypes.OUTPUT_TYPE_XML_ZIPPED));
+        types.add(new ParameterTypeCategory(PARAMETER_OUTPUT_TYPE, "Indicates the type of the output", OUTPUT_TYPES, OUTPUT_TYPE_XML_ZIPPED));
 		return types;
 	}
 }

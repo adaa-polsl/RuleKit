@@ -20,7 +20,9 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package com.rapidminer.operator.io;
+package com.rapidminer5.operator.io;
+
+import com.rapidminer.operator.io.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -121,7 +123,7 @@ public class ArffExampleSource extends AbstractDataReader {
 	private FileInputPortHandler filePortHandler = new FileInputPortHandler(this, fileInputPort, PARAMETER_DATA_FILE);
 
 	static {
-		AbstractReader.registerReaderDescription(new ReaderDescription("arff", ArffExampleSource.class, PARAMETER_DATA_FILE));
+		registerReaderDescription(new ReaderDescription("arff", ArffExampleSource.class, PARAMETER_DATA_FILE));
 	}
 
 	public ArffExampleSource(OperatorDescription description) {
@@ -302,7 +304,7 @@ public class ArffExampleSource extends AbstractDataReader {
 									// this exception indicates a malformed .arff file, log it
 									try {
 										LogService.getRoot().log(Level.WARNING, 
-												"com.rapidminer.operator.io.ArffExampleSource.unexpected_end_of_file", 
+												"ArffExampleSource.unexpected_end_of_file",
 												filePortHandler.getSelectedFile().getName());
 										throw e; // needs to be rethrown for the global catch below
 									} catch (OperatorException e1) {}
