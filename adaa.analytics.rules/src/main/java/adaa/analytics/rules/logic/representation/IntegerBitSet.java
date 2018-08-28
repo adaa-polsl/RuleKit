@@ -225,6 +225,16 @@ public class IntegerBitSet implements Set<Integer> {
 		return s;
 	}
 	
+	public int calculateIntersectionSize(IntegerBitSet other1, IntegerBitSet other2) {
+		int s = 0;
+		for (int i = 0; i < words.length; ++i) {
+			long x = words[i] & other1.words[i] & other2.words[i];	
+			s += Long.bitCount(x);
+		}
+		
+		return s;
+	}
+	
 	@Override
 	public Object[] toArray() {
 		// TODO Auto-generated method stub

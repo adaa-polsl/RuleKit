@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.quality.ClassificationRulesPerformance;
+import adaa.analytics.rules.logic.quality.ExtendedBinaryPerformance;
 import adaa.analytics.rules.logic.quality.IntegratedBrierScore;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 
@@ -135,6 +136,7 @@ public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.POSITIVE_PREDICTIVE_VALUE),
 		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.NEGATIVE_PREDICTIVE_VALUE),
 		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.PSEP),
+		new CriterionClassWrapper(ExtendedBinaryPerformance.class)
 	};
 	
 	private static final CriterionClassWrapper[] REGRESSION_CRITERIA_CLASSES = {
