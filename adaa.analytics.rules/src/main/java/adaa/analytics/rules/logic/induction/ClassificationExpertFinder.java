@@ -147,7 +147,9 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 		IntegerBitSet conditionCovered = new IntegerBitSet(dataset.size());
 		IntegerBitSet coveredPositives = new IntegerBitSet(dataset.size());
 		IntegerBitSet coveredNegatives = new IntegerBitSet(dataset.size());
+		IntegerBitSet newlyCoveredPositives = new IntegerBitSet(dataset.size());
 		
+		newlyCoveredPositives.addAll(uncoveredPositives);
 		coveredPositives.addAll(covering.positives);
 		coveredNegatives.addAll(covering.negatives);
 		
@@ -188,22 +190,25 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 					
 					candidate.evaluate(dataset, conditionCovered);
 					double p = 0, n = 0;
+					int newlyCoveredPositivesCount = 0;
 					
 					if (dataset.getAttributes().getWeight() != null) {
 						
 					} else {
 						p = coveredPositives.calculateIntersectionSize(conditionCovered);
 						n = coveredNegatives.calculateIntersectionSize(conditionCovered);
+						
+						newlyCoveredPositivesCount = coveredPositives.calculateIntersectionSize(conditionCovered, newlyCoveredPositives);
 					}
 					
-					if (checkCandidateCoverage(p + n)) {
+					if (newlyCoveredPositivesCount >= params.getMinimumCovered()) {
 					
 						double q = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
 								p, n, rule.getWeighted_P(), rule.getWeighted_N());
 						
 						// analyse condition only if coverage decreased 
 						// select better quality or same quality with higher coverage
-						if ((p + n < covered.size()) && (q > bestQuality || (q == bestQuality && p > mostCovered))) {
+						if (q > bestQuality || (q == bestQuality && p > mostCovered)) {
 							bestCondition = candidate;
 							bestQuality = q;
 							mostCovered = (int)p;
@@ -215,6 +220,8 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 					
 					carryOn = tryAddCondition(rule, bestCondition, dataset, covered, coveredPositives, coveredNegatives, conditionCovered);
 					knowledge.getPreferredConditions((int)classId).remove(bestCondition);
+					
+					newlyCoveredPositives.retainAll(coveredPositives);
 					
 					allowedAttributes.removeAll(names2attributes(bestCondition.getAttributes(), dataset));
 					

@@ -104,8 +104,8 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		try {
 			InductionParameters params = new InductionParameters();
 			params.setInductionMeasure(createMeasure(PARAMETER_INDUCTION_MEASURE, new ClassificationMeasure(ClassificationMeasure.Correlation)));
-			params.setPruningMeasure(createMeasure(PARAMETER_INDUCTION_MEASURE, params.getInductionMeasure() )); 
-			params.setVotingMeasure(createMeasure(PARAMETER_VOTING_MEASURE, params.getVotingMeasure()));
+			params.setPruningMeasure(createMeasure(PARAMETER_PRUNING_MEASURE, params.getInductionMeasure())); 
+			params.setVotingMeasure(createMeasure(PARAMETER_VOTING_MEASURE, params.getInductionMeasure()));
 			
 			params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
 			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MIN_RULE_COVERED));

@@ -415,7 +415,7 @@ public class ClassificationFinder extends AbstractFinder {
 						
 						if ((quality > bestQuality || (quality == bestQuality && left_p > mostCovered)) && (toCover_left_p > 0)) {	
 							ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_le(midpoint)); 
-							if (checkCandidate(candidate, classId, left_p + left_n)) {
+							if (checkCandidate(candidate, classId, toCover_left_p)) {
 								bestQuality = quality;
 								mostCovered = left_p;
 								bestCondition = candidate;
@@ -430,7 +430,7 @@ public class ClassificationFinder extends AbstractFinder {
 								right_p, right_n, rule.getWeighted_P(), rule.getWeighted_N());
 						if ((quality > bestQuality || (quality == bestQuality && right_p > mostCovered)) && (toCover_right_p > 0)) {
 							ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_geq(midpoint));
-							if (checkCandidate(candidate, classId, right_p + right_n)) {
+							if (checkCandidate(candidate, classId, toCover_right_p)) {
 								bestQuality = quality;
 								mostCovered = right_p;
 								bestCondition = candidate;
@@ -476,7 +476,7 @@ public class ClassificationFinder extends AbstractFinder {
 					if ((quality > bestQuality || (quality == bestQuality && p[i] > mostCovered)) && (toCover_p[i] > 0)) {
 						ElementaryCondition candidate = 
 								new ElementaryCondition(attr.getName(), new SingletonSet((double)i, attr.getMapping().getValues())); 
-						if (checkCandidate(candidate, classId, p[i] + n[i])) {
+						if (checkCandidate(candidate, classId, toCover_p[i])) {
 							bestQuality = quality;
 							mostCovered = p[i];
 							bestCondition = candidate;
@@ -525,16 +525,16 @@ public class ClassificationFinder extends AbstractFinder {
 			}
 			
 			// analyse stopping criteria
-			if (covering.weighted_p + covering.weighted_n < params.getMinimumCovered()) {
+			if (covering.weighted_p < params.getMinimumCovered()) {
 				if (rule.getPremise().getSubconditions().size() == 0) {
 					// special case of empty rule - add condition anyway
-					add = true;
+			//		add = true;
 				}
 				carryOn = false;
 			} else {
 				// exact rule
 				if (covering.weighted_n == 0) { 
-				//	carryOn = false; 
+					carryOn = false; 
 				}
 				add = true;
 			}
@@ -566,15 +566,11 @@ public class ClassificationFinder extends AbstractFinder {
 	}	
 	
 	
-	protected boolean checkCandidateCoverage(double covered_pn) {
-		if (covered_pn >= params.getMinimumCovered()) {
+	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double newlyCoveredPositives) {
+		if (newlyCoveredPositives >= params.getMinimumCovered()) {
 			return true;
 		} else {
 			return false;
 		}
-	}
-	
-	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double covered_pn) {
-		return checkCandidateCoverage(covered_pn);
 	}
 }

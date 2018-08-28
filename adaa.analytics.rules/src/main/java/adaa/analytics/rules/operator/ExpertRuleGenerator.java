@@ -227,7 +227,7 @@ public class ExpertRuleGenerator extends RuleGenerator {
 			
 			InductionParameters params = new InductionParameters();
 			params.setInductionMeasure(createMeasure(PARAMETER_INDUCTION_MEASURE, new ClassificationMeasure(ClassificationMeasure.Correlation)));
-			params.setPruningMeasure(createMeasure(PARAMETER_INDUCTION_MEASURE, params.getInductionMeasure() )); 
+			params.setPruningMeasure(createMeasure(PARAMETER_PRUNING_MEASURE, params.getInductionMeasure())); 
 			params.setVotingMeasure(createMeasure(PARAMETER_VOTING_MEASURE, params.getInductionMeasure()));
 				
 			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MIN_RULE_COVERED));
