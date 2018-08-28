@@ -26,9 +26,9 @@ import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.IOContainer;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.io.ArffExampleSource;
 import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
 import com.rapidminer.tools.OperatorService;
+import com.rapidminer5.operator.io.ArffExampleSource;
 
 import adaa.analytics.rules.logic.induction.ActionFinder;
 import adaa.analytics.rules.logic.induction.ActionFindingParameters;
