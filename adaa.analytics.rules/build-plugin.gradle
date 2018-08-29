@@ -14,14 +14,13 @@ repositories {
 }
 
 extensionConfig {
-
-    name 'ADAA Analytics Rules'
+    name 'ADAA Rules'
     groupId = 'adaa.analytics.rules'
     vendor = 'Silesian University of Technology'
-    homepage = 'www.polsl.pl'
-	
+    homepage = 'https://github.com/adaa-polsl'
+
     dependencies {
-        rapidminer '8.2.0'
+        rapidminer '8.2.1'
     }
 }
 
