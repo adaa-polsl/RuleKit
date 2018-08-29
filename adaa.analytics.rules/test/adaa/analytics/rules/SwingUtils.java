@@ -1,4 +1,4 @@
-package adaa.analytics.rules;
+/*package adaa.analytics.rules;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -20,7 +20,6 @@ import com.rapidminer.gui.look.ui.RapidDockingUISettings;
 import com.rapidminer.gui.properties.GenericParameterPanel;
 import com.rapidminer.operator.Operator;
 import com.vlsolutions.swing.docking.DockableContainerFactory;
-import com.vlsolutions.swing.docking.ui.DockingUISettings;
 
 public final class SwingUtils {
 
@@ -28,11 +27,11 @@ public final class SwingUtils {
 
     private SwingUtils() {}
 
-    /**
+    *//**
      * Czeka az glowny watek Swing sie zakonczy.
      * Metoda moze byc przydatna podczas uruchamiania GUI poprzez JUnit,
      * gdyz JUnit zabija watki przy konczeniu metody testujacej.
-     */
+     *//*
     public static void waitForEventDispatchThread() {
 
         try {
@@ -94,3 +93,4 @@ public final class SwingUtils {
         frame.setVisible(true);
     }
 }
+*/
