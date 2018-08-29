@@ -50,14 +50,17 @@ public class CompoundCondition extends ConditionBase {
 		
 		IntegerBitSet temp = new IntegerBitSet(set.size());
 		
+		int i = 0;
 		for (ConditionBase cond : subconditions) {
 			cond.evaluate(set, temp);
 
-			if (operator == LogicalOperator.CONJUNCTION) {
-				outIndices.retainAll(temp);
-			} else if (operator == LogicalOperator.ALTERNATIVE) {
+			if (i == 0 || operator == LogicalOperator.ALTERNATIVE) {
 				outIndices.addAll(temp);
-			}
+			} else if (operator == LogicalOperator.CONJUNCTION) {
+				outIndices.retainAll(temp);
+			} 
+			
+			++i;
 		}
 		
 	}
