@@ -5,18 +5,46 @@ import adaa.analytics.rules.logic.induction.Covering;
 public class ClassificationMeasure implements IQualityMeasure {
 	
 	public static final int	Accuracy = 0;
-	public static final int	C2 = 1;
-	public static final int	Correlation = 2;
-	public static final int	Lift = 3;
-	public static final int	LogicalSufficiency = 4;
-	public static final int	Precision = 5;
-	public static final int	RSS = 6;
-	public static final int	SBayesian = 7;
-	public static final int	Sensitivity = 8;
-	public static final int	Specificity = 9;
-	public static final int BinaryEntropy = 10;
+	public static final int BinaryEntropy = 1;
+	public static final int C1 = 2;
+	public static final int	C2 = 3;
+	public static final int CFoil = 4;
+	public static final int CN2Significnce = 5;
+	public static final int	Correlation = 6;
+	public static final int Coverage = 7;
+	public static final int FBayesianConfirmation = 8;
+	public static final int FMeasure = 9;
+	public static final int FullCoverage = 10;
 	public static final int GeoRSS = 11;
+	public static final int GMeasure = 12;
+	public static final int InformationGain = 13;
+	public static final int JMeasure = 14;
+	public static final int Kappa = 15;
+	public static final int Klosgen = 16;
+	public static final int Laplace = 17;
+	public static final int	Lift = 18;
+	public static final int	LogicalSufficiency = 19;
+	public static final int MEstimate = 20;
+	public static final int MutualSupport = 21;
+	public static final int Novelty = 22;
+	public static final int OddsRatio = 23;
+	public static final int OneWaySupport = 24;
+	public static final int PawlakDependencyFactor = 25;
+	public static final int Q2 = 26;
+	public static final int	Precision = 27;
+	public static final int RelativeRisk = 28;
+	public static final int Ripper = 29;
+	public static final int RuleInterest = 30;
+	public static final int	RSS = 31;
+	public static final int	SBayesian = 32;
+	public static final int	Sensitivity = 33;
+	public static final int	Specificity = 34;
+	public static final int TwoWaySupport = 35;
+	public static final int WeightedLaplace = 36;
+	public static final int WeightedRelativeAccuracy = 37;
+	public static final int YAILS = 38;
 	
+	public static final int COUNT = 39;
 	
 	protected int criterion = Correlation;
 
@@ -30,47 +58,59 @@ public class ClassificationMeasure implements IQualityMeasure {
 	
 	public static String getName(int criterion) {
 		switch(criterion) {
-		case Accuracy: return "Accuracy";
-		case C2: return "C2";
-		case Correlation: return "Correlation";
-		case Lift: return "Lift";
-		case LogicalSufficiency: return "LogicalSufficiency";
-		case Precision: return "Precision";
-		case RSS: return "RSS";
-		case GeoRSS: return "GeoRSS";
-		case SBayesian: return "SBayesian";
-		case Sensitivity: return "Sensitivity";
-		case Specificity: return "Specificity";
-		case BinaryEntropy: return "BinaryEntropy";
+			case Accuracy : return "Accuracy";
+			case BinaryEntropy : return "BinaryEntropy";
+			case C1 : return "C1";
+			case C2 : return "C2";
+			case CFoil : return "CFoil";
+			case CN2Significnce : return "CN2Significance";
+			case Correlation : return "Correlation";
+			case Coverage : return "Coverage";
+			case FBayesianConfirmation : return "FBayesianConfirmation";
+			case FMeasure : return "FMeasure";
+			case FullCoverage : return "FullCoverage";
+			case GeoRSS : return "GeoRSS";
+			case GMeasure : return "GMeasure";
+			case InformationGain : return "InformationGain";
+			case JMeasure : return "JMeasure";
+			case Kappa : return "Kappa";
+			case Klosgen : return "Klosgen";
+			case Laplace : return "Laplace";
+			case Lift : return "Lift";
+			case LogicalSufficiency : return "LogicalSufficiency";
+			case MEstimate : return "MEstimate";
+			case MutualSupport : return "MutualSupport";
+			case Novelty : return "Novelty";
+			case OddsRatio : return "OddsRatio";
+			case OneWaySupport : return "OneWaySupport";
+			case PawlakDependencyFactor : return "PawlakDependencyFactor";
+			case Q2 : return "Q2";
+			case Precision : return "Precision";
+			case RelativeRisk : return "RelativeRisk";
+			case Ripper : return "Ripper";
+			case RuleInterest : return "RuleInterest";
+			case RSS : return "RSS";
+			case SBayesian : return "SBayesian";
+			case Sensitivity : return "Sensitivity";
+			case Specificity : return "Specificity";
+			case TwoWaySupport : return "TwoWaySupport";
+			case WeightedLaplace : return "WeightedLaplace";
+			case WeightedRelativeAccuracy : return "WeightedRelativeAccuracy";
+			case YAILS : return "Yails";
 		default:
 			throw new IllegalArgumentException("ClassificationMeasure: unknown measure type");
 		}
 	}
 	 
 	public double calculate(double p, double n, double P, double N) {
+		return calculate(p, n, P, N, this.criterion);
+	}
+	
+	public double calculate(double p, double n, double P, double N, int criterion) {
 		switch(criterion) {
 		case Accuracy:
-			return (p + N - n) / (P + N);
-		case C2:
-			return (((P+N)*p/(p + n)-P) /N) * ((1 + p/P) / 2);
-		case Correlation:
-			return (p*N - P*n) / Math.sqrt(P*N*(p+n)*(P-p+N-n));
-		case Lift:
-			return (p + 1)*(P + N) / (p + n + 2)*P;
-		case LogicalSufficiency:
-			return p*N/(n*P);
-		case Precision:
-			return p / (p+n);
-		case RSS:
-			return p/P - n/N;
-		case GeoRSS:
-			return Math.sqrt(p/P * (1 - n/N));
-		case SBayesian:
-			return p / (p+n) - (P-p)/(P-p + N-n); 
-		case Sensitivity:
-			return p / P;
-		case Specificity:
-			return (N - n) / N;		
+			return p - n;
+		
 		case BinaryEntropy:
 			double probs[][] = new double[2][2];
 			double H[] = new double[2];
@@ -92,7 +132,136 @@ public class ClassificationMeasure implements IQualityMeasure {
 			
 			double coveredFrac = (p + n) / (P + N);
 			double CH = coveredFrac * H[0] + (1 - coveredFrac) * H[1];	
-			return 1-CH;
+			return 1-CH;	
+			
+		case C1:	
+			double cohen = calculate(p, n, P, N, Kappa);
+			return ((N*p - P*n) / (N*(p + n))) * ((2.0 + cohen) / 3.0);
+		
+		case C2:
+			return (((P+N)*p/(p + n)-P) /N) * ((1 + p/P) / 2);
+			
+		case CFoil : 
+			return p * (log2(p / (p + n)) - log2(P / (P + N)));
+		
+		case CN2Significnce : 
+			return 2 * (
+					p * Math.log(p / ((p + n)*P / (P + N))) + 
+					n * Math.log(n / ((p + n)*N / (P + N)))
+					);
+		
+		case Correlation:
+			return (p*N - P*n) / Math.sqrt(P*N*(p+n)*(P-p+N-n));
+			
+		case Coverage : 
+			return p/P;
+		
+		case FBayesianConfirmation : 
+			return (p*N - n*P) / (p*N + n*P);
+		
+		case FMeasure: 
+			double beta_2 = 2*2;
+			return 
+				(beta_2 + 1) * (p/(p+n)) * (p/P) /
+				(beta_2 * (p/(p+n)) + p/P);
+		
+		case FullCoverage: 
+			return (p+n)/(P+N);
+		
+		case GeoRSS:
+			return Math.sqrt(p/P * (1 - n/N));
+		
+		case GMeasure : 
+			double g = 2;
+			return p / (p + n + g);
+			
+		case InformationGain : 
+			return info(P,N) - (p + n)/(P+N) * info(p,n) - (P+N-p-n)/(P+N) * info(P-p, N-n);
+			
+		case JMeasure : 
+			return (1.0 / (P+N)) * ( 
+					p*Math.log(p*(P+N) / ((p+n)*P)) + 
+					n*Math.log(n*(P+N) / ((p+n)*N)) 
+				);
+		
+		case Kappa : 
+			return 
+				((P+N)*(p/(p+n)) - P) / 
+				((P+N)/2 * ((p+n+P)/(p+n)) - P);
+			
+		case Klosgen : 
+			double omega = 1;
+			return Math.pow((p+n)/(P+N), omega) *(p/(p+n) - P/(P+N));
+		
+		case Laplace : 
+			return (p+1)/(p+n+2);
+		
+		case Lift:
+			return p*(P + N) / ((p + n)*P);
+			
+		case LogicalSufficiency:
+			return p*N/(n*P);
+			
+		case MEstimate : 
+			double m = 2;
+			return (p + m * P/(P+N)) / (p+n+m);
+		
+		case MutualSupport : 
+			return p / (n + P);
+		
+		case Novelty : 
+			return p/(P+N) - ( P*(p+n) / ((P+N)*(P+N)) );
+		
+		case OddsRatio : 
+			return p*(N-n) / (n*(P-p));
+		
+		case OneWaySupport : 
+			return p/(p+n) * Math.log( p*(P+N) / ((p+n)*P));
+		
+		case PawlakDependencyFactor : 
+			return (p*(P+N)-P*(p+n)) / (p*(P+N)+P*(p+n));
+		
+		case Q2 : 
+			return (p/P - n/N) * (1 - n/N);
+		
+		case Precision:
+			return p / (p+n);
+			
+		case RelativeRisk : 
+			return (p/(p+n)) * ((P+N-p-n)/(P-p));
+		
+		case Ripper : 
+			return (p - n)/(p + n);
+			
+		case RuleInterest : 
+			return (p*(P+N)-(p+n)*P)/(P+N);
+		
+		case RSS:
+			return p/P - n/N;
+		
+		case SBayesian:
+			return p / (p+n) - (P-p)/(P-p + N-n);
+			
+		case Sensitivity:
+			return p / P;
+		
+		case Specificity:
+			return (N - n) / N;	
+		
+		case TwoWaySupport : 
+			return (p/(P+N)) * Math.log( (p*(P+N)) / ((p+n)*P) );
+		
+		case WeightedLaplace : 
+			return (p+1)*(P+N)/((p+n+2)*P);
+		
+		case WeightedRelativeAccuracy: 
+			return (p+n)/(P+N) * (p/(p+n) - P/(P+N));
+		
+		case YAILS : 
+			double prec = calculate(p,n,P,N, Precision);
+			double w1 = 0.5 + 0.25 * prec;
+			double w2 = 0.5 - 0.25 * prec;
+			return w1*p/(p + n) + w2*(p/P);	
 			
 		default:
 			throw new IllegalArgumentException("ClassificationMeasure: unknown measure type");
@@ -108,4 +277,13 @@ public class ClassificationMeasure implements IQualityMeasure {
 		return this.calculate(ct.p, ct.n, ct.P, ct.N);
 	}
 	
+	private double log2(double x) {
+		return Math.log(x) / Math.log(2.0);
+	}
+	
+	private double info(double x, double y) {
+		double prob_x = x / (x + y);
+		double prob_y = 1.0 - prob_x;
+		return -(prob_x * log2(prob_x) + prob_y * log2(prob_y));
+	}
 }

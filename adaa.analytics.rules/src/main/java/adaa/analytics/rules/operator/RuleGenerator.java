@@ -59,19 +59,14 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	public static final String PARAMETER_MAX_GROWING = "max_growing";
 	
 	public static String[] QUALITY_MEASURE_NAMES;
-	public static final int[] QUALITY_MEASURE_CLASSES = {
-		ClassificationMeasure.Lift,
-		ClassificationMeasure.Correlation,
-		ClassificationMeasure.C2,
-		ClassificationMeasure.RSS,
-		ClassificationMeasure.Precision,
-		ClassificationMeasure.SBayesian,
-		ClassificationMeasure.BinaryEntropy
-	};
+	public static final int[] QUALITY_MEASURE_CLASSES;
 	
 	static {
-		QUALITY_MEASURE_NAMES = new String[QUALITY_MEASURE_CLASSES.length];
+		QUALITY_MEASURE_CLASSES = new int[ClassificationMeasure.COUNT];
+		QUALITY_MEASURE_NAMES = new String[ClassificationMeasure.COUNT];
+		
 		for (int i = 0; i < QUALITY_MEASURE_CLASSES.length; ++i) {
+			QUALITY_MEASURE_CLASSES[i] = i;
 			QUALITY_MEASURE_NAMES[i] = ClassificationMeasure.getName(QUALITY_MEASURE_CLASSES[i]);
 		}
 	}
