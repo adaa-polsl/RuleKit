@@ -14,6 +14,7 @@ import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.AttributeFactory;
 import com.rapidminer.tools.Ontology;
 
+import adaa.analytics.rules.logic.actions.ActionMetaTable.AnalysisResult;
 import adaa.analytics.rules.logic.representation.ActionRuleSet;
 import utils.InMemoryActionRuleRepository;
 import utils.InMemoryDataSet;
@@ -64,6 +65,20 @@ public class ActionMetaTableTest {
 			System.out.println(ex);
 		}
 		
+	}
+	
+	@Test
+	public void testAnalyze() {
+		
+		ActionRuleSet actions = repo.getActionRulest();
+		
+		ActionRangeDistribution dist = new ActionRangeDistribution(actions, set);
+		dist.calculateActionDistribution();
+		ActionMetaTable table = new ActionMetaTable(dist);
+		AnalysisResult me = table.analyze(set.getExample(0), 1, 2);
+		System.out.println(me.example);
+		System.out.println(me.primeMetaExample);
+		System.out.println(me.contraMetaExample);
 	}
 
 }

@@ -67,9 +67,15 @@ public class ActionMetaTable {
 		List<Set<MetaValue>> sets = new ArrayList<Set<MetaValue>>(map.size());
 		
 		for (String key : map.keySet()) {
-			sets.add(map.get(key).entrySet().stream().map(x -> new MetaValue(x.getKey(), x.getValue())).collect(Collectors.toSet()));
+			sets.add(
+					map
+					.get(key)
+					.entrySet()
+					.stream()
+					.map(x -> new MetaValue(x.getKey(), x.getValue()))
+					.collect(Collectors.toSet())
+					);
 		}
-	
 		
 		examples = cartesianProduct(sets);
 		
@@ -79,9 +85,21 @@ public class ActionMetaTable {
 		return examples;
 	}
 	
-	public void analyze(Example ex, int fromClass, int toClass) {
+	class AnalysisResult {
+		public MetaExample primeMetaExample;
+		public MetaExample contraMetaExample;
+		public Example example;
+		
+		public AnalysisResult(Example ex, MetaExample prime, MetaExample contre) {
+			example = ex;
+			primeMetaExample = prime;
+			contraMetaExample = contre;
+		}
+	}
+	
+	public AnalysisResult analyze(Example ex, int fromClass, int toClass) {
 		MetaExample primeMe = null;
-		MetaExample contraMe = null;
+		MetaExample contraMe = new MetaExample();
 		
 		for (MetaExample me : examples) {
 			
@@ -92,5 +110,51 @@ public class ActionMetaTable {
 		}
 		
 		
+		if (primeMe == null) {
+			throw new RuntimeException("The example ex was not covered by any metaexample");
+		}
+		
+		
+		Set<MetaExample> toSearch = new HashSet<MetaExample>(examples);
+		toSearch.remove(primeMe);
+		MetaExample currBest = null;
+		double currQ = Double.NEGATIVE_INFINITY;
+		
+		
+		for (Attribute atr: ex.getAttributes()) {
+			
+			
+			
+			String atrName = atr.getName();
+			
+			if (primeMe.get(atrName) == null) {
+				continue;
+			}
+			
+			Double value = ex.getValue(atr);
+			
+			for (MetaExample me : toSearch) {
+				
+				double q = me.getQualityOf(value,  atrName, toClass);
+				if (q > currQ) {
+					currQ = q;
+					currBest = me;
+				}
+			}
+			
+			if (currBest == null) {
+				throw new RuntimeException("Could not find contre-value");
+			}
+			
+			MetaValue bestMv = currBest.get(atrName);
+			
+			if (bestMv == null) {
+				throw new RuntimeException("Could not find contre-value meta-value");
+			}
+			
+			contraMe.add(bestMv);	
+		}
+		
+		return new AnalysisResult(ex, primeMe, contraMe);
 	}
 }

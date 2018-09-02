@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -23,6 +24,16 @@ class DistributionEntry {
 			distribution.put(classValue, new LinkedList<Rule>());
 		}
 		distribution.get(classValue).add(rule);
+	}
+	
+	public Optional<List<Rule>> getRulesOfClass(double classId) {
+		return Optional.ofNullable(distribution.get(classId));
+	}
+	
+	public Map<Double, List<Rule>> getRulesNotOfClass(double classId) {
+		 Map<Double, List<Rule>> others = new HashMap<Double, List<Rule>>(distribution);
+		 others.remove(classId);
+		 return others;
 	}
 
 	@Override

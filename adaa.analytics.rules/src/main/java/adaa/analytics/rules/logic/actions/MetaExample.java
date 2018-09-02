@@ -1,9 +1,11 @@
 package adaa.analytics.rules.logic.actions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -114,5 +116,36 @@ public class MetaExample {
 				 .append(data, me.data)
 				 .isEquals();
 		 
+	}
+
+	public double getQualityOf(Double value, String atrName, double targetClass) {
+		
+		MetaValue mv = data.get(atrName);
+		
+		if (mv == null || mv.contains(value)) {
+			return Double.NEGATIVE_INFINITY;
+		}
+		
+		Optional<List<Rule>> rules = mv.distribution.getRulesOfClass(targetClass);
+		Map<Double, List<Rule>> otherRules = mv.distribution.getRulesNotOfClass(targetClass);
+		// assume weight = quality
+		double positiveQualitySum = rules
+					.orElse(new ArrayList<Rule>())
+					.stream()
+					.mapToDouble(x -> x.getWeight())
+					.sum();
+		
+		
+		
+		double negativeQualitySum = Double.NEGATIVE_INFINITY;
+		if (!otherRules.isEmpty()) {
+			negativeQualitySum = otherRules.entrySet().stream()
+														.flatMap(x -> x.getValue().stream())
+														.mapToDouble(x->x.getWeight())
+														.sum();
+		}
+		//obviously gonna change
+		return positiveQualitySum - negativeQualitySum;
+		
 	}
 }
