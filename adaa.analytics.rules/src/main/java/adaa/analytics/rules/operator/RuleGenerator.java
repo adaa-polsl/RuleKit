@@ -1,24 +1,12 @@
 package adaa.analytics.rules.operator;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import adaa.analytics.rules.logic.induction.AbstractSeparateAndConquer;
-import adaa.analytics.rules.logic.induction.ClassificationFinder;
-import adaa.analytics.rules.logic.induction.ClassificationSnC;
-import adaa.analytics.rules.logic.induction.InductionParameters;
-import adaa.analytics.rules.logic.induction.RegressionFinder;
-import adaa.analytics.rules.logic.induction.RegressionSnC;
-import adaa.analytics.rules.logic.induction.SurvivalClassificationSnC;
-import adaa.analytics.rules.logic.induction.SurvivalLogRankFinder;
-import adaa.analytics.rules.logic.induction.SurvivalLogRankSnC;
+import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
-import adaa.analytics.rules.logic.representation.SurvivalRuleSet;
-
+import adaa.analytics.rules.utils.OperatorI18N;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.Model;
 import com.rapidminer.operator.OperatorCapability;
@@ -28,17 +16,16 @@ import com.rapidminer.operator.learner.AbstractLearner;
 import com.rapidminer.operator.learner.PredictionModel;
 import com.rapidminer.operator.performance.EstimatedPerformance;
 import com.rapidminer.operator.performance.PerformanceVector;
-import com.rapidminer.parameter.ParameterType;
-import com.rapidminer.parameter.ParameterTypeBoolean;
-import com.rapidminer.parameter.ParameterTypeDouble;
-import com.rapidminer.parameter.ParameterTypeInt;
-import com.rapidminer.parameter.ParameterTypeStringCategory;
-import com.rapidminer.parameter.UndefinedParameterError;
+import com.rapidminer.parameter.*;
 import com.rapidminer.parameter.conditions.BooleanParameterCondition;
+import com.rapidminer.parameter.conditions.EqualStringCondition;
 import com.rapidminer.parameter.conditions.OrParameterCondition;
 import com.rapidminer.parameter.conditions.ParameterCondition;
 
-import adaa.analytics.rules.utils.OperatorI18N;;
+import java.util.ArrayList;
+import java.util.List;
+
+;
 
 
 public class RuleGenerator extends AbstractLearner implements OperatorI18N {
@@ -57,7 +44,9 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	public static final String PARAMETER_IGNORE_MISSING = "ignore_missing";
 	public static final String PARAMETER_LOGRANK_SURVIVAL = "use_logrank";
 	public static final String PARAMETER_MAX_GROWING = "max_growing";
-	
+	public static final String PARAMETER_USER_EQUATION = "user_equation";
+
+
 	public static String[] QUALITY_MEASURE_NAMES;
 	public static final int[] QUALITY_MEASURE_CLASSES;
 	
@@ -76,7 +65,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	public RuleGenerator(OperatorDescription description) {
 		super(description);	
 	}
-	
+
 	@Override
 	public Class<? extends PredictionModel> getModelClass() {
 		return PredictionModel.class;
@@ -166,8 +155,8 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	@Override
     public List<ParameterType> getParameterTypes() {
 		List<ParameterType> types = new ArrayList<ParameterType>();
-		ParameterType tmp;	
-		
+		ParameterType tmp;
+
 		// those parameters are the same for regression, classification, and survival
 		types.add(new ParameterTypeDouble(
 				PARAMETER_MIN_RULE_COVERED, getParameterDescription(PARAMETER_MIN_RULE_COVERED), 0, Double.MAX_VALUE, 5));
@@ -177,48 +166,54 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 				PARAMETER_IGNORE_MISSING, getParameterDescription(PARAMETER_IGNORE_MISSING), false));
 		types.add(new ParameterTypeDouble(
 				PARAMETER_MAX_GROWING, getParameterDescription(PARAMETER_MAX_GROWING), 0, Double.MAX_VALUE, 0));
-		
-		
+
+
 		// get log rank flag only in survival mode
 		tmp = new ParameterTypeBoolean(
 				PARAMETER_LOGRANK_SURVIVAL, getParameterDescription(PARAMETER_LOGRANK_SURVIVAL), true);
 		tmp.registerDependencyCondition(survivalMetaCondition);
 		tmp.setHidden(true);
 		types.add(tmp);
-		
+
 		// add measures only when log rank flag is not set
 		ParameterCondition measuresCondition = new OrParameterCondition(this, false,
 				classificationMetaCondition,
 				regressionMetaCondition,
 				new BooleanParameterCondition(this, PARAMETER_LOGRANK_SURVIVAL, false, false));
 		tmp = new ParameterTypeStringCategory(
-				PARAMETER_INDUCTION_MEASURE, getParameterDescription(PARAMETER_INDUCTION_MEASURE), 
+				PARAMETER_INDUCTION_MEASURE, getParameterDescription(PARAMETER_INDUCTION_MEASURE),
 				QUALITY_MEASURE_NAMES, QUALITY_MEASURE_NAMES[0], false);
 		tmp.registerDependencyCondition(measuresCondition);
 		types.add(tmp);
-		
+
+		//tmp = new ParameterTypeBoolean(PARAMETER_USER_EQUATION,getParameterDescription(PARAMETER_USER_EQUATION),true);
+		//tmp = new ParameterTypeConfiguration(RuleGeneratorWizard.class, this);
+		//tmp.setKey(PARAMETER_USER_EQUATION);
+			tmp = new ParameterTypeString(PARAMETER_USER_EQUATION, getParameterDescription(PARAMETER_USER_EQUATION),false);
+		tmp.registerDependencyCondition(new EqualStringCondition(this,PARAMETER_INDUCTION_MEASURE,true,"UserDefined"));
+		types.add(tmp);
+
 		tmp = new ParameterTypeBoolean(
 				PARAMETER_PRUNING_ENABLED, getParameterDescription(PARAMETER_PRUNING_ENABLED), true);
 		types.add(tmp);
 		tmp.registerDependencyCondition(measuresCondition);
-		
+
 		tmp = new ParameterTypeStringCategory(
-				PARAMETER_PRUNING_MEASURE, getParameterDescription(PARAMETER_PRUNING_MEASURE), 
+				PARAMETER_PRUNING_MEASURE, getParameterDescription(PARAMETER_PRUNING_MEASURE),
 				QUALITY_MEASURE_NAMES, "", false);
 		tmp.registerDependencyCondition(new BooleanParameterCondition(this, PARAMETER_PRUNING_ENABLED, true, true));
-		
+
 		tmp = new ParameterTypeStringCategory(
-				PARAMETER_VOTING_MEASURE, getParameterDescription(PARAMETER_VOTING_MEASURE), 
+				PARAMETER_VOTING_MEASURE, getParameterDescription(PARAMETER_VOTING_MEASURE),
 				QUALITY_MEASURE_NAMES, "", false);
 		tmp.registerDependencyCondition(measuresCondition);
-	
+
 		types.add(tmp);
-		
 		return types;
     }
 	 
 	 
-	 protected IQualityMeasure createMeasure(String measureParameter, IQualityMeasure defaultMeasure) throws UndefinedParameterError, IllegalAccessException {
+	 protected IQualityMeasure createMeasure(String measureParameter, IQualityMeasure defaultMeasure) throws OperatorException, IllegalAccessException {
 		String measureName = getParameterAsString(measureParameter);
 		int variant = -1;
 		for (int i = 0; i < QUALITY_MEASURE_NAMES.length; i++) {
@@ -226,9 +221,13 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 				variant = QUALITY_MEASURE_CLASSES[i];
 			}
 		}
-
-		if (variant != -1) {	
-			return new ClassificationMeasure(variant);
+		if (variant != -1) {
+			ClassificationMeasure classificationMeasure = new ClassificationMeasure(variant);
+			String userMeasure = ClassificationMeasure.getName(ClassificationMeasure.UserDefined);
+			if (measureName.equals(userMeasure)) {
+				classificationMeasure.createUserMeasure(getParameter(PARAMETER_USER_EQUATION));
+			}
+			return classificationMeasure;
 		} else {
 			log("No quality measure defined, using default (" + defaultMeasure.getName() + ")");
 			return defaultMeasure;

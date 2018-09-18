@@ -197,20 +197,41 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 		for (int eid = 0; eid < trainingSet.size(); ++eid){
 			Example ex = trainingSet.getExample(eid);
 			int bestRuleId = -1;
-			Double bestWeight = Double.NEGATIVE_INFINITY;
-			
+			double bestWeight = Double.NEGATIVE_INFINITY;
+
+			List<Integer> matchingRules = new ArrayList<Integer>();
+
 			rid = 1;
 			for (Rule r: rules) {
-				if (r.getPremise().evaluate(ex) && r.getWeight() > bestWeight) {
-					bestRuleId = rid;
-					bestWeight = r.getWeight();
-				}
+			    if (r.getPremise().evaluate(ex)) {
+                    matchingRules.add(rid);
+			        if (r.getWeight() > bestWeight) {
+                        bestRuleId = rid;
+                        bestWeight = r.getWeight();
+                    }
+                }
+
 				++rid;
 			}
-			sb.append((bestRuleId > 0 ? bestRuleId : "-") + ",");
+
+			if (bestRuleId == -1) {
+			    sb.append("-,");
+            } else {
+                for (int ruleId : matchingRules) {
+                    sb.append(ruleId);
+                    if (ruleId == bestRuleId) {
+                        sb.append("*");
+                    }
+
+                    sb.append(",");
+                }
+            }
+
+            sb.replace(sb.length() - 1, sb.length(), ";");
+			//sb.append((bestRuleId > 0 ? bestRuleId : "-") + ",");
 		}
-		sb.append("\n");
-		
+
+		sb.replace(sb.length()-1, sb.length(), "\n");
 	//	sb.append("General information:\n");
 	//	sb.append("voting: " + (getIsVoting() ? "true" : "false") + "\n");
 		
