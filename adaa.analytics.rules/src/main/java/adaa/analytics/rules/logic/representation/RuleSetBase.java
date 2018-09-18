@@ -31,6 +31,21 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 	
 	protected List<IQualityMeasure> qualityMeasures = new ArrayList<IQualityMeasure>();
 	
+	protected double totalTime;
+	
+	protected double growingTime;
+	
+	protected double pruningTime;
+	
+	public double getTotalTime() { return totalTime; }
+	public void setTotalTime(double v) { totalTime = v; }
+	
+	public double getGrowingTime() { return growingTime; }
+	public void setGrowingTime(double v) { growingTime = v; }
+	
+	public double getPruningTime() { return pruningTime; }
+	public void setPruningTime(double v) { pruningTime = v; }
+	
 	public List<Rule> getRules() { return rules; }
 	public void addRule(Rule v) { rules.add(v); }
 	

@@ -36,6 +36,8 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 	public ClassificationRuleSet run(ExampleSet dataset)
 	{
 		Logger.log("ClassificationExpertSnC.run()\n", Level.FINE);
+		double beginTime;
+		beginTime = System.nanoTime();
 		
 		ClassificationRuleSet ruleset = (ClassificationRuleSet)factory.create(dataset);
 		Attribute label = dataset.getAttributes().getLabel();
@@ -112,11 +114,15 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 				Logger.log("Expert rule: " + rule.toString() + "\n", Level.FINE);
 				
 				erf.setKnowledge(classKnowledge);
+				double t = System.nanoTime();
 				finder.grow(rule, dataset, uncoveredPositives);
+				ruleset.setGrowingTime( ruleset.getGrowingTime() + (System.nanoTime() - t) / 1e9);
 				
 				if (params.isPruningEnabled()) {
 					Logger.log("Before prunning: " + rule.toString() + "\n" , Level.FINE);
+					t = System.nanoTime();
 					finder.prune(rule, dataset);
+					ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 				}
 				Logger.log("Candidate rule:" + rule.toString() + "\n", Level.INFO);
 				
@@ -143,12 +149,16 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 				
 				ClassificationExpertFinder erf = (ClassificationExpertFinder)finder;
 				erf.setKnowledge(classKnowledge);
+				double t = System.nanoTime();
 				carryOn = (finder.grow(rule, dataset, uncoveredPositives) > 0);
-			
+				ruleset.setGrowingTime( ruleset.getGrowingTime() + (System.nanoTime() - t) / 1e9);
+				
 				if (carryOn) {
 					if (params.isPruningEnabled()) {
 						Logger.log("Before prunning: " + rule.toString() + "\n" , Level.FINE);
+						t = System.nanoTime();
 						finder.prune(rule, dataset);
+						ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 					}
 					Logger.log("Candidate rule:" + rule.toString() + "\n", Level.INFO);
 					
@@ -175,6 +185,7 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 			}
 		}
 			
+		ruleset.setTotalTime((System.nanoTime() - beginTime) / 1e9);
 		return ruleset;
 	}
 	

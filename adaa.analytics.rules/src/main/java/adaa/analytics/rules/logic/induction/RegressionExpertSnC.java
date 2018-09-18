@@ -39,6 +39,8 @@ public class RegressionExpertSnC extends RegressionSnC {
 	public RuleSetBase run(final ExampleSet dataset) {
 		
 		Logger.log("RegressionExpertSnC.run()\n", Level.FINE);
+		double beginTime;
+		beginTime = System.nanoTime();
 		
 		RuleSetBase ruleset = factory.create(dataset);
 		Attribute label = dataset.getAttributes().getLabel();
@@ -83,11 +85,15 @@ public class RegressionExpertSnC extends RegressionSnC {
 		
 			rule.setCoveringInformation(cov);
 			Logger.log("Expert rule: " + rule.toString() + "\n", Level.FINE);
-			
+			double t = System.nanoTime();
 			finder.grow(rule, ses, uncovered);
+			ruleset.setGrowingTime( ruleset.getGrowingTime() + (System.nanoTime() - t) / 1e9);
+						
 			if (params.isPruningEnabled()) {
 				Logger.log("Before prunning: " + rule.toString() + "\n" , Level.FINE);
+				t = System.nanoTime();
 				finder.prune(rule, ses);
+				ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 			}
 			Logger.log("Candidate rule: " + rule.toString() + "\n", Level.INFO);
 			
@@ -116,12 +122,16 @@ public class RegressionExpertSnC extends RegressionSnC {
 				new CompoundCondition(),
 				new ElementaryCondition(label.getName(), new SingletonSet(Double.NaN, null)));
 			
+			double t = System.nanoTime();
 			carryOn = (finder.grow(rule, ses, uncovered) > 0);
-		
+			ruleset.setGrowingTime( ruleset.getGrowingTime() + (System.nanoTime() - t) / 1e9);
+			
 			if (carryOn) {
 				if (params.isPruningEnabled()) {
 					Logger.log("Before prunning: " + rule.toString() + "\n" , Level.FINE);
+					t = System.nanoTime();
 					finder.prune(rule, ses);
+					ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 				}
 				Logger.log("Candidate rule: " + rule.toString() + "\n", Level.INFO);
 				
@@ -152,6 +162,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 			}
 		}
 		
+		ruleset.setTotalTime((System.nanoTime() - beginTime) / 1e9);
 		return ruleset;
 	}
 

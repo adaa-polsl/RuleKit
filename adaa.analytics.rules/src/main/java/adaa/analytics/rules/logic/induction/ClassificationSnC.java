@@ -39,6 +39,8 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 	 */
 	public RuleSetBase run(ExampleSet dataset) {
 		Logger.log("ClassificationSnC.run()\n", Level.FINE);
+		double beginTime;
+		beginTime = System.nanoTime();
 	
 		ClassificationRuleSet ruleset = (ClassificationRuleSet) factory.create(dataset);
 		Attribute label = dataset.getAttributes().getLabel();
@@ -89,12 +91,16 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 				rule.setWeighted_P(weighted_P);
 				rule.setWeighted_N(weighted_N);
 				
+				double t = System.nanoTime();
 				carryOn = (finder.grow(rule, dataset, uncoveredPositives) > 0);
-			
+				ruleset.setGrowingTime( ruleset.getGrowingTime() + (System.nanoTime() - t) / 1e9);
+				
 				if (carryOn) {
 					if (params.isPruningEnabled()) {
 						Logger.log("Before prunning:" + rule.toString() + "\n" , Level.FINE);
+						t = System.nanoTime();
 						finder.prune(rule, dataset);
+						ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 					}
 					Logger.log("Candidate rule" + ruleset.getRules().size() +  ":" + rule.toString() + "\n", Level.INFO);
 					Covering covered = rule.covers(dataset, uncovered);
@@ -126,6 +132,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 			}
 		}
 			
+		ruleset.setTotalTime((System.nanoTime() - beginTime) / 1e9);
 		return ruleset;
 	}
 	

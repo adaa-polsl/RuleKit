@@ -256,6 +256,11 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	 
 	 public static PerformanceVector recalculatePerformance(RuleSetBase rs) {
 		PerformanceVector pv = new PerformanceVector();
+		
+		pv.addCriterion(new EstimatedPerformance("time_total_s", rs.getTotalTime(), 1, false));
+		pv.addCriterion(new EstimatedPerformance("time_growing_s", rs.getGrowingTime(), 1, false));
+		pv.addCriterion(new EstimatedPerformance("time_pruning_s", rs.getPruningTime(), 1, false));
+		
 		pv.addCriterion(new EstimatedPerformance("#rules", rs.getRules().size(), 1, false));
 		pv.addCriterion(new EstimatedPerformance("#conditions_per_rule", rs.calculateConditionsCount(), 1, false));
 		pv.addCriterion(new EstimatedPerformance("#induced_conditions_per_rule", rs.calculateInducedCondtionsCount(), 1, false));

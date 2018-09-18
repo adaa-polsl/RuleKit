@@ -36,6 +36,8 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 	public RuleSetBase run(final ExampleSet dataset) {
 		
 		Logger.log("RegressionSnC.run()\n", Level.FINE);
+		double beginTime;
+		beginTime = System.nanoTime();
 		
 		RuleSetBase ruleset = factory.create(dataset);
 		Attribute label = dataset.getAttributes().getLabel();
@@ -68,12 +70,16 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 				new CompoundCondition(),
 				new ElementaryCondition(label.getName(), new SingletonSet(Double.NaN, null)));
 			
+			double t = System.nanoTime();
 			carryOn = (finder.grow(rule, ses, uncovered) > 0);
-		
+			ruleset.setGrowingTime( ruleset.getGrowingTime() + (System.nanoTime() - t) / 1e9);
+			
 			if (carryOn) {
 				if (params.isPruningEnabled()) {
 					Logger.log("Before prunning: " + rule.toString() + "\n" , Level.FINE);
+					t = System.nanoTime();
 					finder.prune(rule, ses);
+					ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 				}
 				Logger.log("Candidate rule: " + rule.toString() + "\n", Level.INFO);
 				
@@ -104,6 +110,7 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 			}
 		}
 		
+		ruleset.setTotalTime((System.nanoTime() - beginTime) / 1e9);
 		return ruleset;
 	}
 }
