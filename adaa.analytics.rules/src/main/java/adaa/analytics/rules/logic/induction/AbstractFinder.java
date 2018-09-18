@@ -3,6 +3,8 @@ package adaa.analytics.rules.logic.induction;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
@@ -28,11 +30,14 @@ public abstract class AbstractFinder {
 		public double pvalue;
 	}
 	
-	
 	/**
 	 * Rule induction parameters.
 	 */
 	protected final InductionParameters params;
+	
+	protected int threadCount;
+    
+	protected ExecutorService pool;
 	
 	/**
 	 * Initialises induction parameters.
@@ -40,6 +45,9 @@ public abstract class AbstractFinder {
 	 */
 	public AbstractFinder(final InductionParameters params) {
 		this.params = params;
+		
+		threadCount = Runtime.getRuntime().availableProcessors();
+		pool = Executors.newFixedThreadPool(threadCount);
 	}
 	
 	/**

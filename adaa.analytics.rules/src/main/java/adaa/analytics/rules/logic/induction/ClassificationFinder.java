@@ -8,7 +8,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
+
+
+
 
 import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
@@ -25,11 +32,16 @@ import adaa.analytics.rules.logic.representation.MissingValuesHandler;
 import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.SingletonSet;
 
+
+
+
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.DataRow;
 import com.rapidminer.example.table.ExampleTable;
+import com.rapidminer.tools.container.Pair;
+
 
 /**
  * Algorithm for growing and pruning classification rules.
@@ -182,87 +194,114 @@ public class ClassificationFinder extends AbstractFinder {
 		while (continueClimbing) {
 			int toRemove = -1;
 			double bestQuality = Double.NEGATIVE_INFINITY;
+			final int conditionsLeft_final = conditionsLeft;
+			final int[] conditionsPerExample_final = conditionsPerExample;
 			
+			List<Future<Double>> futures = new ArrayList<Future<Double>>(conditionsCount);
+			
+			// distribute over threads
 			for (int cid = 0; cid < conditionsCount; ++cid) {
-				ConditionBase cnd = rule.getPremise().getSubconditions().get(cid);
-				// ignore already removed conditions
-				if (removedConditions.contains(cid)) {
-					continue;
-				}
-				
-				// consider only prunable conditions
-				if (!cnd.isPrunable()) {
-					continue;
-				}
-				
-				double p = 0;
-				double n = 0;
-				
-				if (weighting) {
-					// try to remove condition from output set
-					removedConditions.add(cid);
+				final int fcid = cid;
+				Future<Double> f = pool.submit( () -> {
 					
-					// iterate over all words
-					for (int wordId = 0; wordId < maskLength; ++wordId) {
-						long word = ~(0L);
-						long labelWord = labelMask[wordId];
-						// iterate over all present conditions
-						for (int m = 0; m < conditionsCount; ++m ) {
-							if (!removedConditions.contains(m)) {
-								word &= masks[m * maskLength + wordId];
+					ConditionBase cnd = rule.getPremise().getSubconditions().get(fcid);
+					// ignore already removed conditions
+					if (removedConditions.contains(fcid)) {
+						return Double.NEGATIVE_INFINITY;
+					}
+					
+					// consider only prunable conditions
+					if (!cnd.isPrunable()) {
+						return Double.NEGATIVE_INFINITY;
+					}
+					
+					double p = 0;
+					double n = 0;
+					
+					if (weighting) {		
+						// iterate over all words
+						for (int wordId = 0; wordId < maskLength; ++wordId) {
+							long word = ~(0L);
+							long labelWord = labelMask[wordId];
+							// iterate over all present conditions
+							for (int m = 0; m < conditionsCount; ++m ) {
+								// ignore previously removed conditions and currently checked
+								if (!removedConditions.contains(m) && m != fcid) {
+									word &= masks[m * maskLength + wordId];
+								}
+							}
+							
+							long posWord = word & labelWord;
+							long negWord = word & ~labelWord;
+							for (int wordOffset = 0; wordOffset < Long.SIZE; ++wordOffset) {
+								if ((posWord & (1L << wordOffset)) != 0) {
+									p += trainSet.getExample(wordId * Long.SIZE + wordOffset).getWeight();
+								} else if ((negWord & (1L << wordOffset)) != 0) {
+									n += trainSet.getExample(wordId * Long.SIZE + wordOffset).getWeight();
+								}
 							}
 						}
+	
+					} else {
 						
-						long posWord = word & labelWord;
-						long negWord = word & ~labelWord;
-						for (int wordOffset = 0; wordOffset < Long.SIZE; ++wordOffset) {
-							if ((posWord & (1L << wordOffset)) != 0) {
-								p += trainSet.getExample(wordId * Long.SIZE + wordOffset).getWeight();
-							} else if ((negWord & (1L << wordOffset)) != 0) {
-								n += trainSet.getExample(wordId * Long.SIZE + wordOffset).getWeight();
+						int id = 0;
+						for (int wordId = 0; wordId < maskLength; ++wordId) {
+						
+							long word = masks[fcid * maskLength + wordId];
+							long filteredWord = 0;
+							
+							for (int wordOffset = 0; wordOffset < Long.SIZE && id < examplesCount; ++wordOffset, ++id) {
+								// an example is covered by rule after condition removal in two cases:
+								// - it is covered by all conditions prior the removal
+								// - it is covered by all conditions except the one being removed
+								 
+								if ((conditionsPerExample_final[id] == conditionsLeft_final) || 
+									((conditionsPerExample_final[id] == conditionsLeft_final - 1) && (word & (1L << wordOffset)) == 0) ) {
+									filteredWord |= 1L << wordOffset;
+								}
 							}
+
+							long labelWord = labelMask[wordId];
+							long posWord = filteredWord & labelWord;
+							long negWord = filteredWord & ~labelWord;
+							
+							p += Long.bitCount(posWord);
+							n += Long.bitCount(negWord);
 						}
 					}
 					
-					removedConditions.remove(cid);	
-				} else {
-					
-					int id = 0;
-					for (int wordId = 0; wordId < maskLength; ++wordId) {
-					
-						long word = masks[cid * maskLength + wordId];
-						long filteredWord = 0;
-						
-						for (int wordOffset = 0; wordOffset < Long.SIZE && id < examplesCount; ++wordOffset, ++id) {
-							// an example is covered by rule after condition removal in two cases:
-							// - it is covered by all conditions prior the removal
-							// - it is covered by all conditions except the one being removed
-							 
-							if ((conditionsPerExample[id] == conditionsLeft) || 
-								((conditionsPerExample[id] == conditionsLeft - 1) && (word & (1L << wordOffset)) == 0) ) {
-								filteredWord |= 1L << wordOffset;
-							}
-						}
 
-						long labelWord = labelMask[wordId];
-						long posWord = filteredWord & labelWord;
-						long negWord = filteredWord & ~labelWord;
-						
-						p += Long.bitCount(posWord);
-						n += Long.bitCount(negWord);
+					double q = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
+							p, n, rule.getWeighted_P(), rule.getWeighted_N());
+					
+					return q;
+					
+				/*	if (q > bestQuality) {
+						bestQuality = q;
+						toRemove = cid;
 					}
-				}
+				*/
+				});
 				
-
-				double q = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
-						p, n, rule.getWeighted_P(), rule.getWeighted_N());
-				
-				if (q > bestQuality) {
-					bestQuality = q;
-					toRemove = cid;
-				}
+				futures.add(f);	
 			}
 			
+			// gather results for conditions
+			for (int cid = 0; cid < futures.size(); ++cid) {
+				Future<Double> f = futures.get(cid);
+				try {
+					Double q = f.get();
+					if (q > bestQuality) {
+						bestQuality = q;
+						toRemove = cid;
+					}
+					
+				} catch (InterruptedException | ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
 			// if there is something to remove
 			if (bestQuality >= initialQuality) {
 				initialQuality = bestQuality;

@@ -247,6 +247,10 @@ public class IntegerBitSet implements Set<Integer> {
 		return null;
 	}
 	
-	
+	public IntegerBitSet clone() {
+		IntegerBitSet out = new IntegerBitSet(this.maxElement);
+		out.addAll(this);
+		return out;
+	}
 	
 }
