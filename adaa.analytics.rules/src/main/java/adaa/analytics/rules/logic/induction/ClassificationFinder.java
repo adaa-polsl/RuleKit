@@ -463,8 +463,8 @@ public class ClassificationFinder extends AbstractFinder {
 		
 		
 		if (precalculatedCoverings != null) {
-			return 
-					inducePrecalculatedCondition(rule, trainSet, uncoveredPositives, coveredByRule, allowedAttributes, extraParams);
+	//		return 
+	//				inducePrecalculatedCondition(rule, trainSet, uncoveredPositives, coveredByRule, allowedAttributes, extraParams);
 		}
 		
 		double bestQuality = -Double.MAX_VALUE;
@@ -587,7 +587,7 @@ public class ClassificationFinder extends AbstractFinder {
 					}
 				}
 			} else {
-				/*
+				
 				// sum of positive and negative weights for all values
 				double[] p = new double[attr.getMapping().size()];
 				double[] n = new double[attr.getMapping().size()];
@@ -632,7 +632,7 @@ public class ClassificationFinder extends AbstractFinder {
 						}
 					}
 				}
-				*/
+				
 			}
 			
 		}
