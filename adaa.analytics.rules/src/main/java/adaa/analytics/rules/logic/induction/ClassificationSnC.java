@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.IntegerBitSet;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
@@ -45,13 +46,16 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 		ClassificationRuleSet ruleset = (ClassificationRuleSet) factory.create(dataset);
 		Attribute label = dataset.getAttributes().getLabel();
 		NominalMapping mapping = label.getMapping();
+		boolean weighted = (dataset.getAttributes().getWeight() != null);
 		
 		double defaultClassWeight = 0;
 		
 		// iterate over all classes
 		for (int classId = 0; classId < mapping.size(); ++classId) {
 			
-			Set<Integer> uncoveredPositives = new HashSet<Integer>();
+		//	Set<Integer> uncoveredPositives = new HashSet<Integer>();
+			Set<Integer> uncoveredPositives = new IntegerBitSet(dataset.size());
+		
 			Set<Integer> uncovered = new HashSet<Integer>();
 			
 			double weighted_P = 0;
@@ -69,6 +73,13 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 					weighted_N += w;
 				}
 				uncovered.add(id);
+			}
+			
+			
+			if (!weighted) {
+				IntegerBitSet positives = new IntegerBitSet(dataset.size());
+				positives.addAll(uncoveredPositives);
+				finder.precalculateConditions(classId, dataset, positives);
 			}
 			
 			// change default class if neccessary

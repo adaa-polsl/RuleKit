@@ -17,6 +17,9 @@ import java.util.logging.Level;
 
 
 
+
+
+import jxl.biff.IntegerHelper;
 import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.Hypergeometric;
@@ -35,7 +38,10 @@ import adaa.analytics.rules.logic.representation.SingletonSet;
 
 
 
+
+
 import com.rapidminer.example.Attribute;
+import com.rapidminer.example.Attributes;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.DataRow;
@@ -50,6 +56,13 @@ import com.rapidminer.tools.container.Pair;
  */
 public class ClassificationFinder extends AbstractFinder {
 
+	/*
+	 * For each attribute there is a set of distinctive values. For each value there are bit vectors of positive and negative examples covered.
+	 */
+	protected Map<Attribute, Map<Double, IntegerBitSet>> precalculatedCoverings;
+	
+	protected Map<Attribute, Set<Double>> precalculatedFilter;
+	
 	public ClassificationFinder(InductionParameters params) {
 		super(params);
 		MissingValuesHandler.ignore = params.isIgnoreMissing();
@@ -84,7 +97,8 @@ public class ClassificationFinder extends AbstractFinder {
 		
 		int initialConditionsCount = rule.getPremise().getSubconditions().size();
 		
-		HashSet<Integer> covered = new HashSet<Integer>();
+		//HashSet<Integer> covered = new HashSet<Integer>();
+		Set<Integer> covered = new IntegerBitSet(dataset.size());
 		
 		// bit vectors for faster operations on coverings
 		IntegerBitSet conditionCovered = new IntegerBitSet(dataset.size());
@@ -133,6 +147,10 @@ public class ClassificationFinder extends AbstractFinder {
 			}
 			
 		} while (carryOn); 
+		
+		for (Attribute a: precalculatedFilter.keySet()) {
+			precalculatedFilter.get(a).clear();
+		}
 		
 		// if rule has been successfully grown
 		int addedConditionsCount = rule.getPremise().getSubconditions().size() - initialConditionsCount;
@@ -350,6 +368,90 @@ public class ClassificationFinder extends AbstractFinder {
 		return covering;	
 	}
 
+	/**
+	 * Precalculates conditions coverings and stores them as bit vectors in precalculatedCoverings field.
+	 * @param classId
+	 * @param trainSet
+	 * @param positives
+	 */
+	public void precalculateConditions(int classId, ExampleSet trainSet, Set<Integer> positives) {
+		
+		precalculatedCoverings = new HashMap<Attribute, Map<Double, IntegerBitSet>>();
+		precalculatedFilter = new HashMap<Attribute, Set<Double>>();
+		Attributes attributes = trainSet.getAttributes();
+		
+		ExampleTable table = trainSet.getExampleTable();
+		
+		// iterate over all allowed decision attributes
+		for (Attribute attr : attributes) {
+			
+			Map<Double, IntegerBitSet> attributeCovering = new TreeMap<Double, IntegerBitSet>();
+			precalculatedCoverings.put(attr, attributeCovering);
+			precalculatedFilter.put(attr, new TreeSet<Double>());
+			
+			// check if attribute is numerical or nominal
+			if (attr.isNumerical()) {
+				Map<Double, List<Integer>> values2ids = new TreeMap<Double, List<Integer>>();
+				
+				// get all distinctive values of attribute
+				for (int id = 0; id < table.size(); ++id) {
+					DataRow dr = table.getDataRow(id);
+					double val = dr.get(attr);
+					
+					// exclude missing values from keypoints
+					if (!Double.isNaN(val)) {
+						if (!values2ids.containsKey(val)) {
+							values2ids.put(val, new ArrayList<Integer>());
+						} 
+						values2ids.get(val).add(id);
+					}
+				}
+				
+				Double [] keys = values2ids.keySet().toArray(new Double[values2ids.size()]);
+				IntegerBitSet covered = new IntegerBitSet(table.size());
+				
+				// check all possible midpoints (number of distinctive attribute values - 1)
+				// if only one attribute value - ignore it
+				for (int keyId = 0; keyId < keys.length - 1; ++keyId) {
+					double key = keys[keyId];
+					
+					double next = keys[keyId + 1];
+					double midpoint = (key + next) / 2;
+					
+					// this condition covers everything covered previously with some extra objects
+					List<Integer> ids = values2ids.get(key);
+					for (int id : ids) {
+						covered.add(id);	
+					}
+					
+					attributeCovering.put(midpoint, covered.clone());
+				}
+			} else { // nominal attributes
+				
+				// prepare bit vectors
+				for (int val = 0; val != attr.getMapping().size(); ++val) {
+					attributeCovering.put((double)val, new IntegerBitSet(table.size()));
+				}
+				
+				// get all distinctive values of attribute
+				for (int id = 0; id < table.size(); ++id) {
+					DataRow dr = table.getDataRow(id);
+					double value = dr.get(attr);
+					
+					// omit missing values
+					if (!Double.isNaN(value)) {
+						attributeCovering.get(value).add(id);
+					}
+				}
+			}
+		}
+		
+	}
+	
+	
+	/***
+	 * 
+	 */
 	@Override
 	protected ElementaryCondition induceCondition(
 		Rule rule,
@@ -358,7 +460,13 @@ public class ClassificationFinder extends AbstractFinder {
 		Set<Integer> coveredByRule, 
 		Set<Attribute> allowedAttributes,
 		Object... extraParams) {
-			
+		
+		
+		if (precalculatedCoverings != null) {
+			return 
+					inducePrecalculatedCondition(rule, trainSet, uncoveredPositives, coveredByRule, allowedAttributes, extraParams);
+		}
+		
 		double bestQuality = -Double.MAX_VALUE;
 		ElementaryCondition bestCondition = null;
 		double mostCovered = 0;
@@ -479,6 +587,7 @@ public class ClassificationFinder extends AbstractFinder {
 					}
 				}
 			} else {
+				/*
 				// sum of positive and negative weights for all values
 				double[] p = new double[attr.getMapping().size()];
 				double[] n = new double[attr.getMapping().size()];
@@ -523,7 +632,9 @@ public class ClassificationFinder extends AbstractFinder {
 						}
 					}
 				}
+				*/
 			}
+			
 		}
 
 		if (ignoreCandidate != null) {
@@ -533,8 +644,138 @@ public class ClassificationFinder extends AbstractFinder {
 		return bestCondition;
 	}
 	
+	/*
+	 * 
+	 */
+	protected ElementaryCondition inducePrecalculatedCondition(
+			Rule rule,
+			ExampleSet trainSet,
+			Set<Integer> uncoveredPositives,
+			Set<Integer> coveredByRule, 
+			Set<Attribute> allowedAttributes,
+			Object... extraParams) {
+		
+		
+		double bestQuality = -Double.MAX_VALUE;
+		ElementaryCondition bestCondition = null;
+		double mostCovered = 0;
+		Attribute ignoreCandidate = null;
+		double classId = ((SingletonSet)rule.getConsequence().getValueSet()).getValue();
+		
+		IntegerBitSet positives = (IntegerBitSet)extraParams[0];
+		
+		ExampleTable table = trainSet.getExampleTable();
+		
+		// iterate over all allowed decision attributes
+		for (Attribute attr : allowedAttributes) {
+			Map<Double, IntegerBitSet> attributeCovering = precalculatedCoverings.get(attr);
+				
+			Set<Double> ks = attributeCovering.keySet();
+			IntegerBitSet previousConditionCovered = null;
+			
+			for (Double value : ks) {
+				
+				if (precalculatedFilter.get(attr).contains(value)) {
+				//	break;
+				}
+				
+				IntegerBitSet conditionCovered = attributeCovering.get(value);
+				
+				if (attr.isNumerical()) {
+					// numerical attribute
+					
+					// some conditions become equivalent as rule grows (midpoints can be eliminated)
+					if (previousConditionCovered != null && ((IntegerBitSet)coveredByRule).filteredCompare(previousConditionCovered, conditionCovered)) {
+				//		precalculatedFilter.get(attr).add(value);
+				//		break;
+					}
+					
+					previousConditionCovered = conditionCovered;
+					
+					double apriori_prec = rule.getWeighted_P() / (rule.getWeighted_P() + rule.getWeighted_N());
+					
+					double left_p = conditionCovered.calculateIntersectionSize(positives);
+					double toCover_left_p = conditionCovered.calculateIntersectionSize((IntegerBitSet)coveredByRule, (IntegerBitSet)uncoveredPositives);
+					double left_n = conditionCovered.calculateIntersectionSize((IntegerBitSet)coveredByRule) - left_p;
+					double left_prec = left_p / (left_p + left_n);
+					
+					IntegerBitSet oppositeCover = conditionCovered.clone();
+					oppositeCover.negate();
+					
+					double right_p = oppositeCover.calculateIntersectionSize(positives);
+					double toCover_right_p = oppositeCover.calculateIntersectionSize((IntegerBitSet)coveredByRule, (IntegerBitSet)uncoveredPositives);
+					double right_n =  oppositeCover.calculateIntersectionSize((IntegerBitSet)coveredByRule) - right_p;
+					double right_prec = right_p / (right_p + right_n);
+					
+					// evaluate left-side condition: a in (-inf, v)
+					if (left_prec > apriori_prec && (right_p + right_n != 0)) {
+						double quality = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
+								left_p, left_n, rule.getWeighted_P(), rule.getWeighted_N());
+						
+						if ((quality > bestQuality || (quality == bestQuality && left_p > mostCovered)) && (toCover_left_p > 0)) {	
+							ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_le(value)); 
+							if (checkCandidate(candidate, classId, toCover_left_p)) {
+								bestQuality = quality;
+								mostCovered = left_p;
+								bestCondition = candidate;
+								ignoreCandidate = null;
+							}
+						}
+					}
+					
+					// evaluate right-side condition: a in <v, inf)
+					if (right_prec > apriori_prec && (left_p + left_n != 0)) {
+						double quality = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
+								right_p, right_n, rule.getWeighted_P(), rule.getWeighted_N());
+						if ((quality > bestQuality || (quality == bestQuality && right_p > mostCovered)) && (toCover_right_p > 0)) {
+							ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_geq(value));
+							if (checkCandidate(candidate, classId, toCover_right_p)) {
+								bestQuality = quality;
+								mostCovered = right_p;
+								bestCondition = candidate;
+								ignoreCandidate = null;
+							}
+						}
+					}
+					
+					
+				} else { 
+					// nominal attribute
+					/*
+					double p = conditionCovered.calculateIntersectionSize(positives);
+					double toCover_p = conditionCovered.calculateIntersectionSize((IntegerBitSet)coveredByRule, (IntegerBitSet)uncoveredPositives);
+					double n = conditionCovered.calculateIntersectionSize((IntegerBitSet)coveredByRule) - p;
+					
+					// evaluate equality condition a = v
+					double quality = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
+							p, n, rule.getWeighted_P(), rule.getWeighted_N());
+					if ((quality > bestQuality || (quality == bestQuality && p > mostCovered)) && (toCover_p > 0) && (p + n != coveredByRule.size())) {
+						ElementaryCondition candidate = 
+								new ElementaryCondition(attr.getName(), new SingletonSet(value, attr.getMapping().getValues())); 
+						if (checkCandidate(candidate, classId, toCover_p)) {
+							bestQuality = quality;
+							mostCovered = p;
+							bestCondition = candidate;
+							ignoreCandidate = attr;
+						}
+					}
+					*/
+				}
+			}
+			
+		}
+		
+		if (ignoreCandidate != null) {
+			allowedAttributes.remove(ignoreCandidate);
+		}
+		
+		return bestCondition;
+	}
 	
 	
+	/*
+	 * 
+	 */
 	public boolean tryAddCondition(
 		final Rule rule, 
 		final ConditionBase condition, 

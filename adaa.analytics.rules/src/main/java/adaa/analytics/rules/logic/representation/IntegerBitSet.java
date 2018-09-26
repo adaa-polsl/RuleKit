@@ -96,6 +96,15 @@ public class IntegerBitSet implements Set<Integer> {
 		int rest = maxElement % Long.SIZE;
 		words[words.length - 1] = (~(0L)) >>> (Long.SIZE - rest);
 	}
+	
+	public void negate() {
+		for (int i = 0; i < words.length - 1; ++i) {
+			words[i] = ~words[i];
+		}
+		
+		int rest = maxElement % Long.SIZE;
+		words[words.length - 1] = (~words[words.length - 1]) & (~(0L)) >>> (Long.SIZE - rest);
+	}
 
 	@Override
 	public boolean contains(Object arg0) {
@@ -253,4 +262,14 @@ public class IntegerBitSet implements Set<Integer> {
 		return out;
 	}
 	
+	
+	public boolean filteredCompare(IntegerBitSet arg0, IntegerBitSet arg1) {
+		for (int i = 0; i < words.length; ++i) {
+			if ((this.words[i] & arg0.words[i]) != (this.words[i] & arg1.words[i])) {
+				return false;
+			}
+		}
+	
+		return true;
+	}
 }
