@@ -1,11 +1,10 @@
 package adaa.analytics.rules.logic.representation;
 
-import java.util.Set;
-
 import adaa.analytics.rules.logic.induction.Covering;
-
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
+
+import java.util.Set;
 
 public class SurvivalRule extends Rule {
 

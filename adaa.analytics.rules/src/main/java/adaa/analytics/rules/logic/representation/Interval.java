@@ -1,10 +1,10 @@
 package adaa.analytics.rules.logic.representation;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * Represents continuous interval.

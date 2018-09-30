@@ -1,12 +1,11 @@
 package adaa.analytics.rules.logic.induction;
 
-import com.rapidminer.example.ExampleSet;
-
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.actions.ActionInductionRangeStrategy;
 import adaa.analytics.rules.logic.actions.DefaultActionInductionRangeStrategy;
 import adaa.analytics.rules.logic.actions.ExclusiveOnlyActionInductionRangeStrategy;
 import adaa.analytics.rules.logic.actions.NotIntersectingActionInductionRangeStrategy;
+import adaa.analytics.rules.logic.representation.ElementaryCondition;
+import com.rapidminer.example.ExampleSet;
 
 public class ActionFindingParameters {
 	

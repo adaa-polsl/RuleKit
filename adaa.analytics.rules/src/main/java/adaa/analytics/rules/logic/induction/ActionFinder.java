@@ -1,27 +1,14 @@
 package adaa.analytics.rules.logic.induction;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
-
+import adaa.analytics.rules.logic.quality.ClassificationMeasure;
+import adaa.analytics.rules.logic.quality.IQualityMeasure;
+import adaa.analytics.rules.logic.representation.*;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 
-import adaa.analytics.rules.logic.induction.ActionFindingParameters.RangeUsageStrategy;
-import adaa.analytics.rules.logic.quality.*;
-import adaa.analytics.rules.logic.representation.Action;
-import adaa.analytics.rules.logic.representation.ActionRule;
-import adaa.analytics.rules.logic.representation.ConditionBase;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.Interval;
-import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.SingletonSet;
+import java.util.*;
+import java.util.logging.Level;
 
 public class ActionFinder extends AbstractFinder {
 	

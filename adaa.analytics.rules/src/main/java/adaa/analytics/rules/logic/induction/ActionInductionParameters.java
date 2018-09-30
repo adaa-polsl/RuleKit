@@ -1,15 +1,12 @@
 package adaa.analytics.rules.logic.induction;
 
+import com.rapidminer.example.table.NominalMapping;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
-
-import adaa.analytics.rules.logic.induction.ClassPair;
-
-import com.rapidminer.example.table.NominalMapping;
 
 public class ActionInductionParameters extends InductionParameters {
 

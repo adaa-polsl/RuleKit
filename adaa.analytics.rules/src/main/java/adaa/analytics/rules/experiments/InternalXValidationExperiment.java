@@ -1,11 +1,24 @@
 package adaa.analytics.rules.experiments;
 
+import adaa.analytics.rules.logic.representation.Logger;
+import adaa.analytics.rules.logic.representation.RuleSetBase;
+import adaa.analytics.rules.logic.representation.SurvivalRule;
+import adaa.analytics.rules.operator.RuleGenerator;
+import adaa.analytics.rules.utils.RapidMiner5;
+import com.rapidminer.example.Attributes;
+import com.rapidminer.example.set.SplittedExampleSet;
+import com.rapidminer.operator.*;
+import com.rapidminer.operator.performance.PerformanceVector;
+import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
+import com.rapidminer.operator.validation.XValidation;
+import com.rapidminer.tools.OperatorService;
+import com.rapidminer.tools.RandomGenerator;
+import com.rapidminer5.operator.io.ArffExampleSource;
+
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.InvalidParameterException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -14,33 +27,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-
-import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
-import adaa.analytics.rules.operator.RuleGenerator;
-import adaa.analytics.rules.operator.RulePerformanceEvaluator;
-
-import adaa.analytics.rules.utils.RapidMiner5;
-import com.rapidminer.example.Attributes;
-import com.rapidminer.example.set.SplittedExampleSet;
-import com.rapidminer.operator.ExecutionUnit;
-import com.rapidminer.operator.IOContainer;
-import com.rapidminer.operator.IOObject;
-import com.rapidminer.operator.Model;
-import com.rapidminer.operator.ModelApplier;
-import com.rapidminer.operator.OperatorDescription;
-import com.rapidminer.operator.OperatorException;
-import com.rapidminer5.operator.io.ArffExampleSource;
-import com.rapidminer.operator.performance.AbstractPerformanceEvaluator;
-import com.rapidminer.operator.performance.PerformanceEvaluator;
-import com.rapidminer.operator.performance.PerformanceVector;
-import com.rapidminer.operator.performance.PolynominalClassificationPerformanceEvaluator;
-import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
-import com.rapidminer.operator.preprocessing.filter.NumericToBinominal;
-import com.rapidminer.operator.validation.XValidation;
-import com.rapidminer.tools.OperatorService;
-import com.rapidminer.tools.RandomGenerator;
 
 public class InternalXValidationExperiment extends ExperimentBase {
 
@@ -184,7 +170,7 @@ public class InternalXValidationExperiment extends ExperimentBase {
     		String row = arffFile + "," + dateString + ",";
     		
 			for (Map<String,Object> params : paramsSets) {
-			
+
 				// set parameters
 				for (String key: params.keySet()) {
 					Object o = params.get(key);

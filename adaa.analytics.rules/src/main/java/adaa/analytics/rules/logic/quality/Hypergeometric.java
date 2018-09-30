@@ -1,8 +1,7 @@
 package adaa.analytics.rules.logic.quality;
 
-import org.apache.commons.math3.util.CombinatoricsUtils;
-
 import adaa.analytics.rules.logic.induction.Covering;
+import org.apache.commons.math3.util.CombinatoricsUtils;
 
 public class Hypergeometric implements IQualityMeasure {
 	

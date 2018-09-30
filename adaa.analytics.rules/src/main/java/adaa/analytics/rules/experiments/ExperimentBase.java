@@ -1,25 +1,14 @@
 package adaa.analytics.rules.experiments;
 
-import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import adaa.analytics.rules.operator.ExpertRuleGenerator;
 import adaa.analytics.rules.operator.RuleGenerator;
 import adaa.analytics.rules.operator.RulePerformanceEvaluator;
-import adaa.analytics.rules.stream.RuleGeneratorFromStream;
-
 import adaa.analytics.rules.utils.RapidMiner5;
-import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.performance.AbstractPerformanceEvaluator;
-import com.rapidminer.operator.performance.BinaryClassificationPerformance;
-import com.rapidminer.operator.performance.BinominalClassificationPerformanceEvaluator;
-import com.rapidminer.operator.performance.PerformanceCriterion;
-import com.rapidminer.operator.performance.PerformanceEvaluator;
-import com.rapidminer.operator.performance.PolynominalClassificationPerformanceEvaluator;
-import com.rapidminer.operator.performance.RegressionPerformanceEvaluator;
-import com.rapidminer.tools.OperatorService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public abstract class ExperimentBase implements Runnable {
 	public enum Type {

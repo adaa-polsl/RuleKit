@@ -22,24 +22,19 @@
  */
 package com.rapidminer5.operator.io;
 
-import com.rapidminer.operator.io.*;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.zip.GZIPOutputStream;
-
 import com.rapidminer.operator.Model;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.UserError;
+import com.rapidminer.operator.io.AbstractWriter;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeBoolean;
 import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypeFile;
+
+import java.io.*;
+import java.util.List;
+import java.util.zip.GZIPOutputStream;
 
 import static com.rapidminer.operator.io.OutputTypes.*;
 

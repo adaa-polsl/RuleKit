@@ -1,9 +1,7 @@
 package adaa.analytics.rules.operator;
 
 import adaa.analytics.rules.logic.representation.SurvivalRule;
-
 import com.rapidminer.operator.Operator;
-import com.rapidminer.operator.learner.AbstractLearner;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 import com.rapidminer.parameter.ParameterHandler;

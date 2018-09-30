@@ -22,21 +22,16 @@
  */
 package com.rapidminer5.operator.io;
 
-import com.rapidminer.operator.io.*;
+import com.rapidminer.operator.*;
+import com.rapidminer.operator.io.AbstractModelLoader;
+import com.rapidminer.operator.io.ExampleSource;
+import com.rapidminer.parameter.ParameterType;
+import com.rapidminer.parameter.ParameterTypeFile;
+import com.rapidminer.parameter.UndefinedParameterError;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-
-import com.rapidminer.operator.AbstractIOObject;
-import com.rapidminer.operator.IOObject;
-import com.rapidminer.operator.Model;
-import com.rapidminer.operator.OperatorDescription;
-import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.UserError;
-import com.rapidminer.parameter.ParameterType;
-import com.rapidminer.parameter.ParameterTypeFile;
-import com.rapidminer.parameter.UndefinedParameterError;
 
 /**
  * Reads a {@link com.rapidminer.operator.Model} from a file that was generated

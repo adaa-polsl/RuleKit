@@ -1,16 +1,14 @@
 package adaa.analytics.rules.logic.representation;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.DataRow;
 import com.rapidminer.example.table.DataRowReader;
 import com.rapidminer.example.table.ExampleTable;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class ElementaryCondition extends ConditionBase {
 

@@ -1,21 +1,15 @@
 package adaa.analytics.rules.operator.gui;
 
+import com.rapidminer.tools.I18N;
+import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-
-import net.miginfocom.swing.MigLayout;
-
-import com.rapidminer.tools.I18N;
 
 public class ExpertPanel extends JPanel {
 

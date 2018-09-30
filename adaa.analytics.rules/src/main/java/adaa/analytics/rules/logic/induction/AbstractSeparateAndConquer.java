@@ -1,7 +1,6 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.RuleSetBase;
-
 import com.rapidminer.example.ExampleSet;
 
 /***

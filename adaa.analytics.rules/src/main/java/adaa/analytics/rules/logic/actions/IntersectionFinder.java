@@ -1,13 +1,9 @@
 package adaa.analytics.rules.logic.actions;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-
 import adaa.analytics.rules.logic.representation.Interval;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class IntersectionFinder {
 

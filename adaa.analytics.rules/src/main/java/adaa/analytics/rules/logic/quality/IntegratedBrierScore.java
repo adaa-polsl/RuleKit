@@ -1,19 +1,18 @@
 package adaa.analytics.rules.logic.quality;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.logic.representation.SurvivalRuleSet;
-
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.performance.MeasuredPerformance;
 import com.rapidminer.tools.math.Averagable;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class IntegratedBrierScore extends MeasuredPerformance {
 

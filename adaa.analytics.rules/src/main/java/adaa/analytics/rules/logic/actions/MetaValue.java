@@ -1,12 +1,11 @@
 package adaa.analytics.rules.logic.actions;
 
-import java.util.List;
-
+import adaa.analytics.rules.logic.representation.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.IValueSet;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.IValueSet;
+import java.util.List;
 
 public class MetaValue implements IValueSet {
 

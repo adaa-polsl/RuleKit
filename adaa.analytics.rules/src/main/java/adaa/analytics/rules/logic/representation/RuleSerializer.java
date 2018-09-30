@@ -1,15 +1,14 @@
 package adaa.analytics.rules.logic.representation;
 
+import adaa.analytics.rules.logic.induction.ActionCovering;
+import com.rapidminer.example.Attribute;
+import com.rapidminer.example.ExampleSet;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
-
-import adaa.analytics.rules.logic.induction.ActionCovering;
 
 public class RuleSerializer {
 

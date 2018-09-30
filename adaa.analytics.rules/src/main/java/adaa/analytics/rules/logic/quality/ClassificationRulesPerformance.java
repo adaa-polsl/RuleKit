@@ -1,14 +1,13 @@
 package adaa.analytics.rules.logic.quality;
 
-import java.util.BitSet;
-
 import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
-
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.performance.MeasuredPerformance;
 import com.rapidminer.tools.math.Averagable;
+
+import java.util.BitSet;
 
 public class ClassificationRulesPerformance extends MeasuredPerformance {
 

@@ -4,7 +4,6 @@ import adaa.analytics.rules.logic.induction.AbstractSeparateAndConquer;
 import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
-
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.set.Partition;

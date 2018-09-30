@@ -1,28 +1,12 @@
 package adaa.analytics.rules.stream;
 
-import adaa.analytics.rules.logic.induction.AbstractSeparateAndConquer;
-import adaa.analytics.rules.logic.induction.ClassificationExpertFinder;
-import adaa.analytics.rules.logic.induction.ClassificationExpertSnC;
-import adaa.analytics.rules.logic.induction.ClassificationFinder;
-import adaa.analytics.rules.logic.induction.ClassificationSnC;
-import adaa.analytics.rules.logic.induction.InductionParameters;
-import adaa.analytics.rules.logic.induction.RegressionFinder;
-import adaa.analytics.rules.logic.induction.RegressionSnC;
-import adaa.analytics.rules.logic.induction.SurvivalClassificationSnC;
-import adaa.analytics.rules.logic.induction.SurvivalLogRankFinder;
-import adaa.analytics.rules.logic.induction.SurvivalLogRankSnC;
+import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
-import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.ExpertRuleGenerator;
-import adaa.analytics.rules.operator.RuleGenerator;
-
 import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.Partition;
-import com.rapidminer.example.set.SimplePartitionBuilder;
-import com.rapidminer.example.set.SplittedExampleSet;
 import com.rapidminer.operator.Model;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;

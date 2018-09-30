@@ -1,12 +1,9 @@
 package adaa.analytics.rules.operator.gui;
 
-import java.util.ArrayList;
-
-import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
+import java.util.ArrayList;
 
 public class FlexibleTable extends JTable {
 	

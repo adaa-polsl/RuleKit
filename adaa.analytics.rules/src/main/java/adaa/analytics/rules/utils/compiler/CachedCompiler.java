@@ -18,9 +18,6 @@
 
 package adaa.analytics.rules.utils.compiler;
 
-import adaa.analytics.rules.utils.compiler.CompilerUtils;
-import adaa.analytics.rules.utils.compiler.JavaSourceFromString;
-import adaa.analytics.rules.utils.compiler.MyJavaFileManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;

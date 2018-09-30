@@ -1,15 +1,10 @@
 package adaa.analytics.rules.logic.actions;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import adaa.analytics.rules.logic.representation.Rule;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import adaa.analytics.rules.logic.representation.Rule;
+import java.util.*;
 
 class DistributionEntry {
 

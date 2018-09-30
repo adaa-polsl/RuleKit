@@ -1,24 +1,15 @@
 package adaa.analytics.rules.logic.induction;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-
+import adaa.analytics.rules.logic.representation.*;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.NominalMapping;
 
-import adaa.analytics.rules.logic.representation.Action;
-import adaa.analytics.rules.logic.representation.ActionRule;
-import adaa.analytics.rules.logic.representation.ActionRuleSet;
-import adaa.analytics.rules.logic.representation.BackwardActionRuleAdapter;
-import adaa.analytics.rules.logic.representation.CompoundCondition;
-import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
-import adaa.analytics.rules.logic.representation.SingletonSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
 
 public class BackwardActionSnC extends ActionSnC {
 

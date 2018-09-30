@@ -1,12 +1,11 @@
 package adaa.analytics.rules.logic.representation;
 
-import java.util.Set;
-
+import adaa.analytics.rules.logic.induction.ActionCovering;
+import adaa.analytics.rules.logic.induction.Covering;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 
-import adaa.analytics.rules.logic.induction.ActionCovering;
-import adaa.analytics.rules.logic.induction.Covering;
+import java.util.Set;
 
 public class ActionRule extends Rule {
 

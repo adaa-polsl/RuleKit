@@ -1,10 +1,10 @@
 package adaa.analytics.rules.logic.representation;
 
-import java.io.Serializable;
-import java.util.List;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+
+import java.io.Serializable;
+import java.util.List;
 
 public class SingletonSet implements IValueSet, Serializable {
 

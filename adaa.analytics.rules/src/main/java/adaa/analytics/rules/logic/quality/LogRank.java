@@ -1,13 +1,10 @@
 package adaa.analytics.rules.logic.quality;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import junit.framework.TestResult;
-
+import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
-import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
+import java.util.HashSet;
+import java.util.Set;
 
 public class LogRank implements IQualityMeasure {
 	

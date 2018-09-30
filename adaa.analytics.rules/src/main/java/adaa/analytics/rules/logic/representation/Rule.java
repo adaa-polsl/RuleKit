@@ -1,11 +1,10 @@
 package adaa.analytics.rules.logic.representation;
 
+import adaa.analytics.rules.logic.induction.Covering;
+import com.rapidminer.example.ExampleSet;
+
 import java.io.Serializable;
 import java.util.Set;
-
-import adaa.analytics.rules.logic.induction.Covering;
-
-import com.rapidminer.example.ExampleSet;
 
 public abstract class Rule implements Serializable {
 	/**

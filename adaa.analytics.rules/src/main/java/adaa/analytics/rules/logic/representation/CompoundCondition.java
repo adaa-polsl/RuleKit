@@ -1,17 +1,9 @@
 package adaa.analytics.rules.logic.representation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import adaa.analytics.rules.logic.representation.ConditionBase.Type;
-
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
+
+import java.util.*;
 
 public class CompoundCondition extends ConditionBase {
 

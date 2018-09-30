@@ -1,18 +1,6 @@
 package adaa.analytics.rules.operator;
 
-import java.util.List;
-
-import adaa.analytics.rules.logic.representation.ClassificationRule;
-import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
-import adaa.analytics.rules.logic.representation.CompoundCondition;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.IValueSet;
-import adaa.analytics.rules.logic.representation.Interval;
-import adaa.analytics.rules.logic.representation.RegressionRuleSet;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
-import adaa.analytics.rules.logic.representation.SingletonSet;
-
+import adaa.analytics.rules.logic.representation.*;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.Operator;
@@ -27,6 +15,8 @@ import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.metadata.GenerateNewMDRule;
 import com.rapidminer.operator.ports.metadata.MetaData;
 import com.rapidminer.operator.ports.metadata.PassThroughRule;
+
+import java.util.List;
 
 public class RuleTranslator extends Operator {
 	

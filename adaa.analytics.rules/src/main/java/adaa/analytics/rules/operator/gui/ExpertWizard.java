@@ -1,14 +1,13 @@
 package adaa.analytics.rules.operator.gui;
 
-import java.util.Map;
-
 import adaa.analytics.rules.operator.ExpertRuleGenerator;
-
 import com.rapidminer.gui.RapidMinerGUI;
 import com.rapidminer.gui.tools.dialogs.wizards.AbstractWizard;
 import com.rapidminer.gui.wizards.AbstractConfigurationWizardCreator;
 import com.rapidminer.gui.wizards.ConfigurationListener;
 import com.rapidminer.parameter.ParameterType;
+
+import java.util.Map;
 
 
 public class ExpertWizard extends AbstractWizard {
