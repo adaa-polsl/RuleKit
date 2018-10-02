@@ -79,7 +79,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 			if (!weighted) {
 				IntegerBitSet positives = new IntegerBitSet(dataset.size());
 				positives.addAll(uncoveredPositives);
-				finder.precalculateConditions(classId, dataset, positives);
+			//	finder.precalculateConditions(classId, dataset, positives);
 			}
 			
 			// change default class if neccessary

@@ -148,8 +148,10 @@ public class ClassificationFinder extends AbstractFinder {
 			
 		} while (carryOn); 
 		
-		for (Attribute a: precalculatedFilter.keySet()) {
-			precalculatedFilter.get(a).clear();
+		if (precalculatedCoverings != null) {
+			for (Attribute a: precalculatedFilter.keySet()) {
+				precalculatedFilter.get(a).clear();
+			}
 		}
 		
 		// if rule has been successfully grown
@@ -463,8 +465,7 @@ public class ClassificationFinder extends AbstractFinder {
 		
 		
 		if (precalculatedCoverings != null) {
-	//		return 
-	//				inducePrecalculatedCondition(rule, trainSet, uncoveredPositives, coveredByRule, allowedAttributes, extraParams);
+		//	return inducePrecalculatedCondition(rule, trainSet, uncoveredPositives, coveredByRule, allowedAttributes, extraParams);
 		}
 		
 		double bestQuality = -Double.MAX_VALUE;
@@ -559,10 +560,11 @@ public class ClassificationFinder extends AbstractFinder {
 					if (left_prec > apriori_prec) {
 						double quality = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
 								left_p, left_n, rule.getWeighted_P(), rule.getWeighted_N());
-						
+								
 						if ((quality > bestQuality || (quality == bestQuality && left_p > mostCovered)) && (toCover_left_p > 0)) {	
 							ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_le(midpoint)); 
 							if (checkCandidate(candidate, classId, toCover_left_p)) {
+								Logger.log("\tCurrent best: " + candidate + " (p=" + left_p + ", n=" + left_n + ", new_p=" + (double)toCover_left_p +", quality="  + quality + "\n", Level.FINEST);
 								bestQuality = quality;
 								mostCovered = left_p;
 								bestCondition = candidate;
@@ -578,6 +580,7 @@ public class ClassificationFinder extends AbstractFinder {
 						if ((quality > bestQuality || (quality == bestQuality && right_p > mostCovered)) && (toCover_right_p > 0)) {
 							ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_geq(midpoint));
 							if (checkCandidate(candidate, classId, toCover_right_p)) {
+								Logger.log("\tCurrent best: " + candidate + " (p=" + right_p + ", n=" + right_n + ", new_p=" + (double)toCover_right_p + ", quality="  + quality + "\n", Level.FINEST);
 								bestQuality = quality;
 								mostCovered = right_p;
 								bestCondition = candidate;
@@ -618,6 +621,7 @@ public class ClassificationFinder extends AbstractFinder {
 				
 				// try all possible conditions
 				for (int i = 0; i < attr.getMapping().size(); ++i) {
+						
 					// evaluate equality condition a = v
 					double quality = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
 							p[i], n[i], rule.getWeighted_P(), rule.getWeighted_N());
@@ -625,7 +629,8 @@ public class ClassificationFinder extends AbstractFinder {
 						ElementaryCondition candidate = 
 								new ElementaryCondition(attr.getName(), new SingletonSet((double)i, attr.getMapping().getValues())); 
 						if (checkCandidate(candidate, classId, toCover_p[i])) {
-							bestQuality = quality;
+							Logger.log("\tCurrent best: " + candidate + " (p=" + p[i] + ", n=" + n[i] + ", new_p=" + (double)toCover_p[i] + ", quality="  + quality + "\n", Level.FINEST);
+								bestQuality = quality;
 							mostCovered = p[i];
 							bestCondition = candidate;
 							ignoreCandidate = attr;
@@ -675,19 +680,24 @@ public class ClassificationFinder extends AbstractFinder {
 			
 			for (Double value : ks) {
 				
+				boolean filtered = false;
+				
 				if (precalculatedFilter.get(attr).contains(value)) {
-				//	break;
+				//	filtered = true;
+					continue;
 				}
 				
 				IntegerBitSet conditionCovered = attributeCovering.get(value);
-				
+						
 				if (attr.isNumerical()) {
 					// numerical attribute
 					
 					// some conditions become equivalent as rule grows (midpoints can be eliminated)
 					if (previousConditionCovered != null && ((IntegerBitSet)coveredByRule).filteredCompare(previousConditionCovered, conditionCovered)) {
-				//		precalculatedFilter.get(attr).add(value);
-				//		break;
+						precalculatedFilter.get(attr).add(value);
+						previousConditionCovered = conditionCovered;
+					//	filtered = true;
+						continue;
 					}
 					
 					previousConditionCovered = conditionCovered;
@@ -715,6 +725,7 @@ public class ClassificationFinder extends AbstractFinder {
 						if ((quality > bestQuality || (quality == bestQuality && left_p > mostCovered)) && (toCover_left_p > 0)) {	
 							ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_le(value)); 
 							if (checkCandidate(candidate, classId, toCover_left_p)) {
+								Logger.log("\tCurrent best: " + candidate + " (p=" + left_p + ", n=" + left_n + ", new_p=" + toCover_left_p + ", quality="  + quality + ", filtered=" + filtered + "\n", Level.FINEST);
 								bestQuality = quality;
 								mostCovered = left_p;
 								bestCondition = candidate;
@@ -730,6 +741,7 @@ public class ClassificationFinder extends AbstractFinder {
 						if ((quality > bestQuality || (quality == bestQuality && right_p > mostCovered)) && (toCover_right_p > 0)) {
 							ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_geq(value));
 							if (checkCandidate(candidate, classId, toCover_right_p)) {
+								Logger.log("\tCurrent best: " + candidate + " (p=" + right_p + ", n=" + right_n + ", new_p=" + toCover_right_p + ", quality="  + quality + ", filtered=" + filtered +"\n", Level.FINEST);
 								bestQuality = quality;
 								mostCovered = right_p;
 								bestCondition = candidate;
@@ -741,7 +753,6 @@ public class ClassificationFinder extends AbstractFinder {
 					
 				} else { 
 					// nominal attribute
-					/*
 					double p = conditionCovered.calculateIntersectionSize(positives);
 					double toCover_p = conditionCovered.calculateIntersectionSize((IntegerBitSet)coveredByRule, (IntegerBitSet)uncoveredPositives);
 					double n = conditionCovered.calculateIntersectionSize((IntegerBitSet)coveredByRule) - p;
@@ -753,13 +764,13 @@ public class ClassificationFinder extends AbstractFinder {
 						ElementaryCondition candidate = 
 								new ElementaryCondition(attr.getName(), new SingletonSet(value, attr.getMapping().getValues())); 
 						if (checkCandidate(candidate, classId, toCover_p)) {
+							Logger.log("\tCurrent best: " + candidate + " (p=" + p + ", n=" + n + ", new_p=" + toCover_p + ", quality="  + quality + ", filtered=" + filtered + "\n", Level.FINEST);
 							bestQuality = quality;
 							mostCovered = p;
 							bestCondition = candidate;
 							ignoreCandidate = attr;
 						}
 					}
-					*/
 				}
 			}
 			
@@ -835,7 +846,7 @@ public class ClassificationFinder extends AbstractFinder {
 				rule.setPValue(qp.pvalue);
 				
 				Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
-						+ rule.toString() + "\n", Level.FINER);
+						+ rule.toString() + " " + rule.printStats() + "\n", Level.FINER);
 			}
 		}
 		else {
