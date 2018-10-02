@@ -1,10 +1,9 @@
 package adaa.analytics.rules.logic.actions;
 
-import java.util.Set;
-
+import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import com.rapidminer.example.ExampleSet;
 
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
+import java.util.Set;
 
 public class DefaultActionInductionRangeStrategy extends ActionInductionRangeStrategy {
 

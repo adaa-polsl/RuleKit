@@ -1,7 +1,6 @@
 package adaa.analytics.rules.logic.representation;
 
 import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Attributes;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.set.RemappedExampleSet;

@@ -1,53 +1,25 @@
 package adaa.analytics.rules.operator;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import adaa.analytics.rules.logic.induction.AbstractFinder;
-import adaa.analytics.rules.logic.induction.AbstractSeparateAndConquer;
-import adaa.analytics.rules.logic.induction.ClassificationExpertFinder;
-import adaa.analytics.rules.logic.induction.ClassificationExpertSnC;
-import adaa.analytics.rules.logic.induction.InductionParameters;
-import adaa.analytics.rules.logic.induction.RegressionExpertFinder;
-import adaa.analytics.rules.logic.induction.RegressionExpertSnC;
-import adaa.analytics.rules.logic.induction.SurvivalLogRankExpertFinder;
-import adaa.analytics.rules.logic.induction.SurvivalLogRankExpertSnC;
+import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
-import adaa.analytics.rules.logic.representation.ConditionBase;
+import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.ConditionBase.Type;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.Knowledge;
-import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.MultiSet;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.RuleParser;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
-import adaa.analytics.rules.logic.representation.SingletonSet;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.gui.ExpertWizard.ExpertWizardCreator;
-
-import com.rapidminer.datatable.FilteredDataTable.ConditionCombination;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.Model;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.performance.EstimatedPerformance;
-import com.rapidminer.operator.performance.PerformanceVector;
 import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
-import com.rapidminer.parameter.ParameterType;
-import com.rapidminer.parameter.ParameterTypeBoolean;
-import com.rapidminer.parameter.ParameterTypeConfiguration;
-import com.rapidminer.parameter.ParameterTypeInt;
-import com.rapidminer.parameter.ParameterTypeList;
-import com.rapidminer.parameter.ParameterTypeString;
+import com.rapidminer.parameter.*;
 import com.rapidminer.parameter.conditions.BooleanParameterCondition;
 import com.rapidminer.parameter.conditions.ParameterCondition;
+
+import java.util.List;
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ExpertRuleGenerator extends RuleGenerator {
 	// Wizard parameter
@@ -169,6 +141,7 @@ public class ExpertRuleGenerator extends RuleGenerator {
 			Logger.log("Loading initial rules:\n", Level.FINER);
 			List<String[]> ruleList = getParameterList(ExpertRuleGenerator.PARAMETER_EXPERT_RULES);
 			for (String[] e: ruleList) {
+
 				Rule r = RuleParser.parseRule(e[1], setMeta);
 				if (r != null) {
 					// set all subconditions in rules as forced no matter how they were specified 

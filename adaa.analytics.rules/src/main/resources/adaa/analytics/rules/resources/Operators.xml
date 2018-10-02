@@ -14,10 +14,12 @@
         	<key>rule_translator</key>
             <class>adaa.analytics.rules.operator.RuleTranslator</class>
          </operator>
-           <operator>
-        	<key>survival_evaluator</key>
-            <class>adaa.analytics.rules.operator.SurvivalPerformanceEvaluator</class>
-         </operator>
-      </group>
-   </group>
+          <!--
+          <operator>
+           <key>survival_evaluator</key>
+           <class>adaa.analytics.rules.operator.SurvivalPerformanceEvaluator</class>
+        </operator>
+        -->
+     </group>
+  </group>
 </operators>

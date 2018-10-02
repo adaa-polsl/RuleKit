@@ -1,6 +1,7 @@
 package adaa.analytics.rules.logic.quality;
 
 import adaa.analytics.rules.logic.induction.Covering;
+import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.utils.compiler.CompilerUtils;
 import com.rapidminer.operator.OperatorException;
 
@@ -8,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.logging.Level;
 
 public class
 ClassificationMeasure implements IQualityMeasure {
@@ -343,7 +345,10 @@ ClassificationMeasure implements IQualityMeasure {
     }
 
     public void createUserMeasure(String userMeasure) throws OperatorException {
-        File userMeasureTemplate = new File("UserMeasureTemplate.txt");
+        ClassLoader loader = getClass().getClassLoader();
+        File userMeasureTemplate = new File(loader.getResource("adaa/analytics/rules/resources/UserMeasureTemplate.txt").getFile());
+        Logger.getInstance().log(String.valueOf(userMeasureTemplate.exists()), Level.INFO);
+
         StringBuffer sb = new StringBuffer();
         String javaCode = "";
         String className = "adaa.analytics.rules.logic.quality.UserMeasure";

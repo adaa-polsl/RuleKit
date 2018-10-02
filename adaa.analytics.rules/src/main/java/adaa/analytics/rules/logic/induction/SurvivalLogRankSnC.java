@@ -1,18 +1,12 @@
 package adaa.analytics.rules.logic.induction;
 
-import java.util.Set;
-import java.util.logging.Level;
-
-import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
-import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
-import adaa.analytics.rules.logic.representation.SurvivalRuleSet;
-
+import adaa.analytics.rules.logic.representation.*;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.set.SortedExampleSet;
+
+import java.util.Set;
+import java.util.logging.Level;
 
 public class SurvivalLogRankSnC extends RegressionSnC {
 

@@ -1,10 +1,5 @@
 package adaa.analytics.rules.logic.representation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
@@ -13,6 +8,9 @@ import com.rapidminer.example.table.AttributeFactory;
 import com.rapidminer.example.table.ExampleTable;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.tools.Ontology;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SurvivalRuleSet extends RuleSetBase {
 

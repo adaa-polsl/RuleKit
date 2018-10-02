@@ -1,14 +1,12 @@
 package adaa.analytics.rules.logic.representation;
 
+import com.rapidminer.example.ExampleSet;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import com.rapidminer.example.ExampleSet;
 
 public class Knowledge implements Serializable {
 	

@@ -1,36 +1,20 @@
 package adaa.analytics.rules.operator.gui;
 
+import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.operator.ExpertRuleGenerator;
+import adaa.analytics.rules.operator.gui.ExpertPanel.Category;
+import com.rapidminer.gui.tools.dialogs.wizards.AbstractWizard.WizardStepDirection;
+import com.rapidminer.gui.tools.dialogs.wizards.WizardStep;
+import com.rapidminer.operator.OperatorException;
+import com.rapidminer.operator.ports.metadata.AttributeMetaData;
+import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
+
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.swing.JComponent;
-
-import adaa.analytics.rules.logic.induction.RuleFactory;
-import adaa.analytics.rules.logic.representation.ClassificationRule;
-import adaa.analytics.rules.logic.representation.CompoundCondition;
-import adaa.analytics.rules.logic.representation.ConditionBase;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.IValueSet;
-import adaa.analytics.rules.logic.representation.Interval;
-import adaa.analytics.rules.logic.representation.MultiSet;
-import adaa.analytics.rules.logic.representation.RegressionRule;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.RuleParser;
-import adaa.analytics.rules.logic.representation.SingletonSet;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
-import adaa.analytics.rules.logic.representation.Universum;
-import adaa.analytics.rules.operator.ExpertRuleGenerator;
-import adaa.analytics.rules.operator.gui.ExpertPanel.Category;
-
-import com.rapidminer.gui.tools.dialogs.wizards.AbstractWizard.WizardStepDirection;
-import com.rapidminer.gui.tools.dialogs.wizards.WizardStep;
-import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.learner.subgroups.RuleSet;
-import com.rapidminer.operator.ports.metadata.AttributeMetaData;
-import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 
 
 public class ExpertWizardStep extends WizardStep implements IExpertPanelObserver, IRulePanelObserver {

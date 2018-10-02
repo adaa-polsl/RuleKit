@@ -1,31 +1,16 @@
 package adaa.analytics.rules.logic.induction;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.logging.Level;
-
-import org.apache.commons.math3.distribution.NormalDistribution;
-import org.apache.commons.math3.stat.inference.KolmogorovSmirnovTest;
-import org.apache.commons.math3.stat.inference.MannWhitneyUTest;
-
-import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.quality.ChiSquareVarianceTest;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.StatisticalTestResult;
-import adaa.analytics.rules.logic.representation.ConditionBase;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.Interval;
-import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.SingletonSet;
-
+import adaa.analytics.rules.logic.representation.*;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.Statistics;
+
+import java.util.*;
+import java.util.logging.Level;
 
 /**
  * Algorithm for growing and pruning regression rules.

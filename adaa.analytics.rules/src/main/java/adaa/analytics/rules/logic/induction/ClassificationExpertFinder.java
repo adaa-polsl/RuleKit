@@ -1,29 +1,17 @@
 package adaa.analytics.rules.logic.induction;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.logging.Level;
-
-import org.apache.commons.lang.SerializationUtils;
-
-import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
-import adaa.analytics.rules.logic.representation.CompoundCondition;
-import adaa.analytics.rules.logic.representation.ConditionBase;
+import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.ConditionBase.Type;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.IntegerBitSet;
-import adaa.analytics.rules.logic.representation.Knowledge;
-import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.SingletonSet;
-import adaa.analytics.rules.logic.representation.Universum;
-
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
+import org.apache.commons.lang.SerializationUtils;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.logging.Level;
 
 public class ClassificationExpertFinder extends ClassificationFinder implements IExpertFinder {
 	

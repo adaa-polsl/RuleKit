@@ -1,57 +1,23 @@
 package adaa.analytics.rules.operator;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Level;
-
 import adaa.analytics.rules.logic.quality.ClassificationRulesPerformance;
 import adaa.analytics.rules.logic.quality.ExtendedBinaryPerformance;
 import adaa.analytics.rules.logic.quality.IntegratedBrierScore;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
-
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.UserError;
-import com.rapidminer.operator.performance.AbsoluteError;
-import com.rapidminer.operator.performance.AbstractPerformanceEvaluator;
-import com.rapidminer.operator.performance.BinaryClassificationPerformance;
-import com.rapidminer.operator.performance.BinominalClassificationPerformanceEvaluator;
-import com.rapidminer.operator.performance.CorrelationCriterion;
-import com.rapidminer.operator.performance.CrossEntropy;
-import com.rapidminer.operator.performance.LenientRelativeError;
-import com.rapidminer.operator.performance.LogisticLoss;
-import com.rapidminer.operator.performance.Margin;
-import com.rapidminer.operator.performance.MultiClassificationPerformance;
-import com.rapidminer.operator.performance.NormalizedAbsoluteError;
-import com.rapidminer.operator.performance.PerformanceCriterion;
-import com.rapidminer.operator.performance.PerformanceVector;
-import com.rapidminer.operator.performance.PolynominalClassificationPerformanceEvaluator;
-import com.rapidminer.operator.performance.PredictionAverage;
-import com.rapidminer.operator.performance.RegressionPerformanceEvaluator;
-import com.rapidminer.operator.performance.RelativeError;
-import com.rapidminer.operator.performance.RootMeanSquaredError;
-import com.rapidminer.operator.performance.RootRelativeSquaredError;
-import com.rapidminer.operator.performance.SoftMarginLoss;
-import com.rapidminer.operator.performance.SquaredCorrelationCriterion;
-import com.rapidminer.operator.performance.SquaredError;
-import com.rapidminer.operator.performance.StrictRelativeError;
+import com.rapidminer.operator.performance.*;
 import com.rapidminer.parameter.ParameterType;
-import com.rapidminer.parameter.ParameterTypeBoolean;
-import com.rapidminer.parameter.ParameterTypeDouble;
-import com.rapidminer.parameter.ParameterTypeStringCategory;
 import com.rapidminer.parameter.UndefinedParameterError;
-import com.rapidminer.parameter.conditions.BooleanParameterCondition;
-import com.rapidminer.parameter.conditions.OrParameterCondition;
-import com.rapidminer.parameter.conditions.ParameterCondition;
-import com.rapidminer.tools.LogService;
-import com.rapidminer.tools.OperatorService;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 	

@@ -1,14 +1,12 @@
 package adaa.analytics.rules.logic.representation;
 
+import com.rapidminer.operator.ports.metadata.AttributeMetaData;
+import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.lang.model.element.QualifiedNameable;
-
-import com.rapidminer.operator.ports.metadata.AttributeMetaData;
-import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 
 public class RuleParser {
 	public static Rule parseRule(String s, ExampleSetMetaData meta) {
@@ -60,7 +58,7 @@ public class RuleParser {
 	
 	public static ElementaryCondition parseElementaryCondition(String s, ExampleSetMetaData meta) {
 		ElementaryCondition out = null;
-    	
+
 		// remove surrounding white characters
 		Pattern regex = Pattern.compile("\\s*(?<internal>.+)\\s*");
 		Matcher matcher = regex.matcher(s);
@@ -91,7 +89,7 @@ public class RuleParser {
 	    	}
 	    	
 	    	IValueSet valueSet = null;
-			
+
 	    	AttributeMetaData attributeMeta = meta.getAttributeByName(attribute);
 
 	    	ConditionBase.Type type = (numBrackets == 0) ? ConditionBase.Type.NORMAL :

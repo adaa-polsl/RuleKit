@@ -1,15 +1,13 @@
 package adaa.analytics.rules.logic.induction;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.quality.StatisticalTestResult;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
-
 import com.rapidminer.example.ExampleSet;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class SurvivalLogRankFinder extends RegressionFinder{
 

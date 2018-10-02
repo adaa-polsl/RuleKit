@@ -1,26 +1,13 @@
 package adaa.analytics.rules.logic.actions;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import adaa.analytics.rules.logic.representation.*;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.NominalMapping;
 
-import adaa.analytics.rules.logic.representation.ActionRule;
-import adaa.analytics.rules.logic.representation.ActionRuleSet;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.IValueSet;
-import adaa.analytics.rules.logic.representation.Interval;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.SingletonSet;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ActionRangeDistribution {
 

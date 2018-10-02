@@ -1,14 +1,13 @@
 package adaa.analytics.rules.logic.representation;
 
-import java.security.InvalidParameterException;
-import java.util.Iterator;
-import java.util.Set;
-
 import adaa.analytics.rules.logic.induction.Covering;
-
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.set.SortedExampleSet;
+
+import java.security.InvalidParameterException;
+import java.util.Iterator;
+import java.util.Set;
 
 public class RegressionRule extends Rule {
 	

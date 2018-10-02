@@ -22,29 +22,10 @@
  */
 package com.rapidminer5.operator.io;
 
-import com.rapidminer.operator.io.*;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StreamTokenizer;
-import java.text.DateFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.UserError;
+import com.rapidminer.operator.io.AbstractDataReader;
 import com.rapidminer.operator.nio.file.FileInputPortHandler;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.Port;
@@ -55,6 +36,14 @@ import com.rapidminer.tools.Ontology;
 import com.rapidminer.tools.StrictDecimalFormat;
 import com.rapidminer.tools.Tools;
 import com.rapidminer.tools.io.Encoding;
+
+import java.io.*;
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.Level;
 
 
 /**

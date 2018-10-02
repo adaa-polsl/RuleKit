@@ -1,9 +1,9 @@
 package adaa.analytics.rules.logic.representation;
 
+import com.rapidminer.example.Example;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import com.rapidminer.example.Example;
 
 public class Action extends ElementaryCondition {
 

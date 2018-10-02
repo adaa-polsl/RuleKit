@@ -1,12 +1,11 @@
 package adaa.analytics.rules.logic.actions;
 
+import adaa.analytics.rules.logic.representation.ElementaryCondition;
+import com.rapidminer.example.ExampleSet;
+
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.rapidminer.example.ExampleSet;
-
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
 
 public class NotIntersectingActionInductionRangeStrategy extends ActionInductionRangeStrategy {
 

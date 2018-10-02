@@ -1,44 +1,31 @@
 package adaa.analytics.rules.consoles;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-
-import adaa.analytics.rules.utils.RapidMiner5;
-import org.apache.commons.lang.StringUtils;
-
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.logic.representation.SurvivalRuleSet;
 import adaa.analytics.rules.operator.RuleGenerator;
-
+import adaa.analytics.rules.utils.RapidMiner5;
 import com.rapidminer.RapidMiner;
 import com.rapidminer.example.Attributes;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
-import com.rapidminer.operator.IOContainer;
-import com.rapidminer.operator.Model;
-import com.rapidminer.operator.ModelApplier;
-import com.rapidminer.operator.OperatorCreationException;
-import com.rapidminer.operator.OperatorDescription;
-import com.rapidminer.operator.OperatorException;
-import com.rapidminer5.operator.io.ArffExampleSource;
-import com.rapidminer5.operator.io.ModelLoader;
-import com.rapidminer5.operator.io.ModelWriter;
+import com.rapidminer.operator.*;
 import com.rapidminer.operator.ports.PortException;
 import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
 import com.rapidminer.tools.LogService;
 import com.rapidminer.tools.OperatorService;
+import com.rapidminer5.operator.io.ArffExampleSource;
+import com.rapidminer5.operator.io.ModelLoader;
+import com.rapidminer5.operator.io.ModelWriter;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 
 public class LogRankConsole {
 	public static void main (String[] args) {

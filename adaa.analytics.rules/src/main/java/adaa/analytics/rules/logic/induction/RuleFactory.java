@@ -1,19 +1,6 @@
 package adaa.analytics.rules.logic.induction;
 
-import adaa.analytics.rules.logic.representation.ActionRule;
-import adaa.analytics.rules.logic.representation.ActionRuleSet;
-import adaa.analytics.rules.logic.representation.ClassificationRule;
-import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
-import adaa.analytics.rules.logic.representation.CompoundCondition;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.Knowledge;
-import adaa.analytics.rules.logic.representation.RegressionRule;
-import adaa.analytics.rules.logic.representation.RegressionRuleSet;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
-import adaa.analytics.rules.logic.representation.SurvivalRuleSet;
-
+import adaa.analytics.rules.logic.representation.*;
 import com.rapidminer.example.ExampleSet;
 
 public class RuleFactory {

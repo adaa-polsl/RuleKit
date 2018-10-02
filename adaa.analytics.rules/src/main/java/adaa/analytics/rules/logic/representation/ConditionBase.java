@@ -1,11 +1,10 @@
 package adaa.analytics.rules.logic.representation;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
-
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
+
+import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Interface to be implemented by all conditions.

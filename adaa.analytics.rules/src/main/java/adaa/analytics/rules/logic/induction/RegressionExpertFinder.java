@@ -1,28 +1,13 @@
 package adaa.analytics.rules.logic.induction;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.logging.Level;
-
-import org.apache.commons.lang.SerializationUtils;
-
-import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
-import adaa.analytics.rules.logic.induction.RegressionFinder.ConditionEvaluation;
-import adaa.analytics.rules.logic.representation.CompoundCondition;
-import adaa.analytics.rules.logic.representation.ConditionBase;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.Knowledge;
-import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.Universum;
+import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.ConditionBase.Type;
-
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
+import org.apache.commons.lang.SerializationUtils;
+
+import java.util.*;
+import java.util.logging.Level;
 
 public class RegressionExpertFinder extends RegressionFinder implements IExpertFinder {
 

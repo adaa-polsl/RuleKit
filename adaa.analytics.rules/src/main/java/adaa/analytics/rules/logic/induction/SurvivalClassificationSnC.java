@@ -1,31 +1,15 @@
 package adaa.analytics.rules.logic.induction;
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import adaa.analytics.rules.logic.representation.ClassificationRule;
-import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
-import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
-import adaa.analytics.rules.logic.representation.SurvivalRuleSet;
-
+import adaa.analytics.rules.logic.representation.*;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Attributes;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.AttributeFactory;
-import com.rapidminer.example.table.BinominalMapping;
-import com.rapidminer.example.table.DataRow;
-import com.rapidminer.example.table.DataRowFactory;
-import com.rapidminer.example.table.MemoryExampleTable;
-import com.rapidminer.example.table.NominalMapping;
+import com.rapidminer.example.table.*;
 import com.rapidminer.tools.Ontology;
+
+import java.util.*;
 
 public class SurvivalClassificationSnC extends ClassificationSnC {
 	
