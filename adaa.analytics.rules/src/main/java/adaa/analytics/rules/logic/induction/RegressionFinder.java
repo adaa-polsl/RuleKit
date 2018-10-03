@@ -19,18 +19,6 @@ import java.util.logging.Level;
  */
 public class RegressionFinder extends AbstractFinder {
 	
-	/**
-	 * Helper class for storing information about evaluated condition. 
-	 * @author Adam
-	 *
-	 */
-	class ConditionEvaluation {
-		public ConditionBase condition = null;
-		public Covering covering = null;
-		public double quality = -Double.MAX_VALUE;
-		public double covered = 0;
-	}
-	
 	public RegressionFinder(final InductionParameters params) {
 		super(params);
 	}
