@@ -1,11 +1,11 @@
 package adaa.analytics.rules.logic.quality;
 
-import adaa.analytics.rules.logic.induction.Covering;
+import adaa.analytics.rules.logic.induction.ContingencyTable;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 
 public class Hypergeometric implements IQualityMeasure {
 	
-	public StatisticalTestResult calculate(Covering cov) {
+	public StatisticalTestResult calculate(ContingencyTable cov) {
 		return this.calculate(cov.weighted_p, cov.weighted_n,
 				cov.weighted_P, cov.weighted_N);
 	}

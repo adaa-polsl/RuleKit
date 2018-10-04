@@ -1,8 +1,10 @@
 package adaa.analytics.rules.logic.quality;
 
+import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.utils.compiler.CompilerUtils;
+
 import com.rapidminer.operator.OperatorException;
 
 import java.io.BufferedReader;
@@ -325,13 +327,9 @@ ClassificationMeasure implements IQualityMeasure {
         }
     }
 
-    public double calculate(Covering cov) {
-        return this.calculate(cov.weighted_p, cov.weighted_n,
-                cov.weighted_P, cov.weighted_N);
-    }
-
     public double calculate(ContingencyTable ct) {
-        return this.calculate(ct.p, ct.n, ct.P, ct.N);
+        return this.calculate(ct.weighted_p, ct.weighted_n,
+        		ct.weighted_P, ct.weighted_N);
     }
 
     private double log2(double x) {
