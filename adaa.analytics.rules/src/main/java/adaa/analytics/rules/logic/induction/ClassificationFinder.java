@@ -297,12 +297,6 @@ public class ClassificationFinder extends AbstractFinder {
 							p, n, rule.getWeighted_P(), rule.getWeighted_N());
 					
 					return q;
-					
-				/*	if (q > bestQuality) {
-						bestQuality = q;
-						toRemove = cid;
-					}
-				*/
 				});
 				
 				futures.add(f);	

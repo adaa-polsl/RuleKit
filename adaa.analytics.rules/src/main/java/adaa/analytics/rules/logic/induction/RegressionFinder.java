@@ -4,12 +4,15 @@ import adaa.analytics.rules.logic.quality.ChiSquareVarianceTest;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.StatisticalTestResult;
 import adaa.analytics.rules.logic.representation.*;
+
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.Statistics;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 
 /**
@@ -25,73 +28,95 @@ public class RegressionFinder extends AbstractFinder {
 	
 	@Override
 	protected ElementaryCondition induceCondition(
-		Rule rule,
-		ExampleSet dataset,
-		Set<Integer> uncovered, 
-		Set<Integer> covered, 
-		Set<Attribute> allowedAttributes,
+		final Rule rule,
+		final ExampleSet dataset,
+		final Set<Integer> uncovered, 
+		final Set<Integer> covered, 
+		final Set<Attribute> allowedAttributes,
 		Object... extraParams) {
 		
-		ConditionEvaluation bestEvaluation = new ConditionEvaluation();
-		Attribute ignoreCandidate = null;
+		List<Future<ConditionEvaluation>> futures = new ArrayList<Future<ConditionEvaluation>>();
 		
 		// iterate over all possible decision attributes
 		for (Attribute attr : allowedAttributes) {
-			Logger.log("Analysing attribute: " + attr.getName() + "\n", Level.FINEST);
 			
-			// check if attribute is numerical or nominal
-			if (attr.isNumerical()) {
-				Map<Double, List<Integer>> values2ids = new TreeMap<Double, List<Integer>>();
+			// consider attributes in parallel
+			Future<ConditionEvaluation> future = (Future<ConditionEvaluation>) pool.submit(() -> {
+			
+				ConditionEvaluation best = new ConditionEvaluation();
+				Logger.log("Analysing attribute: " + attr.getName() + "\n", Level.FINEST);
 				
-				// get all distinctive values of attribute
-				for (int id : covered) {
-					Example ex = dataset.getExample(id);
-					double val = ex.getValue(attr);
+				// check if attribute is numerical or nominal
+				if (attr.isNumerical()) {
+					Map<Double, List<Integer>> values2ids = new TreeMap<Double, List<Integer>>();
 					
-					if (!values2ids.containsKey(val)) {
-						values2ids.put(val, new ArrayList<Integer>());
-					} 
-					values2ids.get(val).add(id);
-				}
-				
-				Double [] keys = values2ids.keySet().toArray(new Double[values2ids.size()]);
-	
-				// check all possible midpoints
-				for (int keyId = 0; keyId < keys.length - 1; ++keyId) {
-					double key = keys[keyId];
-					double next = keys[keyId + 1];
-					double midpoint = (key + next) / 2;
-					
-					// evaluate left-side condition a < v
-					ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_le(midpoint)); 
-					if (checkCandidate(dataset, rule, candidate, uncovered, bestEvaluation)) {
-						ignoreCandidate = null;
+					// get all distinctive values of attribute
+					for (int id : covered) {
+						Example ex = dataset.getExample(id);
+						double val = ex.getValue(attr);
+						
+						if (!values2ids.containsKey(val)) {
+							values2ids.put(val, new ArrayList<Integer>());
+						} 
+						values2ids.get(val).add(id);
 					}
 					
-					// evaluate right-side condition v <= a
-					candidate = new ElementaryCondition(attr.getName(), Interval.create_geq(midpoint)); 
-					if (checkCandidate(dataset, rule, candidate, uncovered, bestEvaluation)) {
-						ignoreCandidate = null;
+					Double [] keys = values2ids.keySet().toArray(new Double[values2ids.size()]);
+		
+					// check all possible midpoints
+					for (int keyId = 0; keyId < keys.length - 1; ++keyId) {
+						double key = keys[keyId];
+						double next = keys[keyId + 1];
+						double midpoint = (key + next) / 2;
+						
+						// evaluate left-side condition a < v
+						ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_le(midpoint)); 
+						checkCandidate(dataset, rule, candidate, uncovered, best);
+							
+						// evaluate right-side condition v <= a
+						candidate = new ElementaryCondition(attr.getName(), Interval.create_geq(midpoint)); 
+						checkCandidate(dataset, rule, candidate, uncovered, best);
+					}
+				} else {
+					// try all possible conditions
+					for (int i = 0; i < attr.getMapping().size(); ++i) {
+						ElementaryCondition candidate = new ElementaryCondition(
+								attr.getName(), new SingletonSet((double)i, attr.getMapping().getValues())); 
+						
+						checkCandidate(dataset, rule, candidate, uncovered, best);
 					}
 				}
-			} else {
-				// try all possible conditions
-				for (int i = 0; i < attr.getMapping().size(); ++i) {
-					ElementaryCondition candidate = new ElementaryCondition(
-							attr.getName(), new SingletonSet((double)i, attr.getMapping().getValues())); 
-					
-					if (checkCandidate(dataset, rule, candidate, uncovered, bestEvaluation)) {
-						ignoreCandidate = attr;
-					}
-				}
-			}
+			
+				return best;
+			});
+		
+			futures.add(future);
 		}
 		
-		if (ignoreCandidate != null) {
-			allowedAttributes.remove(ignoreCandidate);
+		ConditionEvaluation best = null;
+		
+		try {
+			for (Future f : futures) {
+				ConditionEvaluation eval;
+			
+				eval = (ConditionEvaluation)f.get();
+				if (best == null || eval.quality > best.quality || (eval.quality == best.quality && eval.covered > best.covered)) {
+					best = eval;
+				}
+			}
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
-		return (ElementaryCondition)bestEvaluation.condition;
+		if (best.condition != null) {
+			Attribute bestAttr = dataset.getAttributes().get(((ElementaryCondition)best.condition).getAttribute());
+			if (bestAttr.isNominal()) {
+				allowedAttributes.remove(bestAttr);
+			}
+		}
+
+		return (ElementaryCondition)best.condition;
 	}
 
 	
@@ -112,9 +137,13 @@ public class RegressionFinder extends AbstractFinder {
 			ConditionEvaluation currentBest) {
 		
 		Logger.log("Evaluating candidate: " + candidate, Level.FINEST);
-		rule.getPremise().addSubcondition(candidate);
-		Covering cov = rule.covers(dataset);
-		rule.getPremise().removeSubcondition(candidate);
+		
+		CompoundCondition newPremise = new CompoundCondition();
+		newPremise.getSubconditions().addAll(rule.getPremise().getSubconditions());
+		newPremise.addSubcondition(candidate);
+		
+		RegressionRule newRule = new RegressionRule(newPremise, rule.getConsequence());
+		Covering cov = newRule.covers(dataset);
 		
 		double newlyCovered = 0;
 		if (dataset.getAttributes().getWeight() == null) {
