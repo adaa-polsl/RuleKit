@@ -6,7 +6,6 @@ import java.util.logging.Level;
 
 import org.apache.commons.lang.SerializationUtils;
 
-import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.representation.ClassificationRule;
 import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
@@ -21,6 +20,7 @@ import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.NominalMapping;
+import com.rapidminer.tools.container.Pair;
 
 public class ClassificationExpertSnC extends ClassificationSnC {
 
@@ -108,9 +108,9 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 				
 				Covering cov = rule.covers(dataset, uncovered);
 				rule.setCoveringInformation(cov);
-				QualityAndPValue qp = finder.calculateQualityAndPValue(dataset, cov, params.getVotingMeasure());
-				rule.setWeight(qp.quality);
-				rule.setPValue(qp.pvalue);
+				Pair<Double,Double> qp = finder.calculateQualityAndPValue(dataset, cov, params.getVotingMeasure());
+				rule.setWeight(qp.getFirst());
+				rule.setPValue(qp.getSecond());
 				Logger.log("Expert rule: " + rule.toString() + "\n", Level.FINE);
 				
 				erf.setKnowledge(classKnowledge);

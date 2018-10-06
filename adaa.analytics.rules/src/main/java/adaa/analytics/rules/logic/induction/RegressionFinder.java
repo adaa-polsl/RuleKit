@@ -2,13 +2,13 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.quality.ChiSquareVarianceTest;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
-import adaa.analytics.rules.logic.quality.StatisticalTestResult;
 import adaa.analytics.rules.logic.representation.*;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.Statistics;
+import com.rapidminer.tools.container.Pair;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -35,8 +35,12 @@ public class RegressionFinder extends AbstractFinder {
 		final Set<Attribute> allowedAttributes,
 		Object... extraParams) {
 		
-		List<Future<ConditionEvaluation>> futures = new ArrayList<Future<ConditionEvaluation>>();
+		if (allowedAttributes.size() == 0) {
+			return null;
+		}
 		
+		List<Future<ConditionEvaluation>> futures = new ArrayList<Future<ConditionEvaluation>>();
+				
 		// iterate over all possible decision attributes
 		for (Attribute attr : allowedAttributes) {
 			
@@ -142,7 +146,14 @@ public class RegressionFinder extends AbstractFinder {
 		newPremise.getSubconditions().addAll(rule.getPremise().getSubconditions());
 		newPremise.addSubcondition(candidate);
 		
-		RegressionRule newRule = new RegressionRule(newPremise, rule.getConsequence());
+		Rule newRule = null;
+		
+		if (rule instanceof RegressionRule) {
+			newRule = new RegressionRule(newPremise, rule.getConsequence());
+		} else if (rule instanceof SurvivalRule) {
+			newRule = new SurvivalRule(newPremise, rule.getConsequence());
+		}
+		 
 		Covering cov = newRule.covers(dataset);
 		
 		double newlyCovered = 0;
@@ -181,9 +192,7 @@ public class RegressionFinder extends AbstractFinder {
 	}
 	
 	@Override
-	protected QualityAndPValue calculateQualityAndPValue(ExampleSet trainSet, Covering cov, IQualityMeasure measure) {
-		QualityAndPValue res = new QualityAndPValue();
-		res.quality = super.calculateQuality(trainSet, cov, measure);
+	protected Pair<Double,Double> calculateQualityAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
 		
 /*		double[] covY = new double[cov.getSize()];
 		double[] uncovY = new double[trainSet.size() - cov.getSize()];
@@ -208,10 +217,10 @@ public class RegressionFinder extends AbstractFinder {
 */
 		ChiSquareVarianceTest test = new ChiSquareVarianceTest();
 		double expectedDev = Math.sqrt(trainSet.getStatistics(trainSet.getAttributes().getLabel(), Statistics.VARIANCE));
-		StatisticalTestResult sts = test.calculateLower(expectedDev, cov.stddev_y, cov.getSize());
+		Pair<Double,Double> statsAndPVal = test.calculateLower(expectedDev, ct.stddev_y, (int)(ct.weighted_p + ct.weighted_n));
 		
-		res.pvalue =  sts.pvalue;
-		
-		return res;
+		return new Pair<Double,Double>(
+				super.calculateQuality(trainSet, ct, measure),
+				statsAndPVal.getSecond());
 	}
 }

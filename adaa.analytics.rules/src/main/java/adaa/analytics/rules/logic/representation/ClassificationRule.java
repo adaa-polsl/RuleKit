@@ -1,6 +1,8 @@
 package adaa.analytics.rules.logic.representation;
 
+import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
+
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 
@@ -64,30 +66,33 @@ public class ClassificationRule extends Rule {
 	
 	public Covering covers(ExampleSet set) {
 		Covering covered = new Covering();
-		
-		
+		covers(set, covered, covered.positives, covered.negatives);
+		return covered;
+	}
+	
+	public void covers(ExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
+
 		int id = 0;
 		for (Example ex : set) {
 			double w = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
 			
 			boolean consequenceAgree = this.getConsequence().evaluate(ex);
 			if (consequenceAgree) {
-				covered.weighted_P += w;
+				ct.weighted_P += w;
 			} else {
-				covered.weighted_N += w;
+				ct.weighted_N += w;
 			}
 			
 			if (this.getPremise().evaluate(ex)) {
 				if (consequenceAgree) {
-					covered.positives.add(id);
-					covered.weighted_p += w;
+					positives.add(id);
+					ct.weighted_p += w;
 				} else {
-					covered.negatives.add(id);
-					covered.weighted_n += w;
+					negatives.add(id);
+					ct.weighted_n += w;
 				}
 			}
 			++id;
 		}
-		return covered;
 	}
 }

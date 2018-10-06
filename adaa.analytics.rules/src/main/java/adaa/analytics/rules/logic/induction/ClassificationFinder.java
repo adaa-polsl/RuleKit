@@ -2,30 +2,18 @@ package adaa.analytics.rules.logic.induction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 
-
-
-
-
-
-
-import jxl.biff.IntegerHelper;
-import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.Hypergeometric;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
-import adaa.analytics.rules.logic.quality.StatisticalTestResult;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ConditionBase;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
@@ -35,12 +23,6 @@ import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.MissingValuesHandler;
 import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.SingletonSet;
-
-
-
-
-
-
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Attributes;
@@ -70,16 +52,15 @@ public class ClassificationFinder extends AbstractFinder {
 		MissingValuesHandler.ignore = params.isIgnoreMissing();
 	}
 	
-	protected QualityAndPValue calculateQualityAndPValue(ExampleSet trainSet, Covering cov, IQualityMeasure measure) {
-		QualityAndPValue res = new QualityAndPValue();
-		res.quality = calculateQuality(trainSet, cov, measure);
-		
+	
+	
+	protected Pair<Double,Double> calculateQualityAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
 		Hypergeometric test = new Hypergeometric();
-		StatisticalTestResult sts = test.calculate(cov);
-		
-		res.pvalue = sts.pvalue;
-		
-		return res;
+		Pair<Double, Double> statAndPValue = test.calculate(ct);
+	
+		return new Pair<Double, Double>(
+				calculateQuality(trainSet, ct, measure), 
+				statAndPValue.getSecond());
 	}
 	
 	
@@ -108,19 +89,10 @@ public class ClassificationFinder extends AbstractFinder {
 		IntegerBitSet coveredNegatives = new IntegerBitSet(dataset.size());
 		
 		// get current covering
-		Covering covering = rule.covers(dataset);
-		covered.addAll(covering.positives);
-		covered.addAll(covering.negatives);
-		
-		int id = 0;
-		for (Example e : dataset) {
-			if (rule.getConsequence().evaluate(e)) {
-				coveredPositives.add(id);
-			} else {
-				coveredNegatives.add(id);
-			}
-			++id;
-		}
+		ContingencyTable table = new ContingencyTable();
+		rule.covers(dataset, table, coveredPositives, coveredNegatives);
+		covered.addAll(coveredPositives);
+		covered.addAll(coveredNegatives);
 	
 		Set<Attribute> allowedAttributes = new TreeSet<Attribute>(new AttributeComparator());
 		for (Attribute a: dataset.getAttributes()) {
@@ -357,9 +329,9 @@ public class ClassificationFinder extends AbstractFinder {
 		covering = rule.covers(trainSet);
 		rule.setWeighted_p(covering.weighted_p);
 		rule.setWeighted_n(covering.weighted_n);
-		QualityAndPValue qp = calculateQualityAndPValue(trainSet, covering, params.getVotingMeasure());
-		rule.setWeight(qp.quality);
-		rule.setPValue(qp.pvalue);
+		Pair<Double,Double> qp = calculateQualityAndPValue(trainSet, covering, params.getVotingMeasure());
+		rule.setWeight(qp.getFirst());
+		rule.setPValue(qp.getSecond());
 		
 		//System.exit(0);
 		
@@ -458,6 +430,10 @@ public class ClassificationFinder extends AbstractFinder {
 		Set<Integer> coveredByRule, 
 		Set<Attribute> allowedAttributes,
 		Object... extraParams) {
+		
+		if (allowedAttributes.size() == 0) {
+			return null;
+		}
 		
 		
 		if (precalculatedCoverings != null) {
@@ -817,25 +793,25 @@ public class ClassificationFinder extends AbstractFinder {
 		
 		boolean carryOn = true;
 		boolean add = false;
-		Covering covering = new Covering();
+		ContingencyTable ct = new ContingencyTable();
 		
 		if (condition != null) {
 			conditionCovered.clear();
 			condition.evaluate(trainSet, conditionCovered);
 			
-			covering.weighted_P = rule.getWeighted_P();
-			covering.weighted_N = rule.getWeighted_N();
+			ct.weighted_P = rule.getWeighted_P();
+			ct.weighted_N = rule.getWeighted_N();
 			
 			if (trainSet.getAttributes().getWeight() != null) {
 				// calculate weights
 				
 			} else {
-				covering.weighted_p = coveredPositives.calculateIntersectionSize(conditionCovered);
-				covering.weighted_n = coveredNegatives.calculateIntersectionSize(conditionCovered);
+				ct.weighted_p = coveredPositives.calculateIntersectionSize(conditionCovered);
+				ct.weighted_n = coveredNegatives.calculateIntersectionSize(conditionCovered);
 			}
 			
 			// analyse stopping criteria
-			if (covering.weighted_p < params.getMinimumCovered()) {
+			if (ct.weighted_p < params.getMinimumCovered()) {
 				if (rule.getPremise().getSubconditions().size() == 0) {
 					// special case of empty rule - add condition anyway
 			//		add = true;
@@ -843,7 +819,7 @@ public class ClassificationFinder extends AbstractFinder {
 				carryOn = false;
 			} else {
 				// exact rule
-				if (covering.weighted_n == 0) { 
+				if (ct.weighted_n == 0) { 
 					carryOn = false; 
 				}
 				add = true;
@@ -857,12 +833,12 @@ public class ClassificationFinder extends AbstractFinder {
 				coveredPositives.retainAll(conditionCovered);
 				coveredNegatives.retainAll(conditionCovered);
 				
-				rule.setWeighted_p(covering.weighted_p);
-				rule.setWeighted_n(covering.weighted_n);
+				rule.setWeighted_p(ct.weighted_p);
+				rule.setWeighted_n(ct.weighted_n);
 				
-				QualityAndPValue qp = calculateQualityAndPValue(trainSet, covering, params.getVotingMeasure());
-				rule.setWeight(qp.quality);
-				rule.setPValue(qp.pvalue);
+				Pair<Double,Double> qp = calculateQualityAndPValue(trainSet, ct, params.getVotingMeasure());
+				rule.setWeight(qp.getFirst());
+				rule.setPValue(qp.getSecond());
 				
 				Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
 						+ rule.toString() + " " + rule.printStats() + "\n", Level.FINER);

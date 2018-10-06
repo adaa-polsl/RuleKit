@@ -1,19 +1,26 @@
 package adaa.analytics.rules.logic.quality;
 
 import adaa.analytics.rules.logic.induction.ContingencyTable;
+
 import org.apache.commons.math3.util.CombinatoricsUtils;
+
+import com.rapidminer.tools.container.Pair;
+
 
 public class Hypergeometric implements IQualityMeasure {
 	
-	public StatisticalTestResult calculate(ContingencyTable cov) {
+	/**
+	 * 
+	 * @param cov
+	 * @return (test statistics, p-value) pair
+	 */
+	public Pair<Double,Double> calculate(ContingencyTable cov) {
 		return this.calculate(cov.weighted_p, cov.weighted_n,
 				cov.weighted_P, cov.weighted_N);
 	}
 	
-	public StatisticalTestResult calculate(double p, double n, double P, double N) {
-		
-		StatisticalTestResult res = new StatisticalTestResult();
-		
+	public Pair<Double,Double> calculate(double p, double n, double P, double N) {
+			
 		int count = (int)(P + N);
 		int consequent = (int)P;
 	    int antecedentAndConsequent = (int)p;
@@ -38,10 +45,9 @@ public class Hypergeometric implements IQualityMeasure {
 	    assert(q >= -1.0 / 10000000000.0);
 	    assert(!Double.isNaN(q));
 	    
-	    res.stats = q;
-	    res.pvalue = pVal;
-	    
-	    return res;
+	    Pair<Double,Double> out = new Pair<Double,Double>(q, pVal);
+	    	  
+	    return out;
 	}
 	
 	

@@ -6,7 +6,6 @@ import java.util.logging.Level;
 
 import org.apache.commons.lang.SerializationUtils;
 
-import adaa.analytics.rules.logic.induction.AbstractFinder.QualityAndPValue;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Knowledge;
@@ -20,6 +19,7 @@ import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.set.SortedExampleSet;
+import com.rapidminer.tools.container.Pair;
 
 public class RegressionExpertSnC extends RegressionSnC {
 
@@ -79,9 +79,9 @@ public class RegressionExpertSnC extends RegressionSnC {
 			
 			Covering cov = rule.covers(ses);
 			
-			QualityAndPValue qp = finder.calculateQualityAndPValue(dataset, cov, params.getVotingMeasure());
-			rule.setWeight(qp.quality);
-			rule.setPValue(qp.pvalue);
+			Pair<Double,Double> qp = finder.calculateQualityAndPValue(dataset, cov, params.getVotingMeasure());
+			rule.setWeight(qp.getFirst());
+			rule.setPValue(qp.getSecond());
 		
 			rule.setCoveringInformation(cov);
 			Logger.log("Expert rule: " + rule.toString() + "\n", Level.FINE);

@@ -1,6 +1,8 @@
 package adaa.analytics.rules.logic.representation;
 
+import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
+
 import com.rapidminer.example.ExampleSet;
 
 import java.io.Serializable;
@@ -91,9 +93,13 @@ public abstract class Rule implements Serializable {
 	}
 	
 	
-	public abstract Covering covers(ExampleSet set, Set<Integer> ids);
+	public abstract Covering covers(ExampleSet set, Set<Integer> filterIds);
 	
 	public abstract Covering covers(ExampleSet set);
+	
+	public void covers(ExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
+	//	throw new Exception("Not implemented: AbstractRule.covers(ExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives)");
+	}
 	
 	public String toString() {
 		String s = "IF " + premise.toString() + " THEN " + consequence.toString();	

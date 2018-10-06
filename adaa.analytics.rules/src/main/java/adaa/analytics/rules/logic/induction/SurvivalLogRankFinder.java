@@ -2,9 +2,10 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
-import adaa.analytics.rules.logic.quality.StatisticalTestResult;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
+
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.tools.container.Pair;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +17,10 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 		// TODO Auto-generated constructor stub
 	}
 
-	protected double calculateQuality(ExampleSet trainSet, Covering cov, IQualityMeasure measure) {
+	@Override
+	protected double calculateQuality(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
+		Covering cov = (Covering)ct;
+		
 		Set<Integer> coveredIndices = cov.positives; // in survival rules all examples are classified as positives
 		Set<Integer> uncoveredIndices = new HashSet<Integer>();
 		for (int i = 0; i < trainSet.size(); ++i) {
@@ -28,16 +32,13 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 		KaplanMeierEstimator coveredEstimator = new KaplanMeierEstimator(trainSet, coveredIndices);
 		KaplanMeierEstimator uncoveredEstimator = new KaplanMeierEstimator(trainSet, uncoveredIndices);
 		
-		StatisticalTestResult res = ((LogRank)measure).calculate(coveredEstimator, uncoveredEstimator);
-		return 1 - res.pvalue;
+		Pair<Double,Double> statsAndPValue = ((LogRank)measure).calculate(coveredEstimator, uncoveredEstimator);
+		return 1 - statsAndPValue.getSecond();
 	}
 
-	
-	protected QualityAndPValue calculateQualityAndPValue(ExampleSet trainSet, Covering cov, IQualityMeasure measure) {
-		QualityAndPValue res = new QualityAndPValue();
-		res.quality = calculateQuality(trainSet, cov, measure);
-		res.pvalue = 1 - res.quality;
-		
-		return res;
+	@Override
+	protected Pair<Double,Double> calculateQualityAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
+		double logrank = calculateQuality(trainSet, ct, measure);
+		return new Pair<Double,Double>(logrank, 1-logrank);
 	}
 }

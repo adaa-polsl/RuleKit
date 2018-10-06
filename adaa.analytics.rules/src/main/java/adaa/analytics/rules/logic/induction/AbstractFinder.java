@@ -17,6 +17,7 @@ import adaa.analytics.rules.logic.representation.Rule;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.tools.container.Pair;
 
 /**
  * Abstract base class for algorithms performing growing and pruning of classification and regression rules.
@@ -24,11 +25,6 @@ import com.rapidminer.example.ExampleSet;
  *
  */
 public abstract class AbstractFinder {
-	
-	class QualityAndPValue {
-		public double quality;
-		public double pvalue;
-	}
 	
 	/**
 	 * Rule induction parameters.
@@ -46,7 +42,7 @@ public abstract class AbstractFinder {
 	public AbstractFinder(final InductionParameters params) {
 		this.params = params;
 		
-		threadCount = Runtime.getRuntime().availableProcessors();
+		threadCount = 1;//Runtime.getRuntime().availableProcessors();
 		pool = Executors.newFixedThreadPool(threadCount);
 	}
 	
@@ -92,9 +88,9 @@ public abstract class AbstractFinder {
 				covered.addAll(covering.negatives);
 
 				rule.setCoveringInformation(covering);
-				QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
-				rule.setWeight(qp.quality);
-				rule.setPValue(qp.pvalue);
+				Pair<Double, Double> qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
+				rule.setWeight(qp.getFirst());
+				rule.setPValue(qp.getSecond());
 				
 				Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
 						+ rule.toString() + "\n", Level.FINER);
@@ -175,9 +171,9 @@ public abstract class AbstractFinder {
 		
 		covering = rule.covers(trainSet);
 		rule.setCoveringInformation(covering);
-		QualityAndPValue qp = calculateQualityAndPValue(trainSet, covering, params.getVotingMeasure());
-		rule.setWeight(qp.quality);
-		rule.setPValue(qp.pvalue);
+		Pair<Double,Double> qp = calculateQualityAndPValue(trainSet, covering, params.getVotingMeasure());
+		rule.setWeight(qp.getFirst());
+		rule.setPValue(qp.getSecond());
 		
 		return covering;
 	}
@@ -188,16 +184,15 @@ public abstract class AbstractFinder {
 	 * @param cov
 	 * @return
 	 */
-	protected double calculateQuality(ExampleSet trainSet, Covering cov, IQualityMeasure measure) {
-		return ((ClassificationMeasure)measure).calculate(cov);
+	protected double calculateQuality(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
+		return ((ClassificationMeasure)measure).calculate(ct);
 	}
 	
-	protected QualityAndPValue calculateQualityAndPValue(ExampleSet trainSet, Covering cov, IQualityMeasure measure) {
-		QualityAndPValue res = new QualityAndPValue();
-		res.quality = calculateQuality(trainSet, cov, measure);
-		res.pvalue = 1.0;
-		
-		return res;
+	protected Pair<Double,Double> calculateQualityAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
+	
+		return new Pair<Double, Double>(
+				calculateQuality(trainSet, ct, measure), 
+				1.0);
 	}
 	
 	/**

@@ -2,8 +2,11 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.ConditionBase.Type;
+
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.tools.container.Pair;
+
 import org.apache.commons.lang.SerializationUtils;
 
 import java.util.*;
@@ -83,9 +86,9 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 			Covering covering = rule.covers(dataset);
 			rule.setCoveringInformation(covering);
 			
-			QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
-			rule.setWeight(qp.quality);
-			rule.setPValue(qp.pvalue);		
+			Pair<Double,Double> qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
+			rule.setWeight(qp.getFirst());
+			rule.setPValue(qp.getSecond());		
 		}
 	
 	
@@ -154,8 +157,8 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 					rule.getPremise().addSubcondition(bestEvaluation.condition);
 					rule.setCoveringInformation(bestEvaluation.covering);
 
-					QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
-					rule.setWeight(qp.quality);
+					Pair<Double,Double> qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
+					rule.setWeight(qp.getFirst());
 					
 					carryOn = true;
 					Logger.log("Preferred condition " + rule.getPremise().getSubconditions().size() + " added: " 
@@ -201,9 +204,9 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 					covered.addAll(covering.positives);
 					covered.addAll(covering.negatives);
 					rule.setCoveringInformation(covering);
-					QualityAndPValue qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
-					rule.setWeight(qp.quality);
-					rule.setPValue(qp.pvalue);
+					Pair<Double,Double> qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
+					rule.setWeight(qp.getFirst());
+					rule.setPValue(qp.getSecond());
 					Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
 							+ rule.toString() + "\n", Level.FINER);
 					
