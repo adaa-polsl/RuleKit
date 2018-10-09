@@ -42,7 +42,7 @@ public abstract class AbstractFinder {
 	public AbstractFinder(final InductionParameters params) {
 		this.params = params;
 		
-		threadCount = 1;//Runtime.getRuntime().availableProcessors();
+		threadCount = Runtime.getRuntime().availableProcessors();
 		pool = Executors.newFixedThreadPool(threadCount);
 	}
 	
