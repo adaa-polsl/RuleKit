@@ -28,11 +28,8 @@ public class IntegratedBrierScore extends MeasuredPerformance {
 	 public void startCounting(ExampleSet testSet, boolean useExampleWeights) throws OperatorException {
 		 	 
 		Attribute survTime = testSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE); 
-		Attribute survStat = testSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_STATUS_ROLE);
-		if (survStat == null) {
-			survStat = testSet.getAttributes().getLabel();
-		}
-	    	
+		Attribute survStat = testSet.getAttributes().getLabel();
+  	
 		List<SurvInfo> info = new ArrayList<SurvInfo>();	
 		for (int i = 0; i < testSet.size(); i++) {
 			Example e = testSet.getExample(i);

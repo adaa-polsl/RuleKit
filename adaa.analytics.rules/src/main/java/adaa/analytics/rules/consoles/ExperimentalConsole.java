@@ -5,8 +5,12 @@ import adaa.analytics.rules.experiments.InternalXValidationExperiment;
 import adaa.analytics.rules.experiments.SplittedXValidationExperiment;
 import adaa.analytics.rules.experiments.SynchronizedReport;
 import adaa.analytics.rules.logic.representation.Logger;
+import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.ExpertRuleGenerator;
+
 import com.rapidminer.RapidMiner;
+import com.rapidminer.example.Attributes;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -15,9 +19,12 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -53,9 +60,10 @@ public class ExperimentalConsole {
     protected void execute(String configFile) throws ParserConfigurationException, SAXException, IOException, InterruptedException, ExecutionException {
         RapidMiner.init();
         Logger.getInstance().addStream(System.out, Level.FINE);
+        //Logger.getInstance().addStream(new PrintStream("d:/bad.log"), Level.FINEST);
         String lineSeparator = System.getProperty("line.separator");
 
-        int threadCount = Runtime.getRuntime().availableProcessors();
+        int threadCount = 1;//Runtime.getRuntime().availableProcessors();
 
         ExecutorService pool = Executors.newFixedThreadPool(threadCount);
         List<Future> futures = new ArrayList<Future>();
@@ -121,27 +129,23 @@ public class ExperimentalConsole {
             String name = node.getAttribute("name");
             String path = node.getElementsByTagName("path").item(0).getTextContent();
             String label = node.getElementsByTagName("label").item(0).getTextContent();
-            String typeString = node.getElementsByTagName("type").item(0).getTextContent();
             String reportPath = node.getElementsByTagName("report_path").item(0).getTextContent();
-
-            Logger.getInstance().log("Name " + name + lineSeparator +
+  
+            Map<String, String> options = new HashMap<String, String>();
+            if (node.getElementsByTagName(SurvivalRule.SURVIVAL_TIME_ROLE).getLength() > 0) {
+            	String val = node.getElementsByTagName(SurvivalRule.SURVIVAL_TIME_ROLE).item(0).getTextContent();
+            	options.put(SurvivalRule.SURVIVAL_TIME_ROLE, val);
+            }
+            
+            if (node.getElementsByTagName(Attributes.WEIGHT_NAME).getLength() > 0) {
+            	String val = node.getElementsByTagName(Attributes.WEIGHT_NAME).item(0).getTextContent();
+            	options.put(Attributes.WEIGHT_NAME, val);
+            }
+            
+			Logger.log("Name " + name + lineSeparator +
                     "Path " + path + lineSeparator +
                     "Label " + label + lineSeparator +
-                    "Type string " + typeString + lineSeparator +
                     "Report path " + reportPath + lineSeparator, Level.INFO);
-
-            ExperimentBase.Type type;
-            if (typeString.equals("BinaryClassification")) {
-                type = ExperimentBase.Type.BINARY_CLASSIFICATION;
-            } else if (typeString.equals("Classification")) {
-                type = ExperimentBase.Type.CLASSIFICATION;
-            } else if (typeString.equals("Regression")) {
-                type = ExperimentBase.Type.REGRESSION;
-            } else if (typeString.equals("Survival")) {
-                type = ExperimentBase.Type.SURVIVAL_BY_REGRESSION;
-            } else {
-                throw new IllegalArgumentException();
-            }
 
             // create experiments for all params sets
             for (ParamSetWrapper wrapper : paramSets) {
@@ -169,10 +173,11 @@ public class ExperimentalConsole {
 
                 if (file.isDirectory()) {
                     Logger.getInstance().log("Creating new SplittedXValidationExperiment" + lineSeparator, Level.INFO);
-                    exp = new SplittedXValidationExperiment(file, new SynchronizedReport(reportFile), new SynchronizedReport(modelFile), label, type, wrapper.map);
+                    exp = new SplittedXValidationExperiment(file, new SynchronizedReport(reportFile), new SynchronizedReport(modelFile), label, options, wrapper.map);
                 } else {
-                    Logger.getInstance().log("Creating new InternalXValidationExperiment" + lineSeparator, Level.INFO);
-                    exp = new InternalXValidationExperiment(file, new SynchronizedReport(reportFile), new SynchronizedReport(modelFile), label, 10, type, wrapper.map);
+                	throw new RuntimeException("InternalXValidationExperiment is no longer supported!");
+               //     Logger.getInstance().log("Creating new InternalXValidationExperiment" + lineSeparator, Level.INFO);
+               //     exp = new InternalXValidationExperiment(file, new SynchronizedReport(reportFile), new SynchronizedReport(modelFile), label, 10, type, wrapper.map);
                 }
                 Future f = pool.submit(exp);
                 futures.add(f);

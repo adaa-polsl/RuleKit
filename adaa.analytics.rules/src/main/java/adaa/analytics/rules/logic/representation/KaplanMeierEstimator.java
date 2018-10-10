@@ -19,10 +19,7 @@ public class KaplanMeierEstimator {
 	
     public KaplanMeierEstimator(ExampleSet data) {
     	Attribute survTime = data.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE); 
-		Attribute survStat = data.getAttributes().getSpecial(SurvivalRule.SURVIVAL_STATUS_ROLE);
-		if (survStat == null) {
-			survStat = data.getAttributes().getLabel();
-		}
+		Attribute survStat = data.getAttributes().getLabel();
 		
 		this.survInfo.ensureCapacity(data.size());
         SurvInfo info[] = new SurvInfo[data.size()];	
@@ -103,10 +100,7 @@ public class KaplanMeierEstimator {
      
     public KaplanMeierEstimator(ExampleSet data, Set<Integer> indices) {
 		Attribute survTime = data.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE); 
-		Attribute survStat = data.getAttributes().getSpecial(SurvivalRule.SURVIVAL_STATUS_ROLE);
-		if (survStat == null) {
-			survStat = data.getAttributes().getLabel();
-		}
+		Attribute survStat = data.getAttributes().getLabel();
 		
 		this.survInfo.ensureCapacity(indices.size());
         SurvInfo[] info = new SurvInfo[indices.size()];	

@@ -25,11 +25,8 @@ public class SurvivalClassificationSnC extends ClassificationSnC {
 		SurvivalRuleSet survSet = new SurvivalRuleSet(trainSet, true, null);
 		
 		Attribute survTime = trainSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
-		Attribute survStat = trainSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_STATUS_ROLE);
-		if (survStat == null) {
-			survStat = trainSet.getAttributes().getLabel();
-		}
-		
+		Attribute survStat = trainSet.getAttributes().getLabel();
+	
 		// get Tmax (max time for censored observations
 		double Tmax = 0;
 		for (Example ex : trainSet) {
@@ -42,11 +39,7 @@ public class SurvivalClassificationSnC extends ClassificationSnC {
 		// prepare classification dataset
 		Attributes survivalAttributes = (Attributes) trainSet.getAttributes().clone();
 		survivalAttributes.remove(survivalAttributes.findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE));
-		if (trainSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_STATUS_ROLE) != null) {
-			survivalAttributes.remove(survivalAttributes.findRoleBySpecialName(SurvivalRule.SURVIVAL_STATUS_ROLE));
-		} else {
-			survivalAttributes.remove(survivalAttributes.getLabel());
-		}
+		survivalAttributes.remove(survivalAttributes.getLabel());
 		
 		Attribute survivalWeight = AttributeFactory.createAttribute("survivalWeight", Ontology.NUMERICAL);
 		

@@ -426,7 +426,6 @@ public class ClassificationFinder extends AbstractFinder {
 		//	return inducePrecalculatedCondition(rule, trainSet, uncoveredPositives, coveredByRule, allowedAttributes, extraParams);
 		}
 		
-		
 		double classId = ((SingletonSet)rule.getConsequence().getValueSet()).getValue();
 		Attribute weightAttr = trainSet.getAttributes().getWeight();
 		Set<Integer> positives = (Set<Integer>)extraParams[0];

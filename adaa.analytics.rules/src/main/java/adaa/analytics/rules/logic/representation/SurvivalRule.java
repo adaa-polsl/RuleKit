@@ -15,8 +15,6 @@ public class SurvivalRule extends Rule {
 	
 	public static final String SURVIVAL_TIME_ROLE = "survival_time";
 	
-	public static final String SURVIVAL_STATUS_ROLE = "survival_status";
-	
 	protected KaplanMeierEstimator estimator;
 	
 	public KaplanMeierEstimator getEstimator() { return estimator; }

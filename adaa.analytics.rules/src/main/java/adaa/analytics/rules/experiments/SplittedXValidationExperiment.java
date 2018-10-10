@@ -52,7 +52,7 @@ public class SplittedXValidationExperiment extends ExperimentBase {
 		SynchronizedReport qualityReport,
 		SynchronizedReport modelReport,
 		String labelAttribute,
-		Type experimentType,
+		Map<String, String> options,
 		Map<String, Object> params) {
 		
 		super(qualityReport, modelReport, params); 
@@ -108,11 +108,19 @@ public class SplittedXValidationExperiment extends ExperimentBase {
 	    	testRoleSetter.setParameter(testRoleSetter.PARAMETER_NAME, labelAttribute);
 	    	testRoleSetter.setParameter(testRoleSetter.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
 	    	
-	    	// this is only set for survival experiment
-	    	if (experimentType == Type.SURVIVAL_BY_REGRESSION) {
-	    		List<String[]> roles = new ArrayList<String[]>();
-	    		roles.add(new String[]{"survival_time", SurvivalRule.SURVIVAL_TIME_ROLE});
-	    		trainRoleSetter.setListParameter(trainRoleSetter.PARAMETER_CHANGE_ATTRIBUTES, roles);
+	    	// survival dataset - set proper role
+	    	List<String[]> roles = new ArrayList<String[]>();
+	    	
+	    	if (options.containsKey(SurvivalRule.SURVIVAL_TIME_ROLE)) {
+	    		roles.add(new String[]{options.get(SurvivalRule.SURVIVAL_TIME_ROLE), SurvivalRule.SURVIVAL_TIME_ROLE});
+	    	}
+	    	
+	    	if (options.containsKey(Attributes.WEIGHT_NAME)) {
+	    		roles.add(new String[]{options.get(Attributes.WEIGHT_NAME), Attributes.WEIGHT_NAME});
+	    	}
+	    	
+	    	if (roles.size() > 0) {
+		    	trainRoleSetter.setListParameter(trainRoleSetter.PARAMETER_CHANGE_ATTRIBUTES, roles);
 	    		testRoleSetter.setListParameter(testRoleSetter.PARAMETER_CHANGE_ATTRIBUTES, roles);
 	    	}
 	    	
