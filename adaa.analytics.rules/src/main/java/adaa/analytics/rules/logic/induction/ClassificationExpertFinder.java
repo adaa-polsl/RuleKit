@@ -44,6 +44,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 		IntegerBitSet coveredPositives = new IntegerBitSet(dataset.size());
 		IntegerBitSet coveredNegatives = new IntegerBitSet(dataset.size());
 		
+		// assume empty premise at the beginning (rule covers all examples)
 		int id = 0;
 		for (Example e : dataset) {
 			if (rule.getConsequence().evaluate(e)) {
@@ -72,11 +73,11 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 				Set<Integer> mustBeCovered;
 				
 				if (ec.getValueSet() instanceof Universum) {
-					// condition in a form "attribute = Any" - just find best condition using this attribute
+					// condition in a form "attribute = Any" - just find the best condition using this attribute
 					mustBeCovered = uncoveredPositives;
 					
 				} else {
-					// condition in other form - find best condition using this attribute with non-empty intersection with specified condition
+					// condition in other form - find the best condition using this attribute with non-empty intersection with specified condition
 					mustBeCovered = new HashSet<Integer>();
 					for (int i : tempPositives) {
 						if (ec.evaluate(dataset.getExample(i))) {
@@ -96,20 +97,22 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 			tryAddCondition(rule, newCondition, dataset, covered, coveredPositives, coveredNegatives, conditionCovered);
 		}
 		
-		Covering covering = new Covering();
-		covering.weighted_P = rule.getWeighted_P();
-		covering.weighted_N = rule.getWeighted_N();
+		ContingencyTable ct; 
 		
 		if (dataset.getAttributes().getWeight() != null) {
-		
+			ct = rule.covers(dataset);
+			
 		} else {
-			covering.weighted_p = coveredPositives.size();
-			covering.weighted_n = coveredNegatives.size();
+			ct = new ContingencyTable(
+				coveredPositives.size(),
+				coveredNegatives.size(),
+				rule.getWeighted_P(),
+				rule.getWeighted_N());
 		}
 		
-		rule.setWeighted_p(covering.weighted_p);
-		rule.setWeighted_n(covering.weighted_n);
-		Pair<Double,Double> qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
+		rule.setWeighted_p(ct.weighted_p);
+		rule.setWeighted_n(ct.weighted_n);
+		Pair<Double,Double> qp = calculateQualityAndPValue(dataset, ct, params.getVotingMeasure());
 		rule.setWeight(qp.getFirst());
 		rule.setPValue(qp.getSecond());		
 	}
@@ -128,6 +131,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 		boolean isRuleEmpty = rule.getPremise().getSubconditions().size() == 0;
 		double classId = ((SingletonSet)rule.getConsequence().getValueSet()).getValue();
 		double apriori_prec = rule.getWeighted_P() / (rule.getWeighted_P() + rule.getWeighted_N());
+		Attribute weightAttr = dataset.getAttributes().getWeight();
 		
 		// get current covering
 		Set<Integer> covered = new IntegerBitSet(dataset.size());
@@ -185,7 +189,15 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 					double p = 0, n = 0;
 					int newlyCoveredPositivesCount = 0;
 					
-					if (dataset.getAttributes().getWeight() != null) {
+					if (weightAttr != null) {
+						
+						for (int id: conditionCovered) {
+							if (coveredPositives.contains(id)) {
+								p += dataset.getExample(id).getWeight();
+							} else if (coveredNegatives.contains(id)) {
+								n += dataset.getExample(id).getWeight();
+							}
+						}
 						
 					} else {
 						p = coveredPositives.calculateIntersectionSize(conditionCovered);

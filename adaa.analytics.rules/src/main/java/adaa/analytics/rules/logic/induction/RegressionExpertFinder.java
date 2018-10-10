@@ -57,13 +57,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 					} else {
 						// condition in other form - find best condition using this attribute with non-empty intersection with specified condition
 						mustBeCovered = new HashSet<Integer>();
-						for (int i : covering.positives) {
-							if (ec.evaluate(dataset.getExample(i))) {
-								mustBeCovered.add(i);
-							}
-						}	
-						
-						for (int i : covering.negatives) {
+						for (int i : covered) {
 							if (ec.evaluate(dataset.getExample(i))) {
 								mustBeCovered.add(i);
 							}

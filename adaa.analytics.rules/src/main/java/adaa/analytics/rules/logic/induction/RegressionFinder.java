@@ -171,7 +171,7 @@ public class RegressionFinder extends AbstractFinder {
 			}
 		}
 		
-		if (newlyCovered > 0 && newlyCovered >= params.getMinimumCovered()) {
+		if (newlyCovered >= params.getMinimumCovered()) {
 			double quality = calculateQuality(dataset, cov, params.getInductionMeasure());
 			
 			Logger.log(", q=" + quality, Level.FINEST);

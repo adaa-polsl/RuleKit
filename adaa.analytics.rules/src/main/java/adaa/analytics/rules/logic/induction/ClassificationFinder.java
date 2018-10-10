@@ -211,22 +211,31 @@ public class ClassificationFinder extends AbstractFinder {
 					
 					double p = 0;
 					double n = 0;
+						
+					// iterate over all words
+					int id = 0;
+					for (int wordId = 0; wordId < maskLength; ++wordId) {
 					
-					if (weighting) {		
-						// iterate over all words
-						for (int wordId = 0; wordId < maskLength; ++wordId) {
-							long word = ~(0L);
-							long labelWord = labelMask[wordId];
-							// iterate over all present conditions
-							for (int m = 0; m < conditionsCount; ++m ) {
-								// ignore previously removed conditions and currently checked
-								if (!removedConditions.contains(m) && m != fcid) {
-									word &= masks[m * maskLength + wordId];
-								}
+						long word = masks[fcid * maskLength + wordId];
+						long filteredWord = 0;
+						
+						for (int wordOffset = 0; wordOffset < Long.SIZE && id < examplesCount; ++wordOffset, ++id) {
+							// an example is covered by rule after condition removal in two cases:
+							// - it is covered by all conditions prior the removal
+							// - it is covered by all conditions except the one being removed
+							 
+							if ((conditionsPerExample_final[id] == conditionsLeft_final) || 
+								((conditionsPerExample_final[id] == conditionsLeft_final - 1) && (word & (1L << wordOffset)) == 0) ) {
+								filteredWord |= 1L << wordOffset;
 							}
-							
-							long posWord = word & labelWord;
-							long negWord = word & ~labelWord;
+						}
+
+						long labelWord = labelMask[wordId];
+						long posWord = filteredWord & labelWord;
+						long negWord = filteredWord & ~labelWord;
+						
+						if (weighting) {
+							// weighted - iterate over bits and sum weights
 							for (int wordOffset = 0; wordOffset < Long.SIZE; ++wordOffset) {
 								if ((posWord & (1L << wordOffset)) != 0) {
 									p += trainSet.getExample(wordId * Long.SIZE + wordOffset).getWeight();
@@ -234,37 +243,14 @@ public class ClassificationFinder extends AbstractFinder {
 									n += trainSet.getExample(wordId * Long.SIZE + wordOffset).getWeight();
 								}
 							}
-						}
-	
-					} else {
-						
-						int id = 0;
-						for (int wordId = 0; wordId < maskLength; ++wordId) {
-						
-							long word = masks[fcid * maskLength + wordId];
-							long filteredWord = 0;
+						} else {
 							
-							for (int wordOffset = 0; wordOffset < Long.SIZE && id < examplesCount; ++wordOffset, ++id) {
-								// an example is covered by rule after condition removal in two cases:
-								// - it is covered by all conditions prior the removal
-								// - it is covered by all conditions except the one being removed
-								 
-								if ((conditionsPerExample_final[id] == conditionsLeft_final) || 
-									((conditionsPerExample_final[id] == conditionsLeft_final - 1) && (word & (1L << wordOffset)) == 0) ) {
-									filteredWord |= 1L << wordOffset;
-								}
-							}
-
-							long labelWord = labelMask[wordId];
-							long posWord = filteredWord & labelWord;
-							long negWord = filteredWord & ~labelWord;
-							
+							// not weighted - bit operations
 							p += Long.bitCount(posWord);
 							n += Long.bitCount(negWord);
 						}
 					}
 					
-
 					double q = ((ClassificationMeasure)params.getPruningMeasure()).calculate(
 							p, n, rule.getWeighted_P(), rule.getWeighted_N());
 					
