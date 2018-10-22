@@ -7,10 +7,7 @@ import adaa.analytics.rules.utils.compiler.CompilerUtils;
 
 import com.rapidminer.operator.OperatorException;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.logging.Level;
 
 public class
@@ -343,25 +340,25 @@ ClassificationMeasure implements IQualityMeasure {
     }
 
     public void createUserMeasure(String userMeasure) throws OperatorException {
-        ClassLoader loader = getClass().getClassLoader();
-        File userMeasureTemplate = new File(loader.getResource("adaa/analytics/rules/resources/UserMeasureTemplate.txt").getFile());
-        Logger.getInstance().log(String.valueOf(userMeasureTemplate.exists()), Level.INFO);
+
+        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("adaa/analytics/rules/resources/UserMeasureTemplate.txt");
+        InputStreamReader reader = new InputStreamReader(resourceAsStream);
 
         StringBuffer sb = new StringBuffer();
         String javaCode = "";
         String className = "adaa.analytics.rules.logic.quality.UserMeasure";
-        if (!userMeasureTemplate.exists()){
+        if (resourceAsStream == null) {
             throw new OperatorException("File 'UserMeasureTemplate.txt' doesn't exist.");
         }
         try {
-            FileReader fileReader = new FileReader(userMeasureTemplate);
-            BufferedReader in = new BufferedReader(fileReader);
+            BufferedReader in = new BufferedReader(reader);
             String str;
             while ((str = in.readLine()) != null) {
                 sb.append(str);
             }
             in.close();
-            fileReader.close();
+            reader.close();
+            resourceAsStream.close();
             String s = sb.toString();
             javaCode = s.replaceAll("(equation)", userMeasure);
         } catch (IOException e) {
