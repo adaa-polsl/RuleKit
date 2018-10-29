@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.rapidminer.example.Attribute;
@@ -24,7 +23,7 @@ public class ActionMetaTableTest {
 	protected InMemoryActionRuleRepository repo;
 	protected ExampleSet set;
 	
-	@Before
+	
 	public void prepare() {
 		List<Attribute> atrs = new ArrayList<Attribute>();
 		atrs.add(AttributeFactory.createAttribute("class", Ontology.NOMINAL));
@@ -49,8 +48,33 @@ public class ActionMetaTableTest {
 		repo = new InMemoryActionRuleRepository(set);
 	}
 	
+	public void prepareCanonical() {
+		List<Attribute> atrs = new ArrayList<Attribute>();
+		atrs.add(AttributeFactory.createAttribute("class", Ontology.NOMINAL));
+		atrs.add(AttributeFactory.createAttribute("a", Ontology.NUMERICAL));
+		atrs.add(AttributeFactory.createAttribute("b", Ontology.NOMINAL));
+		
+		List<String> data = Collections.unmodifiableList(Arrays.asList(
+				"1, 15.0, 150.0, a",
+				"1, 13.0, 151.0, a",
+				"1, 12.0, 130.3, a",
+				"2, 0.0, 150.0, b",
+				"2, 1.0, 150.0, b",
+				"2, -1.0, 150.0, b",
+				"3, 0.0, 150.0, a",
+				"3, 1.0, 150.0, a",
+				"3, -1.0, 150.0, b"
+				));
+		
+		set = (new InMemoryDataSet(atrs, data)).getExampleSet();
+		
+		repo = new InMemoryActionRuleRepository(set);
+	}
+	
 	@Test
 	public void testGetExamples() {
+		
+		prepare();
 		
 		ActionRuleSet actions = repo.getActionRulest();
 		
@@ -69,6 +93,8 @@ public class ActionMetaTableTest {
 	
 	@Test
 	public void testAnalyze() {
+		
+		prepare();
 		
 		ActionRuleSet actions = repo.getActionRulest();
 		

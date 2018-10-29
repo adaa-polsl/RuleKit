@@ -8,7 +8,6 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
-import adaa.analytics.rules.logic.quality.Hypergeometric;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.representation.ConditionBase;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;

@@ -39,7 +39,6 @@ import adaa.analytics.rules.logic.induction.BackwardActionSnC;
 import adaa.analytics.rules.logic.induction.ClassPair;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.Action;
-import adaa.analytics.rules.logic.representation.ActionRule;
 import adaa.analytics.rules.logic.representation.ActionRuleSet;
 import adaa.analytics.rules.logic.representation.AnyValueSet;
 import adaa.analytics.rules.logic.representation.CompressedCompoundCondition;

@@ -14,8 +14,6 @@ import adaa.analytics.rules.logic.representation.Knowledge;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.SingletonSet;
-import adaa.analytics.rules.operator.gui.Serializer;
-
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;

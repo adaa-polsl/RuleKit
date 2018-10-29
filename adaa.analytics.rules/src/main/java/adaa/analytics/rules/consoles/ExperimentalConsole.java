@@ -1,7 +1,6 @@
 package adaa.analytics.rules.consoles;
 
 import adaa.analytics.rules.experiments.ExperimentBase;
-import adaa.analytics.rules.experiments.InternalXValidationExperiment;
 import adaa.analytics.rules.experiments.SplittedXValidationExperiment;
 import adaa.analytics.rules.experiments.SynchronizedReport;
 import adaa.analytics.rules.logic.representation.Logger;
@@ -22,7 +21,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -1,22 +1,16 @@
 package utils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.AttributeFactory;
-import com.rapidminer.tools.Ontology;
-
 import adaa.analytics.rules.logic.induction.RuleFactory;
 import adaa.analytics.rules.logic.representation.Action;
 import adaa.analytics.rules.logic.representation.ActionRule;
 import adaa.analytics.rules.logic.representation.ActionRuleSet;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.Interval;
-import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.SingletonSet;
 
 public class InMemoryActionRuleRepository {

@@ -1,9 +1,6 @@
 package adaa.analytics.rules.experiments;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.text.DateFormat;
@@ -18,24 +15,14 @@ import adaa.analytics.rules.utils.RapidMiner5;
 import org.apache.commons.lang.StringUtils;
 
 import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
-import adaa.analytics.rules.operator.RuleGenerator;
-import adaa.analytics.rules.operator.RulePerformanceEvaluator;
-
 import com.rapidminer.example.Attributes;
 import com.rapidminer.operator.IOContainer;
 import com.rapidminer.operator.IOObject;
 import com.rapidminer.operator.Model;
 import com.rapidminer.operator.ModelApplier;
-import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer5.operator.io.ArffExampleSource;
-import com.rapidminer.operator.performance.AbstractPerformanceEvaluator;
-import com.rapidminer.operator.performance.MultiClassificationPerformance;
-import com.rapidminer.operator.performance.PerformanceCriterion;
 import com.rapidminer.operator.performance.PerformanceVector;
-import com.rapidminer.operator.performance.PolynominalClassificationPerformanceEvaluator;
-import com.rapidminer.operator.performance.RegressionPerformanceEvaluator;
 import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
 import com.rapidminer.tools.OperatorService;
 

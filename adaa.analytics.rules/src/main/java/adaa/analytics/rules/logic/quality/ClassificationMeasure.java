@@ -1,14 +1,11 @@
 package adaa.analytics.rules.logic.quality;
 
 import adaa.analytics.rules.logic.induction.ContingencyTable;
-import adaa.analytics.rules.logic.induction.Covering;
-import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.utils.compiler.CompilerUtils;
 
 import com.rapidminer.operator.OperatorException;
 
 import java.io.*;
-import java.util.logging.Level;
 
 public class
 ClassificationMeasure implements IQualityMeasure {

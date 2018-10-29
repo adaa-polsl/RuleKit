@@ -2,9 +2,7 @@ package adaa.analytics.rules;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -18,34 +16,20 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.junit.Assert;
 import org.junit.Test;
 
-import adaa.analytics.rules.consoles.ExperimentalConsole;
 import adaa.analytics.rules.experiments.ExperimentBase;
 import adaa.analytics.rules.experiments.InternalXValidationExperiment;
 import adaa.analytics.rules.experiments.SynchronizedReport;
 import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.RuleGenerator;
-import adaa.analytics.rules.operator.RulePerformanceEvaluator;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.stream.RuleGeneratorFromStream;
 
 import com.rapidminer.RapidMiner;
-import com.rapidminer.example.Attributes;
-import com.rapidminer.operator.IOContainer;
-import com.rapidminer.operator.ModelApplier;
 import com.rapidminer.operator.OperatorCreationException;
-import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.io.ArffExampleSource;
-import com.rapidminer.operator.performance.PerformanceVector;
-import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
-import com.rapidminer.tools.OperatorService;
 
 
 public class PluginTests {
@@ -65,7 +49,7 @@ public class PluginTests {
        
         env.runPlugin();
       */ 
-        SwingUtils.waitForEventDispatchThread();
+       // SwingUtils.waitForEventDispatchThread();
     }
     
     @Test

@@ -8,11 +8,8 @@ import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.UserError;
 import com.rapidminer.operator.io.AbstractExampleSource;
-import com.rapidminer.operator.nio.file.FileInputPortHandler;
-import com.rapidminer.operator.ports.Port;
 import com.rapidminer.parameter.*;
 import com.rapidminer.tools.Ontology;
-import com.rapidminer.tools.StrictDecimalFormat;
 import org.renjin.eval.Context;
 import org.renjin.primitives.Types;
 import org.renjin.primitives.io.serialization.RDataReader;
@@ -72,9 +69,10 @@ public class RDataExampleSource extends AbstractExampleSource {
         Context context = Context.newTopLevelContext();
         FileInputStream fio = new FileInputStream(directory);
         GZIPInputStream zis = new GZIPInputStream(fio);
-        RDataReader rdreader = new RDataReader(context, zis);
-        PairList pairList = (PairList) rdreader.readFile();
-        return pairList.getElementAsSEXP(0);
+        try (RDataReader rdreader = new RDataReader(context, zis);) {
+        	PairList pairList = (PairList) rdreader.readFile();
+        	return pairList.getElementAsSEXP(0);
+        }
     }
 
     public static ExampleSet toRapidMinerExampleSet(ListVector dataFrame,

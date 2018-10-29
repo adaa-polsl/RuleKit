@@ -132,9 +132,9 @@ public class LogRankConsole {
     	Model model = out.get(Model.class, 0);
     	
     	File file = new File(textModel);
-    	BufferedWriter buf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "utf-8"));
-    	buf.write(model.toString());
-    	
+    	try (BufferedWriter buf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "utf-8"));){
+    		buf.write(model.toString());
+    	}
     	Logger.log("Finished!\n", Level.INFO);
     	
 	}
@@ -185,32 +185,33 @@ public class LogRankConsole {
     	ExampleSet set = out.get(ExampleSet.class, 0);
     
     	File file = new File(predictionsFile);
-    	BufferedWriter buf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "utf-8"));
     	
-    	String s = set.getAnnotations().getAnnotation(SurvivalRuleSet.ANNOTATION_TRAINING_ESTIMATOR);
-    	KaplanMeierEstimator kme = new KaplanMeierEstimator();
-    	kme.load(s);
-    	List<Double> times = kme.getTimes();
+    	try (BufferedWriter buf = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "utf-8"));){
     	
-    	buf.write("times");
-    	for (double t : times) {
-    		buf.write( "," + t );
+	    	String s = set.getAnnotations().getAnnotation(SurvivalRuleSet.ANNOTATION_TRAINING_ESTIMATOR);
+	    	KaplanMeierEstimator kme = new KaplanMeierEstimator();
+	    	kme.load(s);
+	    	List<Double> times = kme.getTimes();
+	    	
+	    	buf.write("times");
+	    	for (double t : times) {
+	    		buf.write( "," + t );
+	    	}
+	    	buf.write("\n"); 
+	    	
+	    	for (int i = 0; i < set.size(); ++i) {
+	    		Example e = set.getExample(i);
+	    		s = e.getValueAsString(e.getAttributes().getSpecial(SurvivalRuleSet.ATTRIBUTE_ESTIMATOR));
+	    		kme = new KaplanMeierEstimator();
+	        	kme.load(s);
+	    		
+	    		buf.write("instance_" + (i+1) );
+	    		for (double t : times) {
+	        		buf.write("," + kme.getProbabilityAt(t));
+	        	} 
+	    		buf.write("\n"); 
+	    	}
     	}
-    	buf.write("\n"); 
-    	
-    	for (int i = 0; i < set.size(); ++i) {
-    		Example e = set.getExample(i);
-    		s = e.getValueAsString(e.getAttributes().getSpecial(SurvivalRuleSet.ATTRIBUTE_ESTIMATOR));
-    		kme = new KaplanMeierEstimator();
-        	kme.load(s);
-    		
-    		buf.write("instance_" + (i+1) );
-    		for (double t : times) {
-        		buf.write("," + kme.getProbabilityAt(t));
-        	} 
-    		buf.write("\n"); 
-    	}
-    	
     	
     	Logger.log("Done!\n", Level.INFO);
 	}

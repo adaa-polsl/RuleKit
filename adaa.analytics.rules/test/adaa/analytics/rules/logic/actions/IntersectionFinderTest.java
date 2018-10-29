@@ -1,7 +1,5 @@
 package adaa.analytics.rules.logic.actions;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +40,20 @@ public class IntersectionFinderTest {
 		List<Interval> actual = finder.calculateAllIntersectionsOf(intervals);
 		
 		Assert.assertArrayEquals(expected.toArray(), actual.toArray());
+	}
+	
+	@Test
+	public void testCalculateIntersection() {
+		
+		List<Interval> intervals = new ArrayList<Interval>();
+		intervals.add(new Interval(1,5, true, true));
+		intervals.add(new Interval(3,7, true, true));
+		intervals.add(new Interval(2,6, true, true));
+		intervals.add(new Interval(6.5,9, true, true));
+		intervals.add(new Interval(8,12, true, true));
+		
+		List<Interval> actual = finder.calculateAllIntersectionsOf(intervals);
+		System.out.println(actual);
 	}
 	
 	@Test

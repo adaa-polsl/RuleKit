@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Interval;
-import junit.framework.Assert;
 
 public class MetaValueTest {
 

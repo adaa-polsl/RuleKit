@@ -1,6 +1,5 @@
 package adaa.analytics.rules.logic.representation;
 
-import java.security.InvalidParameterException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
