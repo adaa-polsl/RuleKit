@@ -1,18 +1,26 @@
 package adaa.analytics.rules.logic.actions;
 
+import adaa.analytics.rules.logic.induction.Covering;
+import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.Logger;
+
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
+import com.rapidminer.example.ExampleSet;
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
+
+import org.apache.commons.math3.util.Pair;
 
 public class ActionMetaTable {
 
 	protected ActionRangeDistribution dist;
 	protected int exampleSize;
 	protected int tableSize;
-	protected Set<MetaExample> examples;
+	protected Set<MetaExample> metaExamples;
 	
 	
 	public ActionMetaTable(ActionRangeDistribution distribution) {
@@ -65,12 +73,12 @@ public class ActionMetaTable {
 					);
 		}
 		
-		examples = cartesianProduct(sets);
+		metaExamples = cartesianProduct(sets);
 		
 	}
 
 	public Set<MetaExample> getExamples() {
-		return examples;
+		return metaExamples;
 	}
 	
 	class AnalysisResult {
@@ -85,11 +93,12 @@ public class ActionMetaTable {
 		}
 	}
 	
-	public AnalysisResult analyze(Example ex, int fromClass, int toClass) {
+	//For given example returns respective meta-example and contre-meta-example of opposite class
+	public AnalysisResult analyze(Example ex, int fromClass, int toClass, ExampleSet examples) {
 		MetaExample primeMe = null;
 		MetaExample contraMe = new MetaExample();
 		
-		for (MetaExample me : examples) {
+		for (MetaExample me : metaExamples) {
 			
 			if (me.covers(ex)) {
 				primeMe = me;
@@ -97,50 +106,73 @@ public class ActionMetaTable {
 			}
 		}
 		
-		
 		if (primeMe == null) {
 			throw new RuntimeException("The example ex was not covered by any metaexample");
 		}
 		
 		
-		Set<MetaExample> toSearch = new HashSet<MetaExample>(examples);
+		
+
+		Set<MetaExample> toSearch = new HashSet<MetaExample>(metaExamples);
 		toSearch.remove(primeMe);
-		MetaExample currBest = null;
-		double currQ = Double.NEGATIVE_INFINITY;
+		
+		
 		
 		
 		for (Attribute atr: ex.getAttributes()) {
 			
-			
-			
 			String atrName = atr.getName();
+
+			double currQ = Double.NEGATIVE_INFINITY;
 			
 			if (primeMe.get(atrName) == null) {
 				continue;
 			}
 			
 			Double value = ex.getValue(atr);
+			ClassificationMeasure precision = new ClassificationMeasure(ClassificationMeasure.Precision);
+			ClassificationMeasure coverage = new ClassificationMeasure(ClassificationMeasure.Coverage);
+			MetaValue candidate = null;
 			
 			for (MetaExample me : toSearch) {
+				double Lplus = me.getCountOfRulesPointingToClass(atrName, toClass);
+				double Lminus = me.getCountOfRulesPointingToClass(atrName, fromClass);
 				
-				double q = me.getQualityOf(value,  atrName, toClass);
-				if (q > currQ) {
-					currQ = q;
-					currBest = me;
+				MetaValue mv = me.get(atrName);
+				if (mv.contains(value)) {
+					continue;
+					// the meta-value cannot cover the example
 				}
+				contraMe.add(mv);
+				
+				Pair<Covering, Covering> coverings = contraMe.getCoverage(examples, toClass, fromClass);
+				Covering fromCov = coverings.getFirst();
+				Covering toCov = coverings.getSecond();
+				
+				double precPlus = precision.calculate(toCov);
+				double precMinus = precision.calculate(fromCov);
+				
+				double covPlus = coverage.calculate(toCov);
+				double covMinus = coverage.calculate(fromCov);
+				
+				double quality =(Lplus * (precPlus * covPlus)) - (Lminus * (precMinus * covMinus));
+				//double quality = Lplus - Lminus;
+				Logger.log("Quality " + quality + " recorded for metaexample " + me, Level.INFO);
+				if (quality >= currQ) {
+					currQ = quality;
+					candidate = mv;
+				}
+				
+				contraMe.remove(mv);
 			}
 			
-			if (currBest == null) {
-				throw new RuntimeException("Could not find contre-value");
+			if (candidate == null) {
+				//try with next attribute
+				continue;
 			}
 			
-			MetaValue bestMv = currBest.get(atrName);
-			
-			if (bestMv == null) {
-				throw new RuntimeException("Could not find contre-value meta-value");
-			}
-			
-			contraMe.add(bestMv);	
+			contraMe.add(candidate);	
+
 		}
 		
 		return new AnalysisResult(ex, primeMe, contraMe);

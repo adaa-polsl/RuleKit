@@ -21,15 +21,9 @@ import org.junit.runners.Parameterized.Parameters;
 
 import com.rapidminer.RapidMiner;
 import com.rapidminer.RapidMiner.ExitMode;
-import com.rapidminer.example.Attributes;
 import com.rapidminer.example.ExampleSet;
-import com.rapidminer.operator.IOContainer;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
-import com.rapidminer.tools.OperatorService;
-import com.rapidminer5.operator.io.ArffExampleSource;
-
 import adaa.analytics.rules.logic.induction.ActionFinder;
 import adaa.analytics.rules.logic.induction.ActionFindingParameters;
 import adaa.analytics.rules.logic.induction.ActionFindingParameters.RangeUsageStrategy;
@@ -43,6 +37,7 @@ import adaa.analytics.rules.logic.representation.ActionRuleSet;
 import adaa.analytics.rules.logic.representation.AnyValueSet;
 import adaa.analytics.rules.logic.representation.CompressedCompoundCondition;
 import adaa.analytics.rules.logic.representation.RuleSerializer;
+import utils.ArffFileLoader;
 
 @RunWith(Parameterized.class)
 public class ActionTests {
@@ -161,29 +156,7 @@ public class ActionTests {
 	}
 
 	protected ExampleSet parseArffFile() throws OperatorException, OperatorCreationException {
-		ArffExampleSource arffSource = (ArffExampleSource)OperatorService.createOperator(ArffExampleSource.class);
-		//role setter allows for deciding which attribute is class attribute
-		ChangeAttributeRole roleSetter = (ChangeAttributeRole)OperatorService.createOperator(ChangeAttributeRole.class);
-		
-		File arffFile = Paths.get(testDirectory, testFile).toFile();
-		
-		arffSource.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, arffFile.getAbsolutePath());
-		roleSetter.setParameter(ChangeAttributeRole.PARAMETER_NAME, labelParameter);
-		roleSetter.setParameter(ChangeAttributeRole.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
-		
-		process = new com.rapidminer.Process();
-		process.getRootOperator().getSubprocess(0).addOperator(arffSource);
-		process.getRootOperator().getSubprocess(0).addOperator(roleSetter);
-		
-		arffSource.getOutputPorts().getPortByName("output").connectTo(
-				roleSetter.getInputPorts().getPortByName("example set input"));
-		
-		roleSetter.getOutputPorts().getPortByName("example set output").connectTo(
-				process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(0));
-		
-		IOContainer c = process.run();
-		//parsed arff file
-		return (ExampleSet)c.getElementAt(0);
+		return ArffFileLoader.load(Paths.get(testDirectory, testFile), labelParameter);
 	}
 
 	protected void dumpData(ExampleSet exampleSet, ActionRuleSet actions) throws IOException {

@@ -1,11 +1,15 @@
 package adaa.analytics.rules.logic.actions;
 
+import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.representation.ConditionBase;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Rule;
 import com.rapidminer.example.Example;
+import com.rapidminer.example.ExampleSet;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.math3.util.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,6 +42,15 @@ public class MetaExample {
 			.collect(Collectors.toList());
 		
 		rules.removeIf(x -> !containsInAnyOrder(x.getPremise().getSubconditions(), vals));
+	}
+	
+	public void remove(MetaValue value) {
+		data.remove(value.value.getAttribute());
+		
+		rules.removeAll(
+				value.distribution.distribution.values().stream().flatMap(x->x.stream()).collect(Collectors.toList())
+				);
+		
 	}
 	
 	public MetaValue get(String attribute) {
@@ -75,7 +88,7 @@ public class MetaExample {
 				data.values()
 				.stream()
 				.map(x->x.value.toString())
-				.collect(Collectors.joining(";"))
+				.collect(Collectors.joining(" AND "))
 				);
 		
 		sb.append("[ ");
@@ -109,6 +122,47 @@ public class MetaExample {
 				 .append(data, me.data)
 				 .isEquals();
 		 
+	}
+	
+	public double getCountOfRulesPointingToClass(String atrName, double targetClass) {
+		MetaValue mv = data.get(atrName);
+		
+		if (mv == null) {
+			return Double.NEGATIVE_INFINITY;
+		}
+		Optional<List<Rule>> rules = mv.distribution.getRulesOfClass(targetClass);
+		
+		return rules.orElse(new ArrayList<Rule>()).size();
+	}
+	
+	public Pair<Covering, Covering> getCoverage(ExampleSet examples, int toClass, int fromClass) {
+		
+		Covering classToCov = new Covering();
+		Covering classFromCov = new Covering();
+		
+		for (Example ex : examples) {
+			
+			if (this.covers(ex)) {
+				classToCov.weighted_p++;
+				classFromCov.weighted_p++;
+			} else {
+				classToCov.weighted_n++;
+				classFromCov.weighted_n++;
+			}
+			
+			if (Double.compare(ex.getLabel(), toClass) == 0 ) {
+				classToCov.weighted_P++;
+				classFromCov.weighted_N++;
+			} else if (Double.compare(ex.getLabel(), fromClass) == 0) {
+				classToCov.weighted_N++;
+				classFromCov.weighted_P++;
+			} else {
+				classToCov.weighted_N++;
+				classFromCov.weighted_N++;
+			}
+		}
+		
+		return new Pair<Covering, Covering>(classFromCov, classToCov);
 	}
 
 	public double getQualityOf(Double value, String atrName, double targetClass) {
