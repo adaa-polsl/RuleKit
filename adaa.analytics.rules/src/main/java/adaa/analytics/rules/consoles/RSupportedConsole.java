@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 
-public class ExperimentalConsole2 {
+public class RSupportedConsole {
 
     protected class ParamSetWrapper {
         String name;
@@ -41,7 +41,7 @@ public class ExperimentalConsole2 {
         try {
             if (args.length == 1) {
 
-                ExperimentalConsole2 console = new ExperimentalConsole2();
+                RSupportedConsole console = new RSupportedConsole();
                 console.execute(args[0]);
 
             } else {

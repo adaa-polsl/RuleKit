@@ -1,10 +1,8 @@
 package adaa.analytics.rules.example;
 
 import com.rapidminer.example.Attribute;
-import com.rapidminer.example.table.AbstractExampleTable;
-import com.rapidminer.example.table.DataRow;
-import com.rapidminer.example.table.DataRowReader;
-import com.rapidminer.example.table.DoubleArrayDataRow;
+import com.rapidminer.example.table.*;
+import org.apache.commons.lang.ArrayUtils;
 import org.renjin.primitives.Types;
 import org.renjin.sexp.ListVector;
 import org.renjin.sexp.StringArrayVector;
@@ -14,6 +12,7 @@ import org.renjin.sexp.Vector;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 public class ExampleTableAdapter extends AbstractExampleTable {
@@ -27,8 +26,10 @@ public class ExampleTableAdapter extends AbstractExampleTable {
     }
 
     private ListVector dataFrame;
+    private MemoryExampleTable excessDataTable = null;
     private ArrayList<Attribute> attributes;
     private String dateFormat;
+    private int dataRowIndex;
 
     @Override
     public int size() {
@@ -51,22 +52,53 @@ public class ExampleTableAdapter extends AbstractExampleTable {
 
     @Override
     public DataRow getDataRow(int index) {
-        /* Tworzenie szkieletu DataRow i pobranie formatu daty*/
-        double[] data = new double[attributes.size()];
+        dataRowIndex = index;
+        double[] data = new double[dataFrame.length()];
+        for (int i = 0; i < dataFrame.length(); i++) {
+            Attribute attribute = attributes.get(i);
+            data[i] = getSexpValue(attribute, index);
+        }
+        data = appendExcessData(data,index);
+        return new DoubleArrayDataRowR(data,this);
+    }
+
+    private double[] appendExcessData(double[] data, int index) {
+        int excessDataSize = attributes.size() - dataFrame.length();
+        if (excessDataSize > 0) {
+            if (excessDataTable.size() <= index) {
+                double[] excessData = new double[excessDataSize];
+                DataRow row = new DoubleArrayDataRow(excessData);
+                excessDataTable.addDataRow(row);
+                return ArrayUtils.addAll(data, excessData);
+            } else {
+                DataRow dataRow = excessDataTable.getDataRow(index);
+                Attribute[] attributes = excessDataTable.getAttributes();
+                double[] excessData = new double[attributes.length];
+                for (int i=0 ;i<attributes.length;i++){
+                    Attribute attribute = attributes[i];
+                    excessData[i] = dataRow.get(attribute);
+                }
+                return ArrayUtils.addAll(data, excessData);
+            }
+        }
+        return data;
+    }
+
+    public void setDataRowValue(int index, double value, double defaultValue){
+        DataRow dataRow = excessDataTable.getDataRow(dataRowIndex);
+        Attribute attribute = excessDataTable.getAttribute(index - dataFrame.length());
+        dataRow.set(attribute,value);
+    }
+
+    private double getSexpValue(Attribute attribute, int index){
         SimpleDateFormat dateformat;
         if (dateFormat != null) {
             dateformat = new SimpleDateFormat(dateFormat);
         } else {
             dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         }
-
-        for (int i = 0; i < attributes.size(); i++) {
-            Attribute attribute = attributes.get(i);
-            Vector vector = getDataFrame().getElementAsVector(
-                    attribute.getName());
-            data[i] = getDoubleValue(attribute, vector, dateformat, index);
-        }
-        return new DoubleArrayDataRow(data);
+        Vector vector = getDataFrame().getElementAsVector(attribute.getName());
+        return getDoubleValue(attribute, vector, dateformat, index);
     }
 
     private double getDoubleValue(Attribute attribute, Vector vector, SimpleDateFormat dateformat, int index) {
@@ -116,5 +148,34 @@ public class ExampleTableAdapter extends AbstractExampleTable {
 
     public ListVector getDataFrame() {
         return dataFrame;
+    }
+
+    public int addAttribute(Attribute a) {
+        int index = super.addAttribute(a);
+        this.attributes = new ArrayList<Attribute>(Arrays.asList(super.getAttributes()));
+        if (!isSexpAttribute(a)){
+            Attribute copy = AttributeFactory.createAttribute(a);
+            addToExcessTable(copy);
+        }
+        return index;
+    }
+
+    private boolean isSexpAttribute(Attribute a){
+        if (dataFrame != null) {
+            int length = dataFrame.length();
+            if (length <= a.getTableIndex()) {
+                return false;
+            }
+            return true;
+        }
+        return true;
+    }
+
+    private void addToExcessTable(Attribute a){
+        if (excessDataTable == null){
+            excessDataTable = new MemoryExampleTable(a);
+        } else {
+            excessDataTable.addAttribute(a);
+        }
     }
 }
