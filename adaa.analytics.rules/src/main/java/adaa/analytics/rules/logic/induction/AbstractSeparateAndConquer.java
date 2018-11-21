@@ -4,9 +4,11 @@ import adaa.analytics.rules.logic.representation.RuleSetBase;
 import com.rapidminer.example.ExampleSet;
 
 /***
- * Base abstract class for all separate'n'conquer rule induction algorithms.
- * @author Adam
- *
+ * Abstract base class for all separate and conquer rule-based models induction algorithms 
+ * (classification, regression, survival).
+ * 
+ * @author Adam Gudyœ
+ * 
  */
 public abstract class AbstractSeparateAndConquer {
 
@@ -15,11 +17,14 @@ public abstract class AbstractSeparateAndConquer {
 	 */
 	protected final InductionParameters params;
 	
+	/**
+	 * Rule factory.
+	 */
 	protected RuleFactory factory;
 	
 	/**
 	 * Sets induction parameters.
-	 * @param params
+	 * @param params Induction paremeters.
 	 */
 	public AbstractSeparateAndConquer(final InductionParameters params) {
 		this.params = params;
@@ -28,7 +33,7 @@ public abstract class AbstractSeparateAndConquer {
 	/**
 	 * Trains a rule classifier.
 	 * @param trainSet Training set.
-	 * @return Rule set.
+	 * @return Rule-based model.
 	 */
 	public abstract RuleSetBase run(final ExampleSet trainSet);
 }

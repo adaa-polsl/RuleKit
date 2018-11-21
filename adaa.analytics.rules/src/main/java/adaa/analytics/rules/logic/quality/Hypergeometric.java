@@ -11,12 +11,12 @@ public class Hypergeometric implements IQualityMeasure {
 	
 	/**
 	 * 
-	 * @param cov
+	 * @param ct Contingency table.
 	 * @return (test statistics, p-value) pair
 	 */
-	public Pair<Double,Double> calculate(ContingencyTable cov) {
-		return this.calculate(cov.weighted_p, cov.weighted_n,
-				cov.weighted_P, cov.weighted_N);
+	public Pair<Double,Double> calculate(ContingencyTable ct) {
+		return this.calculate(ct.weighted_p, ct.weighted_n,
+				ct.weighted_P, ct.weighted_N);
 	}
 	
 	public Pair<Double,Double> calculate(double p, double n, double P, double N) {

@@ -5,6 +5,7 @@ import java.util.Set;
 public class SetHelper {
 	/**
 	 * Calculates size of intersection of two sets.
+	 *
 	 * @param A First set.
 	 * @param B Second set.
 	 * @return Intersection size.
@@ -21,6 +22,7 @@ public class SetHelper {
 	
 	/**
 	 * Calculates size of difference of two sets.
+	 * 
 	 * @param A First set.
 	 * @param B Second set.
 	 * @return Difference size.

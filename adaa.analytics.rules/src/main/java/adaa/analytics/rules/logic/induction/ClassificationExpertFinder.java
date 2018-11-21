@@ -16,19 +16,48 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
+/**
+ * Class for growing and pruning classification rules with user's knowledge.
+ * 
+ * @author Adam Gudyœ
+ *
+ */
 public class ClassificationExpertFinder extends ClassificationFinder implements IExpertFinder {
 	
+	/**
+	 * User's knowledge.
+	 */
 	protected Knowledge knowledge;
 	
+	/**
+	 * Sets users knowledge.
+	 * @param knowledge User's knowledge to be set.
+	 */
 	public void setKnowledge(Knowledge knowledge) {
 		this.knowledge = knowledge;
 	}
 	
+	/**
+	 * Invokes base class constructor and initializes knowledge object.
+	 * 
+	 * @param params Induction parameters.
+	 * @param knowledge Expert knowledge.
+	 */
 	public ClassificationExpertFinder(final InductionParameters params, Knowledge knowledge) {
 		super(params);
 		this.knowledge = knowledge;
 	}
 	
+	/**
+	 * Adjusts expert rule. The procedure specifies value sets of adjustable conditions, i.e., those in the form:
+	 * <ul> 
+	 * <li> attribute ~= Any,</li>
+	 * <li> attribute ~= SomeSet (non-empty intersection of determined value set with SomeSet is required).</li>
+	 * </ul>  
+	 * @param rule Rule to be adjusted.
+	 * @param dataset Training dataset.
+	 * @param uncoveredPositives Set of positive examples not covered by the model.
+	 */
 	public void adjust(
 		Rule rule,
 		ExampleSet dataset, 
@@ -117,7 +146,15 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 		rule.setPValue(qp.getSecond());		
 	}
 	
-	
+	/**
+	 * Adds elementary conditions to the classification rule premise until termination conditions are fulfilled.
+	 * The method uses expert knowledge.
+	 * 
+	 * @param rule Rule to be grown.
+	 * @param dataset Training set.
+	 * @param uncoveredPositives Set of positive examples yet uncovered by the model.
+	 * @return Number of conditions added.
+	 */
 	@Override 
 	public int grow(
 			Rule rule,
@@ -315,9 +352,17 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 		return addedConditionsCount;
 	}
 	
+	/***
+	 * Checks if candidate condition fulfills coverage requirement and is not in conflict with forbidden knowledge.
+	 * 
+	 * @param cnd Candidate condition.
+	 * @param classId Class identifier.
+	 * @param newlyCoveredPositives Number of newly covered positive examples after addition of the condition.
+	 * @return
+	 */
 	@Override
-	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double covered) {
-		return super.checkCandidate(cnd, classId, covered) &&
+	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double newlyCoveredPositives) {
+		return super.checkCandidate(cnd, classId, newlyCoveredPositives) &&
 			!knowledge.isForbidden(cnd.getAttribute(), cnd.getValueSet(), (int)classId);
 	}
 	

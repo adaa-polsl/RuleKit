@@ -35,9 +35,9 @@ public abstract class ConditionBase implements Cloneable, Serializable {
 	}
 	
 	/**
-	 * Checks if condition is fulfilled for given example.
-	 * @param ex An example to be checked.
-	 * @return Test result.
+	 * Evaluates condition on the specified dataset.
+	 * @param set Input dataset.
+	 * @param outIndices Output set of indices covered by the condition.
 	 */
 	public void evaluate(ExampleSet set, Set<Integer> outIndices) {
 		if (!disabled) 

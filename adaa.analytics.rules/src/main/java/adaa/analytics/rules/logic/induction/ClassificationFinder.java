@@ -34,26 +34,42 @@ import com.rapidminer.tools.container.Pair;
 
 
 /**
- * Algorithm for growing and pruning classification rules.
- * @author Adam
+ * Class for growing and pruning classification rules.
+ * 
+ * @author Adam Gudyœ
  *
  */
 public class ClassificationFinder extends AbstractFinder {
 
-	/*
-	 * For each attribute there is a set of distinctive values. For each value there are bit vectors of positive and negative examples covered.
+	/**
+	 * Map of precalculated coverings (time optimization). 
+	 * For each attribute there is a set of distinctive values. For each value there is a bit vector of examples covered.
 	 */
 	protected Map<Attribute, Map<Double, IntegerBitSet>> precalculatedCoverings;
 	
+	/**
+	 * Map of precalculated attribute filters (time optimization). 
+	 */
 	protected Map<Attribute, Set<Double>> precalculatedFilter;
 	
+	/**
+	 * Initializes induction parameters.
+	 * @param params Induction parameters.
+	 */
 	public ClassificationFinder(InductionParameters params) {
 		super(params);
 		MissingValuesHandler.ignore = params.isIgnoreMissing();
 	}
 	
-	
-	
+	/***
+	 * Calculates rule quality and p-value on a training set. P-value is calculated
+	 * using a hypergeometric statistical test.
+	 * 
+	 * @param trainSet Training set.
+	 * @param ct Contingency table.
+	 * @param measure Quality measure to be calculated.
+	 * @return Pair containing value of rule quality measure and p-value.
+	 */
 	protected Pair<Double,Double> calculateQualityAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
 		Hypergeometric test = new Hypergeometric();
 		Pair<Double, Double> statAndPValue = test.calculate(ct);
@@ -65,10 +81,11 @@ public class ClassificationFinder extends AbstractFinder {
 	
 	
 	/**
-	 * Grows a rule.
+	 * Adds elementary conditions to the rule premise until termination conditions are fulfilled.
+	 * 
 	 * @param rule Rule to be grown.
-	 * @param trainSet Training set.
-	 * @param uncovered Collection of examples yet to cover (either all or positives).
+	 * @param dataset Training set.
+	 * @param uncovered Set of positive examples yet uncovered by the model.
 	 * @return Number of conditions added.
 	 */
 	public int grow(
@@ -136,7 +153,7 @@ public class ClassificationFinder extends AbstractFinder {
 	
 	
 	/**
-	 * Removes irrelevant conditions from rule using hill-climbing strategy. 
+	 * Removes irrelevant conditions from the rule using hill-climbing strategy. 
 	 * @param rule Rule to be pruned.
 	 * @param trainSet Training set. 
 	 * @return Updated covering object.
@@ -325,10 +342,10 @@ public class ClassificationFinder extends AbstractFinder {
 	}
 
 	/**
-	 * Precalculates conditions coverings and stores them as bit vectors in precalculatedCoverings field.
-	 * @param classId
-	 * @param trainSet
-	 * @param positives
+	 * Precalculates conditions coverings and stores them as bit vectors in @see precalculatedCoverings field.
+	 * @param classId Class identifier.
+	 * @param trainSet Training set.
+	 * @param positives Set of positives examples yet uncovered by the model.
 	 */
 	public void precalculateConditions(int classId, ExampleSet trainSet, Set<Integer> positives) {
 		
@@ -405,8 +422,16 @@ public class ClassificationFinder extends AbstractFinder {
 	}
 	
 	
-	/***
+	/**
+	 * Induces an elementary condition.
 	 * 
+	 * @param rule Current rule.
+	 * @param trainSet Training set.
+	 * @param uncoveredByRuleset Set of examples uncovered by the model.
+	 * @param coveredByRule Set of examples covered by the rule being grown.
+	 * @param allowedAttributes Set of attributes that may be used during induction.
+	 * @param extraParams Additional parameters.
+	 * @return Induced elementary condition.
 	 */
 	@Override
 	protected ElementaryCondition induceCondition(
@@ -629,8 +654,16 @@ public class ClassificationFinder extends AbstractFinder {
 		return (ElementaryCondition)best.condition;
 	}
 	
-	/*
+	/**
+	 * Induces an elementary condition using precalculated coverings.
 	 * 
+	 * @param rule Current rule.
+	 * @param trainSet Training set.
+	 * @param uncoveredByRuleset Set of examples uncovered by the model.
+	 * @param coveredByRule Set of examples covered by the rule being grown.
+	 * @param allowedAttributes Set of attributes that may be used during induction.
+	 * @param extraParams Additional parameters.
+	 * @return Induced elementary condition.
 	 */
 	protected ElementaryCondition inducePrecalculatedCondition(
 			Rule rule,
@@ -764,8 +797,17 @@ public class ClassificationFinder extends AbstractFinder {
 	}
 	
 	
-	/*
+	/***
+	 * Makes an attempt to add the condition to the rule.
 	 * 
+	 * @param rule Rule to be updated.
+	 * @param condition Condition to be added.
+	 * @param trainSet Training set.
+	 * @param covered Set of examples covered by the rules.
+	 * @param coveredPositives Bit vector of positive examples in the entire training set.
+	 * @param coveredNegatives Bit vector of negative examples in the entire training set.
+	 * @param conditionCovered Bit vector of examples covered by the condition.
+	 * @return Flag indicating whether condition has been added successfully.
 	 */
 	public boolean tryAddCondition(
 		final Rule rule, 
@@ -836,7 +878,14 @@ public class ClassificationFinder extends AbstractFinder {
 		return carryOn;
 	}	
 	
-	
+	/***
+	 * Checks if candidate condition fulfills coverage requirement.
+	 * 
+	 * @param cnd Candidate condition.
+	 * @param classId Class identifier.
+	 * @param newlyCoveredPositives Number of newly covered positive examples after addition of the condition.
+	 * @return
+	 */
 	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double newlyCoveredPositives) {
 		if (newlyCoveredPositives >= params.getMinimumCovered()) {
 			return true;

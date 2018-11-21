@@ -19,9 +19,10 @@ import com.rapidminer.example.ExampleSet;
 import com.rapidminer.tools.container.Pair;
 
 /**
- * Abstract base class for algorithms performing growing and pruning of classification and regression rules.
- * @author Adam
- *
+ * Abstract base class for growing and pruning procedures for all types of rules (classification, regression, survival).
+ * 
+ * @author Adam Gudyœ
+ * 
  */
 public abstract class AbstractFinder {
 	
@@ -30,13 +31,20 @@ public abstract class AbstractFinder {
 	 */
 	protected final InductionParameters params;
 	
+	/**
+	 * Number of threads to be used by the induction algorithm.
+	 */
 	protected int threadCount;
     
+	/**
+	 * Thread pool to be used by the algorithm.
+	 */
 	protected ExecutorService pool;
 	
 	/**
-	 * Initialises induction parameters.
-	 * @param params
+	 * Initializes induction parameters and thread pool.
+	 *
+	 * @param params Induction parameters.
 	 */
 	public AbstractFinder(final InductionParameters params) {
 		this.params = params;
@@ -46,10 +54,11 @@ public abstract class AbstractFinder {
 	}
 	
 	/**
-	 * Grows a rule.
+	 * Adds elementary conditions to the rule premise until termination conditions are fulfilled.
+	 * 
 	 * @param rule Rule to be grown.
-	 * @param trainSet Training set.
-	 * @param uncovered Collection of examples yet to cover (either all or positives).
+	 * @param dataset Training set.
+	 * @param uncovered Collection of examples yet uncovered by the model (positive examples in the classification problems).
 	 * @return Number of conditions added.
 	 */
 	public int grow(
@@ -115,9 +124,10 @@ public abstract class AbstractFinder {
 	
 	/**
 	 * Removes irrelevant conditions from rule using hill-climbing strategy. 
+	 * 
 	 * @param rule Rule to be pruned.
 	 * @param trainSet Training set. 
-	 * @return Updated covering object.
+	 * @return Covering of the rule after pruning.
 	 */
 	public Covering prune(final Rule rule, final ExampleSet trainSet) {
 		
@@ -179,14 +189,26 @@ public abstract class AbstractFinder {
 	
 	
 	/**
+	 * Calculates quality on a training set.
 	 * 
-	 * @param cov
-	 * @return
+	 * @param trainSet Training set.
+	 * @param ct Contingency table.
+	 * @param measure Quality measure to be calculated.
+	 * @return Calculated measure.
 	 */
 	protected double calculateQuality(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
 		return ((ClassificationMeasure)measure).calculate(ct);
 	}
 	
+	/***
+	 * Calculates rule quality and p-value on a training set. The method returns
+	 * 1.0 as a p-value - this behavior should be overridden by derived classes.
+	 * 
+	 * @param trainSet Training set.
+	 * @param ct Contingency table.
+	 * @param measure Quality measure to be calculated.
+	 * @return Pair containing value of rule quality measure and p-value.
+	 */
 	protected Pair<Double,Double> calculateQualityAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
 	
 		return new Pair<Double, Double>(
@@ -195,13 +217,15 @@ public abstract class AbstractFinder {
 	}
 	
 	/**
+	 * Abstract method representing all procedures which induce an elementary condition.
 	 * 
-	 * @param rule
-	 * @param trainSet
-	 * @param uncoveredByRuleset
-	 * @param coveredByRule
-	 * @param ignoredAttributes
-	 * @return
+	 * @param rule Current rule.
+	 * @param trainSet Training set.
+	 * @param uncoveredByRuleset Set of examples uncovered by the model.
+	 * @param coveredByRule Set of examples covered by the rule being grown.
+	 * @param allowedAttributes Set of attributes that may be used during induction.
+	 * @param extraParams Additional parameters.
+	 * @return Induced elementary condition.
 	 */
 	protected abstract ElementaryCondition induceCondition(
 		final Rule rule,
@@ -211,6 +235,13 @@ public abstract class AbstractFinder {
 		final Set<Attribute> allowedAttributes,
 		Object... extraParams);
 	
+	/**
+	 * Maps a set of attribute names to a set of attributes.
+	 * 
+	 * @param names Set of attribute names.
+	 * @param dataset Training set.
+	 * @return Set of attributes.
+	 */
 	protected Set<Attribute> names2attributes(Set<String> names, ExampleSet dataset) {
 		Set<Attribute> out = new HashSet<Attribute>();
 		for (String s : names) {
