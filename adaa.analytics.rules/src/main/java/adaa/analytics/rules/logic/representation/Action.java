@@ -13,13 +13,24 @@ public class Action extends ElementaryCondition {
 	private static final long serialVersionUID = -7307576747677085713L;
 	
 	protected IValueSet leftValue, rightValue;
-
 	
-	public Action(String attribute, IValueSet sourceValue, IValueSet targetValue)  {
-		
+	protected Action construct(String attribute, IValueSet sourceValue, IValueSet targetValue) {
 		this.attribute = attribute;
 		leftValue = sourceValue;
 		rightValue = targetValue;
+		return this;
+	}
+
+	public Action(ElementaryCondition left, ElementaryCondition right) {
+		if (!left.getAttribute().equals(right.getAttribute())) {
+			throw new RuntimeException("Non matching attributes");
+		}
+		construct(left.getAttribute(), left.getValueSet(), right.getValueSet());
+	}
+	
+	public Action(String attribute, IValueSet sourceValue, IValueSet targetValue)  {
+		
+		construct(attribute, sourceValue, targetValue);
 	}
 
 	

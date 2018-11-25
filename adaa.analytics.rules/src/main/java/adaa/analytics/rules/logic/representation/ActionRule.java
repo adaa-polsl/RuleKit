@@ -47,15 +47,15 @@ public class ActionRule extends Rule {
 	}
 	
 	public ActionRule(CompoundCondition premise, ElementaryCondition consequence) throws Exception {
+		
 		if (consequence instanceof Action) {
-
 			this.premise = premise;
 			actionConsequence = (Action)consequence;
 		} else {
 			throw new Exception("Non action consequence for action rule");
 		}
-		
 	}
+
 	
 	//can't use super here
 	public ActionRule(Rule ref) {
@@ -178,6 +178,14 @@ public class ActionRule extends Rule {
 
 	public ElementaryCondition getConsequence() {
 		return actionConsequence;
+	}
+	@Override
+	public void setConsequence(ElementaryCondition val) {
+		if (val instanceof Action) {
+			actionConsequence = (Action)val;
+		} else {
+			throw new RuntimeException("Non action cannot be conclusion of action consequence");
+		}
 	}
 	
 	public Rule getLeftRule() {

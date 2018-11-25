@@ -3,6 +3,7 @@ package adaa.analytics.rules.logic.actions;
 import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.representation.ConditionBase;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.IValueSet;
 import adaa.analytics.rules.logic.representation.Rule;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
@@ -29,6 +30,15 @@ public class MetaExample {
 			}
 		}
 		return true;
+	}
+	
+	public Map<String, ElementaryCondition> toPremise() {
+		return data.keySet().stream().map(
+				x -> {
+					MetaValue mv = data.get(x);
+					return mv.value;
+				}
+				).collect(Collectors.toMap(x -> x.getAttribute(), x->x));
 	}
 	
 	public void add(MetaValue value) {

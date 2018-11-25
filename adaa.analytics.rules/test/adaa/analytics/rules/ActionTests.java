@@ -73,7 +73,8 @@ public class ActionTests {
 		labelParameter = labelParameterName;
 		
 		outputFileName = testFileName.substring(0, testFileName.indexOf('.'));
-		outputFileName += "-rules-" + measure.getName() + (enablePruning  ? "-pruned" : "");
+		outputFileName += "-rules-" + measure.getName() + (enablePruning  ? "-pruned" : "") 
+				+ "-" + (sourceClass.equals("*") ? "ALL" : sourceClass) + "-to-" + targetClass;
 		
 		ActionFindingParameters findingParams = new ActionFindingParameters();
 		findingParams.setUseNotIntersectingRangesOnly(RangeUsageStrategy.EXCLUSIVE_ONLY);
@@ -249,6 +250,19 @@ public class ActionTests {
 		return Arrays.asList(new Object[][]{
 			//fileName, labelName, measure, pruningEnabled, ignoreMissing, minCov, maxUncov, maxGrowing, sourceID, targetID
 	
+			/// furnace control
+			///
+			///
+			
+			{"furnace_control.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9,  "3", "4"},
+			{"furnace_control.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9,  "3", "4"},
+			{"furnace_control.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9,  "5", "4"},
+			{"furnace_control.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9,  "5", "4"},
+			{"furnace_control.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9,  "4", "4"},
+			{"furnace_control.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9,  "4", "4"},
+			{"furnace_control.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9,  "*", "4"},
+			{"furnace_control.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9,  "*", "4"}/*,
+			
 			///
 			/// car - reduced : only two classes
 			///
@@ -451,7 +465,7 @@ public class ActionTests {
 			{"vote.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), false, true, 5.0, 0.05, 0.9, "democrat", "republican"},
 			{"vote.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9, "democrat", "republican"},
 			{"vote.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), false, true, 5.0, 0.05, 0.9, "democrat", "republican"},
-		
+		*/
 		});
 	}
 

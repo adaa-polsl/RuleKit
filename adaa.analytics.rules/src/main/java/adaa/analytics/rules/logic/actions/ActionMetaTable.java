@@ -2,8 +2,13 @@ package adaa.analytics.rules.logic.actions;
 
 import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
+import adaa.analytics.rules.logic.representation.Action;
+import adaa.analytics.rules.logic.representation.ActionRule;
+import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.IValueSet;
 import adaa.analytics.rules.logic.representation.Logger;
+import adaa.analytics.rules.logic.representation.SingletonSet;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
@@ -85,11 +90,40 @@ public class ActionMetaTable {
 		public MetaExample primeMetaExample;
 		public MetaExample contraMetaExample;
 		public Example example;
+		private int from;
+		private int to;
+		private ExampleSet sourceExamples;
 		
-		public AnalysisResult(Example ex, MetaExample prime, MetaExample contre) {
+		public AnalysisResult(Example ex, MetaExample prime, MetaExample contre, int fromClass, int toClass, ExampleSet set) {
 			example = ex;
 			primeMetaExample = prime;
 			contraMetaExample = contre;
+			from = fromClass;
+			to = toClass;
+			sourceExamples = set;
+		}
+		
+		public ActionRule getActionRule() {
+			
+			ActionRule rule = new ActionRule();
+			rule.setPremise(new CompoundCondition());
+			
+			Map<String, ElementaryCondition> premiseLeft = primeMetaExample.toPremise();
+			Map<String, ElementaryCondition> premiseRight = contraMetaExample.toPremise();
+			
+			premiseLeft.keySet()
+				.stream()
+				.map(x -> new Action(premiseLeft.get(x), premiseRight.get(x)))
+				.forEach(x -> rule.getPremise().addSubcondition(x));
+			
+			Attribute classAtr = sourceExamples.getAttributes().get("class");
+			
+			IValueSet sourceClass = new SingletonSet((double)from, classAtr.getMapping().getValues());
+			IValueSet targetClass = new SingletonSet((double)to, classAtr.getMapping().getValues());
+			
+			rule.setConsequence(new Action(classAtr.getName(), sourceClass, targetClass));
+			
+			return rule;
 		}
 	}
 	
@@ -175,6 +209,6 @@ public class ActionMetaTable {
 
 		}
 		
-		return new AnalysisResult(ex, primeMe, contraMe);
+		return new AnalysisResult(ex, primeMe, contraMe, fromClass, toClass, dist.set);
 	}
 }
