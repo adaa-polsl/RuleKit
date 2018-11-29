@@ -113,66 +113,55 @@ Please note several remarks:
 
 ## Dataset definition
 
-Definition of a dataset has the following form. All fields having `prefix` in their name are completed with parameter set name.
+Definition of a dataset has the following form. 
 
 ```
 <dataset>
-     <label>...</label>
-     <survival_time>...</survival_time>            # only for survival datasets
-     <weight>...</weight>                          # optional
-   
-    <training>  
-         <report_prefix>...</report_prefix>          	 	# TXT report (rule sets, KM-estimators, etc.)
-         <train>
-             <in_file>...</in_file>               		# input ARFF file
-             <model_binary_prefix>...<model_binary_prefix>      # output binary model 
+     <label>...</label>				# label attribute
+     <out_directory>...</out_directory>		# directory where all output files will be placed
+     <weight>...</weight>                       # optional weight parameter
+     <survival_time>...</survival_time>         # only for survival datasets
+    
+    <training> 
+          <report_file>...</report_file>        # TXT report (rule sets, KM-estimators, etc.) 
+	  <train>
+             <in_file>...</in_file>            # input data file (ARFF, CSV)
+             <model_file>...</model_file>      # output binary model 
          </train>
          ...
     </training>
     
     <prediction>
+	 <report_file>...</report_file>   	# CSV report with performance metrics (only when true labels are specified) 
          <predict>
-             <model_binary_prefix>...<model_binary_prefix>      # input binary model 
-             <test_file>...<test_file>            		# input ARFF file
-             <predicted_file_prefix>...<predicted_file_prefix>  # output ARFF file with predictions  
+             <model_file>...</model_file>      	# input binary model 
+             <test_file>...</test_file>         # input data file (ARFF, CSV)
+             <predictions_file>...</predictions_file>  # output data file with predictions  
          </predict>
          ...
     </prediction>
     
-    <evaluation>
-         <report_prefix>...</report_prefix>       		# CSV report (performance metrics) 
-         <evaluate>
-             <predicted_file_prefix>...<predicted_file_prefix>  # input ARFF file with predictions 
-             <ref_file>...<ref_file>              		# reference ARFF file
-         </evaluate>
-         ...
-    <evaluation>
-    
-    <delete>
-          <file_prefix>...</file_prefix>                        
-          <file_prefix>...</file_prefix>
-          ...
-    </delete>
-
 </dataset>
 ```
 
 Example:
 
+
 ```
 <dataset>
      <label>class</label>
+     <out_directory>./results</out_directory>		
     
     <training>  
-         <report_prefix>seismic</report_prefix>           		# TXT report (rule sets, KM-estimators, etc.)
+         <report_file>training-log.txt</report_file>           		
          <train>
-             <in_file>seismic-train-1</in_file>               		# input ARFF file
-             <model_binary_prefix>seismic-model-1<model_binary_prefix>  # output binary model 
+             <in_file>./data/seismic-train-1.arff</in_file>               	
+             <model_file>seismic-1.mdl</model_file> 
          </train>
          
 	  <train>
-             <in_file>seismic-train-2</in_file>               		# input ARFF file
-             <model_binary_prefix>seismic-model-2<model_binary_prefix>  # output binary model
+             <in_file>/data/seismic-train-2.arff</in_file>               		
+             <model_file>seismic-2.mdl</model_file>  
          </train>
 	 
 	 ...
@@ -180,47 +169,23 @@ Example:
     </training>
     
     <prediction>
+     	<report_file>performance.csv</report_file>  
          <predict>
-             <model_binary_prefix>seismic-model-1<model_binary_prefix>      	# input binary model
-             <test_file>seismic-test-1<test_file>            			# input ARFF file
-             <predicted_file_prefix>seismic-pred-1<predicted_file_prefix>  	# output ARFF file with predictions  
+             <model_file>seismic-1.mdl</model_file>      	
+             <test_file>./data/seismic-test-1.arff</test_file>            			
+             <predictions_file>seismic-pred-1.arff</predictions_file>  	  
          </predict>
 	 
 	 <predict>
-             <model_binary_prefix>seismic-model-2<model_binary_prefix>      	# input binary model
-             <test_file>seismic-test-2<test_file>            			# input ARFF file
-             <predicted_file_prefix>seismic-pred-2<predicted_file_prefix>   	# output ARFF file with predictions  
+             <model_file>seismic-2.mdl</model_file>      	
+             <test_file>./data/seismic-test-2.arff</test_file>            			
+             <predictions_file>seismic-pred-2.arff</predictions_file>   	
          </predict>
 	 
          ...
 	 
     </prediction>
     
-    <evaluation>
-         <report_prefix>seismic</report_prefix>             			# CSV report (performance metrics) 
-         <evaluate>
-             <predicted_file_prefix>seismic-pred-1<predicted_file_prefix>  	# input ARFF file with predictions 
-             <ref_file>seismic-test-1<ref_file>              			# reference ARFF file
-         </evaluate>
-	 
-	  <evaluate>
-             <predicted_file_prefix>seismic-pred-2<predicted_file_prefix>  	# input ARFF file with predictions 
-             <ref_file>seismic-test-2<ref_file>              			# reference ARFF file
-         </evaluate>
-	 
-         ...
-	 
-    <evaluation>
-    
-    <delete>
-          <file_prefix>seismic-model-1</file_prefix>                        
-          <file_prefix>seismic-pred-1</file_prefix>
-	  
-	  <file_prefix>seismic-model-2</file_prefix>                        
-          <file_prefix>seismic-pred-2</file_prefix>
-          
-	  ...
-	  
-    </delete>
+   
 </dataset>
 ```
