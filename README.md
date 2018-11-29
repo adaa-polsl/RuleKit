@@ -134,7 +134,7 @@ Definition of a dataset has the following form:
          <predict>
              <model_binary>...<model_binary>      # input binary model (parameter set name added automatically)
              <test_file>...<test_file>            # input ARFF file
-             <out_file>...<out_file>              # output ARFF file with predictions  ((parameter set name added automatically) added automatically)
+             <predicted_file>...<predicted_file>  # output ARFF file with predictions  ((parameter set name added automatically) added automatically)
          </predict>
          ...
     </prediction>
@@ -142,13 +142,13 @@ Definition of a dataset has the following form:
     <evaluation>
          <report_path>                            # CSV report (performance metrics) 
          <evaluate>
-             <predicted_file>...<predicted_file>  # ARFF file with predictions (parameter set name added automatically)
+             <predicted_file>...<predicted_file>  # input ARFF file with predictions (parameter set name added automatically)
              <ref_file>...<ref_file>              # reference ARFF file
          </evaluate>
          ...
-     <evaluation>
+    <evaluation>
     
-  	<delete>
+    <delete>
           <file>...</file>                        
           <file>...</file>
           ...
