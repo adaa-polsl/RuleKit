@@ -134,13 +134,13 @@ Definition of a dataset has the following form:
          <predict>
              <model_binary>...<model_binary>      # input binary model (parameter set name added automatically)
              <test_file>...<test_file>            # input ARFF file
-             <predicted_file>...<predicted_file>  # output ARFF file with predictions  ((parameter set name added automatically) added automatically)
+             <predicted_file>...<predicted_file>  # output ARFF file with predictions  (parameter set name added automatically)
          </predict>
          ...
     </prediction>
     
     <evaluation>
-         <report_path>                            # CSV report (performance metrics) 
+         <report_path>...</report_path>           # CSV report (performance metrics) 
          <evaluate>
              <predicted_file>...<predicted_file>  # input ARFF file with predictions (parameter set name added automatically)
              <ref_file>...<ref_file>              # reference ARFF file
@@ -154,5 +154,73 @@ Definition of a dataset has the following form:
           ...
     </delete>
 
+</dataset>
+```
+
+Example:
+
+```
+<dataset>
+     <label>class</label>
+    
+    <training>  
+         <report_path>seismic</report_path>           # TXT report (rule sets, KM-estimators, etc.)
+         <train>
+             <in_file>seismic-train-1</in_file>               # input ARFF file
+             <model_binary>seismic-model-1<model_binary>      # output binary model 
+         </train>
+         
+	  <train>
+             <in_file>seismic-train-2</in_file>               # input ARFF file
+             <model_binary>seismic-model-2<model_binary>      # output binary model
+         </train>
+	 
+	 ...
+	 
+    </training>
+    
+    <prediction>
+         <predict>
+             <model_binary>seismic-model-1<model_binary>      # input binary model
+             <test_file>seismic-train-1<test_file>            # input ARFF file
+             <predicted_file>seismic-pred-1<predicted_file>  # output ARFF file with predictions  
+         </predict>
+	 
+	 <predict>
+             <model_binary>seismic-model-2<model_binary>      # input binary model
+             <test_file>seismic-train-2<test_file>            # input ARFF file
+             <predicted_file>seismic-pred-2<predicted_file>   # output ARFF file with predictions  
+         </predict>
+	 
+         ...
+	 
+    </prediction>
+    
+    <evaluation>
+         <report_path>seismic</report_path>             	# CSV report (performance metrics) 
+         <evaluate>
+             <predicted_file>seismic-pred-1<predicted_file>  	# input ARFF file with predictions 
+             <ref_file>seismic-test-1<ref_file>              	# reference ARFF file
+         </evaluate>
+	 
+	  <evaluate>
+             <predicted_file>seismic-pred-2<predicted_file>  	# input ARFF file with predictions 
+             <ref_file>seismic-test-2<ref_file>              	# reference ARFF file
+         </evaluate>
+	 
+         ...
+	 
+    <evaluation>
+    
+    <delete>
+          <file>seismic-model-1</file>                        
+          <file>seismic-pred-1</file>
+	  
+	  <file>seismic-model-2</file>                        
+          <file>seismic-pred-2</file>
+          
+	  ...
+	  
+    </delete>
 </dataset>
 ```
