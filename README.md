@@ -182,13 +182,13 @@ Example:
     <prediction>
          <predict>
              <model_binary_prefix>seismic-model-1<model_binary_prefix>      	# input binary model
-             <test_file>seismic-train-1<test_file>            			# input ARFF file
+             <test_file>seismic-test-1<test_file>            			# input ARFF file
              <predicted_file_prefix>seismic-pred-1<predicted_file_prefix>  	# output ARFF file with predictions  
          </predict>
 	 
 	 <predict>
              <model_binary_prefix>seismic-model-2<model_binary_prefix>      	# input binary model
-             <test_file>seismic-train-2<test_file>            			# input ARFF file
+             <test_file>seismic-test-2<test_file>            			# input ARFF file
              <predicted_file_prefix>seismic-pred-2<predicted_file_prefix>   	# output ARFF file with predictions  
          </predict>
 	 
