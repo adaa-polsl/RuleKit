@@ -113,7 +113,7 @@ Please note several remarks:
 
 ## Dataset definition
 
-Definition of a dataset has the following form:
+Definition of a dataset has the following form. All fields having `prefix` in their name are completed with parameter set name.
 
 ```
 <dataset>
@@ -122,35 +122,35 @@ Definition of a dataset has the following form:
      <weight>...</weight>                          # optional
    
     <training>  
-         <report_path>...</report_path>           # TXT report (rule sets, KM-estimators, etc.)
+         <report_prefix>...</report_prefix>          	 	# TXT report (rule sets, KM-estimators, etc.)
          <train>
-             <in_file>...</in_file>               # input ARFF file
-             <model_binary>...<model_binary>      # output binary model (parameter set name added automatically)
+             <in_file>...</in_file>               		# input ARFF file
+             <model_binary_prefix>...<model_binary_prefix>      # output binary model 
          </train>
          ...
     </training>
     
     <prediction>
          <predict>
-             <model_binary>...<model_binary>      # input binary model (parameter set name added automatically)
-             <test_file>...<test_file>            # input ARFF file
-             <predicted_file>...<predicted_file>  # output ARFF file with predictions  (parameter set name added automatically)
+             <model_binary_prefix>...<model_binary_prefix>      # input binary model 
+             <test_file>...<test_file>            		# input ARFF file
+             <predicted_file_prefix>...<predicted_file_prefix>  # output ARFF file with predictions  
          </predict>
          ...
     </prediction>
     
     <evaluation>
-         <report_path>...</report_path>           # CSV report (performance metrics) 
+         <report_prefix>...</report_prefix>       		# CSV report (performance metrics) 
          <evaluate>
-             <predicted_file>...<predicted_file>  # input ARFF file with predictions (parameter set name added automatically)
-             <ref_file>...<ref_file>              # reference ARFF file
+             <predicted_file_prefix>...<predicted_file_prefix>  # input ARFF file with predictions 
+             <ref_file>...<ref_file>              		# reference ARFF file
          </evaluate>
          ...
     <evaluation>
     
     <delete>
-          <file>...</file>                        
-          <file>...</file>
+          <file_prefix>...</file_prefix>                        
+          <file_prefix>...</file_prefix>
           ...
     </delete>
 
@@ -164,15 +164,15 @@ Example:
      <label>class</label>
     
     <training>  
-         <report_path>seismic</report_path>           # TXT report (rule sets, KM-estimators, etc.)
+         <report_prefix>seismic</report_prefix>           		# TXT report (rule sets, KM-estimators, etc.)
          <train>
-             <in_file>seismic-train-1</in_file>               # input ARFF file
-             <model_binary>seismic-model-1<model_binary>      # output binary model 
+             <in_file>seismic-train-1</in_file>               		# input ARFF file
+             <model_binary_prefix>seismic-model-1<model_binary_prefix>  # output binary model 
          </train>
          
 	  <train>
-             <in_file>seismic-train-2</in_file>               # input ARFF file
-             <model_binary>seismic-model-2<model_binary>      # output binary model
+             <in_file>seismic-train-2</in_file>               		# input ARFF file
+             <model_binary_prefix>seismic-model-2<model_binary_prefix>  # output binary model
          </train>
 	 
 	 ...
@@ -181,15 +181,15 @@ Example:
     
     <prediction>
          <predict>
-             <model_binary>seismic-model-1<model_binary>      # input binary model
-             <test_file>seismic-train-1<test_file>            # input ARFF file
-             <predicted_file>seismic-pred-1<predicted_file>  # output ARFF file with predictions  
+             <model_binary_prefix>seismic-model-1<model_binary_prefix>      	# input binary model
+             <test_file>seismic-train-1<test_file>            			# input ARFF file
+             <predicted_file_prefix>seismic-pred-1<predicted_file_prefix>  	# output ARFF file with predictions  
          </predict>
 	 
 	 <predict>
-             <model_binary>seismic-model-2<model_binary>      # input binary model
-             <test_file>seismic-train-2<test_file>            # input ARFF file
-             <predicted_file>seismic-pred-2<predicted_file>   # output ARFF file with predictions  
+             <model_binary_prefix>seismic-model-2<model_binary_prefix>      	# input binary model
+             <test_file>seismic-train-2<test_file>            			# input ARFF file
+             <predicted_file_prefix>seismic-pred-2<predicted_file_prefix>   	# output ARFF file with predictions  
          </predict>
 	 
          ...
@@ -197,15 +197,15 @@ Example:
     </prediction>
     
     <evaluation>
-         <report_path>seismic</report_path>             	# CSV report (performance metrics) 
+         <report_prefix>seismic</report_prefix>             			# CSV report (performance metrics) 
          <evaluate>
-             <predicted_file>seismic-pred-1<predicted_file>  	# input ARFF file with predictions 
-             <ref_file>seismic-test-1<ref_file>              	# reference ARFF file
+             <predicted_file_prefix>seismic-pred-1<predicted_file_prefix>  	# input ARFF file with predictions 
+             <ref_file>seismic-test-1<ref_file>              			# reference ARFF file
          </evaluate>
 	 
 	  <evaluate>
-             <predicted_file>seismic-pred-2<predicted_file>  	# input ARFF file with predictions 
-             <ref_file>seismic-test-2<ref_file>              	# reference ARFF file
+             <predicted_file_prefix>seismic-pred-2<predicted_file_prefix>  	# input ARFF file with predictions 
+             <ref_file>seismic-test-2<ref_file>              			# reference ARFF file
          </evaluate>
 	 
          ...
@@ -213,11 +213,11 @@ Example:
     <evaluation>
     
     <delete>
-          <file>seismic-model-1</file>                        
-          <file>seismic-pred-1</file>
+          <file_prefix>seismic-model-1</file_prefix>                        
+          <file_prefix>seismic-pred-1</file_prefix>
 	  
-	  <file>seismic-model-2</file>                        
-          <file>seismic-pred-2</file>
+	  <file_prefix>seismic-model-2</file_prefix>                        
+          <file_prefix>seismic-pred-2</file_prefix>
           
 	  ...
 	  
