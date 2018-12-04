@@ -1,16 +1,24 @@
-#RuleKit
+# RuleKit
 
-RuleKit is a comprehensive library for inducing rule-based data models. The current revision has the ability to produce classification, regression, and survival rules. The analysis can be performed using one of the provided interfaces:
+RuleKit is a comprehensive library for inducing rule-based data models. The current revision has the ability to produce classification, regression, and survival rules. The analysis can be performed using, batch iterface, RapidMiner plugin, or R package.
 
-* batch iterface,
-* RapidMiner plugin,
-* R package.
+# Table of contents
 
+[1. Batch interface](#1-batch-interface)
+    [1.1. General information](#11-general-information)
+    [1.2. Parameter set definition](#12-parameter-set-definition)
+    [1.3. Dataset definition](#13-dataset-definition)
+[2. RapidMiner plugin](#2-rapidminer-plugin)
+[3. R package](#3-r-package)
+[4. Output files](#4-output-files)
+[5. User-guided induction](#5-user-guided-induction)
+[6. Library API](#6-library-api)
 
+<!-- toc -->
 
-# Batch interface
+# 1. Batch interface
 
-## Overall XML structure
+## 1.1. General information
 
 ```
 </experiment>
@@ -28,7 +36,7 @@ RuleKit is a comprehensive library for inducing rule-based data models. The curr
 </experiment>
 ```
 
-## Parameter set definition
+## 1.2 Parameter set definition
 
 As each algorithm parameter has its default value, only selected parameters may specified by the user. In automatic mode, following parameters apply:
 
@@ -47,6 +55,94 @@ where:
 * `voting_measure` - rule quality measure used for voting; one of the aforementioned measures.
 
 The measure parameters apply only for classification and regression problems - in survival datasets log-rank statistics is always used.
+
+
+## 1.3 Dataset definition
+
+Definition of a dataset has the following form. 
+
+```
+<dataset>
+     <label>...</label>				# label attribute
+     <out_directory>...</out_directory>		# directory where all output files will be placed
+     <weight>...</weight>                       # optional weight parameter
+     <survival_time>...</survival_time>         # only for survival datasets
+    
+    <training> 
+          <report_file>...</report_file>        # TXT report (rule sets, KM-estimators, etc.) 
+	  <train>
+             <in_file>...</in_file>            # input data file (ARFF, CSV)
+             <model_file>...</model_file>      # output binary model 
+         </train>
+         ...
+    </training>
+    
+    <prediction>
+	 <report_file>...</report_file>   	# CSV report with performance metrics (only when true labels are specified) 
+         <predict>
+             <model_file>...</model_file>      	# input binary model 
+             <test_file>...</test_file>         # input data file (ARFF, CSV)
+             <predictions_file>...</predictions_file>  # output data file with predictions  
+         </predict>
+         ...
+    </prediction>
+    
+</dataset>
+```
+
+## 1.3 Example:
+
+
+```
+<dataset>
+     <label>class</label>
+     <out_directory>./results</out_directory>		
+    
+    <training>  
+         <report_file>training-log.txt</report_file>           		
+         <train>
+             <in_file>./data/seismic-train-1.arff</in_file>               	
+             <model_file>seismic-1.mdl</model_file> 
+         </train>
+         
+	  <train>
+             <in_file>/data/seismic-train-2.arff</in_file>               		
+             <model_file>seismic-2.mdl</model_file>  
+         </train>
+	 
+	 ...
+	 
+    </training>
+    
+    <prediction>
+     	<report_file>performance.csv</report_file>  
+         <predict>
+             <model_file>seismic-1.mdl</model_file>      	
+             <test_file>./data/seismic-test-1.arff</test_file>            			
+             <predictions_file>seismic-pred-1.arff</predictions_file>  	  
+         </predict>
+	 
+	 <predict>
+             <model_file>seismic-2.mdl</model_file>      	
+             <test_file>./data/seismic-test-2.arff</test_file>            			
+             <predictions_file>seismic-pred-2.arff</predictions_file>   	
+         </predict>
+	 
+         ...
+	 
+    </prediction>
+    
+   
+</dataset>
+```
+# 2. RapidMiner plugin
+
+# 3. R package
+
+# 4. Output files
+
+# 5. User-guided induction
+
 
 Expert knowledge is also specified through parameters:
 ```
@@ -120,82 +216,4 @@ Please note several remarks:
 * Multiplicity is specified before multiset element (`preferred-condition-1` and `preferred-condition-2`),
 * Preferred/forbidden attributes are defined as conditions with special value `Any` (`preferred-attribute-1`, `forbidden-attribute-1`).
 
-
-## Dataset definition
-
-Definition of a dataset has the following form. 
-
-```
-<dataset>
-     <label>...</label>				# label attribute
-     <out_directory>...</out_directory>		# directory where all output files will be placed
-     <weight>...</weight>                       # optional weight parameter
-     <survival_time>...</survival_time>         # only for survival datasets
-    
-    <training> 
-          <report_file>...</report_file>        # TXT report (rule sets, KM-estimators, etc.) 
-	  <train>
-             <in_file>...</in_file>            # input data file (ARFF, CSV)
-             <model_file>...</model_file>      # output binary model 
-         </train>
-         ...
-    </training>
-    
-    <prediction>
-	 <report_file>...</report_file>   	# CSV report with performance metrics (only when true labels are specified) 
-         <predict>
-             <model_file>...</model_file>      	# input binary model 
-             <test_file>...</test_file>         # input data file (ARFF, CSV)
-             <predictions_file>...</predictions_file>  # output data file with predictions  
-         </predict>
-         ...
-    </prediction>
-    
-</dataset>
-```
-
-Example:
-
-
-```
-<dataset>
-     <label>class</label>
-     <out_directory>./results</out_directory>		
-    
-    <training>  
-         <report_file>training-log.txt</report_file>           		
-         <train>
-             <in_file>./data/seismic-train-1.arff</in_file>               	
-             <model_file>seismic-1.mdl</model_file> 
-         </train>
-         
-	  <train>
-             <in_file>/data/seismic-train-2.arff</in_file>               		
-             <model_file>seismic-2.mdl</model_file>  
-         </train>
-	 
-	 ...
-	 
-    </training>
-    
-    <prediction>
-     	<report_file>performance.csv</report_file>  
-         <predict>
-             <model_file>seismic-1.mdl</model_file>      	
-             <test_file>./data/seismic-test-1.arff</test_file>            			
-             <predictions_file>seismic-pred-1.arff</predictions_file>  	  
-         </predict>
-	 
-	 <predict>
-             <model_file>seismic-2.mdl</model_file>      	
-             <test_file>./data/seismic-test-2.arff</test_file>            			
-             <predictions_file>seismic-pred-2.arff</predictions_file>   	
-         </predict>
-	 
-         ...
-	 
-    </prediction>
-    
-   
-</dataset>
-```
+# 6. Library API
