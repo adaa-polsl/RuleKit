@@ -1,6 +1,6 @@
 # RuleKit
 
-RuleKit is a comprehensive library for inducing rule-based data models. It has the ability to produce classification, regression, and survival rules. The analysis can be performed in batch mode, through RapidMiner plugin, or R package. A Java API is also provided for convinience.
+RuleKit is a comprehensive library for inducing rule-based data models. It has the ability to produce classification, regression, and survival rules. The analysis can be performed in batch mode, through RapidMiner plugin, or R package. A Java API is also provided for convinience. 
 
 # Table of contents
 
@@ -8,7 +8,7 @@ RuleKit is a comprehensive library for inducing rule-based data models. It has t
     [1.1. General information](#11-general-information)
     [1.2. Parameter set definition](#12-parameter-set-definition)
     [1.3. Dataset definition](#13-dataset-definition)
-	[1.4. Dataset definition](#14-example)
+    [1.4. Examples](#14-example)
 [2. RapidMiner plugin](#2-rapidminer-plugin)
 [3. R package](#3-r-package)
 [4. Output files](#4-output-files)
@@ -56,15 +56,15 @@ This section allows user to specify induction parameters - each parameter set co
 </parameter_set>
 ```    
 where:
-* `min_rule_covered` - minimum number of previously uncovered examples a new rule has to cover,
+* `min_rule_covered` - minimum number of previously uncovered examples to be covered by a new rule (positive examples for the classification problems),
 * `induction_measure` - rule quality measure used during growing,
 * `pruning_measure` - rule quality measure used during pruning,
 * `voting_measure` - rule quality measure used for voting.
 
-Measure parameters apply only for classification and regression problems and may have one of the following values: 
+Measure parameters apply only for classification and regression tasks and may have one of the following values: 
 *Accuracy*, *BinaryEntropy*, *C1*  *C2*, *CFoil*, *CNSignificnce*, *Correlation*, *Coverage*, *FBayesianConfirmation*, *FMeasure*, *FullCoverage*, *GeoRSS*, *GMeasure*, *InformationGain*, *JMeasure*, *Kappa*, *Klosgen*, *Laplace*, *Lift*, *LogicalSufficiency*, *MEstimate*, *MutualSupport*, *Novelty*, *OddsRatio*, *OneWaySupport*, *PawlakDependencyFactor*, *Q*, *Precision*, *RelativeRisk*, *Ripper*, *RuleInterest*, *RSS*, *SBayesian*, *Sensitivity*, *Specificity*, *TwoWaySupport*, *WeightedLaplace*, *WeightedRelativeAccuracy*, *YAILS* 
 
-In survival analysis, log-rank statistics is always used.
+In the survival analysis, log-rank statistics is used for induction, pruning, and voting.
 
 
 ## 1.3. Dataset definition
