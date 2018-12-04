@@ -1,3 +1,13 @@
+#RuleKit
+
+RuleKit is a comprehensive library for inducing rule-based data models. The current revision has the ability to produce classification, regression, and survival rules. The analysis can be performed using one of the provided interfaces:
+
+* batch iterface,
+* RapidMiner plugin,
+* R package.
+
+
+
 # Batch interface
 
 ## Overall XML structure
