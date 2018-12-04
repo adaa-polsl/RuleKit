@@ -1,6 +1,6 @@
 # RuleKit
 
-RuleKit is a comprehensive library for inducing rule-based data models. The current revision has the ability to produce classification, regression, and survival rules. The analysis can be performed using, batch iterface, RapidMiner plugin, or R package.
+RuleKit is a comprehensive library for inducing rule-based data models. It has the ability to produce classification, regression, and survival rules. The analysis can be performed in batch mode, through RapidMiner plugin, or R package. A Java API is also provided for convinience.
 
 # Table of contents
 
@@ -8,6 +8,7 @@ RuleKit is a comprehensive library for inducing rule-based data models. The curr
     [1.1. General information](#11-general-information)
     [1.2. Parameter set definition](#12-parameter-set-definition)
     [1.3. Dataset definition](#13-dataset-definition)
+	[1.4. Dataset definition](#14-example)
 [2. RapidMiner plugin](#2-rapidminer-plugin)
 [3. R package](#3-r-package)
 [4. Output files](#4-output-files)
@@ -20,25 +21,31 @@ RuleKit is a comprehensive library for inducing rule-based data models. The curr
 
 ## 1.1. General information
 
+To run the analysis in the batch mode, use RuleKit JAR package (see Release tab for download):
+```
+java -jar RuleKit experiments.xml
+```
+where experiments.xml is an XML file with experimental setting description. The files specify parameter sets and datasets to be examined (all combinations are investigated):
+
 ```
 </experiment>
 	<parameter_sets>
 		<parameter_set name="paramset_1">...</parameter_set>
-    	     <parameter_set name="paramset_2">...</parameter_set>
-    	     ...
-  	</parameter_sets>
+		<parameter_set name="paramset_2">...</parameter_set>
+		...
+	</parameter_sets>
 
-  	<datasets>
-    	     <dataset>...</dataset>
-    	     <dataset>...</dataset>
-    	...
+	<datasets>
+		<dataset>...</dataset>
+        <dataset>...</dataset>
+   		...
   	</datasets>
 </experiment>
 ```
 
-## 1.2 Parameter set definition
+## 1.2. Parameter set definition
 
-As each algorithm parameter has its default value, only selected parameters may specified by the user. In automatic mode, following parameters apply:
+This section allows user to specify induction parameters - each parameter set corresponds to a single algorithm configuration. Every parameter has its default value, thus, only selected parameters may be specified by the user. In automatic induction, the following parameters apply:
 
 ```
 <parameter_set name="paramset_1">
@@ -50,14 +57,17 @@ As each algorithm parameter has its default value, only selected parameters may 
 ```    
 where:
 * `min_rule_covered` - minimum number of previously uncovered examples a new rule has to cover,
-* `induction_measure` - rule quality measure used during growing; one of the following: *Accuracy*, *C2*, *Correlation*, 		*Lift*,	*LogicalSufficiency*,	*Precision*, *RSS*,	*GeoRSS*, *SBayesian*, *BinaryEntropy*,
-* `pruning_measure` - rule quality measure used during pruning; one of the aforementioned measures,
-* `voting_measure` - rule quality measure used for voting; one of the aforementioned measures.
+* `induction_measure` - rule quality measure used during growing,
+* `pruning_measure` - rule quality measure used during pruning,
+* `voting_measure` - rule quality measure used for voting.
 
-The measure parameters apply only for classification and regression problems - in survival datasets log-rank statistics is always used.
+Measure parameters apply only for classification and regression problems and may have one of the following values: 
+*Accuracy*, *BinaryEntropy*, *C1*  *C2*, *CFoil*, *CNSignificnce*, *Correlation*, *Coverage*, *FBayesianConfirmation*, *FMeasure*, *FullCoverage*, *GeoRSS*, *GMeasure*, *InformationGain*, *JMeasure*, *Kappa*, *Klosgen*, *Laplace*, *Lift*, *LogicalSufficiency*, *MEstimate*, *MutualSupport*, *Novelty*, *OddsRatio*, *OneWaySupport*, *PawlakDependencyFactor*, *Q*, *Precision*, *RelativeRisk*, *Ripper*, *RuleInterest*, *RSS*, *SBayesian*, *Sensitivity*, *Specificity*, *TwoWaySupport*, *WeightedLaplace*, *WeightedRelativeAccuracy*, *YAILS* 
+
+In survival analysis, log-rank statistics is always used.
 
 
-## 1.3 Dataset definition
+## 1.3. Dataset definition
 
 Definition of a dataset has the following form. 
 
@@ -90,7 +100,7 @@ Definition of a dataset has the following form.
 </dataset>
 ```
 
-## 1.3 Example:
+## 1.4. Example:
 
 
 ```
