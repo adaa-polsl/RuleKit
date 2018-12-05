@@ -1,6 +1,7 @@
 # RuleKit
 
-RuleKit is a comprehensive library for inducing rule-based data models. It has the ability to produce classification, regression, and survival rules. The analysis can be performed in batch mode, through RapidMiner plugin, or R package. A Java API is also provided for convinience. 
+RuleKit is a comprehensive library for inducing rule-based data models. It has the ability to produce classification, regression, and survival rules. The suite provides user with the possibility to introduce some apriori knowledge.
+The analysis can be performed in batch mode, through RapidMiner plugin, or R package. A Java API is also provided for convinience. 
 
 # Table of contents
 
@@ -25,7 +26,7 @@ To run the analysis in the batch mode, use RuleKit JAR package (see Release tab 
 ```
 java -jar RuleKit experiments.xml
 ```
-where experiments.xml is an XML file with experimental setting description. The files specify parameter sets and datasets to be examined (all combinations are investigated):
+where experiments.xml is an XML file with experimental setting description. The batch mode allows investigating multiple datasets with many induction parameters. The general XML structure is as follows:
 
 ```
 </experiment>
@@ -45,7 +46,7 @@ where experiments.xml is an XML file with experimental setting description. The 
 
 ## 1.2. Parameter set definition
 
-This section allows user to specify induction parameters - each parameter set corresponds to a single algorithm configuration. Every parameter has its default value, thus, only selected parameters may be specified by the user. In automatic induction, the following parameters apply:
+This section allows user to specify induction parameters. The package allows testing multiple parameter sets in a single run. Every parameter has its default value, thus, only selected parameters may be specified by the user. In the automatic induction, the following parameters apply:
 
 ```
 <parameter_set name="paramset_1">
