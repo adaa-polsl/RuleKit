@@ -5,16 +5,16 @@ The analysis can be performed in batch mode, through RapidMiner plugin, or R pac
 
 # Table of contents
 
-[1. Batch interface](#1-batch-interface)
-    [1.1. General information](#11-general-information)
-    [1.2. Parameter set definition](#12-parameter-set-definition)
-    [1.3. Dataset definition](#13-dataset-definition)
-    [1.4. Examples](#14-example)
-[2. RapidMiner plugin](#2-rapidminer-plugin)
-[3. R package](#3-r-package)
-[4. Output files](#4-output-files)
-[5. User-guided induction](#5-user-guided-induction)
-[6. Library API](#6-library-api)
+1. [Batch interface](#1-batch-interface)
+    1. [General information](#11-general-information)
+    2. [Parameter set definition](#12-parameter-set-definition)
+    3. [Dataset definition](#13-dataset-definition)
+    4. [Examples](#14-example)
+2. [RapidMiner plugin](#2-rapidminer-plugin)
+3. [R package](#3-r-package)
+4. [Output files](#4-output-files)
+5. [User-guided induction](#5-user-guided-induction)
+6. [Library API](#6-library-api)
 
 <!-- toc -->
 
