@@ -1,13 +1,17 @@
 package adaa.analytics.rules.logic.actions;
 
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.IValueSet;
+import java.util.List;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import java.util.List;
+import adaa.analytics.rules.logic.representation.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.IValueSet;
+import adaa.analytics.rules.logic.representation.Interval;
 
 public class MetaValue implements IValueSet {
+	
+	public static MetaValue EMPTY = new MetaValue(new ElementaryCondition("empty", new Interval()), new DistributionEntry());
 
 	public ElementaryCondition value;
 	public DistributionEntry distribution;

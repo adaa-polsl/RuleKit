@@ -71,6 +71,8 @@ public class ActionTests {
 			String sourceClass, String targetClass) {
 		testFile = testFileName;
 		labelParameter = labelParameterName;
+		this.sourceClass = sourceClass;
+		this.targetClass = targetClass;
 		
 		outputFileName = testFileName.substring(0, testFileName.indexOf('.'));
 		outputFileName += "-rules-" + measure.getName() + (enablePruning  ? "-pruned" : "") 

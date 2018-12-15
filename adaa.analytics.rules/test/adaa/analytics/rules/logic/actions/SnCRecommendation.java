@@ -25,7 +25,7 @@ public class SnCRecommendation extends Recommendation {
 
 	public ActionRuleSet test(ExampleSet set) {
 		
-		//TODO
+		
 		return rules;
 		
 	}

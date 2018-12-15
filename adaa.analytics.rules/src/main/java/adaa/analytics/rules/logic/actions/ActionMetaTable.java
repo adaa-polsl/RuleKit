@@ -19,6 +19,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.apache.commons.math3.util.Pair;
+import org.renjin.repackaged.guava.collect.Sets;
 
 public class ActionMetaTable {
 
@@ -111,10 +112,18 @@ public class ActionMetaTable {
 			Map<String, ElementaryCondition> premiseLeft = primeMetaExample.toPremise();
 			Map<String, ElementaryCondition> premiseRight = contraMetaExample.toPremise();
 			
-			premiseLeft.keySet()
+			//full actions
+			Sets.intersection(premiseLeft.keySet(), premiseRight.keySet())
 				.stream()
 				.map(x -> new Action(premiseLeft.get(x), premiseRight.get(x)))
 				.forEach(x -> rule.getPremise().addSubcondition(x));
+			
+			//handle cases when right (contra meta example) does not contain meta-value for given attribute
+			Sets.difference(premiseLeft.keySet(), premiseRight.keySet())
+				.stream()
+				.map(x -> new Action(premiseLeft.get(x), premiseLeft.get(x)))
+				.forEach(x -> rule.getPremise().addSubcondition(x));
+			
 			
 			Attribute classAtr = sourceExamples.getAttributes().get("class");
 			
@@ -127,8 +136,69 @@ public class ActionMetaTable {
 		}
 	}
 	
+	private double rankMetaPremise(MetaExample metaPremise, int fromClass, int toClass, ExampleSet examples) {
+		ClassificationMeasure C2 = new ClassificationMeasure(ClassificationMeasure.C2);
+		
+		//double Lplus = metaPremise.getCountOfRulesPointingToClass(toClass);
+		//double Lminus = metaPremise.getCountOfRulesPointingToClass(fromClass);
+		
+		double Lplus = metaPremise.getMetaCoverageValue(toClass);
+		double Lminus = metaPremise.getMetaCoverageValue(fromClass);
+		
+		Pair<Covering, Covering> coverings = metaPremise.getCoverage(examples, toClass, fromClass);
+		Covering fromCov = coverings.getFirst();
+		Covering toCov = coverings.getSecond();
+		
+		double quality =(Lplus * (C2.calculate(toCov))) - (Lminus * (C2.calculate(fromCov)));
+	//	double quality = Lplus - Lminus;
+		//double quality = metaPremise.getQualityOfRulesPointingToClass(toClass) - metaPremise.getQualityOfRulesPointingToClass(fromClass);
+		return quality;
+	}
+	
+	private MetaValue getBestMetaValue(Set<String> allowedAttributes, 
+			MetaExample contra,
+			MetaExample prime,
+			Set<MetaExample> metas,
+			Example example,
+			ExampleSet examples,
+			int fromClass,
+			int toClass) {
+		
+		MetaValue candidate = null;
+		double Q = Double.NEGATIVE_INFINITY;
+		double exampleValue;
+		
+		for (MetaExample meta : metas) {
+			
+			for (String attribute : allowedAttributes) {
+				
+				exampleValue = example.getValue(example.getAttributes().get(attribute));
+				MetaValue cand = meta.get(attribute);
+				
+				if (cand == null || cand.contains(exampleValue)) {
+					continue;
+				}
+				
+				contra.add(cand);
+				
+				double quality = rankMetaPremise(contra, fromClass, toClass, examples);
+
+				Logger.log("Quality " + quality + " recorded for metaexample " + meta, Level.INFO);
+				if (quality >= Q) {
+					Q = quality;
+					candidate = cand;
+				}
+				
+				contra.remove(cand);
+			}
+		}
+
+		return candidate;
+	}
+	
+	
 	//For given example returns respective meta-example and contre-meta-example of opposite class
-	public AnalysisResult analyze(Example ex, int fromClass, int toClass, ExampleSet examples) {
+	public AnalysisResult analyze(Example ex, int fromClass, int toClass, ExampleSet trainExamples) {
 		MetaExample primeMe = null;
 		MetaExample contraMe = new MetaExample();
 		
@@ -150,63 +220,75 @@ public class ActionMetaTable {
 		Set<MetaExample> toSearch = new HashSet<MetaExample>(metaExamples);
 		toSearch.remove(primeMe);
 		
+		HashSet<String> allowedAttributes = new HashSet<String>();
 		
+		Iterator<Attribute> it = trainExamples.getAttributes().allAttributes();
 		
-		
-		for (Attribute atr: ex.getAttributes()) {
-			
-			String atrName = atr.getName();
-
-			double currQ = Double.NEGATIVE_INFINITY;
-			
-			if (primeMe.get(atrName) == null) {
-				continue;
+		it.forEachRemaining(x -> {
+				if (x.equals(trainExamples.getAttributes().getLabel())) { return;}
+				allowedAttributes.add(x.getName());
 			}
+		);
+		
+		boolean grown = true;
+		double bestQ = rankMetaPremise(contraMe, fromClass, toClass, trainExamples);
+		while (grown) {
 			
-			Double value = ex.getValue(atr);
-			ClassificationMeasure precision = new ClassificationMeasure(ClassificationMeasure.Precision);
-			ClassificationMeasure coverage = new ClassificationMeasure(ClassificationMeasure.Coverage);
-			MetaValue candidate = null;
+			MetaValue best = getBestMetaValue(allowedAttributes,
+					contraMe, primeMe,
+					toSearch,
+					ex, trainExamples,
+					fromClass, toClass);
+		
+			if (best == null) {
+				break;
+			}
+			contraMe.add(best);
+			double currQ = rankMetaPremise(contraMe, fromClass, toClass, trainExamples);
 			
-			for (MetaExample me : toSearch) {
-				double Lplus = me.getCountOfRulesPointingToClass(atrName, toClass);
-				double Lminus = me.getCountOfRulesPointingToClass(atrName, fromClass);
+			if (currQ >= bestQ) {
+				allowedAttributes.remove(best.value.getAttribute());
+				bestQ = currQ;
+				grown = true;
+			} else {
+				contraMe.remove(best);
+				grown = false;
+			}
+		}
+		/////pruning
+		
+		Set<String> attributes = new HashSet<String>(contraMe.getAttributeNames());
+		boolean pruned = true;
+		
+		while (pruned) {
+			MetaValue candidateToRemoval = null;
+			double currQ = 0.0;
+			for(String atr : attributes) {
 				
-				MetaValue mv = me.get(atrName);
-				if (mv.contains(value)) {
+				MetaValue cand = contraMe.get(atr);
+				if (cand == null) {
 					continue;
-					// the meta-value cannot cover the example
-				}
-				contraMe.add(mv);
-				
-				Pair<Covering, Covering> coverings = contraMe.getCoverage(examples, toClass, fromClass);
-				Covering fromCov = coverings.getFirst();
-				Covering toCov = coverings.getSecond();
-				
-				double precPlus = precision.calculate(toCov);
-				double precMinus = precision.calculate(fromCov);
-				
-				double covPlus = coverage.calculate(toCov);
-				double covMinus = coverage.calculate(fromCov);
-				
-				double quality =(Lplus * (precPlus * covPlus)) - (Lminus * (precMinus * covMinus));
-				//double quality = Lplus - Lminus;
-				Logger.log("Quality " + quality + " recorded for metaexample " + me, Level.INFO);
-				if (quality >= currQ) {
-					currQ = quality;
-					candidate = mv;
 				}
 				
-				contraMe.remove(mv);
+				contraMe.remove(cand);
+				
+				double q = rankMetaPremise(contraMe, fromClass, toClass, trainExamples);
+				
+				if (q >= currQ) {
+					currQ = q;
+					candidateToRemoval = cand;
+				}
+				
+				contraMe.add(cand);
 			}
 			
-			if (candidate == null) {
-				//try with next attribute
-				continue;
+			if (candidateToRemoval != null && currQ >= bestQ) {
+				contraMe.remove(candidateToRemoval);
+				bestQ = currQ;
+			} else {
+				pruned = false;
 			}
 			
-			contraMe.add(candidate);	
-
 		}
 		
 		return new AnalysisResult(ex, primeMe, contraMe, fromClass, toClass, dist.set);

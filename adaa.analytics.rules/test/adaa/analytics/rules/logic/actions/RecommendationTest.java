@@ -1,14 +1,14 @@
 package adaa.analytics.rules.logic.actions;
 
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
 
+import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
-import com.rapidminer.RapidMiner;
-import com.rapidminer.RapidMiner.ExitMode;
-import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.set.Partition;
 import com.rapidminer.example.set.SplittedExampleSet;
@@ -16,88 +16,71 @@ import com.rapidminer.example.set.StratifiedPartitionBuilder;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
 
-import adaa.analytics.rules.logic.actions.ActionMetaTable.AnalysisResult;
+import adaa.analytics.rules.ActionTests;
 import adaa.analytics.rules.logic.induction.ActionFinder;
-import adaa.analytics.rules.logic.induction.ActionFindingParameters;
-import adaa.analytics.rules.logic.induction.ActionInductionParameters;
 import adaa.analytics.rules.logic.induction.ActionSnC;
-import adaa.analytics.rules.logic.induction.Covering;
-import adaa.analytics.rules.logic.induction.ActionFindingParameters.RangeUsageStrategy;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
-import adaa.analytics.rules.logic.representation.ActionRule;
 import adaa.analytics.rules.logic.representation.ActionRuleSet;
-import utils.ArffFileLoader;
 
 ///
 /// This class takes different ActionRule induction algorithms and:
 /// * generates action rules
 /// * applies them on test set
 ///
-public class RecommendationTest {
+@RunWith(Parameterized.class)
+public class RecommendationTest extends ActionTests {
 
-	public RecommendationTest() {
-		// TODO Auto-generated constructor stub
+	protected double trainToTestRatio;
+	
+	@Parameters
+	public static Collection<Object[]> testData(){
+		return Arrays.asList(new Object[][]{
+			//fileName, labelName, measure, pruningEnabled, ignoreMissing, minCov, maxUncov, maxGrowing, sourceID, targetID
+	
+			/// furnace control
+			///
+			///
+			
+		//	{"furnace_control.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9,  "3", "4", 0.8},
+			//{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9,  "unacc", "acc", 0.95},
+			//{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, "0", "1", 0.95}
+			//{"credit-a.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "-", "+", 0.95},
+			{"titanic.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "no", "yes", 0.95},
+			{"iris.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "Iris-setosa", "Iris-versicolor", 0.95},
+		});
+	}
+	
+	public RecommendationTest(String testFileName, String labelParameterName,
+			ClassificationMeasure measure,
+			boolean enablePruning, boolean ignoreMissing, double minimumCovered,
+			double maximumUncoveredFraction, double maxGrowingConditions,
+			String sourceClass, String targetClass,
+			double trainToTestRatio) {
+		
+		super(testFileName, labelParameterName, measure, 
+				enablePruning, ignoreMissing, minimumCovered,
+				maximumUncoveredFraction, maxGrowingConditions, 
+				sourceClass, targetClass);
+		this.trainToTestRatio = trainToTestRatio;
+	}
+	
+	@After
+	public void afterTest() {
+		stopwatch.stop();
+		System.out.println(stopwatch.getTime());
 	}
 	
 	@Test
-	public void runOnFurnaceMeta() throws OperatorCreationException, OperatorException {
-		
-		ActionFindingParameters findingParams = new ActionFindingParameters();
-		findingParams.setUseNotIntersectingRangesOnly(RangeUsageStrategy.EXCLUSIVE_ONLY);
-		
-		ActionInductionParameters params = new ActionInductionParameters(findingParams);
-		params.setInductionMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
-		params.setPruningMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
-		//true, true, 5.0, 0.05, 0.9, "0", "1"
-		params.setEnablePruning(true);
-		params.setIgnoreMissing(true);
-		params.setMinimumCovered(5.0);
-		params.setMaximumUncoveredFraction(0.05);
-		params.setMaxGrowingConditions(0.9);
-		
-		params.addClasswiseTransition("3", "4");
+	public void runMeta() throws OperatorCreationException, OperatorException {
+
 		ActionSnC snc = new ActionSnC(new ActionFinder(params), params);
-	
-		RapidMiner.init();
-		ExampleSet examples = ArffFileLoader.load(Paths.get("C:/Users/pmatyszok/desktop/action-rules/datasets/mixed", "furnace_control.arff"), "class");
 		
-		double from = examples.getAttributes().get("class").getMapping().getIndex("3");
-		double to = examples.getAttributes().get("class").getMapping().getIndex("4");
+		double from = exampleSet.getAttributes().get(labelParameter).getMapping().getIndex(sourceClass);
+		double to = exampleSet.getAttributes().get(labelParameter).getMapping().getIndex(targetClass);
 		
 		Recommendation rec = new MetaRecommendation(snc, (int)from, (int)to);
 		
-		testInternal(examples, 0.95, rec);
-		
-		RapidMiner.quit(ExitMode.NORMAL);
-	}
-	
-	
-	public void runOnFurnaceRegular() throws OperatorCreationException, OperatorException {
-		
-		ActionFindingParameters findingParams = new ActionFindingParameters();
-		findingParams.setUseNotIntersectingRangesOnly(RangeUsageStrategy.EXCLUSIVE_ONLY);
-		
-		ActionInductionParameters params = new ActionInductionParameters(findingParams);
-		params.setInductionMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
-		params.setPruningMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
-		//true, true, 5.0, 0.05, 0.9, "0", "1"
-		params.setEnablePruning(true);
-		params.setIgnoreMissing(true);
-		params.setMinimumCovered(5.0);
-		params.setMaximumUncoveredFraction(0.05);
-		params.setMaxGrowingConditions(0.9);
-		
-		params.addClasswiseTransition("3", "4");
-		ActionSnC snc = new ActionSnC(new ActionFinder(params), params);
-	
-		RapidMiner.init();
-		ExampleSet examples = ArffFileLoader.load(Paths.get("C:/Users/pmatyszok/desktop/action-rules/datasets/mixed", "furnace_control.arff"), "class");
-		
-		double from = examples.getAttributes().get("class").getMapping().getIndex("3");
-		double to = examples.getAttributes().get("class").getMapping().getIndex("4");
-		
-		Recommendation rec = new SnCRecommendation(snc);
-
+		testInternal(exampleSet, trainToTestRatio, rec);
 	}
 
 	private void testInternal(ExampleSet examples, double splitRatio, Recommendation rec) {
@@ -117,10 +100,9 @@ public class RecommendationTest {
 		//test
 		set.invertSelection();
 		
-		ActionRuleSet rules = rec.test(set);
+		ActionRuleSet rules = rec.test(set);		
 		
-		System.out.println(rules);
-
+		
 	}
 	
 }

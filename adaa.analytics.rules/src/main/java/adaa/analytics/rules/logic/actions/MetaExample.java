@@ -1,19 +1,29 @@
 package adaa.analytics.rules.logic.actions;
 
-import adaa.analytics.rules.logic.induction.Covering;
-import adaa.analytics.rules.logic.representation.ConditionBase;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.IValueSet;
-import adaa.analytics.rules.logic.representation.Rule;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.math3.util.Pair;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import com.rapidminer.example.Example;
+import com.rapidminer.example.ExampleSet;
+
+import adaa.analytics.rules.logic.induction.Covering;
+import adaa.analytics.rules.logic.representation.ConditionBase;
+import adaa.analytics.rules.logic.representation.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.Rule;
 
 public class MetaExample {
 	Map<String, MetaValue> data;
@@ -68,6 +78,14 @@ public class MetaExample {
 			return data.get(attribute);
 		}
 		return null;
+	}
+	
+	public Collection<MetaValue> getAllValues() {
+		return data.values();
+	}
+	
+	public Set<String> getAttributeNames() {
+		return data.keySet();
 	}
 	
 	public boolean covers(Example ex) {
@@ -132,6 +150,50 @@ public class MetaExample {
 				 .append(data, me.data)
 				 .isEquals();
 		 
+	}
+	
+	public double getCountOfRulesPointingToClass(double targetClass) {
+		return data.keySet()
+				.stream()
+				.mapToDouble(x -> getCountOfRulesPointingToClass(x, targetClass))
+				.sum();
+	}
+	
+	protected Set<Rule> getMetaCoverage(double targetClass) {
+		//return 
+		
+		List<HashSet<Rule>> interim = data.keySet()
+			.stream()
+			.map(x -> data.getOrDefault(x, MetaValue.EMPTY).distribution.getRulesOfClass(targetClass).orElse(new ArrayList<>()))
+			.map(x -> new HashSet<Rule>(x))
+			.sorted(Comparator.comparingInt(Set::size))
+			.collect(Collectors.toList());
+		
+		
+		
+		Iterator<HashSet<Rule>> it = interim.iterator();
+		if (!it.hasNext()) return Collections.emptySet();
+		
+		HashSet<Rule> ret = new HashSet<Rule>(it.next());
+		while(it.hasNext()) {
+			ret.retainAll(it.next());
+		}
+		return ret;
+		
+	}
+	
+	public double getMetaCoverageValue(double targetClass) {
+		return getMetaCoverage(targetClass).size();
+	}
+	
+	public double getQualityOfRulesPointingToClass(double targetClass) {
+		return data.keySet()
+				.stream()
+				.map(x -> data.get(x).distribution.getRulesOfClass(targetClass))
+				.filter(x -> x.isPresent())
+				.map(x -> x.get())
+				.flatMapToDouble(x -> x.stream().mapToDouble(y -> y.getWeight()))
+				.sum();
 	}
 	
 	public double getCountOfRulesPointingToClass(String atrName, double targetClass) {

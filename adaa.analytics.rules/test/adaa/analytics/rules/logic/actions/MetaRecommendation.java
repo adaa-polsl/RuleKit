@@ -18,6 +18,7 @@ public class MetaRecommendation extends Recommendation {
 	protected ActionSnC engine;
 	int fromClassId;
 	int toClassId;
+	protected ExampleSet trainSet;
 	
 	public MetaRecommendation(ActionSnC snc, int fromClass, int toClass) {
 		engine = snc;
@@ -28,6 +29,7 @@ public class MetaRecommendation extends Recommendation {
 	
 	public void train(ExampleSet set) {
 		ActionRuleSet actions = (ActionRuleSet) engine.run(set);
+		trainSet = (ExampleSet) set.clone();
 		ActionRangeDistribution dist = new ActionRangeDistribution(actions, set);
 		dist.calculateActionDistribution();
 		table = new ActionMetaTable(dist);
@@ -40,7 +42,7 @@ public class MetaRecommendation extends Recommendation {
 		for(int i = 0; i < set.size(); i++) {
 			Example example = set.getExample(i);
 			
-			AnalysisResult res = table.analyze(example, fromClassId, toClassId, set);
+			AnalysisResult res = table.analyze(example, fromClassId, toClassId, trainSet);
 			results.add(res);
 		}
 		
@@ -49,12 +51,17 @@ public class MetaRecommendation extends Recommendation {
 			
 			AnalysisResult res = results.get(j);
 			ActionRule rule = res.getActionRule();
-			Covering cov = rule.covers(set);
+			Covering cov = rule.covers(trainSet);
 			rule.setCoveringInformation(cov);
+			
 			rules.addRule(rule);	
-			//System.out.print(j+1);
-			//System.out.println(res.example);
-			//System.out.println(rule + rule.printStats());
+			System.out.print(j+1 + " ");
+			System.out.println(printExampleNicely(res.example));
+			System.out.println(rule + rule.printStats());
+			System.out.println("Left Target class likeliness: " + res.primeMetaExample.getCountOfRulesPointingToClass(toClassId));
+			System.out.println("Left Source class likeliness: " + res.primeMetaExample.getCountOfRulesPointingToClass(fromClassId));
+			System.out.println("Right Target class likeliness: " + res.contraMetaExample.getCountOfRulesPointingToClass(toClassId));
+			System.out.println("Right Source class likeliness: " + res.contraMetaExample.getCountOfRulesPointingToClass(fromClassId));
 		}
 		return rules;
 	}
