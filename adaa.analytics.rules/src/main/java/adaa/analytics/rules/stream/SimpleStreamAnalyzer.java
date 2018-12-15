@@ -14,13 +14,10 @@ public class SimpleStreamAnalyzer extends AbstractStreamAnalyzer {
 	public SimpleStreamAnalyzer(AbstractSeparateAndConquer snc, int batchSize) {
 		super(snc, batchSize, null);
 	}
-	private float avgP = 0.0f;
-	private float partialSum = 0.0f;
 	private float avgAcc = 0.0f;
-	private float stddev = 0.0f;
 	@Override
 	protected void mergeRules(RuleSetBase rs, int numClasses) {
-		avgAcc = avgP = 0.0f;
+		avgAcc = 0.0f;
 		ClassificationMeasure measure = new ClassificationMeasure(ClassificationMeasure.Accuracy);
 		
 		int ruleSetSize = rs.getRules().size();

@@ -3,7 +3,6 @@ package adaa.analytics.rules.stream;
 import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.ExpertRuleGenerator;
 import com.rapidminer.example.ExampleSet;
@@ -20,8 +19,6 @@ public class RuleGeneratorFromStream extends ExpertRuleGenerator {
 
 
 	public static final String PARAMETER_BATCH_SIZE = "batch_size";
-	
-	private RuleSetBase rules = null;
 	
 	@Override
 	public Model learn(ExampleSet exampleSet) throws OperatorException {
