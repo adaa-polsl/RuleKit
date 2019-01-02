@@ -146,22 +146,24 @@ The corresponding parameter set definition is as follows:
 </parameter_sets>
 ```    
 
-The experiment will be performed in 5-fold cross validation scheme with existing splits:
+The experiment will be performed on a single dataset in 10-fold cross validation scheme with existing splits:
+* name of the label attribute: `class`,
+* no weighting,
+* output directory: *./result* 
 * training files:
     * *./data/seismic-train-1.arff*
     * *./data/seismic-train-2.arff*
     * ...
-    * *./data/seismic-train-5.arff*
+    * *./data/seismic-train-10.arff*
 * training log file: *training-log.txt*
 * testing files:
     * *./data/seismic-test-1.arff*
     * *./data/seismic-test-3.arff*
     * ...
-    * *./data/seismic-test-5.arff*
+    * *./data/seismic-test-10.arff*
 * testing report file: *performance.csv*
-* name of the label attribute: `class`,
-* output directory: *./result* 
-* no weighting,
+
+The corresponding dataset definition is as follows:
 
 ```
 <dataset>
@@ -174,14 +176,18 @@ The experiment will be performed in 5-fold cross validation scheme with existing
              <in_file>./data/seismic-train-1.arff</in_file>               	
              <model_file>seismic-1.mdl</model_file> 
          </train>
-         
-	  <train>
-             <in_file>/data/seismic-train-2.arff</in_file>               		
-             <model_file>seismic-2.mdl</model_file>  
+		 
+		  <train>
+             <in_file>./data/seismic-train-2.arff</in_file>               	
+             <model_file>seismic-2.mdl</model_file> 
+         </train>
+         ...
+		<train>
+             <in_file>/data/seismic-train-10.arff</in_file>               		
+             <model_file>seismic-10.mdl</model_file>  
          </train>
 	 
-	 ...
-	 
+
     </training>
     
     <prediction>
@@ -191,20 +197,42 @@ The experiment will be performed in 5-fold cross validation scheme with existing
              <test_file>./data/seismic-test-1.arff</test_file>            			
              <predictions_file>seismic-pred-1.arff</predictions_file>  	  
          </predict>
-	 
-	 <predict>
+		 
+		  <predict>
              <model_file>seismic-2.mdl</model_file>      	
              <test_file>./data/seismic-test-2.arff</test_file>            			
-             <predictions_file>seismic-pred-2.arff</predictions_file>   	
+             <predictions_file>seismic-pred-2.arff</predictions_file>  	  
          </predict>
+		 ...
 	 
-         ...
+		<predict>
+             <model_file>seismic-10.mdl</model_file>      	
+             <test_file>./data/seismic-test-10.arff</test_file>            			
+             <predictions_file>seismic-pred-10.arff</predictions_file>   	
+         </predict>
+
 	 
     </prediction>
     
-   
 </dataset>
 ```
+
+In the training phase, for every investigated parameter set RuleKit generates a subdirectory in the output directory. 
+Each of these subdirectories contains models for all training files and a common text report. 
+Therefore, the following files are produced as a result of training:
+* *./results/mincov=5, C2/seismic-1.mdl*
+* *./results/mincov=5, C2/seismic-2.mdl*
+* *...*
+* *./results/mincov=5, C2/seismic-10.mdl*
+* *./results/mincov=5, C2/training-log.txt*
+* *./results/mincov=11, RSS_RSS_BinaryEntropy/seismic-1.mdl*
+* *./results/mincov=11, RSS_RSS_BinaryEntropy/seismic-2.mdl*
+* *...*
+* *./results/mincov=11, RSS_RSS_BinaryEntropy/seismic-10.mdl*
+* *./results/mincov=11, RSS_RSS_BinaryEntropy/training-log.txt*
+
+In the prediction phase, previously-generated models are applied on specified    
+
 # 2. RapidMiner plugin
 
 # 3. R package
