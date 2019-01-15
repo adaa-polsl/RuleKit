@@ -1,6 +1,6 @@
 # RuleKit
 
-RuleKit is a comprehensive library for inducing rule-based data models. It has the ability to produce classification, regression, and survival rules. The suite provides user with the possibility to introduce some apriori knowledge.
+RuleKit is a comprehensive library for inducing rule-based data models [X]. It has the ability to produce classification [X], regression [X], and survival rules [X]. The suite provides user with the possibility to introduce a priori knowledge [X].
 The analysis can be performed in batch mode, through RapidMiner plugin, or R package. A Java API is also provided for convinience. 
 
 # Table of contents
@@ -13,8 +13,11 @@ The analysis can be performed in batch mode, through RapidMiner plugin, or R pac
 2. [RapidMiner plugin](#2-rapidminer-plugin)
 3. [R package](#3-r-package)
 4. [Output files](#4-output-files)
+    1. [Training report](#41-training-report)
+    2. [Prediction performance report](#42-prediction-performance-report)    	
 5. [User-guided induction](#5-user-guided-induction)
 6. [Library API](#6-library-api)
+[References](#references)
 
 <!-- toc -->
 
@@ -46,7 +49,7 @@ where experiments.xml is an XML file with experimental setting description. The 
 
 ## 1.2. Parameter set definition
 
-This section allows user to specify induction parameters. The package allows testing multiple parameter sets in a single run. Every parameter has its default value, thus, only selected parameters may be specified by the user. In the automatic induction, the following parameters apply:
+This section allows user to specify induction parameters. The package enables testing multiple parameter sets in a single run. Every parameter has its default value, thus, only selected parameters may be explicitly given. In the automatic induction, the following parameters apply:
 
 ```
 <parameter_set name="paramset_1">
@@ -63,7 +66,7 @@ where:
 * `voting_measure` - rule quality measure used for voting.
 
 Measure parameters apply only for classification and regression tasks and may have one of the following values: 
-*Accuracy*, *BinaryEntropy*, *C1*  *C2*, *CFoil*, *CNSignificnce*, *Correlation*, *Coverage*, *FBayesianConfirmation*, *FMeasure*, *FullCoverage*, *GeoRSS*, *GMeasure*, *InformationGain*, *JMeasure*, *Kappa*, *Klosgen*, *Laplace*, *Lift*, *LogicalSufficiency*, *MEstimate*, *MutualSupport*, *Novelty*, *OddsRatio*, *OneWaySupport*, *PawlakDependencyFactor*, *Q*, *Precision*, *RelativeRisk*, *Ripper*, *RuleInterest*, *RSS*, *SBayesian*, *Sensitivity*, *Specificity*, *TwoWaySupport*, *WeightedLaplace*, *WeightedRelativeAccuracy*, *YAILS* 
+*Accuracy*, *BinaryEntropy*, *C1*,  *C2*, *CFoil*, *CNSignificnce*, *Correlation*, *Coverage*, *FBayesianConfirmation*, *FMeasure*, *FullCoverage*, *GeoRSS*, *GMeasure*, *InformationGain*, *JMeasure*, *Kappa*, *Klosgen*, *Laplace*, *Lift*, *LogicalSufficiency*, *MEstimate*, *MutualSupport*, *Novelty*, *OddsRatio*, *OneWaySupport*, *PawlakDependencyFactor*, *Q*, *Precision*, *RelativeRisk*, *Ripper*, *RuleInterest*, *RSS*, *SBayesian*, *Sensitivity*, *Specificity*, *TwoWaySupport*, *WeightedLaplace*, *WeightedRelativeAccuracy*, *YAILS* 
 
 In the survival analysis, log-rank statistics is used for induction, pruning, and voting.
 
@@ -74,33 +77,35 @@ Definition of a dataset has the following form.
 
 ```
 <dataset>
-     <label>...</label>				# label attribute
-     <out_directory>...</out_directory>		# directory where all output files will be placed
-     <weight>...</weight>                       # optional weight attribute
-     <survival_time>...</survival_time>         # only for survival datasets
+     <label>...</label>							
+     <out_directory>...</out_directory>			
+     <weight>...</weight>                       
+     <survival_time>...</survival_time>         
     
     <training> 
-          <report_file>...</report_file>        # TXT report (rule sets, KM-estimators, etc.) 
+          <report_file>...</report_file>         
 	  <train>
-             <in_file>...</in_file>            # input data file (ARFF, CSV)
-             <model_file>...</model_file>      # output binary model 
+             <in_file>...</in_file>            
+             <model_file>...</model_file>      
          </train>
          ...
     </training>
     
     <prediction>
-	 <report_file>...</report_file>   	# CSV report with performance metrics (only when true labels are specified) 
+	 <report_file>...</report_file>   	 
          <predict>
-             <model_file>...</model_file>      	# input binary model 
-             <test_file>...</test_file>         # input data file (ARFF, CSV)
-             <predictions_file>...</predictions_file>  # output data file with predictions  
+             <model_file>...</model_file>      	
+             <test_file>...</test_file>         
+             <predictions_file>...</predictions_file>  
          </predict>
          ...
     </prediction>
     
 </dataset>
 ```
-There are three main parts of the dataset definition: the general properties, the `traning` section, and the `prediction` section. General parameters and at least one of the two latter sections should be specified. 
+There are three main parts of the dataset definition: the general properties, the `traning` section, and the `prediction` section. General parameters and at least one of the two latter sections must be specified. 
+
+### General properties
 
 The general dataset properties are:
 * `label` - label attribute,
@@ -108,21 +113,27 @@ The general dataset properties are:
 * `weight` - optional weight attribute,
 * `survival_time` - name of the survival time attribute, its presence indicates survival analysis problems.
 
+### Training section
+
 The `training` section allows generating models on specified training sets. It consists of the `report_file` field and any number of `train` subsections. Each `train` subsection is defined by:
 * `in_file` - full path to the training file (in ARFF, CSV, XLS format),
 * `model_file` - name of the output binary model file (without full path); for each parameter set, a separate model is generated under location *<out_directory>/<parameter_set name>/<model_file>*.
+
 The `report_file` is created for each parameter set under *<out_directory>/<parameter_set name>/<report_file>* location. It contains a common text report for all training files: rule sets, model characteristics, detailed coverage information, training set prediction quality, KM-estimators (for survival problems), etc.   
 
-The `prediction` section allows making predictions on specified testing sets using models generated by the `training` section. It consists of the `report_file` field and any number of `predict` subsections. Each `predict` subsection is defined by:
+### Prediction section
+
+The `prediction` section allows making predictions on specified testing sets using models generated by the `training` section. It consists of the `performance_file` field and any number of `predict` subsections. Each `predict` subsection is defined by:
 * `model_file` - name of the input binary model file generated in the `training` part; for each parameter set, a model is searched under location *<out_directory>/<parameter_set name>/<model_file>*, 
 * `test_file` - full path to the testing file (in ARFF, CSV, XLS format),
 * `predictions_file` - output data file with predictions (without full path); for each parameter set, a prediction is generated under location *<out_directory>/<parameter_set name>/<predictions_file>*.
-The `report_file` is created for each parameter set under *<out_directory>/<parameter_set name>/<report_file>* location. It contains a common CSV report for all testing files with values of accuracy measures.
+
+The `performance_file` is created for each parameter set under *<out_directory>/<parameter_set name>/<performance_file>* location. It contains a common CSV report for all testing files with values of performance measures.
  
 
 ## 1.4. Example
 
-Here we present how prepare the XML experiment file for an example classification problem. Let the user be interested in two parameter sets:
+Here we present how to prepare the XML experiment file for an example classification problem. Let the user be interested in two parameter sets:
 * *mincov = 5* with *C2* measure used for growing, pruning, and voting,
 * *mincov = 11* with *RSS* measure used for growing and pruning, and *BinaryEntropy* for voting.
 
@@ -161,7 +172,7 @@ The experiment will be performed on a single dataset in 10-fold cross validation
     * *./data/seismic-test-3.arff*
     * ...
     * *./data/seismic-test-10.arff*
-* testing report file: *performance.csv*
+* testing performance file: *performance.csv*
 
 The corresponding dataset definition is as follows:
 
@@ -191,7 +202,7 @@ The corresponding dataset definition is as follows:
     </training>
     
     <prediction>
-     	<report_file>performance.csv</report_file>  
+     	<performance_file>performance.csv</performance_file>  
          <predict>
              <model_file>seismic-1.mdl</model_file>      	
              <test_file>./data/seismic-test-1.arff</test_file>            			
@@ -217,8 +228,8 @@ The corresponding dataset definition is as follows:
 </dataset>
 ```
 
-In the training phase, for every investigated parameter set RuleKit generates a subdirectory in the output directory. 
-Each of these subdirectories contains models for all training files and a common text report. 
+In the training phase, RuleKit generates a subdirectory in the output directory for every investigated parameter set. 
+Each of these subdirectories contains the models (one per training file) and a common text report. 
 Therefore, the following files are produced as a result of training:
 * *./results/mincov=5, C2/seismic-1.mdl*
 * *./results/mincov=5, C2/seismic-2.mdl*
@@ -231,7 +242,17 @@ Therefore, the following files are produced as a result of training:
 * *./results/mincov=11, RSS_RSS_BinaryEntropy/seismic-10.mdl*
 * *./results/mincov=11, RSS_RSS_BinaryEntropy/training-log.txt*
 
-In the prediction phase, previously-generated models are applied on specified    
+In the prediction phase, previously-generated models are applied on the specified testing sets producing the following files:
+* *./results/mincov=5, C2/seismic-pred-1.arff*
+* *./results/mincov=5, C2/seismic-pred-2.arff*
+* *...*
+* *./results/mincov=5, C2/seismic-pred-10.arff*
+* *./results/mincov=5, C2/performance.csv*
+* *./results/mincov=11, RSS_RSS_BinaryEntropy/seismic-pred-1.arff*
+* *./results/mincov=11, RSS_RSS_BinaryEntropy/seismic-pred-2.arff*
+* *...*
+* *./results/mincov=11, RSS_RSS_BinaryEntropy/seismic-pred-10.arff*
+* *./results/mincov=11, RSS_RSS_BinaryEntropy/performance.csv*   
 
 # 2. RapidMiner plugin
 
@@ -239,13 +260,57 @@ In the prediction phase, previously-generated models are applied on specified
 
 # 4. Output files
 
+During training phase, RuleKit produces following types of files:
+* a binary model (one per each training set) that can be applied in the prediction stage,
+* a text report (common for all training files).
+The result of the prediction phase are:
+* a prediction file (one per each testing set), 
+* a performance report (common for all testing files).
+
+In the following subsections, a detailed description of training and performance reports are given.
+
+## 4.1. Training report
+
+The report consists of separated sections, each corresponding to a single traning file:
+
+```
+================================================================================
+bone-marrow-test-fold0.arff
+
+... # content
+
+================================================================================
+bone-marrow-test-fold1.arff
+
+... # content
+
+```
+
+At the beginning of a seection, a rule model is given:
+
+```
+r1: IF Relapse = {0} AND Donorage = (-inf, 45.526027) AND Recipientage = (-inf, 17.45) THEN survival_status = {NaN} (p=119.0, n=0.0, P=168.0, N=0.0, weight=0.9999992726837377, pvalue=7.27316262327804E-7)
+r2: IF HLAmismatch = {0} AND Relapse = {1} THEN survival_status = {NaN} (p=21.0, n=0.0, P=168.0, N=0.0, weight=0.9981544870337137, pvalue=0.0018455129662863223)
+r3: IF Relapse = {0} AND Rbodymass = (-inf, 69.0) AND Recipientage = (-inf, 18.0) THEN survival_status = {NaN} (p=127.0, n=0.0, P=168.0, N=0.0, weight=0.9999999653103507, pvalue=3.468964926423013E-8)
+r4: IF aGvHDIIIIV = {1} AND ANCrecovery = (-inf, 19.5) AND Stemcellsource = {1} AND Txpostrelapse = {0} THEN survival_status = {NaN} (p=82.0, n=0.0, P=168.0, N=0.0, weight=0.999992179496458, pvalue=7.820503541977608E-6)
+r5: IF Donorage = <28.028767000000002, inf) AND CD34kgx10d6 = <1.2650000000000001, 6.720000000000001) AND CD3dCD34 = <0.8878985, inf) AND Rbodymass = <31.5, inf) AND Recipientage = <11.55, inf) THEN survival_status = {NaN} (p=20.0, n=0.0, P=168.0, N=0.0, weight=0.9999999999914838, pvalue=8.516187754992188E-12)
+```
+
+For each rule, additional statistics are given in the parentheses:
+* elements of confusion matrix *p*, *n*, *P*, *N* (note that for classification *P* and *N* are fixed for each analyzed class, for regression *P* and *N* are determined for each rule on the basis of covered examples, for survival analysis all examples are considered positive, thus *N* and *n* equal to 0),
+* weight - value of the voting quality measure,
+* *p*-value - rule significance (classification: Fisher's exact test for for comparing confusion matrices, regression: Chi-square test for comparing label variance of covered vs. uncovered examples, survival: log-rank for comparing survival  functions  of  covered vs.  uncovered examples).
+
+
+## 4.2. Prediction performance report
+
 # 5. User-guided induction
 
 
 Expert knowledge is also specified through parameters:
 ```
 <parameter_set name="paramset_1">
-  	<param name="min_rule_covered">...</param>
+  	<param name="min_rule_cotvered">...</param>
   	<param name="induction_measure">...</param>
   	<param name="pruning_measure">...</param>
 	<param name="voting_measure">...</param>
@@ -315,3 +380,10 @@ Please note several remarks:
 * Preferred/forbidden attributes are defined as conditions with special value `Any` (`preferred-attribute-1`, `forbidden-attribute-1`).
 
 # 6. Library API
+
+# References
+
+[Sikora, M, Wróbel, Ł, Gudyś, A (2018) GuideR: a guided separate-and-conquer rule learning in classification, regression, and survival settings, arXiv:1806.01579](https://arxiv.org/abs/1806.01579)
+
+[Wróbel, Ł, Gudyś, A, Sikora, M (2017) Learning rule sets from survival data, BMC Bioinformatics, 18(1):285.](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-017-1693-x) 
+
