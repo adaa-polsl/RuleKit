@@ -1,7 +1,6 @@
 # RuleKit
 
-RuleKit is a comprehensive library for inducing rule-based data models [X]. It has the ability to produce classification [X], regression [X], and survival rules [X]. The suite provides user with the possibility to introduce a priori knowledge [X].
-The analysis can be performed in batch mode, through RapidMiner plugin, or R package. A Java API is also provided for convinience. 
+RuleKit is a comprehensive library for inducing rule-based data models [X]. It has the ability to produce classification [X], regression [X], and survival rules [X]. The suite provides user with the possibility to introduce a priori knowledge [X]. The powerful and flexible experimental environment allows straightforward investigation of different induction schemes. The analysis can be performed in batch mode, through RapidMiner plugin, or R package. A Java API is also provided for convinience. 
 
 # Table of contents
 
@@ -12,11 +11,14 @@ The analysis can be performed in batch mode, through RapidMiner plugin, or R pac
     4. [Examples](#14-example)
 2. [RapidMiner plugin](#2-rapidminer-plugin)
 3. [R package](#3-r-package)
-4. [Output files](#4-output-files)
-    1. [Training report](#41-training-report)
-    2. [Prediction performance report](#42-prediction-performance-report)    	
-5. [User-guided induction](#5-user-guided-induction)
-6. [Library API](#6-library-api)
+4. [Quality and evaluation](#4-quality-and-evaluation)
+    1. [Rule quality](#41-rule-quality)
+	2. [Performance metrices](#42-performance-metices)
+5. [Output files](#4-output-files)
+    1. [Training report](#51-training-report)
+    2. [Prediction performance report](#52-prediction-performance-report)    	
+6. [User-guided induction](#6-user-guided-induction)
+7. [Library API](#7-library-api)
 [References](#references)
 
 <!-- toc -->
@@ -65,10 +67,7 @@ where:
 * `pruning_measure` - rule quality measure used during pruning,
 * `voting_measure` - rule quality measure used for voting.
 
-Measure parameters apply only for classification and regression tasks and may have one of the following values: 
-*Accuracy*, *BinaryEntropy*, *C1*,  *C2*, *CFoil*, *CNSignificnce*, *Correlation*, *Coverage*, *FBayesianConfirmation*, *FMeasure*, *FullCoverage*, *GeoRSS*, *GMeasure*, *InformationGain*, *JMeasure*, *Kappa*, *Klosgen*, *Laplace*, *Lift*, *LogicalSufficiency*, *MEstimate*, *MutualSupport*, *Novelty*, *OddsRatio*, *OneWaySupport*, *PawlakDependencyFactor*, *Q*, *Precision*, *RelativeRisk*, *Ripper*, *RuleInterest*, *RSS*, *SBayesian*, *Sensitivity*, *Specificity*, *TwoWaySupport*, *WeightedLaplace*, *WeightedRelativeAccuracy*, *YAILS* 
-
-In the survival analysis, log-rank statistics is used for induction, pruning, and voting.
+Measure parameters apply only for classification and regression tasks and may have one of the values described in 4.1 section. In the survival analysis, log-rank statistics is used for induction, pruning, and voting.
 
 
 ## 1.3. Dataset definition
@@ -258,7 +257,40 @@ In the prediction phase, previously-generated models are applied on the specifie
 
 # 3. R package
 
-# 4. Output files
+# 4. Evaluation
+
+## 4.1. Rule evaluation
+
+During 
+
+*Accuracy*, *BinaryEntropy*, *C1*,  *C2*, *CFoil*, *CNSignificnce*, *Correlation*, *Coverage*, *FBayesianConfirmation*, *FMeasure*, *FullCoverage*, *GeoRSS*, *GMeasure*, *InformationGain*, *JMeasure*, *Kappa*, *Klosgen*, *Laplace*, *Lift*, *LogicalSufficiency*, *MEstimate*, *MutualSupport*, *Novelty*, *OddsRatio*, *OneWaySupport*, *PawlakDependencyFactor*, *Q*, *Precision*, *RelativeRisk*, *Ripper*, *RuleInterest*, *RSS*, *SBayesian*, *Sensitivity*, *Specificity*, *TwoWaySupport*, *WeightedLaplace*, *WeightedRelativeAccuracy*, *YAILS* 
+
+
+## 4.2. Performance metrices
+
+### Common metrices
+
+* `time_total_s` - algorithm execution time,
+* `time_growing_s` - growing time, 
+* `time_pruning_s` - pruning time,
+* `#rules` - number of rules,
+* `#conditions_per_rule` - average number of conditions per rule,
+* `#induced_conditions_per_rule` - average number of induced conditions per rule (before pruning),
+* `avg_rule_coverage` - average rule coverage defined as (*p* + *n*) / (*P* + *N*),
+* `avg_rule_precision` -average rule precision defined as *p* / (*P* + *N*),
+* `avg_rule_quality` - average value of voting measure,
+* `avg_pvalue` - average rule *p*-value
+`avg_FDR_pvalue: 3.71317511237688E-4
+`avg_FWER_pvalue: 3.726949446670513E-4
+`fraction_0.05_significant: 1.0
+`fraction_0.05_FDR_significant: 1.0
+`fraction_0.05_FWER_significant: 1.0
+
+### Classification
+### Regression
+### Survival
+
+# 5. Output files
 
 During training phase, RuleKit produces following types of files:
 * a binary model (one per each training set) that can be applied in the prediction stage,
@@ -267,9 +299,11 @@ The result of the prediction phase are:
 * a prediction file (one per each testing set), 
 * a performance report (common for all testing files).
 
-In the following subsections, a detailed description of training and performance reports are given.
 
-## 4.1. Training report
+In the following subsections, a detailed description of training and performance reports are given. 
+
+
+## 5.1. Training report
 
 The report consists of separated sections, each corresponding to a single traning file:
 
@@ -286,7 +320,7 @@ bone-marrow-test-fold1.arff
 
 ```
 
-At the beginning of a seection, a rule model is given:
+At the beginning of a section, a rule model is given:
 
 ```
 r1: IF Relapse = {0} AND Donorage = (-inf, 45.526027) AND Recipientage = (-inf, 17.45) THEN survival_status = {NaN} (p=119.0, n=0.0, P=168.0, N=0.0, weight=0.9999992726837377, pvalue=7.27316262327804E-7)
@@ -295,16 +329,64 @@ r3: IF Relapse = {0} AND Rbodymass = (-inf, 69.0) AND Recipientage = (-inf, 18.0
 r4: IF aGvHDIIIIV = {1} AND ANCrecovery = (-inf, 19.5) AND Stemcellsource = {1} AND Txpostrelapse = {0} THEN survival_status = {NaN} (p=82.0, n=0.0, P=168.0, N=0.0, weight=0.999992179496458, pvalue=7.820503541977608E-6)
 r5: IF Donorage = <28.028767000000002, inf) AND CD34kgx10d6 = <1.2650000000000001, 6.720000000000001) AND CD3dCD34 = <0.8878985, inf) AND Rbodymass = <31.5, inf) AND Recipientage = <11.55, inf) THEN survival_status = {NaN} (p=20.0, n=0.0, P=168.0, N=0.0, weight=0.9999999999914838, pvalue=8.516187754992188E-12)
 ```
-
 For each rule, additional statistics are given in the parentheses:
 * elements of confusion matrix *p*, *n*, *P*, *N* (note that for classification *P* and *N* are fixed for each analyzed class, for regression *P* and *N* are determined for each rule on the basis of covered examples, for survival analysis all examples are considered positive, thus *N* and *n* equal to 0),
 * weight - value of the voting quality measure,
-* *p*-value - rule significance (classification: Fisher's exact test for for comparing confusion matrices, regression: Chi-square test for comparing label variance of covered vs. uncovered examples, survival: log-rank for comparing survival  functions  of  covered vs.  uncovered examples).
+* *p*-value - rule significance (classification: Fisher's exact test for for comparing confusion matrices; regression: &Chi;<sup>2</sup>- test for comparing label variance of covered vs. uncovered examples; survival: log-rank for comparing survival  functions  of  covered vs. uncovered examples).
+
+Rules are followed by the detailed information about training set coverage:
+```
+Rules covering examples from training set (1-based):
+2,4*;2*;3,5*;1,3*,4;1,3*;1,3*;1,3*;1,3*,4;1,3*;1,3*,4;3*,4;1,3,5*;1,3*;2*;1,3*,4;1,3*,4;2*;1,3*,4;1,3,5*;1,3*;1*;1,3*,4;3*,4;4,5*;3*,4;1,3*,4;1,3*,4;1,3*,4;1,3*,4;1,3*;1*,4;1,3*;1,3*;3*;1,3*,4;1,3*;1,3*,4;5*;1,3*,4;2*;3,5*;1,3*,4;1,3*;2,5*;1,3*,4;1,3*,4;3*,4;1,3*;1,3*;1,3*,4;2,4*;1,3*,4;4,5*;1,3*;2*;1,3*;2*;1,3*,4;1,3*;1,3*,4;3*;5*;1,3*,4;1,3*,4;1,3*;1,3*;1,3*,4;3,4,5*;4*;1,3*,4;1,3*;1,3*;1,3*,4;5*;4*;1,3*,4;1,3*,4;2*;1,3*;1,3*;1,3*;1,3*;1,3*;1,3*;1,3*,4;1,3*,4;1,3*;1,3*;1,3,5*;1,3*;1,3*,4;5*;1,3*;2*;1,3*;1*,4;1,3*,4;1,3*,4;1,3*,4;1,5*;1,3*;1,3*;4*;1,3*;3,5*;3*;1,3,4,5*;1,3*;5*;2*;1,3*;1,3*;1*,4;1,3*;1,3*,4;1,3*;1,3*,4;3*,4;1,3*;1,3*,4;4*;1,3*,4;1,3*;1,3*,4;4*;1,3*;1,3*;1,3*;1,3*,4;1*;1,3*,4;1,3*,4;2*;1,3*,4;1,3*,4;1,3,5*;2,4*;1,3*;1,3*,4;1,3*,4;1,3*;2,4*;1,3*,4;3*,4;1,3*,4;1,3*;1,3*;1,3*;1,3*,4;1,3*,4;1,3*,4;1,3*;1,3*;5*;2,4*;2*;1,3,5*;2,4*;3*;1,3*;2,4*;1,3*,4;1,3*,4;1,3*,4;1,3*,4;2*;4*;2,4*
+```
+For each example from the training set, a comma-separated list of rules covering that example is specified. Best rule (one with highest weight is marked with asterisk, lists corresponding to consecutive examples are separated with semicolon. The record `2,4*;2*;` at the beginning indicates that the first training example was covered by rules `r2` and `r4` (of which `r4` was the best), while the second training example was covered by `r2` only.  
+
+Another section of the training report applies to survival problems only and contains tabular representation of survival curves. The first column represents time, then there are survival estimates of the entire training set and induced rules. This can be used for visualization of the algorithm results.
+```
+Estimator:
+time, entire-set, r1, r2, r3, r4, r5, 
+6.0, 0.9940476190476191, 0.9915966386554622,1.0,0.9921259842519685,1.0,1.0,
+10.0, 0.988095238095238, 0.9915966386554622,1.0,0.984251968503937,1.0,1.0,
+11.0, 0.9821428571428571, 0.9831932773109244,1.0,0.9763779527559056,1.0,1.0,
+15.0, 0.976190476190476, 0.9831932773109244,1.0,0.9763779527559056,1.0,0.95,
+19.0, 0.9702380952380951, 0.9831932773109244,1.0,0.9763779527559056,1.0,0.8999999999999999,
+26.0, 0.9642857142857142, 0.9747899159663866,1.0,0.9685039370078741,1.0,0.8999999999999999,
+28.0, 0.9523809523809522, 0.957983193277311,1.0,0.9527559055118111,0.9878048780487805,0.8999999999999999,
+31.0, 0.9464285714285713, 0.9495798319327731,1.0,0.9448818897637796,0.9878048780487805,0.8999999999999999,
+35.0, 0.9404761904761904, 0.9411764705882353,1.0,0.9370078740157481,0.9878048780487805,0.8999999999999999,
+41.0, 0.9285714285714285, 0.9327731092436975,1.0,0.9291338582677167,0.975609756097561,0.8499999999999999,
+42.0, 0.9226190476190476, 0.9243697478991597,1.0,0.9212598425196852,0.975609756097561,0.7999999999999998,
+48.0, 0.9166666666666666, 0.9159663865546219,1.0,0.9212598425196852,0.975609756097561,0.7499999999999998,
+53.0, 0.9107142857142857, 0.9159663865546219,1.0,0.9212598425196852,0.975609756097561,0.6999999999999998,
+55.0, 0.9047619047619048, 0.9159663865546219,1.0,0.9133858267716537,0.975609756097561,0.6499999999999999,
+56.0, 0.8988095238095238, 0.9159663865546219,1.0,0.9133858267716537,0.9634146341463414,0.6499999999999999,
+```
+The last element of the report are performance metrics evaluated on the training set. The contents of this section depends on the investigated problem. The detailed discussion of available metrices is presented in 4.2.  
+```
+time_total_s: 13.829900798
+time_growing_s: 11.434164728999999
+time_pruning_s: 2.3417725849999997
+#rules: 5.0
+#conditions_per_rule: 3.6
+#induced_conditions_per_rule: 73.6
+avg_rule_coverage: 0.43928571428571433
+avg_rule_precision: 1.0
+avg_rule_quality: 0.9996291809031488
+avg_pvalue: 3.7081909685121595E-4
+avg_FDR_pvalue: 3.71317511237688E-4
+avg_FWER_pvalue: 3.726949446670513E-4
+fraction_0.05_significant: 1.0
+fraction_0.05_FDR_significant: 1.0
+fraction_0.05_FWER_significant: 1.0
+integrated_brier_score: 0.20866685101468796
+```
+
+## 5.2. Prediction performance report
+
+The prediction performance report has the form of comma-separated table with rows corresponding to testing sets and columns representing performance metrices. 
 
 
-## 4.2. Prediction performance report
-
-# 5. User-guided induction
+# 6. User-guided induction
 
 
 Expert knowledge is also specified through parameters:
@@ -379,7 +461,7 @@ Please note several remarks:
 * Multiplicity is specified before multiset element (`preferred-condition-1` and `preferred-condition-2`),
 * Preferred/forbidden attributes are defined as conditions with special value `Any` (`preferred-attribute-1`, `forbidden-attribute-1`).
 
-# 6. Library API
+# 7. Library API
 
 # References
 
