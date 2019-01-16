@@ -257,53 +257,53 @@ In the prediction phase, previously-generated models are applied on the specifie
 
 # 3. R package
 
-# 4. Evaluation
+# 4. Quality and evaluation
 
-## 4.1. Rule evaluation
+## 4.1. Rule quality
 
 
 
 | Quality measure 			| Formula
 | :--- 						| :---|
-| Accuracy					| http://chart.apis.google.com/chart?cht=tx&chl=p-n | 
-| BinaryEntropy				| | 
-| C1						| http://chart.apis.google.com/chart?cht=tx&chl=\left(\frac{Np-Pn}{N(p+n)}\right)\left(\frac{2+Kappa(p,n))}{3}\right) |  
-| C2						| | 
-| CFoil						| | 
-| CNSignificnce				| | 
-| Correlation				| | 
-| Coverage					| | 
-| FBayesianConfirmation		| | 
-| FMeasure					| | 
-| FullCoverage				| | 
-| GeoRSS					| | 
-| GMeasure					| | 
-| InformationGain			| | 
-| JMeasure					| | 
-| Kappa						| | 
-| Klosgen					| | 
-| Laplace					| | 
-| Lift						| | 
-| LogicalSufficiency		| | 
-| MEstimate					| | 
-| MutualSupport				| | 
-| Novelty					| | 
-| OddsRatio					| | 
-| OneWaySupport				| | 
-| PawlakDependencyFactor	| | 
-| Q							| | 
-| Precision					| | 
-| RelativeRisk				| | 
-| Ripper					| | 
-| RuleInterest				| | 
-| RSS						| | 
-| SBayesian					| | 
-| Sensitivity				| | 
-| Specificity				| | 
-| TwoWaySupport				| | 
-| WeightedLaplace			| | 
-| WeightedRelativeAccuracy	| | 
-| YAILS						| | 
+| Accuracy					| ![](https://chart.googleapis.com/chart?cht=tx&chl=p-n)| 
+| BinaryEntropy				| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)| 
+| C1						| ![](https://chart.googleapis.com/chart?cht=tx&chl=\left(\frac{Np-Pn}{N(p%2Bn)}\right)\left(\frac{2%2BKappa(p,n)}{3}\right))  |  
+| C2						| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| CFoil						| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| CNSignificnce				| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| Correlation				| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| Coverage					| ![](https://chart.googleapis.com/chart?cht=tx&chl=p/P) |  
+| FBayesianConfirmation		| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| FMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| FullCoverage				| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| GeoRSS					| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| GMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chl=p/(p%2Bn%2Bg),g=2) | 
+| InformationGain			| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| JMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| Kappa						| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| Klosgen					| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| Laplace					| ![](https://chart.googleapis.com/chart?cht=tx&chl=(p%2B1)/(p%2Bn%2B2)) | 
+| Lift						| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| LogicalSufficiency		| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| MEstimate					| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| MutualSupport				| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| Novelty					| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| OddsRatio					| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| OneWaySupport				| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| PawlakDependencyFactor	| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| Q							| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| Precision					| ![](https://chart.googleapis.com/chart?cht=tx&chl=p/(p%2Bn))| 
+| RelativeRisk				| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p}{p%2Bn}\left(\frac{P%2BN-p-n}{P-p}\right))|  
+| Ripper					| ![](https://chart.googleapis.com/chart?cht=tx&chl=(p-n)/(p%2Bn))|  
+| RuleInterest				| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| RSS						| ![](https://chart.googleapis.com/chart?cht=tx&chl=p/P-n/N)|  
+| SBayesian					| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| Sensitivity				| ![](https://chart.googleapis.com/chart?cht=tx&chl=p/P)|  
+| Specificity				| ![](https://chart.googleapis.com/chart?cht=tx&chl=(N-n)/n)|  
+| TwoWaySupport				| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| WeightedLaplace			| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| WeightedRelativeAccuracy	| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| YAILS						| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
 
 
 
