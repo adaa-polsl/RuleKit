@@ -261,25 +261,68 @@ In the prediction phase, previously-generated models are applied on the specifie
 
 ## 4.1. Rule evaluation
 
-During 
 
-*Accuracy*, *BinaryEntropy*, *C1*,  *C2*, *CFoil*, *CNSignificnce*, *Correlation*, *Coverage*, *FBayesianConfirmation*, *FMeasure*, *FullCoverage*, *GeoRSS*, *GMeasure*, *InformationGain*, *JMeasure*, *Kappa*, *Klosgen*, *Laplace*, *Lift*, *LogicalSufficiency*, *MEstimate*, *MutualSupport*, *Novelty*, *OddsRatio*, *OneWaySupport*, *PawlakDependencyFactor*, *Q*, *Precision*, *RelativeRisk*, *Ripper*, *RuleInterest*, *RSS*, *SBayesian*, *Sensitivity*, *Specificity*, *TwoWaySupport*, *WeightedLaplace*, *WeightedRelativeAccuracy*, *YAILS* 
+
+| Quality measure 			| Formula
+| :--- 						| :---|
+| Accuracy					| http://chart.apis.google.com/chart?cht=tx&chl=p-n | 
+| BinaryEntropy				| | 
+| C1						| http://chart.apis.google.com/chart?cht=tx&chl=\left(\frac{Np-Pn}{N(p+n)}\right)\left(\frac{2+Kappa(p,n))}{3}\right) |  
+| C2						| | 
+| CFoil						| | 
+| CNSignificnce				| | 
+| Correlation				| | 
+| Coverage					| | 
+| FBayesianConfirmation		| | 
+| FMeasure					| | 
+| FullCoverage				| | 
+| GeoRSS					| | 
+| GMeasure					| | 
+| InformationGain			| | 
+| JMeasure					| | 
+| Kappa						| | 
+| Klosgen					| | 
+| Laplace					| | 
+| Lift						| | 
+| LogicalSufficiency		| | 
+| MEstimate					| | 
+| MutualSupport				| | 
+| Novelty					| | 
+| OddsRatio					| | 
+| OneWaySupport				| | 
+| PawlakDependencyFactor	| | 
+| Q							| | 
+| Precision					| | 
+| RelativeRisk				| | 
+| Ripper					| | 
+| RuleInterest				| | 
+| RSS						| | 
+| SBayesian					| | 
+| Sensitivity				| | 
+| Specificity				| | 
+| TwoWaySupport				| | 
+| WeightedLaplace			| | 
+| WeightedRelativeAccuracy	| | 
+| YAILS						| | 
+
+
+
 
 
 ## 4.2. Performance metrices
 
 ### Common metrices
 
-* `time_total_s` - algorithm execution time,
-* `time_growing_s` - growing time, 
-* `time_pruning_s` - pruning time,
-* `#rules` - number of rules,
-* `#conditions_per_rule` - average number of conditions per rule,
-* `#induced_conditions_per_rule` - average number of induced conditions per rule (before pruning),
-* `avg_rule_coverage` - average rule coverage defined as (*p* + *n*) / (*P* + *N*),
-* `avg_rule_precision` -average rule precision defined as *p* / (*P* + *N*),
-* `avg_rule_quality` - average value of voting measure,
-* `avg_pvalue` - average rule *p*-value
+|  `time_total_s` - algorithm execution time,
+|  `time_growing_s` - growing time, 
+|  `time_pruning_s` - pruning time,
+|  `#rules` - number of rules,
+|  `#conditions_per_rule` - average number of conditions per rule,
+|  `#induced_conditions_per_rule` - average number of induced conditions per rule (before pruning),
+|  `avg_rule_coverage` - average rule coverage defined as (| p|  + | n| ) / (| P|  + | N| ),
+|  `avg_rule_precision` -average rule precision defined as | p|  / (| P|  + | N| ),
+|  `avg_rule_quality` - average value of voting measure,
+|  `avg_pvalue` - average rule | p| -value
 `avg_FDR_pvalue: 3.71317511237688E-4
 `avg_FWER_pvalue: 3.726949446670513E-4
 `fraction_0.05_significant: 1.0
@@ -293,11 +336,11 @@ During
 # 5. Output files
 
 During training phase, RuleKit produces following types of files:
-* a binary model (one per each training set) that can be applied in the prediction stage,
-* a text report (common for all training files).
+|  a binary model (one per each training set) that can be applied in the prediction stage,
+|  a text report (common for all training files).
 The result of the prediction phase are:
-* a prediction file (one per each testing set), 
-* a performance report (common for all testing files).
+|  a prediction file (one per each testing set), 
+|  a performance report (common for all testing files).
 
 
 In the following subsections, a detailed description of training and performance reports are given. 
@@ -330,16 +373,16 @@ r4: IF aGvHDIIIIV = {1} AND ANCrecovery = (-inf, 19.5) AND Stemcellsource = {1} 
 r5: IF Donorage = <28.028767000000002, inf) AND CD34kgx10d6 = <1.2650000000000001, 6.720000000000001) AND CD3dCD34 = <0.8878985, inf) AND Rbodymass = <31.5, inf) AND Recipientage = <11.55, inf) THEN survival_status = {NaN} (p=20.0, n=0.0, P=168.0, N=0.0, weight=0.9999999999914838, pvalue=8.516187754992188E-12)
 ```
 For each rule, additional statistics are given in the parentheses:
-* elements of confusion matrix *p*, *n*, *P*, *N* (note that for classification *P* and *N* are fixed for each analyzed class, for regression *P* and *N* are determined for each rule on the basis of covered examples, for survival analysis all examples are considered positive, thus *N* and *n* equal to 0),
-* weight - value of the voting quality measure,
-* *p*-value - rule significance (classification: Fisher's exact test for for comparing confusion matrices; regression: &Chi;<sup>2</sup>- test for comparing label variance of covered vs. uncovered examples; survival: log-rank for comparing survival  functions  of  covered vs. uncovered examples).
+|  elements of confusion matrix | p| | | n| | | P| | | N|  (note that for classification | P|  and | N|  are fixed for each analyzed class, for regression | P|  and | N|  are determined for each rule on the basis of covered examples, for survival analysis all examples are considered positive, thus | N|  and | n|  equal to 0),
+|  weight - value of the voting quality measure,
+|  | p| -value - rule significance (classification: Fisher's exact test for for comparing confusion matrices; regression: &Chi;<sup>2</sup>- test for comparing label variance of covered vs. uncovered examples; survival: log-rank for comparing survival  functions  of  covered vs. uncovered examples).
 
 Rules are followed by the detailed information about training set coverage:
 ```
 Rules covering examples from training set (1-based):
-2,4*;2*;3,5*;1,3*,4;1,3*;1,3*;1,3*;1,3*,4;1,3*;1,3*,4;3*,4;1,3,5*;1,3*;2*;1,3*,4;1,3*,4;2*;1,3*,4;1,3,5*;1,3*;1*;1,3*,4;3*,4;4,5*;3*,4;1,3*,4;1,3*,4;1,3*,4;1,3*,4;1,3*;1*,4;1,3*;1,3*;3*;1,3*,4;1,3*;1,3*,4;5*;1,3*,4;2*;3,5*;1,3*,4;1,3*;2,5*;1,3*,4;1,3*,4;3*,4;1,3*;1,3*;1,3*,4;2,4*;1,3*,4;4,5*;1,3*;2*;1,3*;2*;1,3*,4;1,3*;1,3*,4;3*;5*;1,3*,4;1,3*,4;1,3*;1,3*;1,3*,4;3,4,5*;4*;1,3*,4;1,3*;1,3*;1,3*,4;5*;4*;1,3*,4;1,3*,4;2*;1,3*;1,3*;1,3*;1,3*;1,3*;1,3*;1,3*,4;1,3*,4;1,3*;1,3*;1,3,5*;1,3*;1,3*,4;5*;1,3*;2*;1,3*;1*,4;1,3*,4;1,3*,4;1,3*,4;1,5*;1,3*;1,3*;4*;1,3*;3,5*;3*;1,3,4,5*;1,3*;5*;2*;1,3*;1,3*;1*,4;1,3*;1,3*,4;1,3*;1,3*,4;3*,4;1,3*;1,3*,4;4*;1,3*,4;1,3*;1,3*,4;4*;1,3*;1,3*;1,3*;1,3*,4;1*;1,3*,4;1,3*,4;2*;1,3*,4;1,3*,4;1,3,5*;2,4*;1,3*;1,3*,4;1,3*,4;1,3*;2,4*;1,3*,4;3*,4;1,3*,4;1,3*;1,3*;1,3*;1,3*,4;1,3*,4;1,3*,4;1,3*;1,3*;5*;2,4*;2*;1,3,5*;2,4*;3*;1,3*;2,4*;1,3*,4;1,3*,4;1,3*,4;1,3*,4;2*;4*;2,4*
+2,4| ;2| ;3,5| ;1,3| |4;1,3| ;1,3| ;1,3| ;1,3| |4;1,3| ;1,3| |4;3| |4;1,3,5| ;1,3| ;2| ;1,3| |4;1,3| |4;2| ;1,3| |4;1,3,5| ;1,3| ;1| ;1,3| |4;3| |4;4,5| ;3| |4;1,3| |4;1,3| |4;1,3| |4;1,3| |4;1,3| ;1| |4;1,3| ;1,3| ;3| ;1,3| |4;1,3| ;1,3| |4;5| ;1,3| |4;2| ;3,5| ;1,3| |4;1,3| ;2,5| ;1,3| |4;1,3| |4;3| |4;1,3| ;1,3| ;1,3| |4;2,4| ;1,3| |4;4,5| ;1,3| ;2| ;1,3| ;2| ;1,3| |4;1,3| ;1,3| |4;3| ;5| ;1,3| |4;1,3| |4;1,3| ;1,3| ;1,3| |4;3,4,5| ;4| ;1,3| |4;1,3| ;1,3| ;1,3| |4;5| ;4| ;1,3| |4;1,3| |4;2| ;1,3| ;1,3| ;1,3| ;1,3| ;1,3| ;1,3| ;1,3| |4;1,3| |4;1,3| ;1,3| ;1,3,5| ;1,3| ;1,3| |4;5| ;1,3| ;2| ;1,3| ;1| |4;1,3| |4;1,3| |4;1,3| |4;1,5| ;1,3| ;1,3| ;4| ;1,3| ;3,5| ;3| ;1,3,4,5| ;1,3| ;5| ;2| ;1,3| ;1,3| ;1| |4;1,3| ;1,3| |4;1,3| ;1,3| |4;3| |4;1,3| ;1,3| |4;4| ;1,3| |4;1,3| ;1,3| |4;4| ;1,3| ;1,3| ;1,3| ;1,3| |4;1| ;1,3| |4;1,3| |4;2| ;1,3| |4;1,3| |4;1,3,5| ;2,4| ;1,3| ;1,3| |4;1,3| |4;1,3| ;2,4| ;1,3| |4;3| |4;1,3| |4;1,3| ;1,3| ;1,3| ;1,3| |4;1,3| |4;1,3| |4;1,3| ;1,3| ;5| ;2,4| ;2| ;1,3,5| ;2,4| ;3| ;1,3| ;2,4| ;1,3| |4;1,3| |4;1,3| |4;1,3| |4;2| ;4| ;2,4| 
 ```
-For each example from the training set, a comma-separated list of rules covering that example is specified. Best rule (one with highest weight is marked with asterisk, lists corresponding to consecutive examples are separated with semicolon. The record `2,4*;2*;` at the beginning indicates that the first training example was covered by rules `r2` and `r4` (of which `r4` was the best), while the second training example was covered by `r2` only.  
+For each example from the training set, a comma-separated list of rules covering that example is specified. Best rule (one with highest weight is marked with asterisk, lists corresponding to consecutive examples are separated with semicolon. The record `2,4| ;2| ;` at the beginning indicates that the first training example was covered by rules `r2` and `r4` (of which `r4` was the best), while the second training example was covered by `r2` only.  
 
 Another section of the training report applies to survival problems only and contains tabular representation of survival curves. The first column represents time, then there are survival estimates of the entire training set and induced rules. This can be used for visualization of the algorithm results.
 ```
@@ -423,22 +466,22 @@ Expert knowledge is also specified through parameters:
 ``` 
 
 Parameter meaning (symbols from the paper are given in parentheses):
-* `use_expert` - boolean indicating whether user's knowledge should be used,
-* `expert_rules`(R<sub>&oplus;</sub>) - set of initial rules,
-* `expert_preferred_conditions`(C<sub>&oplus;</sub>, A<sub>&oplus;</sub>) - multiset of preferred conditions (used also for specifying preferred attributes by using special value `Any`),
-* `expert_forbidden_conditions`(C<sub>&ominus;</sub>, A<sub>&ominus;</sub>) - set of forbidden conditions (used also for specifying forbidden attributes by using special valye `Any`),
-* `extend_using_preferred`(&Sigma;<sub>pref</sub>)/`extend_using_automatic`(&Sigma;<sub>auto</sub>) - boolean indicating whether initial rules should be extended with a use of preferred/automatic conditions and attributes,
-* `induce_using_preferred`(&Upsilon;<sub>pref</sub>)/`induce_using_automatic`(&Upsilon;<sub>auto</sub>) - boolean indicating whether new rules should be induced with a use of preferred/automatic conditions and attributes,
-* `preferred_conditions_per_rule`(K<sub>C</sub>)/`preferred_attributes_per_rule`(K<sub>A</sub>) - maximum number of preferred conditions/attributes per rule,
-* `consider_other_classes` - boolean indicating whether automatic induction should be performed for classes for which no user's knowledge has been defined (classification only).
+|  `use_expert` - boolean indicating whether user's knowledge should be used,
+|  `expert_rules`(R<sub>&oplus;</sub>) - set of initial rules,
+|  `expert_preferred_conditions`(C<sub>&oplus;</sub>, A<sub>&oplus;</sub>) - multiset of preferred conditions (used also for specifying preferred attributes by using special value `Any`),
+|  `expert_forbidden_conditions`(C<sub>&ominus;</sub>, A<sub>&ominus;</sub>) - set of forbidden conditions (used also for specifying forbidden attributes by using special valye `Any`),
+|  `extend_using_preferred`(&Sigma;<sub>pref</sub>)/`extend_using_automatic`(&Sigma;<sub>auto</sub>) - boolean indicating whether initial rules should be extended with a use of preferred/automatic conditions and attributes,
+|  `induce_using_preferred`(&Upsilon;<sub>pref</sub>)/`induce_using_automatic`(&Upsilon;<sub>auto</sub>) - boolean indicating whether new rules should be induced with a use of preferred/automatic conditions and attributes,
+|  `preferred_conditions_per_rule`(K<sub>C</sub>)/`preferred_attributes_per_rule`(K<sub>A</sub>) - maximum number of preferred conditions/attributes per rule,
+|  `consider_other_classes` - boolean indicating whether automatic induction should be performed for classes for which no user's knowledge has been defined (classification only).
 
 Let us consider the following user's knowledge (superscripts next to C<sub>&oplus;</sub>, A<sub>&oplus;</sub>, C<sub>&ominus;</sub>, and A<sub>&ominus;</sub> symbols indicate class label):
-* R<sub>&oplus;</sub> = { (**IF** gimpuls < 750 **THEN** class = 0), (**IF** gimpuls >= 750 **THEN** class = 1)},
-* C<sub>&oplus;</sub><sup>0</sup> = { (seismic = a) }, 
-* C<sub>&oplus;</sub><sup>1</sup> = { (seismic = b &wedge; seismoacoustic = c)<sup>5</sup> }, 
-* A<sub>&oplus;</sub><sup>1</sup> = { gimpuls<sup>inf</sup> },
-* C<sub>&ominus;</sub><sup>0</sup> = { seismoacoustic = b },
-* A<sub>&ominus;</sub><sup>1</sup> = { ghazard }.
+|  R<sub>&oplus;</sub> = { (| | IF| |  gimpuls < 750 | | THEN| |  class = 0), (| | IF| |  gimpuls >= 750 | | THEN| |  class = 1)},
+|  C<sub>&oplus;</sub><sup>0</sup> = { (seismic = a) }, 
+|  C<sub>&oplus;</sub><sup>1</sup> = { (seismic = b &wedge; seismoacoustic = c)<sup>5</sup> }, 
+|  A<sub>&oplus;</sub><sup>1</sup> = { gimpuls<sup>inf</sup> },
+|  C<sub>&ominus;</sub><sup>0</sup> = { seismoacoustic = b },
+|  A<sub>&ominus;</sub><sup>1</sup> = { ghazard }.
 The XML definition of this knowledge is presented below.
 ```
 <param name ="expert_rules">
@@ -456,10 +499,10 @@ The XML definition of this knowledge is presented below.
 </param>
 ```
 Please note several remarks:
-* Inifinity is represented as `inf` string (`rule-1`, `preferred-attribute-1` ).
-* Conditions based on continuous attributes are represented as intervals. Left-closed intervals are specified using `&lt;` symbol as `<` is reserved by XML syntax (`rule-2`).
-* Multiplicity is specified before multiset element (`preferred-condition-1` and `preferred-condition-2`),
-* Preferred/forbidden attributes are defined as conditions with special value `Any` (`preferred-attribute-1`, `forbidden-attribute-1`).
+|  Inifinity is represented as `inf` string (`rule-1`, `preferred-attribute-1` ).
+|  Conditions based on continuous attributes are represented as intervals. Left-closed intervals are specified using `&lt;` symbol as `<` is reserved by XML syntax (`rule-2`).
+|  Multiplicity is specified before multiset element (`preferred-condition-1` and `preferred-condition-2`),
+|  Preferred/forbidden attributes are defined as conditions with special value `Any` (`preferred-attribute-1`, `forbidden-attribute-1`).
 
 # 7. Library API
 
