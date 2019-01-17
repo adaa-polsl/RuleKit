@@ -264,8 +264,8 @@ In the prediction phase, previously-generated models are applied on the specifie
 
 | Quality measure 			| Formula |
 | :--- 						| :---|
-| Accuracy					| ![](https://chart.googleapis.com/chart?cht=tx&chl=p-n)| 
-| BinaryEntropy				| ![](https://chart.googleapis.com/chart?cht=tx&chl=-\sum_{x{\in}X}P(x)\sum_{y{\in}Y}P(y|x)\log_2{P(y|x)}), where <br> ![](https://chart.googleapis.com/chart?cht=tx&chl=X=\left{\textrm{covered},\textrm{uncovered}\right},{\quad}Y=\left{\textrm{positive},\textrm{negative}}) <br> the probabilities can be calculated straightforwardly from confusion matrix 
+| Accuracy 					| ![](https://chart.googleapis.com/chart?cht=tx&chl=p-n)| 
+| BinaryEntropy				| ![](https://chart.googleapis.com/chart?cht=tx&chl=-\sum_{x{\in}X}P(x)\sum_{y{\in}Y}P(y\|x)\log_2{P(y\|x)}), where <br> ![](https://chart.googleapis.com/chart?cht=tx&chl=X=\left{\textrm{covered},\textrm{uncovered}\right},{\quad}Y=\left{\textrm{positive},\textrm{negative}}) <br> the probabilities can be calculated straightforwardly from confusion matrix [X]
 | C1						| ![](https://chart.googleapis.com/chart?cht=tx&chl=Coleman\cdot\frac{2%2BKappa}{3})  |  
 | C2						| ![](https://chart.googleapis.com/chart?cht=tx&chl=Coleman\cdot\frac{P%2Bp}{2P})|  
 | CFoil						| ![](https://chart.googleapis.com/chart?cht=tx&chl=p\left({{\log}_{2}}\left(\frac{p}{p%2Bn}\right)-{{\log}_{2}}\left(\frac{P}{P%2BN}\right)\right))|  
