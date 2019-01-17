@@ -261,11 +261,14 @@ In the prediction phase, previously-generated models are applied on the specifie
 
 ## 4.1. Rule quality
 
+An important factor determining performance and comprehensibility of the resulting model is a selection of a rule quality measure.
+RuleKit provides user with a number of state-of-art measures calculated on the basis of the confusion matrix. The matrix consists of the number of positive and negative examples in the entire training set (*P* and *N*) and the number of positive and negative examples covered by
+the rule (*p* and *n*). The measures based on confusion matrix can be used for classification and regression problems (note, that for the former *P* and *N* are fixed for each analyzed class, while for the latter *P* and *N* are determined for every rule on the basis of covered examples). In the case of survival problems, log-rank statistics is always used as for determining rules quality (for simplicity, all examples are assumed positive, thus *N* and *n* equal to 0). Below one can find all available measures together with formulas. 
 
 | Quality measure 			| Formula |
-| :--- 						| :---|
-| Accuracy 					| ![](https://chart.googleapis.com/chart?cht=tx&chl=p-n)| 
-| BinaryEntropy				| ![](https://chart.googleapis.com/chart?cht=tx&chl=-\sum_{x{\in}X}P(x)\sum_{y{\in}Y}P(y\|x)\log_2{P(y\|x)}), where <br> ![](https://chart.googleapis.com/chart?cht=tx&chl=X=\left{\textrm{covered},\textrm{uncovered}\right},{\quad}Y=\left{\textrm{positive},\textrm{negative}}) <br> the probabilities can be calculated straightforwardly from confusion matrix [X]
+| :--- 						| :--- |
+| Accuracy 					| ![](https://chart.googleapis.com/chart?cht=tx&chl=p-n) | 
+| BinaryEntropy				| ![](https://chart.googleapis.com/chart?cht=tx&chl=-\sum_{x{\in}X}P(x)\sum_{y{\in}Y}P(y\|x)\log_2{P(y\|x)}), where ![](https://chart.googleapis.com/chart?cht=tx&chl=X=\left{\textrm{covered},\textrm{uncovered}\right},{\quad}Y=\left{\textrm{positive},\textrm{negative}}) <br> and the probabilities can be calculated straightforwardly from the confusion matrix [X]
 | C1						| ![](https://chart.googleapis.com/chart?cht=tx&chl=Coleman\cdot\frac{2%2BKappa}{3})  |  
 | C2						| ![](https://chart.googleapis.com/chart?cht=tx&chl=Coleman\cdot\frac{P%2Bp}{2P})|  
 | CFoil						| ![](https://chart.googleapis.com/chart?cht=tx&chl=p\left({{\log}_{2}}\left(\frac{p}{p%2Bn}\right)-{{\log}_{2}}\left(\frac{P}{P%2BN}\right)\right))|  
@@ -305,16 +308,19 @@ In the prediction phase, previously-generated models are applied on the specifie
 | WeightedRelativeAccuracy	| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p%2Bn}{P%2BN}\left(\frac{p}{p%2Bn}-\frac{P}{P%2BN}\right))|  
 | YAILS						| ![](https://chart.googleapis.com/chart?cht=tx&chl=(0.5%2B0.25{\cdot}Precision)\frac{p}{p%2Bn}%2B{(0.5-0.25{\cdot}Precision)}\frac{p}{P}) |
 
-
+During model construction, the significance of rules is assesed statistically using following tests:
+* classification: Fisher's exact test for for comparing confusion matrices,
+* regression: &Chi;<sup>2</sup>- test for comparing label variance of covered vs. uncovered examples,
+* survival: log-rank for comparing survival functions of covered vs. uncovered examples. 
 
 
 ## 4.2. Performance metrices
 
 ### Common metrices
 
-* `time_total_s` - algorithm execution time,
-* `time_growing_s` - growing time, 
-* `time_pruning_s` - pruning time,
+* `time_total_s` - algorithm execution time in seconds,
+* `time_growing_s` - growing time in seconds, 
+* `time_pruning_s` - pruning time in seconds,
 * `#rules` - number of rules,
 * `#conditions_per_rule` - average number of conditions per rule,
 * `#induced_conditions_per_rule` - average number of induced conditions per rule (before pruning),
@@ -322,13 +328,16 @@ In the prediction phase, previously-generated models are applied on the specifie
 * `avg_rule_precision` -average rule precision defined as *p* / (*p* + *n*),
 * `avg_rule_quality` - average value of voting measure,
 * `avg_pvalue` - average rule *p*-value
-`avg_FDR_pvalue: 3.71317511237688E-4
-`avg_FWER_pvalue: 3.726949446670513E-4
-`fraction_0.05_significant: 1.0
-`fraction_0.05_FDR_significant: 1.0
-`fraction_0.05_FWER_significant: 1.0
+* `avg_FDR_pvalue` - average rule *p*-value after false discovery rate (FDR) correction,
+* `avg_FWER_pvalue` - average rule *p*-value after family-wise error (FWER) correction,
+* `fraction_0.05_significant` - fraction of significant rules at &alpha = 0.05,
+* `fraction_0.05_FDR_significant` - fraction of significant rules at 0.05 level (with FDR correction),
+* `fraction_0.05_FWER_significant` - fraction of significant rules at 0.05 level (with FWER correction).
 
 ### Classification
+
+
+
 ### Regression
 ### Survival
 
@@ -340,10 +349,7 @@ During training phase, RuleKit produces following types of files:
 The result of the prediction phase are:
 * a prediction file (one per each testing set), 
 * a performance report (common for all testing files).
-
-
 In the following subsections, a detailed description of training and performance reports are given. 
-
 
 ## 5.1. Training report
 
@@ -372,9 +378,9 @@ r4: IF aGvHDIIIIV = {1} AND ANCrecovery = (-inf, 19.5) AND Stemcellsource = {1} 
 r5: IF Donorage = <28.028767000000002, inf) AND CD34kgx10d6 = <1.2650000000000001, 6.720000000000001) AND CD3dCD34 = <0.8878985, inf) AND Rbodymass = <31.5, inf) AND Recipientage = <11.55, inf) THEN survival_status = {NaN} (p=20.0, n=0.0, P=168.0, N=0.0, weight=0.9999999999914838, pvalue=8.516187754992188E-12)
 ```
 For each rule, additional statistics are given in the parentheses:
-* elements of confusion matrix *p*, *n*, *P*, *N* (note that for classification *P* and *N* are fixed for each analyzed class, for regression *P* and *N* are determined for each rule on the basis of covered examples, for survival analysis all examples are considered positive, thus *N* and *n* equal to 0),
+* elements of confusion matrix *p*, *n*, *P*, *N*,
 * weight - value of the voting quality measure,
-* *p*-value - rule significance (classification: Fisher's exact test for for comparing confusion matrices; regression: &Chi;<sup>2</sup>- test for comparing label variance of covered vs. uncovered examples; survival: log-rank for comparing survival  functions  of  covered vs. uncovered examples).
+* *p*-value - rule significance.
 
 Rules are followed by the detailed information about training set coverage:
 ```
