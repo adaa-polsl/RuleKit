@@ -262,48 +262,48 @@ In the prediction phase, previously-generated models are applied on the specifie
 ## 4.1. Rule quality
 
 
-
-| Quality measure 			| Formula
+| Quality measure 			| Formula |
 | :--- 						| :---|
 | Accuracy					| ![](https://chart.googleapis.com/chart?cht=tx&chl=p-n)| 
-| BinaryEntropy				| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)| 
-| C1						| ![](https://chart.googleapis.com/chart?cht=tx&chl=\left(\frac{Np-Pn}{N(p%2Bn)}\right)\left(\frac{2%2BKappa(p,n)}{3}\right))  |  
-| C2						| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| CFoil						| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| CNSignificnce				| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| Correlation				| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| BinaryEntropy				| ![](https://chart.googleapis.com/chart?cht=tx&chl=-\sum_{x{\in}X}P(x)\sum_{y{\in}Y}P(y|x)\log_2{P(y|x)}), where <br> ![](https://chart.googleapis.com/chart?cht=tx&chl=X=\left{\textrm{covered},\textrm{uncovered}\right},{\quad}Y=\left{\textrm{positive},\textrm{negative}}) <br> the probabilities can be calculated straightforwardly from confusion matrix 
+| C1						| ![](https://chart.googleapis.com/chart?cht=tx&chl=Coleman\cdot\frac{2%2BKappa}{3})  |  
+| C2						| ![](https://chart.googleapis.com/chart?cht=tx&chl=Coleman\cdot\frac{P%2Bp}{2P})|  
+| CFoil						| ![](https://chart.googleapis.com/chart?cht=tx&chl=p\left({{\log}_{2}}\left(\frac{p}{p%2Bn}\right)-{{\log}_{2}}\left(\frac{P}{P%2BN}\right)\right))|  
+| CNSignificnce				| ![](https://chart.googleapis.com/chart?cht=tx&chl=2\left(p\ln\left(\frac{p}{\left(p%2Bn\right)\frac{P}{P%2BN}}\right)%2Bn\ln\left(\frac{n}{\left(p%2Bn\right)\frac{N}{P%2BN}}\right)\right))| 
+| Coleman					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{Np-Pn}{N(p%2Bn)})|  
+| Correlation				| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{pN-Pn}{\sqrt{PN(p%2Bn)(P-p%2BN-n)}})|  
 | Coverage					| ![](https://chart.googleapis.com/chart?cht=tx&chl=p/P) |  
-| FBayesianConfirmation		| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| FMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| FullCoverage				| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| GeoRSS					| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| FBayesianConfirmation		| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{pN-nP}{pN%2BnP})|  
+| FMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{(\beta^2%2D1)\left(\frac{p}{p%2Dn}\right)\left(\frac{p}{P}\right)}{\beta^2\left(\frac{p}{p%2Dn}\right)%2B\frac{p}{P}})|  
+| FullCoverage				| ![](https://chart.googleapis.com/chart?cht=tx&chl=(p%2Bn)/(P%2BN))|  
+| GeoRSS					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\sqrt{\frac{p}{P}\left(1-\frac{n}{N}\right)})|  
 | GMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chl=p/(p%2Bn%2Bg),g=2) | 
-| InformationGain			| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| JMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| Kappa						| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| Klosgen					| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| InformationGain			| ![](https://chart.googleapis.com/chart?cht=tx&chl=Info\left(P,N\right)-Inf{{o}_{pn}}\left(P,N\right),Info\left(P,N\right)=-\left[\frac{P}{P+N}{{\log}_{2}}\frac{P}{P+N}+\frac{N}{P+N}{{\log}_{2}}\frac{N}{P+N}\right])Inf{{o}_{pn}}\left(P,N\right)=\frac{p+n}{P+N}Info\left( p,n \right)+\frac{P+N-p-n}{P+N}Info\left(P-p,N-n\right))|  
+| JMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{1}{P%2BN}\left(p\ln\left(\frac{p\left(P%2BN\right)}{\left(p%2Bn\right)P}\right)%2Bn\ln\left(\frac{n\left(P%2BN\right)}{\left(p%2Bn\right)N}\right)\right))|  
+| Kappa						| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{\left(P%2BN\right)\left(\frac{p}{p+n}\right)-P}{\left(\frac{P+N}{2}\right)\left(\frac{p+n+P}{p+n}\right)-P})|  
+| Klosgen					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\left(\frac{p%2Bn}{P%2BN}\right)^{\omega}\left(\frac{p}{p%2Bn}-\frac{P}{P%2BN}\right),\omega=1)|  
 | Laplace					| ![](https://chart.googleapis.com/chart?cht=tx&chl=(p%2B1)/(p%2Bn%2B2)) | 
-| Lift						| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| LogicalSufficiency		| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| MEstimate					| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| MutualSupport				| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| Novelty					| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| OddsRatio					| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| OneWaySupport				| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| PawlakDependencyFactor	| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| Q							| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| Lift						| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p\left(P+N\right)}{\left(p+n\right)P})|  
+| LogicalSufficiency		| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{pN}{nP})|  
+| MEstimate					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p%2Bm\frac{P}{P%2BN}}{p%2Bn%2Bm} )|  
+| MutualSupport				| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p}{n%2BP})|  
+| Novelty					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p}{P%2BN}-\left(\frac{P\left(p%2Bn\right)}{{{\left(P%2BN\right)}^{2}}}\right))|  
+| OddsRatio					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p\left(N-n\right)}{n\left(P-p\right)})|  
+| OneWaySupport				| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p}{p%2Bn}\ln\left(\frac{p\left(P%2BN\right)}{\left(p%2Bn\right)P}\right))|  
+| PawlakDependencyFactor	| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p\left(P%2BN\right)-P\left(p%2Bn\right)}{p\left(P%2BN\right)%2BP\left(p%2Bn\right)})|  
+| Q2						| ![](https://chart.googleapis.com/chart?cht=tx&chl=\left(\frac{p}{P}-\frac{n}{N}\right)\left(1-\frac{n}{N}\right))|  
 | Precision					| ![](https://chart.googleapis.com/chart?cht=tx&chl=p/(p%2Bn))| 
 | RelativeRisk				| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p}{p%2Bn}\left(\frac{P%2BN-p-n}{P-p}\right))|  
 | Ripper					| ![](https://chart.googleapis.com/chart?cht=tx&chl=(p-n)/(p%2Bn))|  
-| RuleInterest				| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| RuleInterest				| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p\left(P%2BN\right)-\left(p%2Bn\right)P}{P%2BN})|  
 | RSS						| ![](https://chart.googleapis.com/chart?cht=tx&chl=p/P-n/N)|  
-| SBayesian					| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| SBayesian					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p}{p%2Bn}-\frac{P-p}{P-p%2BN-n})|  
 | Sensitivity				| ![](https://chart.googleapis.com/chart?cht=tx&chl=p/P)|  
 | Specificity				| ![](https://chart.googleapis.com/chart?cht=tx&chl=(N-n)/n)|  
-| TwoWaySupport				| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| WeightedLaplace			| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| WeightedRelativeAccuracy	| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
-| YAILS						| ![](https://chart.googleapis.com/chart?cht=tx&chl=?)|  
+| TwoWaySupport				| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p}{P%2BN}\ln\left(\frac{p\left(P%2BN\right)}{\left(p%2Bn\right)P}\right))|  
+| WeightedLaplace			| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{\left(p%2B1\right)\left(P%2BN\right)}{\left(p%2Bn%2B2\right)P})|  
+| WeightedRelativeAccuracy	| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p%2Bn}{P%2BN}\left(\frac{p}{p%2Bn}-\frac{P}{P%2BN}\right))|  
+| YAILS						| ![](https://chart.googleapis.com/chart?cht=tx&chl=(0.5%2B0.25{\cdot}Precision)\frac{p}{p%2Bn}%2B{(0.5-0.25{\cdot}Precision)}\frac{p}{P}) |
 
 
 
@@ -318,8 +318,8 @@ In the prediction phase, previously-generated models are applied on the specifie
 * `#rules` - number of rules,
 * `#conditions_per_rule` - average number of conditions per rule,
 * `#induced_conditions_per_rule` - average number of induced conditions per rule (before pruning),
-* `avg_rule_coverage` - average rule coverage defined as (*p* + *n*) / (*P* + *N*),
-* `avg_rule_precision` -average rule precision defined as *p* / (*P* + *N*),
+* `avg_rule_coverage` - average rule full coverage defined as (*p* + *n*) / (*P* + *N*),
+* `avg_rule_precision` -average rule precision defined as *p* / (*p* + *n*),
 * `avg_rule_quality` - average value of voting measure,
 * `avg_pvalue` - average rule *p*-value
 `avg_FDR_pvalue: 3.71317511237688E-4
