@@ -117,7 +117,7 @@ The general dataset properties are:
 
 The `training` section allows generating models on specified training sets. It consists of the `report_file` field and any number of `train` subsections. Each `train` subsection is defined by:
 * `in_file` - full path to the training file (in ARFF, CSV, XLS format),
-* `model_file` - name of the output binary model file (without full path); for each parameter set, a separate model is generated under location *<out_directory>/<parameter_set name>/<model_file>*.
+* `model_file` - name of the output model file (without full path); for each parameter set, a separate model is generated under location *<out_directory>/<parameter_set name>/<model_file>*.
 
 The `report_file` is created for each parameter set under *<out_directory>/<parameter_set name>/<report_file>* location. It contains a common text report for all training files: rule sets, model characteristics, detailed coverage information, training set prediction quality, KM-estimators (for survival problems), etc.   
 
@@ -256,6 +256,35 @@ In the prediction phase, previously-generated models are applied on the specifie
 
 # 2. RapidMiner plugin
 
+RuleKit can be used as a RapidMiner plugin. 
+
+## 2.1. Installation
+
+## 2.2. Usage
+
+The plugin consists of three operators:
+* Rule Generator,
+* Expert Rule Generator,
+* Rule Performance.
+
+The automatic induction of rules can be done with a use of Rule Generator operator. The Expert Rule Generator additionally allows speficying user's knowledge. Both these operators are RapidMiner learners with a single *training set* input and three outputs: *model* (to be applied on unseen data), *example set* (input training set passed without any changes), and *estimated performance* (model characteristics discussed in [4.2](#42-model-characteristics)). 
+
+RuleKit automatically determines the type of the problem on the basis of the training set:
+* classification - nominal label attribute,
+* regression - numerical label attribute,
+* survival analysis - binary label attribute and numerical attribute with role *survival_time* specified (Figure 2.1).
+
+| ![](figs/survival-role-setting.png) | 
+|:--:| 
+| Figure 2.1. Setting *survival_time* role in the training set. |
+
+Depending on the problem, the corresponding induction algorithm is applied. All the parameters configurable from the XML interface are accessible through RapidMiner GUI (Figure 2.2). 
+
+## 2.3. Example
+
+In the following subsection we show an example regression analysis with a use of RuleKit RapidMiner plugin. 
+
+
 # 3. R package
 
 # 4. Quality and evaluation
@@ -267,7 +296,7 @@ An important factor determining performance and comprehensibility of the resulti
 | Quality measure 			| Formula |
 | :--- 						| :--- |
 | Accuracy 					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=p-n) | 
-| BinaryEntropy				| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=-\sum_{x{\in}X}P(x)\sum_{y{\in}Y}P(y\|x)\log_2{P(y\|x)}), where ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=X=\left{\textrm{covered},\textrm{uncovered}\right},{\quad}Y=\left{\textrm{positive},\textrm{negative}}) <br> and the probabilities can be calculated straightforwardly from the confusion matrix [X]
+| BinaryEntropy				| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=-\sum_{x{\in}X}P(x)\sum_{y{\in}Y}P(y\|x)\log_2{P(y\|x)}), where ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=X=\left{\textrm{covered},\quad\textrm{uncovered}\right},{\quad\quad}Y=\left{\textrm{positive},\quad\textrm{negative}}) <br> the probabilities can be calculated straightforwardly from the confusion matrix [X]
 | C1						| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=Coleman\cdot\frac{2%2BKappa}{3})  |  
 | C2						| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=Coleman\cdot\frac{P%2Bp}{2P})|  
 | CFoil						| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=p\left({{\log}_{2}}\left(\frac{p}{p%2Bn}\right)-{{\log}_{2}}\left(\frac{P}{P%2BN}\right)\right))|  
@@ -276,18 +305,18 @@ An important factor determining performance and comprehensibility of the resulti
 | Correlation				| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{pN-Pn}{\sqrt{PN(p%2Bn)(P-p%2BN-n)}})|  
 | Coverage					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=p/P) |  
 | FBayesianConfirmation		| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{pN-nP}{pN%2BnP})|  
-| FMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{(\beta^2%2D1)\left(\frac{p}{p%2Dn}\right)\left(\frac{p}{P}\right)}{\beta^2\left(\frac{p}{p%2Dn}\right)%2B\frac{p}{P}})|  
+| FMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{(\beta^2%2D1)\left(\frac{p}{p%2Dn}\right)\left(\frac{p}{P}\right)}{\beta^2\left(\frac{p}{p%2Dn}\right)%2B\frac{p}{P}},{\quad\quad}\beta=2)|  
 | FullCoverage				| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=(p%2Bn)/(P%2BN))|  
 | GeoRSS					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\sqrt{\frac{p}{P}\left(1-\frac{n}{N}\right)})|  
-| GMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=p/(p%2Bn%2Bg),g=2) | 
-| InformationGain			| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=Info\left(P,N\right)-Inf{{o}_{pn}}\left(P,N\right),Info\left(P,N\right)=-\left[\frac{P}{P+N}{{\log}_{2}}\frac{P}{P+N}+\frac{N}{P+N}{{\log}_{2}}\frac{N}{P+N}\right])Inf{{o}_{pn}}\left(P,N\right)=\frac{p+n}{P+N}Info\left( p,n \right)+\frac{P+N-p-n}{P+N}Info\left(P-p,N-n\right))|  
+| GMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=p/(p%2Bn%2Bg),{\quad\quad}g=2) | 
+| InformationGain			| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=Info\left(P,N\right)-Inf{{o}_{pn}}\left(P,N\right),Info\left(P,N\right)=-\left[\frac{P}{P+N}{{\log}_{2}}\frac{P}{P+N}+\frac{N}{P+N}{{\log}_{2}}\frac{N}{P+N}\right])Inf{{o}_{pn}}\left(P,N\right)=\frac{p+n}{P+N}Info\left(p,n \right)+\frac{P+N-p-n}{P+N}Info\left(P-p,N-n\right))|  
 | JMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{1}{P%2BN}\left(p\ln\left(\frac{p\left(P%2BN\right)}{\left(p%2Bn\right)P}\right)%2Bn\ln\left(\frac{n\left(P%2BN\right)}{\left(p%2Bn\right)N}\right)\right))|  
-| Kappa						| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{\left(P%2BN\right)\left(\frac{p}{p+n}\right)-P}{\left(\frac{P+N}{2}\right)\left(\frac{p+n+P}{p+n}\right)-P})|  
-| Klosgen					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\left(\frac{p%2Bn}{P%2BN}\right)^{\omega}\left(\frac{p}{p%2Bn}-\frac{P}{P%2BN}\right),\omega=1)|  
+| Kappa						| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{\left(P%2BN\right)\left(\frac{p}{p%2Bn}\right)-P}{\left(\frac{P%2BN}{2}\right)\left(\frac{p%2Bn%2BP}{p%2Bn}\right)-P})|  
+| Klosgen					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\left(\frac{p%2Bn}{P%2BN}\right)^{\omega}\left(\frac{p}{p%2Bn}-\frac{P}{P%2BN}\right),{\quad\quad}\omega=1)|  
 | Laplace					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=(p%2B1)/(p%2Bn%2B2)) | 
-| Lift						| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p\left(P+N\right)}{\left(p+n\right)P})|  
+| Lift						| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p\left(P%2BN\right)}{\left(p%2Bn\right)P})|  
 | LogicalSufficiency		| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{pN}{nP})|  
-| MEstimate					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p%2Bm\frac{P}{P%2BN}}{p%2Bn%2Bm} )|  
+| MEstimate					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p%2Bm\frac{P}{P%2BN}}{p%2Bn%2Bm},{\quad\quad}m=2 )|  
 | MutualSupport				| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p}{n%2BP})|  
 | Novelty					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p}{P%2BN}-\left(\frac{P\left(p%2Bn\right)}{{{\left(P%2BN\right)}^{2}}}\right))|  
 | OddsRatio					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p\left(N-n\right)}{n\left(P-p\right)})|  
@@ -455,7 +484,7 @@ time, entire-set, r1, r2, r3, r4, r5,
 55.0, 0.9047619047619048, 0.9159663865546219,1.0,0.9133858267716537,0.975609756097561,0.6499999999999999,
 56.0, 0.8988095238095238, 0.9159663865546219,1.0,0.9133858267716537,0.9634146341463414,0.6499999999999999,
 ```
-The last element of the report are model indicators followed by the performance metrices evaluated on the training set. The contents of this section depends on the investigated problem. The detailed discussion of available metrices is presented in 4.2.  
+The last element of the report are model indicators followed by the performance metrices evaluated on the training set. The contents of this section depends on the investigated problem. The detailed discussion of available metrices is presented in [4.3](#43-performance-metrices).  
 ```
 time_total_s: 13.829900798
 time_growing_s: 11.434164728999999
@@ -571,6 +600,8 @@ Please note several remarks:
 * Preferred/forbidden attributes are defined as conditions with special value `Any` (`preferred-attribute-1`, `forbidden-attribute-1`).
 
 # 7. Library API
+
+RuleKit was implemented upon RapidMiner API, thus it 
 
 # References
 
