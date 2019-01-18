@@ -60,30 +60,24 @@ public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 	public static final int TYPE_SURVIVAL = 3;
 	
 	private static final CriterionClassWrapper[] COMMON_CRITERIA_CLASSES = {
-		new CriterionClassWrapper(AbsoluteError.class),
-		new CriterionClassWrapper(RelativeError.class),
-		new CriterionClassWrapper(LenientRelativeError.class),
-		new CriterionClassWrapper(StrictRelativeError.class),
-		new CriterionClassWrapper(NormalizedAbsoluteError.class),
-		new CriterionClassWrapper(RootMeanSquaredError.class),
-		new CriterionClassWrapper(RootRelativeSquaredError.class),
-		new CriterionClassWrapper(SquaredError.class),
-		new CriterionClassWrapper(CorrelationCriterion.class),
-		new CriterionClassWrapper(SquaredCorrelationCriterion.class)
+		
 	};
 	
-	private static final CriterionClassWrapper[] MULTICLASS_CRITERIA_CLASSES = { 
+	private static final CriterionClassWrapper[] MULTICLASS_CRITERIA_CLASSES = { 	
+		new CriterionClassWrapper(MultiClassificationPerformance.class, MultiClassificationPerformance.ACCURACY),
+		new CriterionClassWrapper(MultiClassificationPerformance.class, MultiClassificationPerformance.ERROR),
+		new CriterionClassWrapper(MultiClassificationPerformance.class, MultiClassificationPerformance.KAPPA),	
+		new CriterionClassWrapper(ClassificationRulesPerformance.class, ClassificationRulesPerformance.BALANCED_ACCURACY),
+		new CriterionClassWrapper(ClassificationRulesPerformance.class, ClassificationRulesPerformance.RULES_PER_EXAMPLE),
+		new CriterionClassWrapper(ClassificationRulesPerformance.class, ClassificationRulesPerformance.VOTING_CONFLICTS),
+		new CriterionClassWrapper(ClassificationRulesPerformance.class, ClassificationRulesPerformance.NEGATIVE_VOTING_CONFLICTS),
 		new CriterionClassWrapper(CrossEntropy.class),
 		new CriterionClassWrapper(Margin.class),
 		new CriterionClassWrapper(SoftMarginLoss.class),
 		new CriterionClassWrapper(LogisticLoss.class),
-		new CriterionClassWrapper(MultiClassificationPerformance.class, MultiClassificationPerformance.ACCURACY),
-		new CriterionClassWrapper(MultiClassificationPerformance.class, MultiClassificationPerformance.ERROR),
-		new CriterionClassWrapper(MultiClassificationPerformance.class, MultiClassificationPerformance.KAPPA),
-		new CriterionClassWrapper(ClassificationRulesPerformance.class, ClassificationRulesPerformance.RULES_PER_EXAMPLE),
-		new CriterionClassWrapper(ClassificationRulesPerformance.class, ClassificationRulesPerformance.VOTING_CONFLICTS),
-		new CriterionClassWrapper(ClassificationRulesPerformance.class, ClassificationRulesPerformance.NEGATIVE_VOTING_CONFLICTS),
-		new CriterionClassWrapper(ClassificationRulesPerformance.class, ClassificationRulesPerformance.BALANCED_ACCURACY)	
+//		new CriterionClassWrapper(AreaUnderCurve.Neutral.class),
+//		new CriterionClassWrapper(AreaUnderCurve.Pessimistic.class),
+//		new CriterionClassWrapper(AreaUnderCurve.Optimistic.class),
 	};
 	
 	private static final CriterionClassWrapper[] BINARY_CRITERIA_CLASSES = { 
@@ -106,7 +100,16 @@ public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 	};
 	
 	private static final CriterionClassWrapper[] REGRESSION_CRITERIA_CLASSES = {
-		new CriterionClassWrapper(PredictionAverage.class)
+		new CriterionClassWrapper(AbsoluteError.class),
+		new CriterionClassWrapper(RelativeError.class),
+		new CriterionClassWrapper(LenientRelativeError.class),
+		new CriterionClassWrapper(StrictRelativeError.class),
+		new CriterionClassWrapper(NormalizedAbsoluteError.class),
+		new CriterionClassWrapper(RootMeanSquaredError.class),
+		new CriterionClassWrapper(RootRelativeSquaredError.class),
+		new CriterionClassWrapper(SquaredError.class),
+		new CriterionClassWrapper(CorrelationCriterion.class),
+		new CriterionClassWrapper(SquaredCorrelationCriterion.class)
 	};
 	
 	private static final CriterionClassWrapper[] SURVIVAL_CRITERIA_CLASSES = {

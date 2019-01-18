@@ -13,7 +13,8 @@ RuleKit is a comprehensive library for inducing rule-based data models [X]. It h
 3. [R package](#3-r-package)
 4. [Quality and evaluation](#4-quality-and-evaluation)
     1. [Rule quality](#41-rule-quality)
-	2. [Performance metrices](#42-performance-metices)
+	2. [Model characteristics](#42-model-characteristics)
+	2. [Performance metrices](#43-performance-metrices)
 5. [Output files](#4-output-files)
     1. [Training report](#51-training-report)
     2. [Prediction performance report](#52-prediction-performance-report)    	
@@ -261,52 +262,50 @@ In the prediction phase, previously-generated models are applied on the specifie
 
 ## 4.1. Rule quality
 
-An important factor determining performance and comprehensibility of the resulting model is a selection of a rule quality measure.
-RuleKit provides user with a number of state-of-art measures calculated on the basis of the confusion matrix. The matrix consists of the number of positive and negative examples in the entire training set (*P* and *N*) and the number of positive and negative examples covered by
-the rule (*p* and *n*). The measures based on confusion matrix can be used for classification and regression problems (note, that for the former *P* and *N* are fixed for each analyzed class, while for the latter *P* and *N* are determined for every rule on the basis of covered examples). In the case of survival problems, log-rank statistics is always used as for determining rules quality (for simplicity, all examples are assumed positive, thus *N* and *n* equal to 0). Below one can find all available measures together with formulas. 
+An important factor determining performance and comprehensibility of the resulting model is a selection of a rule quality measure. RuleKit provides user with a number of state-of-art measures calculated on the basis of the confusion matrix. The matrix consists of the number of positive and negative examples in the entire training set (*P* and *N*) and the number of positive and negative examples covered by the rule (*p* and *n*). The measures based on confusion matrix can be used for classification and regression problems (note, that for the former *P* and *N* are fixed for each analyzed class, while for the latter *P* and *N* are determined for every rule on the basis of covered examples). In the case of survival problems, log-rank statistics is always used as for determining rules quality (for simplicity, all examples are assumed positive, thus *N* and *n* equal to 0). Below one can find all available measures together with formulas. 
 
 | Quality measure 			| Formula |
 | :--- 						| :--- |
-| Accuracy 					| ![](https://chart.googleapis.com/chart?cht=tx&chl=p-n) | 
-| BinaryEntropy				| ![](https://chart.googleapis.com/chart?cht=tx&chl=-\sum_{x{\in}X}P(x)\sum_{y{\in}Y}P(y\|x)\log_2{P(y\|x)}), where ![](https://chart.googleapis.com/chart?cht=tx&chl=X=\left{\textrm{covered},\textrm{uncovered}\right},{\quad}Y=\left{\textrm{positive},\textrm{negative}}) <br> and the probabilities can be calculated straightforwardly from the confusion matrix [X]
-| C1						| ![](https://chart.googleapis.com/chart?cht=tx&chl=Coleman\cdot\frac{2%2BKappa}{3})  |  
-| C2						| ![](https://chart.googleapis.com/chart?cht=tx&chl=Coleman\cdot\frac{P%2Bp}{2P})|  
-| CFoil						| ![](https://chart.googleapis.com/chart?cht=tx&chl=p\left({{\log}_{2}}\left(\frac{p}{p%2Bn}\right)-{{\log}_{2}}\left(\frac{P}{P%2BN}\right)\right))|  
-| CNSignificnce				| ![](https://chart.googleapis.com/chart?cht=tx&chl=2\left(p\ln\left(\frac{p}{\left(p%2Bn\right)\frac{P}{P%2BN}}\right)%2Bn\ln\left(\frac{n}{\left(p%2Bn\right)\frac{N}{P%2BN}}\right)\right))| 
-| Coleman					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{Np-Pn}{N(p%2Bn)})|  
-| Correlation				| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{pN-Pn}{\sqrt{PN(p%2Bn)(P-p%2BN-n)}})|  
-| Coverage					| ![](https://chart.googleapis.com/chart?cht=tx&chl=p/P) |  
-| FBayesianConfirmation		| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{pN-nP}{pN%2BnP})|  
-| FMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{(\beta^2%2D1)\left(\frac{p}{p%2Dn}\right)\left(\frac{p}{P}\right)}{\beta^2\left(\frac{p}{p%2Dn}\right)%2B\frac{p}{P}})|  
-| FullCoverage				| ![](https://chart.googleapis.com/chart?cht=tx&chl=(p%2Bn)/(P%2BN))|  
-| GeoRSS					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\sqrt{\frac{p}{P}\left(1-\frac{n}{N}\right)})|  
-| GMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chl=p/(p%2Bn%2Bg),g=2) | 
-| InformationGain			| ![](https://chart.googleapis.com/chart?cht=tx&chl=Info\left(P,N\right)-Inf{{o}_{pn}}\left(P,N\right),Info\left(P,N\right)=-\left[\frac{P}{P+N}{{\log}_{2}}\frac{P}{P+N}+\frac{N}{P+N}{{\log}_{2}}\frac{N}{P+N}\right])Inf{{o}_{pn}}\left(P,N\right)=\frac{p+n}{P+N}Info\left( p,n \right)+\frac{P+N-p-n}{P+N}Info\left(P-p,N-n\right))|  
-| JMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{1}{P%2BN}\left(p\ln\left(\frac{p\left(P%2BN\right)}{\left(p%2Bn\right)P}\right)%2Bn\ln\left(\frac{n\left(P%2BN\right)}{\left(p%2Bn\right)N}\right)\right))|  
-| Kappa						| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{\left(P%2BN\right)\left(\frac{p}{p+n}\right)-P}{\left(\frac{P+N}{2}\right)\left(\frac{p+n+P}{p+n}\right)-P})|  
-| Klosgen					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\left(\frac{p%2Bn}{P%2BN}\right)^{\omega}\left(\frac{p}{p%2Bn}-\frac{P}{P%2BN}\right),\omega=1)|  
-| Laplace					| ![](https://chart.googleapis.com/chart?cht=tx&chl=(p%2B1)/(p%2Bn%2B2)) | 
-| Lift						| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p\left(P+N\right)}{\left(p+n\right)P})|  
-| LogicalSufficiency		| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{pN}{nP})|  
-| MEstimate					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p%2Bm\frac{P}{P%2BN}}{p%2Bn%2Bm} )|  
-| MutualSupport				| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p}{n%2BP})|  
-| Novelty					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p}{P%2BN}-\left(\frac{P\left(p%2Bn\right)}{{{\left(P%2BN\right)}^{2}}}\right))|  
-| OddsRatio					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p\left(N-n\right)}{n\left(P-p\right)})|  
-| OneWaySupport				| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p}{p%2Bn}\ln\left(\frac{p\left(P%2BN\right)}{\left(p%2Bn\right)P}\right))|  
-| PawlakDependencyFactor	| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p\left(P%2BN\right)-P\left(p%2Bn\right)}{p\left(P%2BN\right)%2BP\left(p%2Bn\right)})|  
-| Q2						| ![](https://chart.googleapis.com/chart?cht=tx&chl=\left(\frac{p}{P}-\frac{n}{N}\right)\left(1-\frac{n}{N}\right))|  
-| Precision					| ![](https://chart.googleapis.com/chart?cht=tx&chl=p/(p%2Bn))| 
-| RelativeRisk				| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p}{p%2Bn}\left(\frac{P%2BN-p-n}{P-p}\right))|  
-| Ripper					| ![](https://chart.googleapis.com/chart?cht=tx&chl=(p-n)/(p%2Bn))|  
-| RuleInterest				| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p\left(P%2BN\right)-\left(p%2Bn\right)P}{P%2BN})|  
-| RSS						| ![](https://chart.googleapis.com/chart?cht=tx&chl=p/P-n/N)|  
-| SBayesian					| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p}{p%2Bn}-\frac{P-p}{P-p%2BN-n})|  
-| Sensitivity				| ![](https://chart.googleapis.com/chart?cht=tx&chl=p/P)|  
-| Specificity				| ![](https://chart.googleapis.com/chart?cht=tx&chl=(N-n)/n)|  
-| TwoWaySupport				| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p}{P%2BN}\ln\left(\frac{p\left(P%2BN\right)}{\left(p%2Bn\right)P}\right))|  
-| WeightedLaplace			| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{\left(p%2B1\right)\left(P%2BN\right)}{\left(p%2Bn%2B2\right)P})|  
-| WeightedRelativeAccuracy	| ![](https://chart.googleapis.com/chart?cht=tx&chl=\frac{p%2Bn}{P%2BN}\left(\frac{p}{p%2Bn}-\frac{P}{P%2BN}\right))|  
-| YAILS						| ![](https://chart.googleapis.com/chart?cht=tx&chl=(0.5%2B0.25{\cdot}Precision)\frac{p}{p%2Bn}%2B{(0.5-0.25{\cdot}Precision)}\frac{p}{P}) |
+| Accuracy 					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=p-n) | 
+| BinaryEntropy				| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=-\sum_{x{\in}X}P(x)\sum_{y{\in}Y}P(y\|x)\log_2{P(y\|x)}), where ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=X=\left{\textrm{covered},\textrm{uncovered}\right},{\quad}Y=\left{\textrm{positive},\textrm{negative}}) <br> and the probabilities can be calculated straightforwardly from the confusion matrix [X]
+| C1						| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=Coleman\cdot\frac{2%2BKappa}{3})  |  
+| C2						| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=Coleman\cdot\frac{P%2Bp}{2P})|  
+| CFoil						| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=p\left({{\log}_{2}}\left(\frac{p}{p%2Bn}\right)-{{\log}_{2}}\left(\frac{P}{P%2BN}\right)\right))|  
+| CNSignificnce				| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=2\left(p\ln\left(\frac{p}{\left(p%2Bn\right)\frac{P}{P%2BN}}\right)%2Bn\ln\left(\frac{n}{\left(p%2Bn\right)\frac{N}{P%2BN}}\right)\right))| 
+| Coleman					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{Np-Pn}{N(p%2Bn)})|  
+| Correlation				| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{pN-Pn}{\sqrt{PN(p%2Bn)(P-p%2BN-n)}})|  
+| Coverage					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=p/P) |  
+| FBayesianConfirmation		| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{pN-nP}{pN%2BnP})|  
+| FMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{(\beta^2%2D1)\left(\frac{p}{p%2Dn}\right)\left(\frac{p}{P}\right)}{\beta^2\left(\frac{p}{p%2Dn}\right)%2B\frac{p}{P}})|  
+| FullCoverage				| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=(p%2Bn)/(P%2BN))|  
+| GeoRSS					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\sqrt{\frac{p}{P}\left(1-\frac{n}{N}\right)})|  
+| GMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=p/(p%2Bn%2Bg),g=2) | 
+| InformationGain			| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=Info\left(P,N\right)-Inf{{o}_{pn}}\left(P,N\right),Info\left(P,N\right)=-\left[\frac{P}{P+N}{{\log}_{2}}\frac{P}{P+N}+\frac{N}{P+N}{{\log}_{2}}\frac{N}{P+N}\right])Inf{{o}_{pn}}\left(P,N\right)=\frac{p+n}{P+N}Info\left( p,n \right)+\frac{P+N-p-n}{P+N}Info\left(P-p,N-n\right))|  
+| JMeasure					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{1}{P%2BN}\left(p\ln\left(\frac{p\left(P%2BN\right)}{\left(p%2Bn\right)P}\right)%2Bn\ln\left(\frac{n\left(P%2BN\right)}{\left(p%2Bn\right)N}\right)\right))|  
+| Kappa						| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{\left(P%2BN\right)\left(\frac{p}{p+n}\right)-P}{\left(\frac{P+N}{2}\right)\left(\frac{p+n+P}{p+n}\right)-P})|  
+| Klosgen					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\left(\frac{p%2Bn}{P%2BN}\right)^{\omega}\left(\frac{p}{p%2Bn}-\frac{P}{P%2BN}\right),\omega=1)|  
+| Laplace					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=(p%2B1)/(p%2Bn%2B2)) | 
+| Lift						| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p\left(P+N\right)}{\left(p+n\right)P})|  
+| LogicalSufficiency		| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{pN}{nP})|  
+| MEstimate					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p%2Bm\frac{P}{P%2BN}}{p%2Bn%2Bm} )|  
+| MutualSupport				| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p}{n%2BP})|  
+| Novelty					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p}{P%2BN}-\left(\frac{P\left(p%2Bn\right)}{{{\left(P%2BN\right)}^{2}}}\right))|  
+| OddsRatio					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p\left(N-n\right)}{n\left(P-p\right)})|  
+| OneWaySupport				| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p}{p%2Bn}\ln\left(\frac{p\left(P%2BN\right)}{\left(p%2Bn\right)P}\right))|  
+| PawlakDependencyFactor	| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p\left(P%2BN\right)-P\left(p%2Bn\right)}{p\left(P%2BN\right)%2BP\left(p%2Bn\right)})|  
+| Q2						| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\left(\frac{p}{P}-\frac{n}{N}\right)\left(1-\frac{n}{N}\right))|  
+| Precision					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=p/(p%2Bn))| 
+| RelativeRisk				| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p}{p%2Bn}\left(\frac{P%2BN-p-n}{P-p}\right))|  
+| Ripper					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=(p-n)/(p%2Bn))|  
+| RuleInterest				| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p\left(P%2BN\right)-\left(p%2Bn\right)P}{P%2BN})|  
+| RSS						| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=p/P-n/N)|  
+| SBayesian					| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p}{p%2Bn}-\frac{P-p}{P-p%2BN-n})|  
+| Sensitivity				| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=p/P)|  
+| Specificity				| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=(N-n)/n)|  
+| TwoWaySupport				| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p}{P%2BN}\ln\left(\frac{p\left(P%2BN\right)}{\left(p%2Bn\right)P}\right))|  
+| WeightedLaplace			| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{\left(p%2B1\right)\left(P%2BN\right)}{\left(p%2Bn%2B2\right)P})|  
+| WeightedRelativeAccuracy	| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\frac{p%2Bn}{P%2BN}\left(\frac{p}{p%2Bn}-\frac{P}{P%2BN}\right))|  
+| YAILS						| ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=(0.5%2B0.25{\cdot}Precision)\frac{p}{p%2Bn}%2B{(0.5-0.25{\cdot}Precision)}\frac{p}{P}) |
 
 During model construction, the significance of rules is assesed statistically using following tests:
 * classification: Fisher's exact test for for comparing confusion matrices,
@@ -314,9 +313,9 @@ During model construction, the significance of rules is assesed statistically us
 * survival: log-rank for comparing survival functions of covered vs. uncovered examples. 
 
 
-## 4.2. Performance metrices
+## 4.2. Model characteristics
 
-### Common metrices
+These indicators are common for all types of problems and their values are established during model construction.
 
 * `time_total_s` - algorithm execution time in seconds,
 * `time_growing_s` - growing time in seconds, 
@@ -325,7 +324,7 @@ During model construction, the significance of rules is assesed statistically us
 * `#conditions_per_rule` - average number of conditions per rule,
 * `#induced_conditions_per_rule` - average number of induced conditions per rule (before pruning),
 * `avg_rule_coverage` - average rule full coverage defined as (*p* + *n*) / (*P* + *N*),
-* `avg_rule_precision` -average rule precision defined as *p* / (*p* + *n*),
+* `avg_rule_precision` - average rule precision defined as *p* / (*p* + *n*),
 * `avg_rule_quality` - average value of voting measure,
 * `avg_pvalue` - average rule *p*-value
 * `avg_FDR_pvalue` - average rule *p*-value after false discovery rate (FDR) correction,
@@ -334,12 +333,59 @@ During model construction, the significance of rules is assesed statistically us
 * `fraction_0.05_FDR_significant` - fraction of significant rules at 0.05 level (with FDR correction),
 * `fraction_0.05_FWER_significant` - fraction of significant rules at 0.05 level (with FWER correction).
 
+## 4.3. Performance metrices
+
+Performance metrices are established on the basis of model outcome and real example labels. They are specific for investigated problem.
+
 ### Classification
 
+* accuracy
+* classification_error
+* balanced_accuracy
+* kappa - 
+* #rules_per_example - average number of rules covering an example,
+* #voting_conflicts - number of voting conflicts (example covered by rules pointing to different classes),
+* #negative_voting_conflicts - number of voiting conflicts resolved incorrectly,
+* cross-entropy
+* margin
+* soft_margin_loss
+* logistic_loss
 
+In binary classification problems some additional metrices are computed:
+
+* precision
+* recall
+* lift
+* fallout
+* f_measure
+* false_positive
+* false_negative
+* true_positive
+* true_negative
+* sensitivity
+* specificity
+* youden
+* positive_predictive_value
+* negative_predictive_value
+* psep
+* geometric_mean
 
 ### Regression
+
+* absolute_error 
+* relative_error
+* relative_error_lenient
+* relative_error_strict
+* normalized_absolute_error
+* root_mean_squared_error
+* root_relative_squared_error
+* squared_error
+* correlation
+* squared_correlation
+
 ### Survival
+
+* integrated_brier_score
 
 # 5. Output files
 
@@ -409,7 +455,7 @@ time, entire-set, r1, r2, r3, r4, r5,
 55.0, 0.9047619047619048, 0.9159663865546219,1.0,0.9133858267716537,0.975609756097561,0.6499999999999999,
 56.0, 0.8988095238095238, 0.9159663865546219,1.0,0.9133858267716537,0.9634146341463414,0.6499999999999999,
 ```
-The last element of the report are performance metrics evaluated on the training set. The contents of this section depends on the investigated problem. The detailed discussion of available metrices is presented in 4.2.  
+The last element of the report are model indicators followed by the performance metrices evaluated on the training set. The contents of this section depends on the investigated problem. The detailed discussion of available metrices is presented in 4.2.  
 ```
 time_total_s: 13.829900798
 time_growing_s: 11.434164728999999
@@ -431,7 +477,22 @@ integrated_brier_score: 0.20866685101468796
 
 ## 5.2. Prediction performance report
 
-The prediction performance report has the form of comma-separated table with rows corresponding to testing sets and columns representing performance metrices. 
+The prediction performance report has the form of comma-separated table with rows corresponding to testing sets and columns representing model indicators and, optionally, performance metrices. The latter are reported only when real labels are provided in the testing set.
+```
+RuleGenerator: min_rule_covered=5.0; induction_measure=Accuracy; pruning_enabled=true; pruning_measure=null
+Dataset, time started, elapsed[s], time_total_s,time_growing_s,time_pruning_s,#rules,#conditions_per_rule,#induced_conditions_per_rule,avg_rule_coverage,avg_rule_precision,avg_rule_quality,avg_pvalue,avg_FDR_pvalue,avg_FWER_pvalue,fraction_0.05_significant,fraction_0.05_FDR_significant,fraction_0.05_FWER_significant,integrated_brier_score,
+przeszczepy-test-r0-f0.arff,2018.10.10_19.22.19,14.197630903,13.829900798, 11.434164728999999, 2.3417725849999997, 5.0, 3.6, 73.6, 0.43928571428571433, 1.0, 0.9996291809031488, 3.7081909685121595E-4, 3.71317511237688E-4, 3.726949446670513E-4, 1.0, 1.0, 1.0, 0.20866685101468796, 
+przeszczepy-test-r0-f1.arff,2018.10.10_19.22.33,8.816920328,8.785011626, 7.139117646, 1.644193643, 3.0, 2.0, 81.33333333333333, 0.5277777777777778, 1.0, 0.9999840894880433, 1.591051195670712E-5, 1.593935102948511E-5, 1.5968190102263097E-5, 1.0, 1.0, 1.0, 0.32738956730627355, 
+przeszczepy-test-r0-f2.arff,2018.10.10_19.22.42,11.202350452,11.139475589, 9.226062807, 1.9120130830000002, 5.0, 3.4, 65.0, 0.4238095238095238, 1.0, 0.995274964099923, 0.004725035900076935, 0.004725037058680282, 0.004725040534490322, 1.0, 1.0, 1.0, 0.2193283512681922, 
+przeszczepy-test-r0-f3.arff,2018.10.10_19.22.53,11.235637043,11.117153526, 9.119976444, 1.995392923, 7.0, 3.857142857142857, 60.57142857142857, 0.35289115646258506, 1.0, 0.9801963244964088, 0.019803675503591172, 0.01986258037321523, 0.020129896761985813, 0.8571428571428571, 0.8571428571428571, 0.8571428571428571, 0.1969380949017121, 
+przeszczepy-test-r0-f4.arff,2018.10.10_19.23.04,10.668216899,10.551245553, 8.727900207000001, 1.822214638, 4.0, 2.25, 67.75, 0.49999999999999994, 1.0, 0.9999999359313667, 6.406863328756174E-8, 6.406863328756174E-8, 6.406863328756174E-8, 1.0, 1.0, 1.0, 0.17517417672611418, 
+przeszczepy-test-r0-f5.arff,2018.10.10_19.23.15,10.523336237,10.4100414, 8.722353154, 1.6866635950000002, 4.0, 4.0, 76.0, 0.4821428571428571, 1.0, 0.9781969933568722, 0.021803006643127898, 0.02181038208090318, 0.021823023749909604, 0.75, 0.75, 0.75, 0.25878170984273013, 
+przeszczepy-test-r0-f6.arff,2018.10.10_19.23.25,12.877260506,12.7574517, 10.616004643, 2.140288125, 5.0, 3.2, 77.6, 0.39880952380952384, 1.0, 0.9995242324316976, 4.7576756830243206E-4, 4.805232398770713E-4, 4.946063707460313E-4, 1.0, 1.0, 1.0, 0.19484740108158835, 
+przeszczepy-test-r0-f7.arff,2018.10.10_19.23.38,17.133387559,17.01621479, 14.541448512999997, 2.473219469, 7.0, 4.571428571428571, 63.57142857142857, 0.23245984784446325, 1.0, 0.9961646528405262, 0.003835347159473836, 0.004022999396535294, 0.004865332297101272, 1.0, 1.0, 1.0, 0.1759002883753468, 
+przeszczepy-test-r0-f8.arff,2018.10.10_19.23.55,22.294961552,22.183485085, 18.778375772, 3.403339693, 9.0, 4.777777777777778, 67.11111111111111, 0.23537146614069693, 1.0, 0.9949077503124099, 0.005092249687590009, 0.005743702908769271, 0.009426945617211135, 1.0, 1.0, 1.0, 0.16894150945629255, 
+przeszczepy-test-r0-f9.arff,2018.10.10_19.24.18,7.400985905,7.287232628, 6.234206981, 1.052146398, 3.0, 3.0, 61.333333333333336, 0.35897435897435903, 1.0, 0.9991030527299692, 8.969472700306828E-4, 8.969472700306828E-4, 8.969472700306828E-4, 1.0, 1.0, 1.0, 0.19829001480313704, 
+
+``` 
 
 
 # 6. User-guided induction
