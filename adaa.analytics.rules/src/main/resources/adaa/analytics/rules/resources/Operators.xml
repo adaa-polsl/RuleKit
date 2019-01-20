@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <operators name="template" version="5.0" docbundle="adaa/analytics/rules/resources/i18n/OperatorsDoc">
-    <group key="">
-        <group key="disesor">
+   
+        <group key="rulekit">
+		
             <operator>
                 <key>expert_rule_generator</key>
                 <class>adaa.analytics.rules.operator.ExpertRuleGenerator</class>
             </operator>
+			
+		<operator>
+             <key>rule_performance</key>
+             <class>adaa.analytics.rules.operator.RulePerformanceEvaluator</class>
+          </operator>
+
+<!--
+
             <operator>
                 <key>rule_generator</key>
                 <class>adaa.analytics.rules.operator.RuleGenerator</class>
             </operator>
+
             <operator>
                 <key>rule_translator</key>
                 <class>adaa.analytics.rules.operator.RuleTranslator</class>
@@ -18,12 +28,10 @@
                 <key>rdata_reader</key>
                 <class>adaa.analytics.rules.operator.RDataExampleSource</class>
             </operator>
-            <!--
-            <operator>
-             <key>survival_evaluator</key>
-             <class>adaa.analytics.rules.operator.SurvivalPerformanceEvaluator</class>
-          </operator>
-          -->
+  -->       
+          	  
+		  
         </group>
-    </group>
+		   
+  
 </operators>

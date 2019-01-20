@@ -26,9 +26,9 @@ public class RuleGeneratorFromStream extends ExpertRuleGenerator {
 		
 		try{
 			InductionParameters params = new InductionParameters();
-			params.setInductionMeasure(createMeasure(PARAMETER_INDUCTION_MEASURE, new ClassificationMeasure(ClassificationMeasure.Correlation)));
-			params.setPruningMeasure(createMeasure(PARAMETER_INDUCTION_MEASURE, params.getInductionMeasure() )); 
-			params.setVotingMeasure(createMeasure(PARAMETER_VOTING_MEASURE, params.getInductionMeasure()));
+			params.setInductionMeasure(createMeasure(MeasureType.INDUCTION, new ClassificationMeasure(ClassificationMeasure.Correlation)));
+			params.setPruningMeasure(createMeasure(MeasureType.PRUNING, params.getInductionMeasure() )); 
+			params.setVotingMeasure(createMeasure(MeasureType.VOTING, params.getInductionMeasure()));
 
 			params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
 			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MIN_RULE_COVERED));
