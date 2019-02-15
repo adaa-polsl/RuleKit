@@ -7,8 +7,8 @@
    
    <operator>
 	   <key>expert_rule_generator</key>
-	   <name>Rule Generator</name>
-	   <synopsis>Rule generator</synopsis>
+	   <name>RuleKit Generator</name>
+	   <synopsis>RuleKit generator</synopsis>
 	   <help>
 	   Generates classification, regression, or survival rules.
 	   </help>
@@ -16,8 +16,8 @@
 	
 	 <operator>
 	   <key>rule_performance</key>
-	   <name>Rule Performance</name>
-	   <synopsis>Expert performance evaluator</synopsis>
+	   <name>RuleKit Performance</name>
+	   <synopsis>RuleKit performance evaluator</synopsis>
 	   <help>
 	   Evaluates performance of rule models.
 	   </help>

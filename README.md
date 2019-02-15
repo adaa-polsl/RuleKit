@@ -20,7 +20,8 @@ RuleKit is a comprehensive library for inducing rule-based data models [X]. It h
     2. [Prediction performance report](#52-prediction-performance-report)    	
 6. [User-guided induction](#6-user-guided-induction)
 7. [Library API](#7-library-api)
-[References](#references)
+   
+   [References](#references)
 
 <!-- toc -->
 
@@ -133,45 +134,45 @@ The `performance_file` is created for each parameter set under *<out_directory>/
 
 ## 1.4. Example
 
-Here we present how to prepare the XML experiment file for an example classification problem. Let the user be interested in two parameter sets:
-* *mincov = 5* with *C2* measure used for growing, pruning, and voting,
-* *mincov = 11* with *RSS* measure used for growing and pruning, and *BinaryEntropy* for voting.
+Here we present how to prepare the XML experiment file for an example classification problem. The investigated dataset concerns a problem of forecasting high energy seismic bumps in coal mines and is named *seismic-bumps*. Let the user be interested in two parameter sets:
+* *mincov = 5* with *RSS* measure used for growing, pruning, and voting,
+* *mincov = 8* with *BinaryEntropy* measure used for growing and pruning, and *C2* for voting.
 
 The corresponding parameter set definition is as follows:
 ```
 <parameter_sets>
-	<parameter_set name="mincov=5, C2">
-		<param name="min_rule_covered">5</param>
-		<param name="induction_measure">C2</param>
-		<param name="pruning_measure">C2</param>
-		<param name="voting_measure">C2</param>
-	</parameter_set>
-	
-	<parameter_set name="mincov=11, RSS_RSS_BinaryEntropy">
+	<parameter_set name="mincov=5, RSS">
 		<param name="min_rule_covered">5</param>
 		<param name="induction_measure">RSS</param>
 		<param name="pruning_measure">RSS</param>
-		<param name="voting_measure">BinaryEntropy</param>
+		<param name="voting_measure">RSS</param>
+	</parameter_set>
+	
+	<parameter_set name="mincov=8, Entropy_Entropy_C2">
+		<param name="min_rule_covered">8</param>
+		<param name="induction_measure">BinaryEntropy</param>
+		<param name="pruning_measure">BinaryEntropy</param>
+		<param name="voting_measure">C2</param>
 	</parameter_set>
 	
 </parameter_sets>
 ```    
 
-The experiment will be performed on a single dataset in 10-fold cross validation scheme with existing splits:
+The experiment will be performed on a single dataset in 10-fold cross validation scheme with existing splits ([download](examples/seismic-bumps/cv-splits)):
 * name of the label attribute: `class`,
 * no weighting,
 * output directory: *./result* 
 * training files:
-    * *./data/seismic-train-1.arff*
-    * *./data/seismic-train-2.arff*
+    * *./data/seismic-bumps-train-0.arff*
+    * *./data/seismic-bumps-train-1.arff*
     * ...
-    * *./data/seismic-train-10.arff*
+    * *./data/seismic-bumps-train-9.arff*
 * training log file: *training-log.txt*
 * testing files:
-    * *./data/seismic-test-1.arff*
-    * *./data/seismic-test-3.arff*
+    * *./data/seismic-bumps-test-0.arff*
+    * *./data/seismic-bumps-test-1.arff*
     * ...
-    * *./data/seismic-test-10.arff*
+    * *./data/seismic-bumps-test-9.arff*
 * testing performance file: *performance.csv*
 
 The corresponding dataset definition is as follows:
@@ -184,18 +185,18 @@ The corresponding dataset definition is as follows:
     <training>  
          <report_file>training-log.txt</report_file>           		
          <train>
-             <in_file>./data/seismic-train-1.arff</in_file>               	
-             <model_file>seismic-1.mdl</model_file> 
+             <in_file>./data/seismic-bumps-train-0.arff</in_file>               	
+             <model_file>seismic-bumps-0.mdl</model_file> 
          </train>
 		 
 		  <train>
-             <in_file>./data/seismic-train-2.arff</in_file>               	
-             <model_file>seismic-2.mdl</model_file> 
+             <in_file>./data/seismic-bumps-train-1.arff</in_file>               	
+             <model_file>seismic-bumps-1.mdl</model_file> 
          </train>
          ...
 		<train>
-             <in_file>/data/seismic-train-10.arff</in_file>               		
-             <model_file>seismic-10.mdl</model_file>  
+             <in_file>/data/seismic-bumps-train-9.arff</in_file>               		
+             <model_file>seismic-bumps-9.mdl</model_file>  
          </train>
 	 
 
@@ -204,22 +205,22 @@ The corresponding dataset definition is as follows:
     <prediction>
      	<performance_file>performance.csv</performance_file>  
          <predict>
-             <model_file>seismic-1.mdl</model_file>      	
-             <test_file>./data/seismic-test-1.arff</test_file>            			
-             <predictions_file>seismic-pred-1.arff</predictions_file>  	  
+             <model_file>seismic-bumps-0.mdl</model_file>      	
+             <test_file>./data/seismic-bumps-test-0.arff</test_file>            			
+             <predictions_file>seismic-bumps-pred-0.arff</predictions_file>  	  
          </predict>
 		 
 		  <predict>
-             <model_file>seismic-2.mdl</model_file>      	
-             <test_file>./data/seismic-test-2.arff</test_file>            			
-             <predictions_file>seismic-pred-2.arff</predictions_file>  	  
+             <model_file>seismic-bumps-1.mdl</model_file>      	
+             <test_file>./data/seismic-bumps-test-1.arff</test_file>            			
+             <predictions_file>seismic-bumps-pred-1.arff</predictions_file>  	  
          </predict>
 		 ...
 	 
 		<predict>
-             <model_file>seismic-10.mdl</model_file>      	
-             <test_file>./data/seismic-test-10.arff</test_file>            			
-             <predictions_file>seismic-pred-10.arff</predictions_file>   	
+             <model_file>seismic-bumps-9.mdl</model_file>      	
+             <test_file>./data/seismic-bumps-test-9.arff</test_file>            			
+             <predictions_file>seismic-bumps-pred-9.arff</predictions_file>   	
          </predict>
 
 	 
@@ -231,28 +232,28 @@ The corresponding dataset definition is as follows:
 In the training phase, RuleKit generates a subdirectory in the output directory for every investigated parameter set. 
 Each of these subdirectories contains the models (one per training file) and a common text report. 
 Therefore, the following files are produced as a result of training:
-* *./results/mincov=5, C2/seismic-1.mdl*
-* *./results/mincov=5, C2/seismic-2.mdl*
+* *./results/mincov=5, RSS/seismic-bumps-0.mdl*
+* *./results/mincov=5, RSS/seismic-bumps-1.mdl*
 * *...*
-* *./results/mincov=5, C2/seismic-10.mdl*
-* *./results/mincov=5, C2/training-log.txt*
-* *./results/mincov=11, RSS_RSS_BinaryEntropy/seismic-1.mdl*
-* *./results/mincov=11, RSS_RSS_BinaryEntropy/seismic-2.mdl*
+* *./results/mincov=5, RSS/seismic-bumps-9.mdl*
+* *./results/mincov=5, RSS/training-log.txt*
+* *./results/mincov=8, Entropy_Entropy_C2/seismic-bumps-0.mdl*
+* *./results/mincov=8, Entropy_Entropy_C2/seismic-bumps-1.mdl*
 * *...*
-* *./results/mincov=11, RSS_RSS_BinaryEntropy/seismic-10.mdl*
-* *./results/mincov=11, RSS_RSS_BinaryEntropy/training-log.txt*
+* *./results/mincov=8, Entropy_Entropy_C2/seismic-bumps-9.mdl*
+* *./results/mincov=8, Entropy_Entropy_C2/training-log.txt*
 
 In the prediction phase, previously-generated models are applied on the specified testing sets producing the following files:
-* *./results/mincov=5, C2/seismic-pred-1.arff*
-* *./results/mincov=5, C2/seismic-pred-2.arff*
+* *./results/mincov=5, RSS/seismic-bumps-pred-0.arff*
+* *./results/mincov=5, RSS/seismic-bumps-pred-1.arff*
 * *...*
-* *./results/mincov=5, C2/seismic-pred-10.arff*
-* *./results/mincov=5, C2/performance.csv*
-* *./results/mincov=11, RSS_RSS_BinaryEntropy/seismic-pred-1.arff*
-* *./results/mincov=11, RSS_RSS_BinaryEntropy/seismic-pred-2.arff*
+* *./results/mincov=5, RSS/seismic-bumps-pred-9.arff*
+* *./results/mincov=5, RSS/performance.csv*
+* *./results/mincov=8, Entropy_Entropy_C2/seismic-bumps-pred-0.arff*
+* *./results/mincov=8, Entropy_Entropy_C2/seismic-bumps-pred-1.arff*
 * *...*
-* *./results/mincov=11, RSS_RSS_BinaryEntropy/seismic-pred-10.arff*
-* *./results/mincov=11, RSS_RSS_BinaryEntropy/performance.csv*   
+* *./results/mincov=8, Entropy_Entropy_C2/seismic-bumps-pred-9.arff*
+* *./results/mincov=8, Entropy_Entropy_C2/performance.csv*   
 
 # 2. RapidMiner plugin
 
@@ -260,30 +261,38 @@ RuleKit can be used as a RapidMiner plugin.
 
 ## 2.1. Installation
 
+In order to integrate RuleKit with RapidMiner please download *adaa.analytics.rules-1.0.0-all.jar* plugin file (see Release tab) and place it in one of the following locations:
+* *lib/plugins* subdirectory in the RapidMiner installation directory,
+* *Extension directory* location (*RapidMiner Studio Preferences &rarr; Start-up* menu).
+
 ## 2.2. Usage
 
-The plugin consists of three operators:
-* Rule Generator,
-* Expert Rule Generator,
-* Rule Performance.
+The plugin consists of two operators:
+* *RuleKit Generator*,
+* *RuleKit Performance*,
 
-The automatic induction of rules can be done with a use of Rule Generator operator. The Expert Rule Generator additionally allows speficying user's knowledge. Both these operators are RapidMiner learners with a single *training set* input and three outputs: *model* (to be applied on unseen data), *example set* (input training set passed without any changes), and *estimated performance* (model characteristics discussed in [4.2](#42-model-characteristics)). 
+whicch can be found in *Extensions &rarr; ADAA &rarr; RuleKit* folder. 
 
-RuleKit automatically determines the type of the problem on the basis of the training set:
+The former allows inducing various typles of rule models. The operator is a RapidMiner learner with a single *training set* input and three outputs: *model* (to be applied on unseen data), *example set* (input training set passed without any changes), and *estimated performance* ([model characteristics](#42-model-characteristics)). RuleKit automatically determines the type of the problem and applies corresponding induction algorithm on the basis of the training set:
 * classification - nominal label attribute,
 * regression - numerical label attribute,
-* survival analysis - binary label attribute and numerical attribute with role *survival_time* specified (Figure 2.1).
+* survival analysis - binary label attribute and numerical attribute with role *survival_time* specified.
 
-| ![](figs/survival-role-setting.png) | 
-|:--:| 
-| Figure 2.1. Setting *survival_time* role in the training set. |
-
-Depending on the problem, the corresponding induction algorithm is applied. All the parameters configurable from the XML interface are accessible through RapidMiner GUI (Figure 2.2). 
+The *RuleKit Performance* operator allows assesing the model. It conforms to the standart *Performance* RM operator, thus it  contains *labelled data* and *performance* inputs. The former allows calculating various [performance metrices](#43-performance-metrices) on the model-labelled data, the latter can be used to capture [model characteristics](#42-model-characteristics) returned by the *RuleKit Generator*. 
 
 ## 2.3. Example
 
-In the following subsection we show an example regression analysis with a use of RuleKit RapidMiner plugin. 
+In the following subsection we show an example regression analysis with a use of RuleKit RapidMiner plugin. The investigated dataset is named *methane* and concerns the problem of predicting methane concentration in a coal mine. The set is split into separate testing and training parts distributed in ARFF format ([download](examples/methane)). The corresponding RapidMiner process is presented in Figure 2.2.
+ 
+After loading sets with *Read ARFF*, the *Set Role* operator is used for setting *MM116_pred* as the label attribute (in the survival analysis a *survival_time* role has to be additionally assigned to some other attribute). Then, the training set is provided as an input for *RuleKit Generator*. All the parameters configurable from the XML interface are accessible through the RapidMiner GUI. Let *mincov = 4* and *RSS* measure be used for growing, pruning, and voting. The corresponding panel with operator properties is presented in Figure 2.3. 
 
+| ![](doc/methane-process.png) | 
+|:--:| 
+| Figure 2.2. RapidMiner process for *methane* dataset analysis. |
+| ![](doc/generator-params.png) | 
+| Figure 2.3. RuleKit Generator parameters. |
+
+The model generated by RuleKit Generator is then applied on unseen data (*Apply Model* operator). The performance of prediction is assesed using *RuleKit Evaluator* operator. Estimated performance as well as generated model are passed as process outputs. 
 
 # 3. R package
 
@@ -371,7 +380,7 @@ Performance metrices are established on the basis of model outcome and real exam
 * accuracy
 * classification_error
 * balanced_accuracy
-* kappa - 
+* kappa  
 * #rules_per_example - average number of rules covering an example,
 * #voting_conflicts - number of voting conflicts (example covered by rules pointing to different classes),
 * #negative_voting_conflicts - number of voiting conflicts resolved incorrectly,
@@ -530,7 +539,7 @@ przeszczepy-test-r0-f9.arff,2018.10.10_19.24.18,7.400985905,7.287232628, 6.23420
 Expert knowledge is also specified through parameters:
 ```
 <parameter_set name="paramset_1">
-  	<param name="min_rule_cotvered">...</param>
+  	<param name="min_rule_covered">...</param>
   	<param name="induction_measure">...</param>
   	<param name="pruning_measure">...</param>
 	<param name="voting_measure">...</param>
