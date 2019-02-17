@@ -257,8 +257,6 @@ In the prediction phase, previously-generated models are applied on the specifie
 
 # 2. RapidMiner plugin
 
-RuleKit can be used as a RapidMiner plugin. 
-
 ## 2.1. Installation
 
 In order to integrate RuleKit with RapidMiner please download *adaa.analytics.rules-1.0.0-all.jar* plugin file (see Release tab) and place it in one of the following locations:
@@ -271,24 +269,30 @@ The plugin consists of two operators:
 * *RuleKit Generator*,
 * *RuleKit Performance*,
 
-whicch can be found in *Extensions &rarr; ADAA &rarr; RuleKit* folder. 
+which can be found in *Extensions &rarr; ADAA &rarr; RuleKit* folder. 
 
-The former allows inducing various typles of rule models. The operator is a RapidMiner learner with a single *training set* input and three outputs: *model* (to be applied on unseen data), *example set* (input training set passed without any changes), and *estimated performance* ([model characteristics](#42-model-characteristics)). RuleKit automatically determines the type of the problem and applies corresponding induction algorithm on the basis of the training set:
+The former allows inducing various typles of rule models. The operator is a RapidMiner learner with a single *training set* input and three outputs: *model* (to be applied on unseen data), *example set* (input training set passed without any changes), and *estimated performance* ([model characteristics](#42-model-characteristics)). RuleKit automatically determines the type of the problem on the basis of the training set metadata:  
 * classification - nominal label attribute,
 * regression - numerical label attribute,
 * survival analysis - binary label attribute and numerical attribute with role *survival_time* specified.
 
-The *RuleKit Performance* operator allows assesing the model. It conforms to the standart *Performance* RM operator, thus it  contains *labelled data* and *performance* inputs. The former allows calculating various [performance metrices](#43-performance-metrices) on the model-labelled data, the latter can be used to capture [model characteristics](#42-model-characteristics) returned by the *RuleKit Generator*. 
+The metadata are crucial for proper operation as they define available GUI parameters and induction algorithm to be used.
+
+The *RuleKit Performance* operator allows assesing the model. It conforms to the standart *Performance* RM operator, thus it  contains *labelled data* and *performance* inputs. The former allows calculating various [performance metrices](#43-performance-metrices) on the predicted data, the latter can be used to capture [model characteristics](#42-model-characteristics) returned by the *RuleKit Generator*. 
 
 ## 2.3. Example
 
-In the following subsection we show an example regression analysis with a use of RuleKit RapidMiner plugin. The investigated dataset is named *methane* and concerns the problem of predicting methane concentration in a coal mine. The set is split into separate testing and training parts distributed in ARFF format ([download](examples/methane)). The corresponding RapidMiner process is presented in Figure 2.2.
- 
-After loading sets with *Read ARFF*, the *Set Role* operator is used for setting *MM116_pred* as the label attribute (in the survival analysis a *survival_time* role has to be additionally assigned to some other attribute). Then, the training set is provided as an input for *RuleKit Generator*. All the parameters configurable from the XML interface are accessible through the RapidMiner GUI. Let *mincov = 4* and *RSS* measure be used for growing, pruning, and voting. The corresponding panel with operator properties is presented in Figure 2.3. 
+In the following subsection we show an example regression analysis with a use of RuleKit RapidMiner plugin. The investigated dataset is named *methane* and concerns the problem of predicting methane concentration in a coal mine. The set is split into separate testing and training parts distributed in ARFF format ([download](examples/methane)). The analysis is divided into two parts: data preparation and main processing. Corresponding RapidMiner processes are presented in Figure 2.1 and 2.2.
 
-| ![](doc/methane-process.png) | 
+The role of the preparation process is to add metadata to the sets and store them in the RM format (RapidMiner does not support metadata for ARFF files). After loading sets with *Read ARFF*, the *Set Role* operator is used for setting *MM116_pred* as the label attribute (in the survival analysis, a *survival_time* role has to be additionally assigned to some other attribute). Then, the sets are saved in RapidMiner local repository with *Store* operators.
+
+In the main process, datasets are loaded from RM repository with *Retrieve* operator. Then, the training set is provided as an input for *RuleKit Generator*. All the parameters configurable from the XML interface are accessible through the RapidMiner GUI. Let *mincov = 4* and *RSS* measure be used for growing, pruning, and voting. The corresponding panel with operator properties is presented in Figure 2.3. 
+
+| ![](doc/methane-prepare.png) | 
 |:--:| 
-| Figure 2.2. RapidMiner process for *methane* dataset analysis. |
+| Figure 2.1. Data preparation process. |
+| ![](doc/generator-process.png) | 
+| Figure 2.2. Main analysis process. |
 | ![](doc/generator-params.png) | 
 | Figure 2.3. RuleKit Generator parameters. |
 
