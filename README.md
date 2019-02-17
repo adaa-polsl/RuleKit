@@ -291,7 +291,7 @@ In the main process, datasets are loaded from RM repository with *Retrieve* oper
 | ![](doc/methane-prepare.png) | 
 |:--:| 
 | Figure 2.1. Data preparation process. |
-| ![](doc/generator-process.png) | 
+| ![](doc/methane-process.png) | 
 | Figure 2.2. Main analysis process. |
 | ![](doc/generator-params.png) | 
 | Figure 2.3. RuleKit Generator parameters. |
