@@ -56,29 +56,31 @@ where *experiments.xml* is an XML file with experimental setting description. Th
 
 ## 1.2. Parameter set definition
 
-This section allows user to specify induction parameters. The package enables testing multiple parameter sets in a single run. The definition of a single parameter sets is as follows: 
+This section allows user to specify induction parameters. The package enables testing multiple parameter sets in a single run. The definition of a single parameter is presented below. Every parameter has its default value, thus only selected may be specified by the user. 
 
 ```
 <parameter_set name="paramset_1">
-  	<param name="param_1">...</param>
-  	<param name="param_2">...</param>
-  	
-	<param name="param_N">...</param>
+  	<param name="min_rule_covered">...</param>
+  	<param name="max_uncovered_fraction">...</param>
+	<param name="max_growing">...</param>
+  	<param name="induction_measure">...</param>
+	<param name="pruning_measure">...</param>
+  	<param name="voting_measure">...</param>
+	<param name="ignore_missing">...</param>
 </parameter_set>
 ```    
-Every parameter has its default value, thus, there is no need to specify them all explicitly. Below there is detailed description of available parameters.
 
-| Name | Value type | Default | Meaning | 
-| :--- | :--- | :--- | :--- |
-| `min_rule_covered` | positive integer | 5 | minimum number of previously uncovered examples to be covered by a new rule (positive examples for the classification problems) |
-| `max_uncovered_fraction` | real from [0,1] interval | 0 | maximum fraction of examples that may remain uncovered by the rule set |
-| `max_growing` | non-negative integer (0 = no limit) | 0 | maximum number of conditions which can be added to the rule in the growing phase (use this parameter for large datasets if execution time is prohibitive) |
-| `induction_measure` | string from [particular set](#41-rule-quality) | Correlation | rule quality measure used during growing (ignored in survival analysis) |
-| `pruning_measure` | string from [particular set](#41-rule-quality) | Correlation | rule quality measure used during pruning (ignored in survival analysis) |
-| `voting_measure` | string from [particular set](#41-rule-quality) | Correlation | rule quality measure used for voting (ignored in survival analysis) |
-| `ignore_missing` | boolean | false | Tells whether missing values should be ignored (by default, a missing value of given attribute is always considered as not fulfilling the condition build upon that attribute) |
+where:
 
-Measure parameters are ignored in the survival analysis, as log-rank statistics is used for induction, pruning, and voting. Additional parameters concern user-guided generation of rules (details can be found [in this section](#6-user-guided-induction)). 
+* `min_rule_covered` - positive integer representing minimum number of previously uncovered examples to be covered by a new rule (positive examples for classification problems); default: 5,
+* `max_uncovered_fraction` - floating-point number from [0,1] interval representing maximum fraction of examples that may remain uncovered by the rule set; default: 0,
+* `max_growing` - non-negative integer representing maximum number of conditions which can be added to the rule in the growing phase (use this parameter for large datasets if execution time is prohibitive); 0 indicates no limit; default: 0,
+* `induction_measure` - name of the [rule quality measure](#41-rule-quality) used during growing (ignored in survival analysis); default: Correlation, 
+* `pruning_measure` - name of the [rule quality measure](#41-rule-quality) used during pruning (ignored in survival analysis); default: Correlation,
+* `voting_measure` - name of the [rule quality measure](#41-rule-quality) used for voting (ignored in survival analysis); default: Correlation, 
+* `ignore_missing` - boolean telling whether missing values should be ignored (by default, a missing value of given attribute is always considered as not fulfilling the condition build upon that attribute); default: false. 
+
+Measure parameters are ignored in the survival analysis, as log-rank statistics is used for induction, pruning, and voting. Additional parameters concerning user-guided generation of rules are described [in this section](#6-user-guided-induction). 
 
 
 ## 1.3. Dataset definition
@@ -549,14 +551,11 @@ przeszczepy-test-r0-f9.arff,2018.10.10_19.24.18,7.400985905,7.287232628, 6.23420
 
 # 6. User-guided induction
 
+RuleKit suite allows user-guided rule induction which follows the scheme introduced by the GuideR algorithm. The user's knowledge is specified by the following parameters:
 
-Expert knowledge is also specified through parameters:
 ```
 <parameter_set name="paramset_1">
-  	<param name="min_rule_covered">...</param>
-  	<param name="induction_measure">...</param>
-  	<param name="pruning_measure">...</param>
-	<param name="voting_measure">...</param>
+  	...
   	<param name="use_expert">true</param>
   	<param name="extend_using_preferred">...</param>
   	<param name="extend_using_automatic">...</param>
@@ -583,7 +582,7 @@ Expert knowledge is also specified through parameters:
 </parameter_set>
 ``` 
 
-Parameter meaning (symbols from the paper are given in parentheses):
+Parameter meaning (symbols from the GuideR paper are given in parentheses):
 * `use_expert` - boolean indicating whether user's knowledge should be used,
 * `expert_rules`(R<sub>&oplus;</sub>) - set of initial rules,
 * `expert_preferred_conditions`(C<sub>&oplus;</sub>, A<sub>&oplus;</sub>) - multiset of preferred conditions (used also for specifying preferred attributes by using special value `Any`),
@@ -600,6 +599,7 @@ Let us consider the following user's knowledge (superscripts next to C<sub>&oplu
 * A<sub>&oplus;</sub><sup>1</sup> = { gimpuls<sup>inf</sup> },
 * C<sub>&ominus;</sub><sup>0</sup> = { seismoacoustic = b },
 * A<sub>&ominus;</sub><sup>1</sup> = { ghazard }.
+
 The XML definition of this knowledge is presented below.
 ```
 <param name ="expert_rules">
@@ -621,6 +621,13 @@ Please note several remarks:
 * Conditions based on continuous attributes are represented as intervals. Left-closed intervals are specified using `&lt;` symbol as `<` is reserved by XML syntax (`rule-2`).
 * Multiplicity is specified before multiset element (`preferred-condition-1` and `preferred-condition-2`),
 * Preferred/forbidden attributes are defined as conditions with special value `Any` (`preferred-attribute-1`, `forbidden-attribute-1`).
+
+User's guided induction may also be executed from RapidMiner plugin and R package. In the former case, convinent wizards are provided for specifying expert rules, preferred conditions/attibutes, and forbidden conditions/attributes (Figure 6.1). However, the traditional, parameter-based method of defining expert's knowledge may also be used.
+
+| ![](doc/wizard.png) |
+|:--:| 
+| Figure 6.1. RapidMiner wizard for specifying user's rules, preferred conditions/attributes, and forbidden conditions/attributes.  |
+
 
 # 7. Library API
 
