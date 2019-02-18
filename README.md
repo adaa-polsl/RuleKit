@@ -8,8 +8,11 @@ RuleKit is a comprehensive library for inducing rule-based data models [X]. It h
     1. [General information](#11-general-information)
     2. [Parameter set definition](#12-parameter-set-definition)
     3. [Dataset definition](#13-dataset-definition)
-    4. [Examples](#14-example)
+    4. [Example](#14-example)
 2. [RapidMiner plugin](#2-rapidminer-plugin)
+	1. [Installation](#21-installation)
+	2. [Usage](#22-usage)
+	3. [Example](#23-example)
 3. [R package](#3-r-package)
 4. [Quality and evaluation](#4-quality-and-evaluation)
     1. [Rule quality](#41-rule-quality)
@@ -33,7 +36,7 @@ To run the analysis in the batch mode, use RuleKit JAR package (see Release tab 
 ```
 java -jar RuleKit experiments.xml
 ```
-where experiments.xml is an XML file with experimental setting description. The batch mode allows investigating multiple datasets with many induction parameters. The general XML structure is as follows:
+where *experiments.xml* is an XML file with experimental setting description. The batch mode allows investigating multiple datasets with many induction parameters. The general XML structure is as follows:
 
 ```
 </experiment>
@@ -53,23 +56,29 @@ where experiments.xml is an XML file with experimental setting description. The 
 
 ## 1.2. Parameter set definition
 
-This section allows user to specify induction parameters. The package enables testing multiple parameter sets in a single run. Every parameter has its default value, thus, only selected parameters may be explicitly given. In the automatic induction, the following parameters apply:
+This section allows user to specify induction parameters. The package enables testing multiple parameter sets in a single run. The definition of a single parameter sets is as follows: 
 
 ```
 <parameter_set name="paramset_1">
-  	<param name="min_rule_covered">...</param>
-  	<param name="induction_measure">...</param>
-  	<param name="pruning_measure">...</param>
-	<param name="voting_measure">...</param>
+  	<param name="param_1">...</param>
+  	<param name="param_2">...</param>
+  	
+	<param name="param_N">...</param>
 </parameter_set>
 ```    
-where:
-* `min_rule_covered` - minimum number of previously uncovered examples to be covered by a new rule (positive examples for the classification problems),
-* `induction_measure` - rule quality measure used during growing,
-* `pruning_measure` - rule quality measure used during pruning,
-* `voting_measure` - rule quality measure used for voting.
+Every parameter has its default value, thus, there is no need to specify them all explicitly. Below there is detailed description of available parameters.
 
-Measure parameters apply only for classification and regression tasks and may have one of the values described in 4.1 section. In the survival analysis, log-rank statistics is used for induction, pruning, and voting.
+| Name | Value type | Default | Meaning | 
+| :--- | :--- | :--- | :--- |
+| `min_rule_covered` | positive integer | 5 | minimum number of previously uncovered examples to be covered by a new rule (positive examples for the classification problems) |
+| `max_uncovered_fraction` | real from [0,1] interval | 0 | maximum fraction of examples that may remain uncovered by the rule set |
+| `max_growing` | non-negative integer (0 = no limit) | 0 | maximum number of conditions which can be added to the rule in the growing phase (use this parameter for large datasets if execution time is prohibitive) |
+| `induction_measure` | string from [particular set](#41-rule-quality) | Correlation | rule quality measure used during growing (ignored in survival analysis) |
+| `pruning_measure` | string from [particular set](#41-rule-quality) | Correlation | rule quality measure used during pruning (ignored in survival analysis) |
+| `voting_measure` | string from [particular set](#41-rule-quality) | Correlation | rule quality measure used for voting (ignored in survival analysis) |
+| `ignore_missing` | boolean | false | Tells whether missing values should be ignored (by default, a missing value of given attribute is always considered as not fulfilling the condition build upon that attribute) |
+
+Measure parameters are ignored in the survival analysis, as log-rank statistics is used for induction, pruning, and voting. Additional parameters concern user-guided generation of rules (details can be found [in this section](#6-user-guided-induction)). 
 
 
 ## 1.3. Dataset definition
@@ -230,8 +239,8 @@ The corresponding dataset definition is as follows:
 ```
 
 In the training phase, RuleKit generates a subdirectory in the output directory for every investigated parameter set. 
-Each of these subdirectories contains the models (one per training file) and a common text report. 
-Therefore, the following files are produced as a result of training:
+Each of these subdirectories contains models (one per training file) and a common text report. 
+Therefore, the following files are produced as a result of the training:
 * *./results/mincov=5, RSS/seismic-bumps-0.mdl*
 * *./results/mincov=5, RSS/seismic-bumps-1.mdl*
 * *...*
@@ -271,7 +280,7 @@ The plugin consists of two operators:
 
 which can be found in *Extensions &rarr; ADAA &rarr; RuleKit* folder. 
 
-The former allows inducing various typles of rule models. The operator is a RapidMiner learner with a single *training set* input and three outputs: *model* (to be applied on unseen data), *example set* (input training set passed without any changes), and *estimated performance* ([model characteristics](#42-model-characteristics)). RuleKit automatically determines the type of the problem on the basis of the training set metadata:  
+The former operator allows inducing various typles of rule models. It is a RapidMiner learner with a single *training set* input and three outputs: *model* (to be applied on unseen data), *example set* (input training set passed without any changes), and *estimated performance* ([model characteristics](#42-model-characteristics)). RuleKit automatically determines the type of the problem on the basis of the training set metadata:  
 * classification - nominal label attribute,
 * regression - numerical label attribute,
 * survival analysis - binary label attribute and numerical attribute with role *survival_time* specified.
@@ -284,19 +293,20 @@ The *RuleKit Performance* operator allows assesing the model. It conforms to the
 
 In the following subsection we show an example regression analysis with a use of RuleKit RapidMiner plugin. The investigated dataset is named *methane* and concerns the problem of predicting methane concentration in a coal mine. The set is split into separate testing and training parts distributed in ARFF format ([download](examples/methane)). The analysis is divided into two parts: data preparation and main processing. Corresponding RapidMiner processes are presented in Figure 2.1 and 2.2.
 
-The role of the preparation process is to add metadata to the sets and store them in the RM format (RapidMiner does not support metadata for ARFF files). After loading sets with *Read ARFF*, the *Set Role* operator is used for setting *MM116_pred* as the label attribute (in the survival analysis, a *survival_time* role has to be additionally assigned to some other attribute). Then, the sets are saved in RapidMiner local repository with *Store* operators.
+The role of the preparation process is to add metadata to the sets and store them in the RM format (RapidMiner does not support metadata for ARFF files). After loading sets with *Read ARFF*, the *Set Role* operator is used for setting *MM116_pred* as the label attribute (in the survival analysis, a *survival_time* role has to be additionally assigned to some other attribute). Then, the sets are saved in the RapidMiner local repository with *Store* operators.
 
-In the main process, datasets are loaded from RM repository with *Retrieve* operator. Then, the training set is provided as an input for *RuleKit Generator*. All the parameters configurable from the XML interface are accessible through the RapidMiner GUI. Let *mincov = 4* and *RSS* measure be used for growing, pruning, and voting. The corresponding panel with operator properties is presented in Figure 2.3. 
+In the main process, datasets are loaded from the RM repository with *Retrieve* operator. Then, the training set is provided as an input for *RuleKit Generator*. All the parameters configurable from the XML interface are accessible through the RapidMiner GUI. Let *mincov = 4* and *RSS* measure be used for growing, pruning, and voting. The corresponding panel with operator properties is presented in Figure 2.3. 
 
-| ![](doc/methane-prepare.png) | 
+||
 |:--:| 
+| ![](doc/methane-prepare.png) | 
 | Figure 2.1. Data preparation process. |
 | ![](doc/methane-process.png) | 
 | Figure 2.2. Main analysis process. |
 | ![](doc/generator-params.png) | 
 | Figure 2.3. RuleKit Generator parameters. |
 
-The model generated by RuleKit Generator is then applied on unseen data (*Apply Model* operator). The performance of prediction is assesed using *RuleKit Evaluator* operator. Estimated performance as well as generated model are passed as process outputs. 
+The model generated by RuleKit Generator is then applied on unseen data (*Apply Model* operator). The performance of the prediction is assesed using *RuleKit Evaluator* operator. [Performance metrices](#43-performance-metrices) as well as generated model are passed as process outputs. The text representation of the model was presented in the [training report description](#51-training-report).
 
 # 3. R package
 
@@ -304,7 +314,7 @@ The model generated by RuleKit Generator is then applied on unseen data (*Apply 
 
 ## 4.1. Rule quality
 
-An important factor determining performance and comprehensibility of the resulting model is a selection of a rule quality measure. RuleKit provides user with a number of state-of-art measures calculated on the basis of the confusion matrix. The matrix consists of the number of positive and negative examples in the entire training set (*P* and *N*) and the number of positive and negative examples covered by the rule (*p* and *n*). The measures based on confusion matrix can be used for classification and regression problems (note, that for the former *P* and *N* are fixed for each analyzed class, while for the latter *P* and *N* are determined for every rule on the basis of covered examples). In the case of survival problems, log-rank statistics is always used as for determining rules quality (for simplicity, all examples are assumed positive, thus *N* and *n* equal to 0). Below one can find all available measures together with formulas. 
+An important factor determining performance and comprehensibility of the resulting model is a selection of a rule quality measure. RuleKit provides user with a number of state-of-art measures calculated on the basis of the confusion matrix. The matrix consists of the number of positive and negative examples in the entire training set (*P* and *N*) and the number of positive and negative examples covered by the rule (*p* and *n*). The measures based on the confusion matrix can be used for classification and regression problems (note, that for the former *P* and *N* are fixed for each analyzed class, while for the latter *P* and *N* are determined for every rule on the basis of covered examples). In the case of survival problems, log-rank statistics is always used for determining rules quality (for simplicity, all examples are assumed positive, thus *N* and *n* equal to 0). Below one can find all available measures together with formulas. 
 
 | Quality measure 			| Formula |
 | :--- 						| :--- |

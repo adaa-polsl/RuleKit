@@ -169,8 +169,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 				PARAMETER_MIN_RULE_COVERED, getParameterDescription(PARAMETER_MIN_RULE_COVERED), 0, Double.MAX_VALUE, 5));
 		types.add(new ParameterTypeDouble(
 				PARAMETER_MAX_UNCOVERED_FRACTION, getParameterDescription(PARAMETER_MAX_UNCOVERED_FRACTION), 0, Double.MAX_VALUE, 0));
-		types.add(new ParameterTypeBoolean(
-				PARAMETER_IGNORE_MISSING, getParameterDescription(PARAMETER_IGNORE_MISSING), false));
+		
 		types.add(new ParameterTypeDouble(
 				PARAMETER_MAX_GROWING, getParameterDescription(PARAMETER_MAX_GROWING), 0, Double.MAX_VALUE, 0));
 
@@ -224,6 +223,8 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		tmp.registerDependencyCondition(new EqualStringCondition(this,PARAMETER_VOTING_MEASURE,true,"UserDefined"));
 		types.add(tmp);
 		
+		types.add(new ParameterTypeBoolean(
+				PARAMETER_IGNORE_MISSING, getParameterDescription(PARAMETER_IGNORE_MISSING), false));
 		
 		return types;
     }
