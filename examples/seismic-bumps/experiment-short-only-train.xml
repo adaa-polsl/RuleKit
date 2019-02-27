@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<experiment>
+	<parameter_sets>
+		<parameter_set name="mincov=5, RSS">
+			<param name="min_rule_covered">5</param>
+			<param name="induction_measure">RSS</param>
+			<param name="pruning_measure">RSS</param>
+			<param name="voting_measure">RSS</param>
+		</parameter_set>
+	</parameter_sets>
+
+	<datasets>
+		<dataset>
+			<label>class</label>
+			<out_directory>./results</out_directory>		
+    
+			<training>  
+				<report_file>training-log.txt</report_file>      
+				 
+				<train>
+					 <in_file>../examples/seismic-bumps/cv-splits/seismic-bumps-train-7.arff</in_file>               		
+					 <model_file>seismic-bumps-7.mdl</model_file>  
+				 </train>
+			</training>
+    
+		</dataset>
+  	</datasets>
+</experiment>
