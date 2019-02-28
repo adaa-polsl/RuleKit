@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<experiment>
+	<parameter_sets>
+	
+		
+		<!--================================================================================================================-->
+	<parameter_set name="auto">
+			<param name="min_rule_covered">4</param>
+			<param name="induction_measure">RSS</param>
+			<param name="pruning_measure">RSS</param>
+			<param name="voting_measure">RSS</param>
+		</parameter_set>
+	
+		<!--================================================================================================================-->
+		
+		<parameter_set name="guided-r1, PD=0 or PD=1">
+			<param name="min_rule_covered">4</param>
+			<param name="induction_measure">RSS</param>
+			<param name="pruning_measure">RSS</param>	
+			<param name="voting_measure">RSS</param>			
+			<param name="use_expert">true</param>
+			<param name="extend_using_preferred">false</param>
+			<param name="extend_using_automatic">false</param>
+			<param name="induce_using_preferred">true</param>
+			<param name="induce_using_automatic">true</param>
+			<param name ="expert_rules">
+			</param>
+			<param name ="expert_preferred_conditions">
+				<entry name="preferred-condition-0">3: IF PD = &lt;0.5, inf) THEN MM116_pred = {NaN}</entry>
+				<entry name="preferred-condition-1">3: IF PD = (-inf, 0.5) THEN MM116_pred = {NaN}</entry>
+			</param>
+		</parameter_set>
+		
+		<!--================================================================================================================-->
+		
+		<parameter_set name="guided-r2, PD=1 and MM116 le 1">
+			<param name="min_rule_covered">4</param>
+			<param name="induction_measure">RSS</param>
+			<param name="pruning_measure">RSS</param>
+			<param name="voting_measure">RSS</param>			
+			<param name="use_expert">true</param>
+			<param name="extend_using_preferred">false</param>
+			<param name="extend_using_automatic">false</param>
+			<param name="induce_using_preferred">true</param>
+			<param name="induce_using_automatic">true</param>
+			<param name ="expert_rules">
+			</param>
+			<param name ="expert_preferred_conditions">
+				<entry name="preferred-condition-0">5: IF PD = &lt;0.5, inf) AND MM116 = (-inf, 1.0) THEN MM116_pred = {NaN}</entry>
+			</param>
+		</parameter_set>
+		
+		<!--================================================================================================================-->
+		
+		<parameter_set name="guided-r3, PD=0 and MM116 ge 1">
+			<param name="min_rule_covered">4</param>
+			<param name="induction_measure">RSS</param>
+			<param name="pruning_measure">RSS</param>
+			<param name="voting_measure">RSS</param>			
+			<param name="use_expert">true</param>
+			<param name="extend_using_preferred">false</param>
+			<param name="extend_using_automatic">false</param>
+			<param name="induce_using_preferred">true</param>
+			<param name="induce_using_automatic">true</param>
+			<param name ="expert_rules">
+			</param>
+			<param name ="expert_preferred_conditions">
+				<entry name="preferred-condition-0">5: IF PD = (-inf, 0.5) AND MM116 = (1.0, inf) THEN MM116_pred = {NaN}</entry>
+			</param>
+		</parameter_set>
+		
+		<!--================================================================================================================-->
+		
+		<parameter_set name="guided-r4, DMM and MM116 and PD">
+			<param name="min_rule_covered">4</param>
+			<param name="induction_measure">RSS</param>
+			<param name="pruning_measure">RSS</param>
+			<param name="voting_measure">RSS</param>			
+			<param name="use_expert">true</param>
+			<param name="extend_using_preferred">false</param>
+			<param name="extend_using_automatic">false</param>
+			<param name="induce_using_preferred">true</param>
+			<param name="induce_using_automatic">true</param>
+			<param name ="expert_rules">
+			</param>
+			<param name ="expert_preferred_conditions">
+				<entry name="preferred-attribute-0">inf: IF PD = Any THEN MM116_pred = {NaN}</entry>
+				<entry name="preferred-attribute-1">inf: IF MM116 = Any THEN MM116_pred = {NaN}</entry>
+				<entry name="preferred-attribute-2">inf: IF DMM116 = Any THEN MM116_pred = {NaN}</entry>
+			</param>
+		</parameter_set>
+		
+		<!--================================================================================================================-->
+
+
+	</parameter_sets>
+
+	<datasets>
+
+		<dataset>
+			<label>MM116_pred</label>
+			<out_directory>./methane-results</out_directory>		
+			<training>  
+				<report_file>training-log.txt</report_file>      
+				 
+				<train>
+					 <in_file>./methane/methane-train.arff</in_file>               		
+					 <model_file>methane-train.mdl</model_file>  
+				 </train>
+				 
+				 <train>
+					 <in_file>./methane/methane-full.arff</in_file>               		
+					 <model_file>methane-full.mdl</model_file>  
+				 </train>
+			</training>
+    
+			<prediction>
+				<performance_file>performance.csv</performance_file>  
+				
+				<predict>
+					<model_file>methane-train.mdl</model_file>      	
+					<test_file>./methane/methane-test.arff</test_file>            			
+					<predictions_file>methane-test-pred.arff</predictions_file>   	
+				</predict>
+				
+				
+			</prediction>
+    
+		</dataset>
+
+	</datasets>
+</experiment>
