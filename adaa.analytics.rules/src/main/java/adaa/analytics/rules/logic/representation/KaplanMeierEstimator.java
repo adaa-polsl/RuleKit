@@ -5,9 +5,15 @@ import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class KaplanMeierEstimator {
+public class KaplanMeierEstimator implements Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6949465091584014494L;
 	
 	protected ArrayList<SurvInfo> survInfo = new ArrayList<SurvInfo>();
 	
@@ -282,8 +288,13 @@ public class KaplanMeierEstimator {
      * @author Adam
      *
      */
-    class SurvInfo  {
-        public static final int NotAssigned = Integer.MIN_VALUE;
+    class SurvInfo  implements Serializable {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 8276994296125818327L;
+
+		public static final int NotAssigned = Integer.MIN_VALUE;
 
         protected double time;
         private int eventsCount = NotAssigned;

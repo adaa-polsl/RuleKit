@@ -215,15 +215,15 @@ public class TrainTestValidationExperiment extends ExperimentBase {
                     Model model = (Model)objs[1];
                     sb.append(model.toString());
 
-                    sb.append("\n");
-
+                    sb.append("\nModel characteristics:\n");
+                    	
                     performance = RuleGenerator.recalculatePerformance((RuleSetBase)model);
                     for (String name : performance.getCriteriaNames()) {
                         double avg = performance.getCriterion(name).getAverage();
                         sb.append(name).append(": ").append(avg).append("\n");
                     }
 
-                    sb.append("\n");
+                    sb.append("\nTraining set performance:\n");
 
                     performance = (PerformanceVector)objs[0];
                     // add performance
@@ -273,8 +273,14 @@ public class TrainTestValidationExperiment extends ExperimentBase {
                 // Performance log
                 if(qualityReport != null){
 
-                    PerformanceVector performance = (PerformanceVector)objs[0];
-
+                    PerformanceVector testPerformance = (PerformanceVector)objs[0];
+                	RuleSetBase model = (RuleSetBase)objs[1];
+                	PerformanceVector performance = RuleGenerator.recalculatePerformance(model); 
+                        	
+                	for (String name : testPerformance.getCriteriaNames()) {
+                		performance.addCriterion(testPerformance.getCriterion(name));
+                	}
+                	
                     String[] columns = performance.getCriteriaNames();
 
                     Logger.log(performance + "\n", Level.FINE);
