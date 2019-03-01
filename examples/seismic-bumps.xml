@@ -1,0 +1,358 @@
+<?xml version="1.0"?>
+<experiment>
+	<parameter_sets>
+	
+	
+	<!--
+		<parameter_set name="auto">
+			<param name="min_rule_covered">8</param>
+			<param name="induction_measure">BinaryEntropy</param>
+			<param name="pruning_measure">BinaryEntropy</param>
+			<param name="voting_measure">C2</param>
+			<param name="max_growing">0</param>
+		</parameter_set>
+		
+		-->
+		
+		<!--=======================================================================================================================-->
+		
+		
+		<parameter_set name="guided-c1, gimpuls_750">
+			<param name="min_rule_covered">8</param>
+			<param name="induction_measure">BinaryEntropy</param>
+			<param name="pruning_measure">BinaryEntropy</param>
+			<param name="voting_measure">C2</param>
+			<param name="max_growing">0</param>
+			<param name="use_expert">true</param>
+			<param name="extend_using_preferred">false</param>
+			<param name="extend_using_automatic">false</param>
+			<param name="induce_using_preferred">false</param>
+			<param name="induce_using_automatic">false</param>
+			<param name ="expert_rules">
+				<entry name="rule-0">IF [[gimpuls = (-inf, 750)]] THEN class = {0}</entry>
+				<entry name="rule-1">IF [[gimpuls = &lt;750, inf)]] THEN class = {1}</entry>
+			</param>
+			<param name ="expert_preferred_conditions">
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>	
+		</parameter_set>
+		
+				
+
+		<!--=======================================================================================================================-->
+		
+		
+		<parameter_set name="guided-c2, gimpuls_750 extended">
+			<param name="min_rule_covered">8</param>
+			<param name="induction_measure">BinaryEntropy</param>
+			<param name="pruning_measure">BinaryEntropy</param>
+			<param name="voting_measure">C2</param>
+			<param name="max_growing">0</param>
+			<param name="use_expert">true</param>
+			<param name="extend_using_preferred">false</param>
+			<param name="extend_using_automatic">true</param>
+			<param name="induce_using_preferred">true</param>
+			<param name="induce_using_automatic">true</param>
+			<param name ="expert_rules">
+			</param>
+			<param name ="expert_preferred_conditions">
+				<entry name="preferred-attribute-0">1: IF [[gimpuls = Any]] THEN class = {0}</entry>
+				<entry name="preferred-attribute-1">1: IF [[gimpuls = Any]] THEN class = {1}</entry>
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>
+		</parameter_set>
+		
+				
+		
+		
+		<!--=======================================================================================================================-->
+		
+		
+		<parameter_set name="guided-c3, gimpuls_genergy_senergy">
+			<param name="min_rule_covered">8</param>
+			<param name="induction_measure">BinaryEntropy</param>
+			<param name="pruning_measure">BinaryEntropy</param>
+			<param name="voting_measure">C2</param>
+			<param name="max_growing">0</param>
+			<param name="use_expert">true</param>
+			<param name="extend_using_preferred">false</param>
+			<param name="extend_using_automatic">false</param>
+			<param name="induce_using_preferred">true</param>
+			<param name="induce_using_automatic">true</param>
+			<param name="preferred_attributes_per_rule">2</param>
+			<param name ="expert_rules">
+			</param>
+			<param name ="expert_preferred_conditions">
+				<entry name="preferred-attribute-0">inf: IF [[genergy = Any]] THEN class = {0}</entry>
+				<entry name="preferred-attribute-1">inf: IF [[senergy = Any]] THEN class = {0}</entry>
+				<entry name="preferred-attribute-2">inf: IF [[gimpuls = Any]] THEN class = {0}</entry>
+				<entry name="preferred-attribute-3">inf: IF [[genergy = Any]] THEN class = {1}</entry>
+				<entry name="preferred-attribute-4">inf: IF [[senergy = Any]] THEN class = {1}</entry>
+				<entry name="preferred-attribute-5">inf: IF [[gimpuls = Any]] THEN class = {1}</entry>
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>	
+		</parameter_set>
+		
+				
+		
+		<!--=======================================================================================================================-->
+				
+		<parameter_set name="guided-c4, seismic OR seismoacoustic OR ghazard">
+			<param name="min_rule_covered">8</param>
+			<param name="induction_measure">BinaryEntropy</param>
+			<param name="pruning_measure">BinaryEntropy</param>
+			<param name="voting_measure">C2</param>
+			<param name="max_growing">0</param>
+			<param name="use_expert">true</param>
+			<param name="extend_using_preferred">false</param>
+			<param name="extend_using_automatic">true</param>
+			<param name="induce_using_preferred">true</param>
+			<param name="induce_using_automatic">true</param>
+			<param name="consider_other_classes">false</param>
+			<param name="preferred_conditions_per_rule">1</param>
+			<param name ="expert_rules">	
+			</param>
+			<param name ="expert_preferred_conditions">
+				<entry name="preferred-condition-01">inf: IF [[seismic = {a}]] THEN class = {0}</entry>
+				<entry name="preferred-condition-02">inf: IF [[seismic = {b}]] THEN class = {0}</entry>
+				<entry name="preferred-condition-03">inf: IF [[seismoacoustic = {a}]] THEN class = {0}</entry>
+				<entry name="preferred-condition-04">inf: IF [[seismoacoustic = {b}]] THEN class = {0}</entry>
+				<entry name="preferred-condition-05">inf: IF [[ghazard = {a}]] THEN class = {0}</entry>
+				<entry name="preferred-condition-06">inf: IF [[ghazard = {b}]] THEN class = {0}</entry>
+				
+				<entry name="preferred-condition-11">inf: IF [[seismic = {b}]] THEN class = {1}</entry>
+				<entry name="preferred-condition-12">inf: IF [[seismic = {c}]] THEN class = {1}</entry>
+				<entry name="preferred-condition-13">inf: IF [[seismic = {d}]] THEN class = {1}</entry>
+				<entry name="preferred-condition-14">inf: IF [[seismoacoustic = {b}]] THEN class = {1}</entry>
+				<entry name="preferred-condition-15">inf: IF [[seismoacoustic = {c}]] THEN class = {1}</entry>
+				<entry name="preferred-condition-16">inf: IF [[seismoacoustic = {d}]] THEN class = {1}</entry>
+				<entry name="preferred-condition-17">inf: IF [[ghazard = {b}]] THEN class = {1}</entry>
+				<entry name="preferred-condition-18">inf: IF [[ghazard = {c}]] THEN class = {1}</entry>
+<entry name="preferred-condition-19">inf: IF [[ghazard = {d}]] THEN class = {1}</entry>
+			</param>
+			<param name ="expert_forbidden_conditions">
+				
+			</param>
+			
+		</parameter_set>
+		
+				
+		
+		<!--=======================================================================================================================-->
+		
+		
+		<parameter_set name="guided-c5, +seismic +nbumps +energy +maxenergy +shift">
+			<param name="min_rule_covered">8</param>
+			<param name="induction_measure">BinaryEntropy</param>
+			<param name="pruning_measure">BinaryEntropy</param>
+			<param name="voting_measure">C2</param>
+			<param name="max_growing">0</param>
+			<param name="use_expert">true</param>
+			<param name="extend_using_preferred">false</param>
+			<param name="extend_using_automatic">false</param>
+			<param name="induce_using_preferred">false</param>
+			<param name="induce_using_automatic">true</param>
+			<param name="consider_other_classes">false</param>
+			<param name ="expert_rules">
+			</param>
+			<param name ="expert_preferred_conditions">
+			</param>
+			<param name ="expert_forbidden_conditions">
+				<entry name="forb-attribute-00">1: IF [[seismoacoustic = Any]] THEN class = {0}</entry>
+				<entry name="forb-attribute-01">1: IF [[gimpuls = Any]] THEN class = {0}</entry>
+				<entry name="forb-attribute-02">1: IF [[goimpuls = Any]] THEN class = {0}</entry>
+				<entry name="forb-attribute-03">1: IF [[ghazard = Any]] THEN class = {0}</entry>
+	
+				<entry name="forb-attribute-10">1: IF [[seismoacoustic = Any]] THEN class = {1}</entry>
+				<entry name="forb-attribute-11">1: IF [[gimpuls = Any]] THEN class = {1}</entry>
+				<entry name="forb-attribute-12">1: IF [[goimpuls = Any]] THEN class = {1}</entry>
+				<entry name="forb-attribute-13">1: IF [[ghazard = Any]] THEN class = {1}</entry>
+			</param>
+			
+		</parameter_set>
+		
+		
+				
+		
+		<!--=======================================================================================================================-->
+		
+		
+		<parameter_set name="guided-c6, +seismoacoustic +shift +genergy +gimpuls +genergy +goimpuls +ghazard">
+			<param name="min_rule_covered">8</param>
+			<param name="induction_measure">BinaryEntropy</param>
+			<param name="pruning_measure">BinaryEntropy</param>
+			<param name="voting_measure">C2</param>
+			<param name="max_growing">0</param>
+			<param name="use_expert">true</param>
+			<param name="extend_using_preferred">false</param>
+			<param name="extend_using_automatic">false</param>
+			<param name="induce_using_preferred">false</param>
+			<param name="induce_using_automatic">true</param>
+			<param name="consider_other_classes">false</param>
+			<param name ="expert_rules">
+			</param>
+			<param name ="expert_preferred_conditions">
+			</param>
+			<param name ="expert_forbidden_conditions">
+				<entry name="forb-attribute-000">1: IF [[nbumps = Any]] THEN class = {0}</entry>
+				<entry name="forb-attribute-001">1: IF [[nbumps2 = Any]] THEN class = {0}</entry>
+				<entry name="forb-attribute-002">1: IF [[nbumps4 = Any]] THEN class = {0}</entry>
+				<entry name="forb-attribute-003">1: IF [[nbumps5 = Any]] THEN class = {0}</entry>
+				<entry name="forb-attribute-004">1: IF [[nbumps6 = Any]] THEN class = {0}</entry>
+				<entry name="forb-attribute-005">1: IF [[nbumps7 = Any]] THEN class = {0}</entry>
+				<entry name="forb-attribute-006">1: IF [[nbumps89 = Any]] THEN class = {0}</entry>
+				<entry name="forb-attribute-007">1: IF [[senergy = Any]] THEN class = {0}</entry>
+				<entry name="forb-attribute-008">1: IF [[maxenergy = Any]] THEN class = {0}</entry>
+				<entry name="forb-attribute-009">1: IF [[seismic = Any]] THEN class = {0}</entry>
+				<entry name="forb-attribute-010">1: IF [[nbumps3 = Any]] THEN class = {0}</entry>
+			
+				<entry name="forb-attribute-100">1: IF [[nbumps = Any]] THEN class = {1}</entry>
+				<entry name="forb-attribute-101">1: IF [[nbumps2 = Any]] THEN class = {1}</entry>
+				<entry name="forb-attribute-102">1: IF [[nbumps4 = Any]] THEN class = {1}</entry>
+				<entry name="forb-attribute-103">1: IF [[nbumps5 = Any]] THEN class = {1}</entry>
+				<entry name="forb-attribute-104">1: IF [[nbumps6 = Any]] THEN class = {1}</entry>
+				<entry name="forb-attribute-105">1: IF [[nbumps7 = Any]] THEN class = {1}</entry>
+				<entry name="forb-attribute-106">1: IF [[nbumps89 = Any]] THEN class = {1}</entry>
+				<entry name="forb-attribute-107">1: IF [[senergy = Any]] THEN class = {1}</entry>
+				<entry name="forb-attribute-108">1: IF [[maxenergy = Any]] THEN class = {1}</entry>
+				<entry name="forb-attribute-109">1: IF [[seismic = Any]] THEN class = {1}</entry>
+				<entry name="forb-attribute-110">1: IF [[nbumps3 = Any]] THEN class = {1}</entry>
+			</param>
+		</parameter_set>
+	</parameter_sets>
+
+	<datasets>
+		<dataset>
+			<label>class</label>
+			<out_directory>./seismic-bumps-results</out_directory>		
+    
+			<training>  
+				 <report_file>training.txt</report_file>    
+
+				<train>
+					 <in_file>./seismic-bumps/seismic-bumps.arff</in_file>               	
+					 <model_file>seismic-bumps.mdl</model_file> 
+				 </train>
+			<!--	 
+				 <train>
+					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-0.arff</in_file>               	
+					 <model_file>seismic-bumps-0.mdl</model_file> 
+				 </train>
+				 
+				  <train>
+					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-1.arff</in_file>               	
+					 <model_file>seismic-bumps-1.mdl</model_file> 
+				 </train>
+				 
+				  <train>
+					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-2.arff</in_file>               	
+					 <model_file>seismic-bumps-2.mdl</model_file> 
+				 </train>
+				 
+				  <train>
+					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-3.arff</in_file>               	
+					 <model_file>seismic-bumps-3.mdl</model_file> 
+				 </train>
+				 
+				  <train>
+					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-4.arff</in_file>               	
+					 <model_file>seismic-bumps-4.mdl</model_file> 
+				 </train>
+				 
+				  <train>
+					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-5.arff</in_file>               	
+					 <model_file>seismic-bumps-5.mdl</model_file> 
+				 </train>
+				 
+				  <train>
+					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-6.arff</in_file>               	
+					 <model_file>seismic-bumps-6.mdl</model_file> 
+				 </train>
+				 
+				  <train>
+					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-7.arff</in_file>               	
+					 <model_file>seismic-bumps-7.mdl</model_file> 
+				 </train>
+				 
+				  <train>
+					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-8.arff</in_file>               	
+					 <model_file>seismic-bumps-8.mdl</model_file> 
+				 </train>
+
+				<train>
+					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-9.arff</in_file>               		
+					 <model_file>seismic-bumps-9.mdl</model_file>  
+				 </train>
+				 -->
+			</training>
+    <!--
+			<prediction>
+				<performance_file>performance.csv</performance_file>  
+				<predict>
+					<model_file>seismic-bumps-0.mdl</model_file>      	
+					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-0.arff</test_file>            			
+					<predictions_file>seismic-bumps-pred-0.arff</predictions_file>  	  
+				</predict>
+				 
+				<predict>
+					<model_file>seismic-bumps-1.mdl</model_file>      	
+					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-1.arff</test_file>            			
+					<predictions_file>seismic-bumps-pred-1.arff</predictions_file>  	  
+				</predict>
+				 
+				<predict>
+					<model_file>seismic-bumps-2.mdl</model_file>      	
+					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-2.arff</test_file>            			
+					<predictions_file>seismic-bumps-pred-2.arff</predictions_file>  	  
+				</predict>
+				 
+				<predict>
+					<model_file>seismic-bumps-3.mdl</model_file>      	
+					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-3.arff</test_file>            			
+					<predictions_file>seismic-bumps-pred-3.arff</predictions_file>  	  
+				</predict>
+				 
+				<predict>
+					<model_file>seismic-bumps-4.mdl</model_file>      	
+					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-4.arff</test_file>            			
+					<predictions_file>seismic-bumps-pred-4.arff</predictions_file>  	  
+				</predict>
+				 
+				<predict>
+					<model_file>seismic-bumps-5.mdl</model_file>      	
+					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-5.arff</test_file>            			
+					<predictions_file>seismic-bumps-pred-5.arff</predictions_file>  	  
+				</predict>
+				 
+				<predict>
+					<model_file>seismic-bumps-6.mdl</model_file>      	
+					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-6.arff</test_file>            			
+					<predictions_file>seismic-bumps-pred-6.arff</predictions_file>  	  
+				</predict>
+				 
+				<predict>
+					<model_file>seismic-bumps-7.mdl</model_file>      	
+					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-7.arff</test_file>            			
+					<predictions_file>seismic-bumps-pred-7.arff</predictions_file>  	  
+				</predict>
+				 
+				<predict>
+					<model_file>seismic-bumps-8.mdl</model_file>      	
+					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-8.arff</test_file>            			
+					<predictions_file>seismic-bumps-pred-8.arff</predictions_file>  	  
+				</predict>
+
+				<predict>
+					<model_file>seismic-bumps-9.mdl</model_file>      	
+					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-9.arff</test_file>            			
+					<predictions_file>seismic-bumps-pred-9.arff</predictions_file>   	
+				</predict>
+			</prediction>
+			-->
+    
+		</dataset>
+  	</datasets>
+</experiment>

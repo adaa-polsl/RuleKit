@@ -1,143 +1,12 @@
-% ========================================================================================================
-% Seismic bumps dataset
-% ========================================================================================================
-% The data describe the problem of high energy (higher than 10^4 J) seismic bumps forecasting in a coal 
-% mine. Data come from two of longwalls located in a Polish coal mine.
-%
-% --------------------------------------------------------------------------------------------------------
-% Citation request
-% --------------------------------------------------------------------------------------------------------
-% Sikora M., Wrobel L.: Application of rule induction algorithms for analysis of data collected by seismic 
-% hazard monitoring systems in coal mines. Archives of Mining Sciences, 55(1), 2010, 91-114.
-%
-% --------------------------------------------------------------------------------------------------------
-% Donors and creators
-% --------------------------------------------------------------------------------------------------------
-% Marek Sikora^{1,2} (marek.sikora@polsl.pl), Lukasz Wrobel^{1} (lukasz.wrobel@polsl.pl)
-% (1) Institute of Computer Science, Silesian University of Technology, 44-100 Gliwice, Poland
-% (2) Institute of Innovative Technologies EMAG, 40-189 Katowice, Poland
-%
-% --------------------------------------------------------------------------------------------------------
-% Data characteristics
-% --------------------------------------------------------------------------------------------------------
-% Instances: 2584 
-% Attributes: 18 + class
-% Class distribution: 
-%     "hazardous state" (class 1)    :  170  (6.6%)
-%     "non-hazardous state" (class 0): 2414 (93.4%)
-% Missing Attribute Values: None
-%
-% Attribute information:
-%  1. seismic: result of shift seismic hazard assessment in the mine working obtained by the seismic 
-% method (a - lack of hazard, b - low hazard, c - high hazard, d - danger state);
-%  2. seismoacoustic: result of shift seismic hazard assessment in the mine working obtained by the 
-% seismoacoustic method;
-%  3. shift: information about type of a shift (W - coal-getting, N -preparation shift);
-%  4. genergy: seismic energy recorded within previous shift by the most active geophone (GMax) out of 
-% geophones monitoring the longwall;
-%  5. gpuls: a number of pulses recorded within previous shift by GMax;
-%  6. gdenergy: a deviation of energy recorded within previous shift by GMax from average energy recorded 
-% during eight previous shifts;
-%  7. gdpuls: a deviation of a number of pulses recorded within previous shift by GMax from average number 
-% of pulses recorded during eight previous shifts;
-%  8. ghazard: result of shift seismic hazard assessment in the mine working obtained by the 
-% seismoacoustic method based on registration coming form GMax only;
-%  9. nbumps: the number of seismic bumps recorded within previous shift;
-% 10. nbumps2: the number of seismic bumps (in energy range [10^2,10^3)) registered within previous shift;
-% 11. nbumps3: the number of seismic bumps (in energy range [10^3,10^4)) registered within previous shift;
-% 12. nbumps4: the number of seismic bumps (in energy range [10^4,10^5)) registered within previous shift;
-% 13. nbumps5: the number of seismic bumps (in energy range [10^5,10^6)) registered within the last shift;
-% 14. nbumps6: the number of seismic bumps (in energy range [10^6,10^7)) registered within previous shift;
-% 15. nbumps7: the number of seismic bumps (in energy range [10^7,10^8)) registered within previous shift;
-% 16. nbumps89: the number of seismic bumps (in energy range [10^8,10^10)) registered within previous shift;
-% 17. energy: total energy of seismic bumps registered within previous shift;
-% 18. maxenergy: the maximum energy of the seismic bumps registered within previous shift;
-% 19. class: the decision attribute - "1" means that high energy seismic bump occurred in the next shift 
-% ("hazardous state"), "0" means that no high energy seismic bumps occurred in the next shift 
-% ("non-hazardous state").
-%
-% --------------------------------------------------------------------------------------------------------
-% Relevant information
-% --------------------------------------------------------------------------------------------------------
-% Mining activity was and is always connected with the occurrence of dangers which are commonly called 
-% mining hazards. A special case of such threat is a seismic hazard which frequently occurs in many 
-% underground mines. Seismic hazard is the hardest detectable and predictable of natural hazards and in 
-% this respect it is comparable to an earthquake. More and more advanced seismic and seismoacoustic 
-% monitoring systems allow a better understanding rock mass processes and definition of seismic hazard 
-% prediction methods. Accuracy of so far created methods is however far from perfect. Complexity of 
-% seismic processes and big disproportion between the number of low-energy seismic events and the number 
-% of high-energy phenomena (e.g. > 10^4J) causes the statistical techniques to be insufficient to predict 
-% seismic hazard. Therefore, it is essential to search for new opportunities of better hazard prediction, 
-% also using machine learning methods. In seismic hazard assessment data clustering techniques can be 
-% applied (Lesniak A., Isakow Z.: Space-time clustering of seismic events and hazard assessment in the 
-% Zabrze-Bielszowice coal mine, Poland. Int. Journal of Rock Mechanics and Mining Sciences, 46(5), 2009, 
-% 918-928), and for prediction of seismic tremors artificial neural networks are used (Kabiesz, J.: Effect 
-% of the form of data on the quality of mine tremors hazard forecasting using neural networks. 
-% Geotechnical and Geological Engineering, 24(5), 2005, 1131-1147). In the majority of applications, the 
-% results obtained by mentioned methods are reported in the form of two states which are interpreted as 
-% "hazardous" and "non-hazardous". Unbalanced distribution of positive ("hazardous state") and negative 
-% ("non-hazardous state") examples is a serious problem in seismic hazard prediction. Currently used 
-% methods are still insufficient to achieve good sensitivity and specificity of predictions. In the paper 
-% (Bukowska M.: The probability of rockburst occurrence in the Upper Silesian Coal Basin area dependent on 
-% natural mining conditions. Journal of Mining Sciences, 42(6), 2006, 570-577) a number of factors having 
-% an effect on seismic hazard occurrence was proposed, among other factors, the occurrence of tremors with 
-% energy > 10^4J was listed. The task of seismic prediction can be defined in different ways, but the main 
-% aim of all seismic hazard assessment methods is to predict (with given precision relating to time and 
-% date) of increased seismic activity which can cause a rockburst. In the data set each row contains a 
-% summary statement about seismic activity in the rock mass within one shift (8 hours). If decision 
-% attribute has the value 1, then in the next shift any seismic bump with an energy higher than 10^4 J was 
-% registered. That task of hazards prediction bases on the relationship between the energy of recorded 
-% tremors and seismoacoustic activity with the possibility of rockburst occurrence. Hence, such hazard 
-% prognosis is not connected with accurate rockburst prediction. Moreover, with the information about the 
-% possibility of hazardous situation occurrence, an appropriate supervision service can reduce a risk of 
-% rockburst (e.g. by distressing shooting) or withdraw workers from the threatened area. Good prediction 
-% of increased seismic activity is therefore a matter of great practical importance.   The presented data 
-% set is characterized by unbalanced distribution of positive and negative examples. In the data set there 
-% are only 170 positive examples representing class 1.
-%
-% --------------------------------------------------------------------------------------------------------
-% Classification results using stratified 10-fold cross-validation repeated 10 times
-% --------------------------------------------------------------------------------------------------------
-% | Algorithm                   | Acc.      | BAcc.     | Acc.0       | Acc.1       | Size  |
-% |                             |           |           | Specificity | Sensitivity |	    |
-% ------------------------------------------------------------------------------------------|
-% | q-ModLEM(entropy-RSS)   (1) | 80.2(5.1) | 69.1(6.2) | 81.90       | 56.35       | 27.5  |
-% | q-ModLEM(entropy-Corr.) (1) | 82.9(4.5) | 67.9(7.2) | 85.15       | 50.65       | 45.5  |
-% | MODLEM (2)                  | 92.5(0.8) | 52.6(2.8) | 98.58	      | 6.65        | 145.5 |
-% | MLRules(-M 30)  (3)         | 93.2(0.3) | 50.5(1.3) | 99.69       | 1.29        | 30    |
-% | MLRules(-M 100) (3)         | 92.9(0.6) | 52.0(2.2) | 99.10       | 4.88        | 100   |
-% | MLRules(-M 500) (3)         | 92.3(0.6) | 52.9(2.8) | 98.27       | 7.59        | 500   |
-% | BRACID (4)                  | 87.5(0.4) | 62.0(2.6) | 91.38       | 32.71       | -     |
-% | Jrip (Weka)                 | 93.0(0.6) | 51.4(2.4) | 99.35       | 3.47        | 1.8   |
-% | PART (Weka)                 | 92.1(0.8) | 52.7(3.5) | 98.09       | 7.35        | 34    |
-% | J48 (Weka)                  | 93.1(0.8) | 50.2(0.9) | 99.64       | 0.82        | 5.6   |
-% | SimpleCart (Weka)           | 93.4(0.0) | 50.0(0.0) | 100         | 0.00        | 1.0   |
-% | NaiveBayes (Weka)           | 86.7(2.0) | 64.7(5.8) | 90.08       | 39.41       | -     |
-% | IB1 (Weka)                  | 89.4(1.6) | 55.3(4.8) | 94.54       | 16.06       | -     |
-% | RandomForest(-I 100) (Weka) | 93.1(0.6) | 52.1(2.5) | 99.31       | 4.88        | 100   |
-% -------------------------------------------------------------------------------------------
-% Acc.  - the overall accuracy
-% BAcc. - the balanced accuracy
-% Size  - the number of: rules for rule-based methods, leaves for trees and trees for random forest
-%
-% (1) Sikora M.: Rule quality measures in creation and reduction of data rule models. Lecture Notes in 
-% Artificial Intelligence 4259, 2006, 716-725.
-% (2) Stefanowski J.: On combined classifiers, rule induction and rough sets. 
-% Transactions on Rough Sets VI (LNCS 4374) Springer-Verlag, 2007, s. 329 350
-% (3) Dembczynski K., Kotlowski W., Slowinski R.: ENDER: a statistical framework for boosting decision 
-% rules. Data Mining and Knowledge Discovery 21, 2010, 52-90.
-% (4) Napierala K., Stefanowski J.: BRACID: a comprehensive approach to learning rules from imbalanced 
-% data. Journal of Intelligent Information Systems, 39(2), 2012, 335-373.
-%
 @relation seismic-bumps
 
 @attribute seismic {a,b,c,d}
 @attribute seismoacoustic {a,b,c,d}
 @attribute shift {W, N}
 @attribute genergy real
-@attribute gpuls real
-@attribute gdenergy real
-@attribute gdpuls real
+@attribute gimpuls real
+@attribute goenergy real
+@attribute goimpuls real
 @attribute ghazard {a,b,c,d}
 @attribute nbumps real
 @attribute nbumps2 real
@@ -147,7 +16,7 @@
 @attribute nbumps6 real
 @attribute nbumps7 real
 @attribute nbumps89 real
-@attribute energy real
+@attribute senergy real
 @attribute maxenergy real
 @attribute class {1,0}
 
