@@ -58,7 +58,8 @@ public class TrainTestValidationExperiment extends ExperimentBase {
                                          List<ExperimentalConsole.PredictElement> predictElements){
         super(predictionPerformance, trainingReport, params);
 
-        this.outDirPath = outDirPath;
+        File f = new File(outDirPath);
+        this.outDirPath = f.isAbsolute() ? outDirPath : (System.getProperty("user.dir") + "/" + outDirPath);
         this.labelAttribute = labelAttribute;
         this.trainElements = trainElements;
         this.predictElements = predictElements;
@@ -187,7 +188,7 @@ public class TrainTestValidationExperiment extends ExperimentBase {
             for(ExperimentalConsole.TrainElement te : trainElements){
 
                 File f = new File(te.modelFile);
-                String modelFilePath = f.isAbsolute() ? te.modelFile : (System.getProperty("user.dir") + "/" + outDirPath + "/" + te.modelFile);
+                String modelFilePath = f.isAbsolute() ? te.modelFile : (outDirPath + "/" + te.modelFile);
                 f = new File(te.inFile);
                 String inFilePath = f.isAbsolute() ? te.inFile : (System.getProperty("user.dir") + "/" + te.inFile);
 
@@ -245,10 +246,10 @@ public class TrainTestValidationExperiment extends ExperimentBase {
 
                 File f = new File(pe.modelFile);
                 String modelFilePath = f.isAbsolute() ? pe.modelFile :
-                        (System.getProperty("user.dir") + "/" + outDirPath + "/" + pe.modelFile);
+                        (outDirPath + "/" + pe.modelFile);
                 f = new File(pe.predictionsFile);
                 String predictionsFilePath = f.isAbsolute() ? pe.predictionsFile :
-                        (System.getProperty("user.dir") + "/" + outDirPath + "/" + pe.predictionsFile);
+                        (outDirPath + "/" + pe.predictionsFile);
                 f = new File(pe.testFile);
                 String testFilePath = f.isAbsolute() ? pe.testFile :
                         (System.getProperty("user.dir") + "/" + pe.testFile);
