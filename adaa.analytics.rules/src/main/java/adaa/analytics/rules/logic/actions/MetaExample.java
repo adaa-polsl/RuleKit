@@ -12,10 +12,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.math3.util.Pair;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.SignatureSpi.ecCVCDSA;
 
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
@@ -28,9 +30,29 @@ import adaa.analytics.rules.logic.representation.Rule;
 public class MetaExample {
 	Map<String, MetaValue> data;
 	HashSet<Rule> rules = new HashSet<Rule>();
+	public int positiveCovered = 0;
+	public int negativeCovered = 0;
 	
 	public MetaExample() {
 		data = new HashMap<String,MetaValue>();
+	}
+	
+	public class MetaCoverage {
+		protected double LS;
+		protected double LT;
+		
+		public MetaCoverage(double LSource, double LTarget) {
+			LS = LSource;
+			LT = LTarget;
+		}
+		
+		public double getCoverageOfTargetClass() {
+			return LS;
+		}
+		
+		public double getCoverageNotOfTargetClass() {
+			return LT;
+		}
 	}
 	
 	private boolean containsInAnyOrder(List<ConditionBase> conditionsA, List<ElementaryCondition> conditionB) {
@@ -46,29 +68,34 @@ public class MetaExample {
 		return data.keySet().stream().map(
 				x -> {
 					MetaValue mv = data.get(x);
-					return mv.value;
+					return mv.getValue();
 				}
 				).collect(Collectors.toMap(x -> x.getAttribute(), x->x));
 	}
 	
-	public void add(MetaValue value) {
-		data.put(value.value.getAttribute(), value);
+	public void add(MetaValue metaValue) {
+		data.put(metaValue.getAttribute(), metaValue);
 		
-		rules.addAll(value.distribution.distribution.values().stream().flatMap(x->x.stream()).collect(Collectors.toList()));
+		Stream<Rule> supportingRules = metaValue.getSupportingRules();
 		
 		List<ElementaryCondition> vals = data.values()
 			.stream()
-			.map(x->x.value)
+			.map(x->x.getValue())
 			.collect(Collectors.toList());
+
+		
 		
 		rules.removeIf(x -> !containsInAnyOrder(x.getPremise().getSubconditions(), vals));
+		List<Rule> filteredRulesToAdd = supportingRules.filter(x -> !containsInAnyOrder(x.getPremise().getSubconditions(), vals)).collect(Collectors.toList());
+		rules.addAll(filteredRulesToAdd);
+		
 	}
 	
-	public void remove(MetaValue value) {
-		data.remove(value.value.getAttribute());
+	public void remove(MetaValue metaValue) {
+		data.remove(metaValue.getAttribute());
 		
 		rules.removeAll(
-				value.distribution.distribution.values().stream().flatMap(x->x.stream()).collect(Collectors.toList())
+				metaValue.getSupportingRules().collect(Collectors.toList())
 				);
 		
 	}
@@ -94,11 +121,9 @@ public class MetaExample {
 		
 		for (Map.Entry<String, MetaValue> mv : data.entrySet()) {
 			
-			double val = ex.getValue(ex.getAttributes().get(mv.getKey()));
-			
 			MetaValue metaVal = mv.getValue();
 			
-			partial = metaVal.contains(val);
+			partial = metaVal.contains(ex);
 			
 			if (!partial) {
 				return false;
@@ -115,7 +140,7 @@ public class MetaExample {
 		sb.append(
 				data.values()
 				.stream()
-				.map(x->x.value.toString())
+				.map(x->x.toValueString())
 				.collect(Collectors.joining(" AND "))
 				);
 		
@@ -159,17 +184,25 @@ public class MetaExample {
 				.sum();
 	}
 	
-	protected Set<Rule> getMetaCoverage(double targetClass) {
-		//return 
+	protected Set<Rule> getMetaCoverageForClass(double targetClass, boolean negate) {
 		
-		List<HashSet<Rule>> interim = data.keySet()
+		List<HashSet<Rule>> interim =null;
+		if (negate) {
+			interim = data.keySet()
 			.stream()
-			.map(x -> data.getOrDefault(x, MetaValue.EMPTY).distribution.getRulesOfClass(targetClass).orElse(new ArrayList<>()))
+			.map(x -> data.getOrDefault(x, MetaValue.EMPTY).getSupportingRulesNotOfClass(targetClass).orElse(new ArrayList<>()))
 			.map(x -> new HashSet<Rule>(x))
 			.sorted(Comparator.comparingInt(Set::size))
 			.collect(Collectors.toList());
-		
-		
+		}
+		else {
+			interim = data.keySet()
+			.stream()
+			.map(x -> data.getOrDefault(x, MetaValue.EMPTY).getSupportingRulesPointingToClass(targetClass).orElse(new ArrayList<>()))
+			.map(x -> new HashSet<Rule>(x))
+			.sorted(Comparator.comparingInt(Set::size))
+			.collect(Collectors.toList());
+		}
 		
 		Iterator<HashSet<Rule>> it = interim.iterator();
 		if (!it.hasNext()) return Collections.emptySet();
@@ -182,14 +215,20 @@ public class MetaExample {
 		
 	}
 	
+	public MetaCoverage getMetaCoverage(double targetClass) {
+		double lt = getMetaCoverageForClass(targetClass, false).size();
+		double ls = getMetaCoverageForClass(targetClass, true).size();
+		return new MetaCoverage(lt, ls);
+	}
+	
 	public double getMetaCoverageValue(double targetClass) {
-		return getMetaCoverage(targetClass).size();
+		return getMetaCoverageForClass(targetClass, false).size();
 	}
 	
 	public double getQualityOfRulesPointingToClass(double targetClass) {
 		return data.keySet()
 				.stream()
-				.map(x -> data.get(x).distribution.getRulesOfClass(targetClass))
+				.map(x -> data.get(x).getSupportingRulesPointingToClass(targetClass))
 				.filter(x -> x.isPresent())
 				.map(x -> x.get())
 				.flatMapToDouble(x -> x.stream().mapToDouble(y -> y.getWeight()))
@@ -202,7 +241,7 @@ public class MetaExample {
 		if (mv == null) {
 			return Double.NEGATIVE_INFINITY;
 		}
-		Optional<List<Rule>> rules = mv.distribution.getRulesOfClass(targetClass);
+		Optional<List<Rule>> rules = mv.getSupportingRulesPointingToClass(targetClass);
 		
 		return rules.orElse(new ArrayList<Rule>()).size();
 	}
@@ -232,39 +271,25 @@ public class MetaExample {
 				classToCov.weighted_N++;
 				classFromCov.weighted_N++;
 			}
-		}
-		
+		}	
 		return new Pair<Covering, Covering>(classFromCov, classToCov);
 	}
 
-	public double getQualityOf(Double value, String atrName, double targetClass) {
-		
-		MetaValue mv = data.get(atrName);
-		
-		if (mv == null || mv.contains(value)) {
-			return Double.NEGATIVE_INFINITY;
-		}
-		
-		Optional<List<Rule>> rules = mv.distribution.getRulesOfClass(targetClass);
-		Map<Double, List<Rule>> otherRules = mv.distribution.getRulesNotOfClass(targetClass);
-		// assume weight = quality
-		double positiveQualitySum = rules
-					.orElse(new ArrayList<Rule>())
-					.stream()
-					.mapToDouble(x -> x.getWeight())
-					.sum();
-		
-		
-		
-		double negativeQualitySum = Double.NEGATIVE_INFINITY;
-		if (!otherRules.isEmpty()) {
-			negativeQualitySum = otherRules.entrySet().stream()
-														.flatMap(x -> x.getValue().stream())
-														.mapToDouble(x->x.getWeight())
-														.sum();
-		}
-		//obviously gonna change
-		return positiveQualitySum - negativeQualitySum;
-		
+
+	public int getCountOfSupportingRules() {
+		return rules.size();
 	}
+	
+	public void recordStandardCoverage(ExampleSet set, double targetClass) {
+		for(Example e : set) {
+			if (this.covers(e)) {
+				if (e.getValue(e.getAttributes().get("class")) == targetClass)
+					positiveCovered++;
+				else
+					negativeCovered++;
+			}
+		}
+	}
+	
+	
 }

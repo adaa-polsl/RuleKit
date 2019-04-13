@@ -4,6 +4,7 @@ import adaa.analytics.rules.logic.representation.*;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.NominalMapping;
+import com.rapidminer.operator.learner.subgroups.RuleSet;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,6 +40,7 @@ public class ActionRangeDistribution {
 
 	protected final ActionRuleSet actions;
 	protected final ExampleSet set;
+	protected HashSet<Rule> splittedRules = new HashSet<Rule>();
 
 	protected Map<IValueSet, DistributionEntry> distribution = new HashMap<IValueSet, DistributionEntry>();
 
@@ -46,11 +48,24 @@ public class ActionRangeDistribution {
 		actions = ruleset;
 		set = dataset;
 	}
-
-	public Map<String, Map<ElementaryCondition, DistributionEntry>> getDistribution() {
-		return dist;
+	
+	public List<Set<MetaValue>> getMetaValuesByAttribute() {
+		List<Set<MetaValue>> sets = new ArrayList<Set<MetaValue>>(dist.size());
+		
+		for (String key : dist.keySet()) {
+			sets.add(
+					dist
+					.get(key)
+					.entrySet()
+					.stream()
+					.map(x -> new MetaValue(x.getKey(), x.getValue()))
+					.collect(Collectors.toSet())
+					);
+		}
+		
+		return sets;
 	}
-
+	
 	protected void calculateActionDistribution() {
 
 		// Gather all elementary conditions to one list
@@ -61,7 +76,8 @@ public class ActionRangeDistribution {
 
 			Rule left = actionRule.getLeftRule();
 			Rule right = actionRule.getRightRule();
-
+			splittedRules.add(left);
+			splittedRules.add(right);
 			conditions = Stream.concat(conditions,
 					Stream.concat(
 							left.getPremise().getSubconditions().parallelStream().map(ElementaryCondition.class::cast)

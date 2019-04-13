@@ -5,6 +5,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class DistributionEntry {
 
@@ -21,8 +23,25 @@ class DistributionEntry {
 		distribution.get(classValue).add(rule);
 	}
 	
+	public Stream<Rule> getAllRules() {
+		return distribution.values().stream().flatMap(x -> x.stream());
+	}
+	
 	public Optional<List<Rule>> getRulesOfClass(double classId) {
 		return Optional.ofNullable(distribution.get(classId));
+	}
+	
+	public Optional<List<Rule>> getFlatRulesNotOfClass(double classId) {
+		
+		Set<Double> keys = new HashSet<Double>(distribution.keySet());
+		keys.remove(classId);
+		
+		return Optional.ofNullable(
+			keys.stream()
+			.map(x -> Optional.ofNullable(distribution.get(x)).orElse(new ArrayList<Rule>()))
+			.flatMap(x -> x.stream())
+			.collect(Collectors.toList())
+			);
 	}
 	
 	public Map<Double, List<Rule>> getRulesNotOfClass(double classId) {
