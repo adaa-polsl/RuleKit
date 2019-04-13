@@ -13,7 +13,6 @@ import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.representation.ActionRule;
 import adaa.analytics.rules.logic.representation.ActionRuleSet;
 import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.Rule;
 
 public class MetaRecommendation extends Recommendation {
 

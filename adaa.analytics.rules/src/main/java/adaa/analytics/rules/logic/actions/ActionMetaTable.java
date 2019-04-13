@@ -1,8 +1,6 @@
 package adaa.analytics.rules.logic.actions;
 
-import adaa.analytics.rules.logic.actions.MetaExample.MetaCoverage;
 import adaa.analytics.rules.logic.induction.Covering;
-import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.Action;
 import adaa.analytics.rules.logic.representation.ActionRule;
 import adaa.analytics.rules.logic.representation.AnyValueSet;
@@ -18,8 +16,6 @@ import com.rapidminer.example.ExampleSet;
 
 import java.util.*;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
-
 import org.apache.commons.math3.util.Pair;
 import org.renjin.repackaged.guava.collect.Sets;
 
@@ -77,8 +73,7 @@ public class ActionMetaTable {
 		}
 	}
 
-	protected int exampleSize;
-	protected int tableSize;
+
 	protected ExampleSet trainSet;
 	protected Set<MetaExample> metaExamples;
 	
@@ -91,82 +86,6 @@ public class ActionMetaTable {
 		return metaExamples;
 	}
 
-	protected double rankMetaPremise(MetaExample metaPremise, int fromClass, int toClass, ExampleSet examples) {
-		ClassificationMeasure C2 = new ClassificationMeasure(ClassificationMeasure.C2);
-		ClassificationMeasure prec = new ClassificationMeasure(ClassificationMeasure.Precision);
-
-		
-		Pair<Covering, Covering> coverings = metaPremise.getCoverage(examples, toClass, fromClass);
-		Covering fromCov = coverings.getFirst();
-		Covering toCov = coverings.getSecond();
-		double precVal = prec.calculate(toCov);
-		/*
-		Pair<Covering, Covering> coverings = metaPremise.getCoverageDontCareForSource(examples, toClass);
-		Covering fromCov = coverings.getFirst();
-		Covering toCov = coverings.getSecond();
-		*/
-		//MetaCoverage mc = metaPremise.getMetaCoverage(toClass);
-		//double c2Target = C2.calculate(toCov);
-	//	if (true) return precVal;
-		//if (c2Target < 0) {
-	//		return Double.NEGATIVE_INFINITY;
-	//	}
-		
-		//double quality = ((Lplus / allTarget) - (Lminus / allSource)) * c2Target;
-		//double quality =(Lplus * (C2.calculate(toCov))) - (Lminus * (C2.calculate(fromCov)));
-		
-		//double quality =(mc.getCoverageOfTargetClass() * (C2.calculate(toCov))) - (mc.getCoverageNotOfTargetClass() * (C2.calculate(fromCov)));
-	//	double quality = Lplus - Lminus;
-		//double quality = metaPremise.getQualityOfRulesPointingToClass(toClass) - metaPremise.getQualityOfRulesPointingToClass(fromClass);
-		
-		double quality = toCov.weighted_p / fromCov.weighted_n;
-		
-		return quality;
-	}
-	
-	private MetaValue getBestMetaValue(Set<String> allowedAttributes, 
-			MetaExample contra,
-			MetaExample prime,
-			Set<MetaExample> metas,
-			Example example,
-			ExampleSet examples,
-			int fromClass,
-			int toClass) {
-		
-		MetaValue candidate = null;
-		double Q = Double.NEGATIVE_INFINITY;
-		
-		for (MetaExample meta : metas) {
-			
-			for (String attribute : allowedAttributes) {
-				
-				MetaValue cand = meta.get(attribute);
-				
-				if (cand == null || cand.contains(example)) {
-					continue;
-				}
-				if (candidate != null && cand.equals(candidate) ) {
-					continue;
-				}
-				
-				contra.add(cand);
-				
-				double quality = rankMetaPremise(contra, fromClass, toClass, examples);
-
-				Logger.log("Quality " + quality + " recorded for metaexample " + meta + "\r\n", Level.FINEST);
-				if (quality >= Q) {
-					Q = quality;
-					candidate = cand;
-				}
-				
-				contra.remove(cand);
-			}
-		}
-
-		return candidate;
-	}
-	
-	
 	//For given example returns respective meta-example and contre-meta-example of opposite class
 	public AnalysisResult analyze(Example ex, int fromClass, int toClass, ExampleSet trainExamples) {
 		MetaExample primeMe = null;
@@ -203,7 +122,6 @@ public class ActionMetaTable {
 		);
 		Logger.log("Looking for recommendation for example: " + ex + "\r\n", Level.FINE);
 		
-		metaExamples.forEach(x -> x.recordStandardCoverage(trainExamples, toClass));
 		
 		boolean grown = true;
 		double bestQ = rankMetaPremise(contraMe, fromClass, toClass, trainExamples);
@@ -272,7 +190,63 @@ public class ActionMetaTable {
 		return new AnalysisResult(ex, primeMe, contraMe, fromClass, toClass, trainSet);
 	}
 
-	protected Set<MetaExample> cartesianProduct(List<Set<MetaValue>> sets) {
+	
+	//fill in the fittness function (quality measure for hill climbing)
+	//maybe should be configurable by user
+	private double rankMetaPremise(MetaExample metaPremise, int fromClass, int toClass, ExampleSet examples) {
+		Pair<Covering, Covering> coverings = metaPremise.getCoverage(examples, toClass, fromClass);
+		Covering fromCov = coverings.getFirst();
+		Covering toCov = coverings.getSecond();
+	
+	
+		double quality = toCov.weighted_p / fromCov.weighted_n;
+		
+		return quality;
+	}
+
+	private MetaValue getBestMetaValue(Set<String> allowedAttributes, 
+			MetaExample contra,
+			MetaExample prime,
+			Set<MetaExample> metas,
+			Example example,
+			ExampleSet examples,
+			int fromClass,
+			int toClass) {
+		
+		MetaValue candidate = null;
+		double Q = Double.NEGATIVE_INFINITY;
+		
+		for (MetaExample meta : metas) {
+			
+			for (String attribute : allowedAttributes) {
+				
+				MetaValue cand = meta.get(attribute);
+				
+				if (cand == null || cand.contains(example)) {
+					continue;
+				}
+				if (candidate != null && cand.equals(candidate) ) {
+					continue;
+				}
+				
+				contra.add(cand);
+				
+				double quality = rankMetaPremise(contra, fromClass, toClass, examples);
+	
+				Logger.log("Quality " + quality + " recorded for metaexample " + meta + "\r\n", Level.FINEST);
+				if (quality >= Q) {
+					Q = quality;
+					candidate = cand;
+				}
+				
+				contra.remove(cand);
+			}
+		}
+	
+		return candidate;
+	}
+
+	private Set<MetaExample> cartesianProduct(List<Set<MetaValue>> sets) {
 	    if (sets.size() < 2)
 	        throw new IllegalArgumentException(
 	                "Can't have a product of fewer than two sets (got " +

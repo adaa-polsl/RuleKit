@@ -12,7 +12,6 @@ import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.IValueSet;
 import adaa.analytics.rules.logic.representation.Interval;
 import adaa.analytics.rules.logic.representation.Rule;
 

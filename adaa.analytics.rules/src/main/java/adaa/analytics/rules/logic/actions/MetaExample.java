@@ -17,7 +17,6 @@ import java.util.stream.Stream;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.math3.util.Pair;
-import org.bouncycastle.jcajce.provider.asymmetric.ec.SignatureSpi.ecCVCDSA;
 
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
@@ -28,14 +27,8 @@ import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Rule;
 
 public class MetaExample {
-	Map<String, MetaValue> data;
-	HashSet<Rule> rules = new HashSet<Rule>();
-	public int positiveCovered = 0;
-	public int negativeCovered = 0;
-	
-	public MetaExample() {
-		data = new HashMap<String,MetaValue>();
-	}
+	private Map<String, MetaValue> data;
+	private HashSet<Rule> rules = new HashSet<Rule>();
 	
 	public class MetaCoverage {
 		protected double LS;
@@ -54,16 +47,55 @@ public class MetaExample {
 			return LT;
 		}
 	}
-	
-	private boolean containsInAnyOrder(List<ConditionBase> conditionsA, List<ElementaryCondition> conditionB) {
-		for (ConditionBase cnd : conditionsA) {
-			if (!conditionB.contains(cnd)) {
-				return false;
-			}
-		}
-		return true;
+
+	public MetaExample() {
+		data = new HashMap<String,MetaValue>();
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append(
+				data.values()
+				.stream()
+				.map(x->x.toValueString())
+				.collect(Collectors.joining(" AND "))
+				);
+		
+		sb.append("[ ");
+		sb.append(
+				rules
+				.stream()
+				.map(x -> x.toString())
+				.collect(Collectors.joining(";"))
+		);
+		sb.append(" ]");
+		
+		return sb.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		HashCodeBuilder b = new HashCodeBuilder(13,19);
+		b.append(data);
+		return b.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		 if (obj == null) { return false; }
+		 if (obj == this) { return true; }
+		 if (obj.getClass() != getClass()) {
+		     return false;
+		 }
+		 MetaExample me = (MetaExample)obj;
+		 return new EqualsBuilder()
+				 .append(data, me.data)
+				 .isEquals();
+		 
+	}
+
 	public Map<String, ElementaryCondition> toPremise() {
 		return data.keySet().stream().map(
 				x -> {
@@ -133,86 +165,11 @@ public class MetaExample {
 		return partial;
 	}
 	
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		
-		sb.append(
-				data.values()
-				.stream()
-				.map(x->x.toValueString())
-				.collect(Collectors.joining(" AND "))
-				);
-		
-		sb.append("[ ");
-		sb.append(
-				rules
-				.stream()
-				.map(x -> x.toString())
-				.collect(Collectors.joining(";"))
-		);
-		sb.append(" ]");
-		
-		return sb.toString();
-	}
-	
-	@Override
-	public int hashCode() {
-		HashCodeBuilder b = new HashCodeBuilder(13,19);
-		b.append(data);
-		return b.toHashCode();
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		 if (obj == null) { return false; }
-		 if (obj == this) { return true; }
-		 if (obj.getClass() != getClass()) {
-		     return false;
-		 }
-		 MetaExample me = (MetaExample)obj;
-		 return new EqualsBuilder()
-				 .append(data, me.data)
-				 .isEquals();
-		 
-	}
-	
 	public double getCountOfRulesPointingToClass(double targetClass) {
 		return data.keySet()
 				.stream()
 				.mapToDouble(x -> getCountOfRulesPointingToClass(x, targetClass))
 				.sum();
-	}
-	
-	protected Set<Rule> getMetaCoverageForClass(double targetClass, boolean negate) {
-		
-		List<HashSet<Rule>> interim =null;
-		if (negate) {
-			interim = data.keySet()
-			.stream()
-			.map(x -> data.getOrDefault(x, MetaValue.EMPTY).getSupportingRulesNotOfClass(targetClass).orElse(new ArrayList<>()))
-			.map(x -> new HashSet<Rule>(x))
-			.sorted(Comparator.comparingInt(Set::size))
-			.collect(Collectors.toList());
-		}
-		else {
-			interim = data.keySet()
-			.stream()
-			.map(x -> data.getOrDefault(x, MetaValue.EMPTY).getSupportingRulesPointingToClass(targetClass).orElse(new ArrayList<>()))
-			.map(x -> new HashSet<Rule>(x))
-			.sorted(Comparator.comparingInt(Set::size))
-			.collect(Collectors.toList());
-		}
-		
-		Iterator<HashSet<Rule>> it = interim.iterator();
-		if (!it.hasNext()) return Collections.emptySet();
-		
-		HashSet<Rule> ret = new HashSet<Rule>(it.next());
-		while(it.hasNext()) {
-			ret.retainAll(it.next());
-		}
-		return ret;
-		
 	}
 	
 	public MetaCoverage getMetaCoverage(double targetClass) {
@@ -223,16 +180,6 @@ public class MetaExample {
 	
 	public double getMetaCoverageValue(double targetClass) {
 		return getMetaCoverageForClass(targetClass, false).size();
-	}
-	
-	public double getQualityOfRulesPointingToClass(double targetClass) {
-		return data.keySet()
-				.stream()
-				.map(x -> data.get(x).getSupportingRulesPointingToClass(targetClass))
-				.filter(x -> x.isPresent())
-				.map(x -> x.get())
-				.flatMapToDouble(x -> x.stream().mapToDouble(y -> y.getWeight()))
-				.sum();
 	}
 	
 	public double getCountOfRulesPointingToClass(String atrName, double targetClass) {
@@ -279,17 +226,44 @@ public class MetaExample {
 	public int getCountOfSupportingRules() {
 		return rules.size();
 	}
-	
-	public void recordStandardCoverage(ExampleSet set, double targetClass) {
-		for(Example e : set) {
-			if (this.covers(e)) {
-				if (e.getValue(e.getAttributes().get("class")) == targetClass)
-					positiveCovered++;
-				else
-					negativeCovered++;
+
+	private Set<Rule> getMetaCoverageForClass(double targetClass, boolean negate) {
+		
+		List<HashSet<Rule>> interim =null;
+		if (negate) {
+			interim = data.keySet()
+			.stream()
+			.map(x -> data.getOrDefault(x, MetaValue.EMPTY).getSupportingRulesNotOfClass(targetClass).orElse(new ArrayList<>()))
+			.map(x -> new HashSet<Rule>(x))
+			.sorted(Comparator.comparingInt(Set::size))
+			.collect(Collectors.toList());
+		}
+		else {
+			interim = data.keySet()
+			.stream()
+			.map(x -> data.getOrDefault(x, MetaValue.EMPTY).getSupportingRulesPointingToClass(targetClass).orElse(new ArrayList<>()))
+			.map(x -> new HashSet<Rule>(x))
+			.sorted(Comparator.comparingInt(Set::size))
+			.collect(Collectors.toList());
+		}
+		
+		Iterator<HashSet<Rule>> it = interim.iterator();
+		if (!it.hasNext()) return Collections.emptySet();
+		
+		HashSet<Rule> ret = new HashSet<Rule>(it.next());
+		while(it.hasNext()) {
+			ret.retainAll(it.next());
+		}
+		return ret;
+		
+	}
+
+	private boolean containsInAnyOrder(List<ConditionBase> conditionsA, List<ElementaryCondition> conditionB) {
+		for (ConditionBase cnd : conditionsA) {
+			if (!conditionB.contains(cnd)) {
+				return false;
 			}
 		}
+		return true;
 	}
-	
-	
 }

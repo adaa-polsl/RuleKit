@@ -4,8 +4,6 @@ import adaa.analytics.rules.logic.representation.*;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.NominalMapping;
-import com.rapidminer.operator.learner.subgroups.RuleSet;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
