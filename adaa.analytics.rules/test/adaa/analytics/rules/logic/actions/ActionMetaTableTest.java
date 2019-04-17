@@ -100,7 +100,7 @@ public class ActionMetaTableTest {
 		dist.calculateActionDistribution();
 		ActionMetaTable table = new ActionMetaTable(dist);
 	
-		Set<MetaExample> examples = table.getExamples();
+		Set<MetaExample> examples = table.getMetaExamples();
 		System.out.println("Count:" + examples.size());
 		
 		for (MetaExample ex : examples) {

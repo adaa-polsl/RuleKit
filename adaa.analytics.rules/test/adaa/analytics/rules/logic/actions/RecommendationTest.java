@@ -2,6 +2,7 @@ package adaa.analytics.rules.logic.actions;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.logging.Level;
 
 import org.junit.After;
 import org.junit.Test;
@@ -21,6 +22,7 @@ import adaa.analytics.rules.logic.induction.ActionFinder;
 import adaa.analytics.rules.logic.induction.ActionSnC;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.ActionRuleSet;
+import adaa.analytics.rules.logic.representation.Logger;
 
 ///
 /// This class takes different ActionRule induction algorithms and:
@@ -41,12 +43,19 @@ public class RecommendationTest extends ActionTests {
 			///
 			///
 			
-		//	{"furnace_control.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9,  "3", "4", 0.8},
-			//{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9,  "unacc", "acc", 0.95},
-			//{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, "0", "1", 0.95}
+			//{"furnace_control.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9,  "3", "4", 0.95},
+	//		{"car-reduced.arff", "class", new ClassificationMeasure(ClassificationMeasure.Correlation), true, true, 5.0, 0.05, 0.9,  "unacc", "acc", 0.95},
+			//{"monk1_train.arff", "class", new ClassificationMeasure(ClassificationMeasure.RSS), true, true, 5.0, 0.05, 0.9, "0", "1", 0.95},
 			//{"credit-a.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "-", "+", 0.95},
-			{"titanic.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "no", "yes", 0.95},
-			{"iris.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "Iris-setosa", "Iris-versicolor", 0.95},
+		//	{"titanic.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "no", "yes", 0.95},
+		//	{"iris.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "Iris-setosa", "Iris-versicolor", 0.95},
+			{"seeds.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "1", "2", 0.95},
+		//	{"blood-transfusion.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "1", "2", 0.95},
+			//{"balance-scale.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "L", "R", 0.95},
+			//{"breast-w.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "malignant", "benign", 0.95},
+			//{"bupa-liver-disorders.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "2", "1", 0.95},
+			//{"diabetes-c.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "tested_negative", "tested_positive", 0.95},
+		//	{"ionosphere.arff", "class", new ClassificationMeasure(ClassificationMeasure.C2), true, true, 5.0, 0.05, 0.9, "b", "g", 0.95},
 		});
 	}
 	
@@ -77,7 +86,7 @@ public class RecommendationTest extends ActionTests {
 		
 		double from = exampleSet.getAttributes().get(labelParameter).getMapping().getIndex(sourceClass);
 		double to = exampleSet.getAttributes().get(labelParameter).getMapping().getIndex(targetClass);
-		
+		Logger.getInstance().addStream(System.out, Level.FINE);
 		Recommendation rec = new MetaRecommendation(snc, (int)from, (int)to);
 		
 		testInternal(exampleSet, trainToTestRatio, rec);

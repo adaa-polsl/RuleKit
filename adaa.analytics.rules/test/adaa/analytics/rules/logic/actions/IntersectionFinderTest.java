@@ -77,4 +77,19 @@ public class IntersectionFinderTest {
 		Assert.assertArrayEquals(expected.toArray(), actual.toArray());
 	}
 
+	@Test
+	public void testSingleValue() {
+		List<Interval> intervals = new ArrayList<Interval>();
+		intervals.add(Interval.create_geq(1.5));
+		
+		
+		List<Interval> expected = new ArrayList<Interval>();
+		expected.add(Interval.create_le(1.5));
+		expected.add(Interval.create_geq(1.5));
+		
+		List<Interval> actual = finder.calculateAllIntersectionsOf(intervals);
+		
+		Assert.assertArrayEquals(expected.toArray(), actual.toArray());
+	}
+	
 }
