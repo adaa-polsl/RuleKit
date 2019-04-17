@@ -1,3 +1,21 @@
+/*
+ *  RuleKit
+ *
+ *  Copyright (C) 2019 by RuleKit Development Team
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see http://www.gnu.org/licenses/.
+ */
 package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.logic.induction.ContingencyTable;
@@ -8,24 +26,29 @@ import com.rapidminer.example.ExampleSet;
 
 import java.util.Set;
 
+/**
+ * Class representing a classification rule.
+ * @author Adam Gudyœ
+ *
+ */
 public class ClassificationRule extends Rule {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -809625670611500594L;
 
+	/**
+	 * Creates empty classification rule.
+	 */
 	public ClassificationRule() {
 		super();
 	}
 	
-	public ClassificationRule(ClassificationRule ref) {
-		super(ref);
-	}
-	
-	public ClassificationRule(Rule ref) {
-		super(ref);
-	}
-	
+	/**
+	 * Creates classification rule with given premise and consequences.
+	 * @param premise Rule premise.
+	 * @param consequence Rule consequence.
+	 */
 	public ClassificationRule(CompoundCondition premise, ElementaryCondition consequence) {
 		super(premise, consequence);
 	}
@@ -33,7 +56,7 @@ public class ClassificationRule extends Rule {
 	/**
 	 * Gets identifiers of examples covered by the rule. 
 	 * @param set Example set.
-	 * @param ids Collection of input identifiers.
+	 * @param ids Collection of input identifiers to be checked.
 	 * @return Collection of output identifiers.
 	 */
 	public Covering covers(ExampleSet set, Set<Integer> ids) {
