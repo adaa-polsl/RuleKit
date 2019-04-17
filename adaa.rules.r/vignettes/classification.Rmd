@@ -1,0 +1,54 @@
+---
+title: "Adaa.rules classification example"
+author: "Wojciech Sikora"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(adaa.rules)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Classification example
+
+```{r, include=TRUE}
+devtools::load_data() 
+```
+
+## Data
+
+In this case data will be used in 10-fold corss-validation. Note that in this case, arguments train_data and test_data are lists of data frame instead of being single data frames. 
+Here you can see a sapmle of original data used in this example.
+
+```{r, include=TRUE, results='asis', message=FALSE, warning=FALSE}
+knitr::kable(head(seismic_bumps, 10))
+folds<-caret::createFolds(seismic_bumps$class,10)
+fold_list <- lapply(folds, function(x,y) y[x,],y=seismic_bumps)
+train_data <- list()
+test_data <- list()
+for (i in 1:length(fold_list)) {
+  test_data[i] <- fold_list[i]
+  train_data[[i]] <- data.frame(data.table::rbindlist(fold_list[-i]))
+}
+formula <- class ~ .
+control <- list(min_rule_covered = 6,
+                induction_measure = 'GMeasure',
+                pruning_measure = 'GMeasure',
+                max_growing = 5)
+results <- learn_rules(formula,control,train_data,test_data)
+csv <- results[1]
+rules <- results[[2]]
+```
+## Results
+```{r}
+knitr::kable(csv)
+cat(head(rules,30),sep = "\n")
+```

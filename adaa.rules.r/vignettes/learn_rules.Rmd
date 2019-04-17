@@ -1,0 +1,115 @@
+---
+title: "Adaa.rules library examples"
+author: "Wojciech Sikora"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(adaa.rules)
+devtools::load_data()
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+The purpose of this Vignette is to show how to use adaa.rules library for classification, regression, and survival. Since the only available function in this library is 'learn_rules', this tutorial is simply description of function's arguments and use case examples.
+
+# Function arguments
+
+## Train_data, test_data
+
+First step is to get your data. Adaa.rules library enables user to perform rule induction for single data.frame or list of data.frames. Specifying test data is optional and this argument can be left empty. In this case training data will be used for testing.
+
+```{r, include=TRUE, results='asis'}
+devtools::load_data() #data sets: bone_marrow, methane_test, methane_train, seismic_bumps
+knitr::kable(head(bone_marrow, 10))
+```
+
+## Formula
+
+```{r, include=TRUE}
+formula <- survival_status ~ .
+```
+
+Formula is the argument that specifies which attribute in data.frame is the decision attribute and which attributes are to be used in rule induction.
+
+
+Another argument of learn_rules function is jar. This arguent is a character vector containing path to adaa.rules standalone jar file.
+
+## Control
+
+```{r, include=TRUE}
+control <- list(min_rule_covered = 11, induction_measure = 'UserDefined', pruning_measure = 'UserDefined', max_growing = 0, user_equation = '(((P + N) * p / (p + n) - P) / N) * ((1 + p / P) / 2)')
+```
+
+Control describes experiment  is a list of named parameters describing for algorithm. Details concerning  available ([here](https://github.com/adaa-polsl/GuideR/blob/master/README.md))
+
+
+# Survival example
+
+```{r, include=TRUE}
+devtools::load_data()
+```
+##Training data
+```{r, include=TRUE, results='asis', message=FALSE, warning=FALSE}
+knitr::kable(head(bone_marrow, 10))
+formula <- survival::Surv(survival_time,survival_status) ~ .
+working_dir <- knitr::opts_knit$get("root.dir")
+control <- list(min_rule_covered = 5,
+                use_expert = TRUE,
+                extend_using_preferred = FALSE,
+                extend_using_automatic = FALSE,
+                induce_using_preferred = TRUE,
+                induce_using_automatic = TRUE,
+                expert_rules = '', 
+                expert_preferred_conditions = list(
+                   'attr-preferred-0' = 'inf: IF [CD34kgx10d6 = Any] THEN survival_status = {NaN}'),
+                expert_forbidden_conditions = list(
+                   'condition-forbidden-0' = 'IF ANCrecovery = Any THEN survival_status = {NaN}',
+                   'condition-forbidden-0' = 'IF PLTrecovery = Any THEN survival_status = {NaN}'))
+results <- learn_rules(formula,control,bone_marrow)
+csv <- results[1]
+rules <- results[[2]]
+```
+##Results
+```{r}
+knitr::kable(csv)
+cat(head(rules,30),sep = "\n")
+```
+
+# Regression example
+
+```{r, include=TRUE}
+devtools::load_data()
+```
+
+##Training data
+```{r, include=TRUE, results='asis', message=FALSE}
+knitr::kable(head(methane_train, 10))
+```
+
+##Test data
+```{r, include=TRUE, results='asis', message=FALSE, warning=FALSE}
+knitr::kable(head(methane_test, 10))
+formula <- MM116_pred ~ MM31+MM116+AS038+PG072+PD+BA13
+working_dir <- knitr::opts_knit$get("root.dir")
+control <- list(min_rule_covered = 11,
+                induction_measure = 'UserDefined',
+                pruning_measure = 'UserDefined',
+                max_growing = 0,
+                user_equation = '(((P + N) * p / (p + n) - P) / N) * ((1 + p / P) / 2)')
+results <- learn_rules(formula,control,methane_train,methane_test)
+csv <- results[1]
+rules <- results[[2]]
+```
+##Results
+```{r}
+knitr::kable(csv)
+cat(head(rules,30),sep = "\n")
+```
