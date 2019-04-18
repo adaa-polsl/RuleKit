@@ -61,7 +61,7 @@ where *experiments.xml* is an XML file with experimental setting description. Th
 
 This section allows user to specify induction parameters. The package enables testing multiple parameter sets in a single run. The definition of a single parameter is presented below. Every parameter has its default value, thus only selected may be specified by the user. 
 
-```
+```xml
 <parameter_set name="paramset_1">
   	<param name="min_rule_covered">...</param>
   	<param name="max_uncovered_fraction">...</param>
@@ -90,7 +90,7 @@ Measure parameters are ignored in the survival analysis, as log-rank statistics 
 
 Definition of a dataset has the following form. 
 
-```
+```xml
 <dataset>
      <label>...</label>							
      <out_directory>...</out_directory>			
@@ -153,7 +153,7 @@ Here we present how to prepare the XML experiment file for an example classifica
 * *mincov = 8* with *BinaryEntropy* measure used for growing and pruning, and *C2* for voting.
 
 The corresponding parameter set definition is as follows:
-```
+```xml
 <parameter_sets>
 	<parameter_set name="mincov=5, RSS">
 		<param name="min_rule_covered">5</param>
@@ -191,7 +191,7 @@ The experiment will be performed on a single dataset in 10-fold cross validation
 
 The corresponding dataset definition is as follows:
 
-```
+```xml
 <dataset>
      <label>class</label>
      <out_directory>./results</out_directory>		
@@ -346,50 +346,49 @@ Parameters:
 ## 3.3. Example
 
 In this subsection we present a survival analysis of *BMT-Ch* dataset with RuleKit R package. After loading the package,  survival time and survival status variables are specified and induction parameters are set. Note, that in survival problems, log-rank statistic is always used as a rule quality measure. 
-```
+```r
 library(adaa.rules)
 formula <- survival::Surv(survival_time, survival_status) ~ .
 control <- list(min_rule_covered = 5)
 ```
 In the next step, the analysis is initialized (training and testing performed on the same set) and the results are gathered. 
-```
+```r
 results <- learn_rules(formula, control, bone_marrow)
 performance <- results[[1]] # data frame with validation performance metrics
 report <- results[[2]]      # text training report
 ```
 The second element of resulting list is a [training report](#51-training-report). In the following lines, the list of rules and survival functions are extracted from the report.
-```
-
+```r
 # get separating empty lines in the report
-separators = which(report == "")
+separators <- which(report == "")
 
 # extract rules from the report
-start = which(report == "Rules:") + 1
-rules = report[start : (separators[which(separators > start)[1]] - 1)] # first separator after start
+start <- which(report == "Rules:") + 1
+rules <- report[start : (separators[which(separators > start)[1]] - 1)] # first separator after start
 
 # extract survival function estimates from the report
-start = which(report == "Estimator:") + 1
-estimates = report[start : (separators[which(separators > start)[1]] - 1)] # first separator after start
+start <- which(report == "Estimator:") + 1
+estimates <- report[start : (separators[which(separators > start)[1]] - 1)] # first separator after start
 
 # convert estimates into data frame with following columns:
 # - time - survival time,
 # - entire-set - values of survival function of entire dataset,
 # - r1, r2, ... - values of survival function for rules r1, r2, etc.
-names = strsplit(estimates[1],',')[[1]]
-data = lapply(estimates[2:length(estimates)], function(row) {
-  vals =strsplit(row,',')[[1]]
+names <- strsplit(estimates[1],',')[[1]]
+data <- lapply(estimates[2:length(estimates)], function(row) {
+  vals <- strsplit(row,',')[[1]]
   as.numeric(vals)
 })
 surv <- data.frame(matrix(unlist(data), nrow=length(data), byrow=T))
 colnames(surv) <- names
 ```
 Survival function estimates of the entire dataset as well as those corresponding to particular rules are then plotted.
-```
+```r
 library(ggplot2)
 library(reshape2)
 
 # melt dataset for automatic plotting of multiple series
-meltedSurv = melt(surv, id.var="time")
+meltedSurv <- melt(surv, id.var="time")
 
 ggplot(meltedSurv, aes(x=time, y=value, color=variable)) +
   geom_line(size=1.0) +
