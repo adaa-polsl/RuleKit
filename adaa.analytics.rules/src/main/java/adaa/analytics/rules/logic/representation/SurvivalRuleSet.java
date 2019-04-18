@@ -110,17 +110,17 @@ public class SurvivalRuleSet extends RuleSetBase {
 		ArrayList<Double> times = trainingEstimator.getTimes();
 		
 		// build header
-		sb.append("time, entire-set, ");
+		sb.append("time,entire-set");
 		for (int i = 0; i < rules.size(); ++i) {
-			sb.append("r" + (i + 1) + ", ");
+			sb.append(",r" + (i + 1));
 		}
 		sb.append("\n");
 		
 		for (double t : times) {
-			sb.append(t + ", " + trainingEstimator.getProbabilityAt(t) + ", ");
+			sb.append(t + "," + trainingEstimator.getProbabilityAt(t));
 			for (Rule r: rules) {
 				KaplanMeierEstimator kme = ((SurvivalRule)r).getEstimator();
-				sb.append(kme.getProbabilityAt(t) + ",");
+				sb.append("," + kme.getProbabilityAt(t));
 			}
 			sb.append("\n");
 		}
