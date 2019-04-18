@@ -69,6 +69,9 @@ This section allows user to specify induction parameters. The package enables te
   	<param name="induction_measure">...</param>
 	<param name="pruning_measure">...</param>
   	<param name="voting_measure">...</param>
+	<param name="user_induction_equation">...</param>
+	<param name="user_pruning_equation">...</param>
+	<param name="user_voting_equation">...</param>
 	<param name="ignore_missing">...</param>
 </parameter_set>
 ```    
@@ -78,12 +81,11 @@ where:
 * `min_rule_covered` - positive integer representing minimum number of previously uncovered examples to be covered by a new rule (positive examples for classification problems); default: 5,
 * `max_uncovered_fraction` - floating-point number from [0,1] interval representing maximum fraction of examples that may remain uncovered by the rule set; default: 0,
 * `max_growing` - non-negative integer representing maximum number of conditions which can be added to the rule in the growing phase (use this parameter for large datasets if execution time is prohibitive); 0 indicates no limit; default: 0,
-* `induction_measure` - name of the [rule quality measure](#41-rule-quality) used during growing (ignored in survival analysis); default: Correlation, 
-* `pruning_measure` - name of the [rule quality measure](#41-rule-quality) used during pruning (ignored in survival analysis); default: Correlation,
-* `voting_measure` - name of the [rule quality measure](#41-rule-quality) used for voting (ignored in survival analysis); default: Correlation, 
+* `induction_measure`/`pruning_measure`/`voting_measure` - name of the [rule quality measure](#41-rule-quality) used during growing/pruning/voting (ignored in the survival analysis where log-rank statistics is used); default: *Correlation*, 
+* `user_induction_equation`/`user_pruning_equation`/`user_voting_equation` - equation of user-defined quality measure; applies only when the corresponding measure parameter has value *UserDefined*; the equation must be a mathematical expression with *p, n, P, N* literals (elements of confusion matrix), operators, numbers, and library functions (sin, log, etc.).
 * `ignore_missing` - boolean telling whether missing values should be ignored (by default, a missing value of given attribute is always considered as not fulfilling the condition build upon that attribute); default: false. 
 
-Measure parameters are ignored in the survival analysis, as log-rank statistics is used for induction, pruning, and voting. Additional parameters concerning user-guided generation of rules are described [in this section](#6-user-guided-induction). 
+Additional parameters concerning user-guided generation of rules are described [in this section](#6-user-guided-induction). 
 
 
 ## 1.3. Dataset definition
@@ -134,7 +136,7 @@ The `training` section allows generating models on specified training sets. It c
 * `in_file` - full path to the training file (in ARFF, CSV, XLS format),
 * `model_file` - name of the output model file (without full path); for each parameter set, a separate model is generated under location *<out_directory>/<parameter_set name>/<model_file>*.
 
-The `report_file` is created for each parameter set under *<out_directory>/<parameter_set name>/<report_file>* location. It contains a common text report for all training files: rule sets, model characteristics, detailed coverage information, training set prediction quality, KM-estimators (for survival problems), etc.   
+The `report_file` is created for each parameter set under *<out_directory>/<parameter_set name>/<report_file>* location. It contains a common text report for all training files: rule sets, model characteristics, detailed coverage information, training set prediction quality, KM-estimators (for survival problems), etc. Details on its content can be found [here](#51-training-report).
 
 ### Prediction section
 
@@ -143,14 +145,14 @@ The `prediction` section allows making predictions on specified testing sets usi
 * `test_file` - full path to the testing file (in ARFF, CSV, XLS format),
 * `predictions_file` - output data file with predictions (without full path); for each parameter set, a prediction is generated under location *<out_directory>/<parameter_set name>/<predictions_file>*.
 
-The `performance_file` is created for each parameter set under *<out_directory>/<parameter_set name>/<performance_file>* location. It contains a common CSV report for all testing files with values of performance measures.
+The `performance_file` is created for each parameter set under *<out_directory>/<parameter_set name>/<performance_file>* location. It contains a common CSV report for all testing files with values of performance measures. [In this section](#52-prediction-performance-report) one can find all the information concerning performance report.
  
 
 ## 1.4. Example
 
 Here we present how to prepare the XML experiment file for an example classification problem. The investigated dataset concerns a problem of forecasting high energy seismic bumps in coal mines and is named *seismic-bumps*. Let the user be interested in two parameter sets:
 * *mincov = 5* with *RSS* measure used for growing, pruning, and voting,
-* *mincov = 8* with *BinaryEntropy* measure used for growing and pruning, and *C2* for voting.
+* *mincov = 8* with *BinaryEntropy* measure used for growing, user-defined measure described by the equation *2p/n* for pruning, and *C2* for voting.
 
 The corresponding parameter set definition is as follows:
 ```xml
@@ -162,10 +164,11 @@ The corresponding parameter set definition is as follows:
 		<param name="voting_measure">RSS</param>
 	</parameter_set>
 	
-	<parameter_set name="mincov=8, Entropy_Entropy_C2">
+	<parameter_set name="mincov=8, Entropy_User_C2">
 		<param name="min_rule_covered">8</param>
 		<param name="induction_measure">BinaryEntropy</param>
-		<param name="pruning_measure">BinaryEntropy</param>
+		<param name="pruning_measure">UserDefined</param>
+		<param name="user_pruning_equation">2 * p / n</param>
 		<param name="voting_measure">C2</param>
 	</parameter_set>
 	
@@ -251,11 +254,11 @@ Therefore, the following files are produced as a result of the training:
 * *...*
 * *./results/mincov=5, RSS/seismic-bumps-9.mdl*
 * *./results/mincov=5, RSS/training-log.txt*
-* *./results/mincov=8, Entropy_Entropy_C2/seismic-bumps-0.mdl*
-* *./results/mincov=8, Entropy_Entropy_C2/seismic-bumps-1.mdl*
+* *./results/mincov=8, Entropy_User_C2/seismic-bumps-0.mdl*
+* *./results/mincov=8, Entropy_User_C2/seismic-bumps-1.mdl*
 * *...*
-* *./results/mincov=8, Entropy_Entropy_C2/seismic-bumps-9.mdl*
-* *./results/mincov=8, Entropy_Entropy_C2/training-log.txt*
+* *./results/mincov=8, Entropy_User_C2/seismic-bumps-9.mdl*
+* *./results/mincov=8, Entropy_User_C2/training-log.txt*
 
 In the prediction phase, previously-generated models are applied on the specified testing sets producing the following files:
 * *./results/mincov=5, RSS/seismic-bumps-pred-0.arff*
@@ -263,11 +266,11 @@ In the prediction phase, previously-generated models are applied on the specifie
 * *...*
 * *./results/mincov=5, RSS/seismic-bumps-pred-9.arff*
 * *./results/mincov=5, RSS/performance.csv*
-* *./results/mincov=8, Entropy_Entropy_C2/seismic-bumps-pred-0.arff*
-* *./results/mincov=8, Entropy_Entropy_C2/seismic-bumps-pred-1.arff*
+* *./results/mincov=8, Entropy_User_C2/seismic-bumps-pred-0.arff*
+* *./results/mincov=8, Entropy_User_C2/seismic-bumps-pred-1.arff*
 * *...*
-* *./results/mincov=8, Entropy_Entropy_C2/seismic-bumps-pred-9.arff*
-* *./results/mincov=8, Entropy_Entropy_C2/performance.csv*   
+* *./results/mincov=8, Entropy_User_C2/seismic-bumps-pred-9.arff*
+* *./results/mincov=8, Entropy_User_C2/performance.csv*   
 
 # 2. RapidMiner plugin
 
@@ -395,6 +398,8 @@ ggplot(meltedSurv, aes(x=time, y=value, color=variable)) +
   xlab("time") + ylab("survival probability") +
   theme_bw() + theme(legend.title=element_blank())
 ```
+
+The entire R script for performing survival analysis for *BMT* dataset can be found [here](https://github.com/adaa-polsl/Expert-Rules-dev/blob/master/examples/survival.R).
 
 # 4. Quality and evaluation
  
