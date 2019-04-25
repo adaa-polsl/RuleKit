@@ -99,17 +99,17 @@
 
 		<dataset>
 			<label>MM116_pred</label>
-			<out_directory>./methane-results</out_directory>		
+			<out_directory>./results-methane</out_directory>		
 			<training>  
 				<report_file>training-log.txt</report_file>      
 				 
 				<train>
-					 <in_file>./methane/methane-train.arff</in_file>               		
+					 <in_file>../data/methane/methane-train.arff</in_file>               		
 					 <model_file>methane-train.mdl</model_file>  
 				 </train>
 				 
 				 <train>
-					 <in_file>./methane/methane-full.arff</in_file>               		
+					 <in_file>../data/methane/methane.arff</in_file>               		
 					 <model_file>methane-full.mdl</model_file>  
 				 </train>
 			</training>
@@ -119,7 +119,7 @@
 				
 				<predict>
 					<model_file>methane-train.mdl</model_file>      	
-					<test_file>./methane/methane-test.arff</test_file>            			
+					<test_file>../data/methane/methane-test.arff</test_file>            			
 					<predictions_file>methane-test-pred.arff</predictions_file>   	
 				</predict>
 				

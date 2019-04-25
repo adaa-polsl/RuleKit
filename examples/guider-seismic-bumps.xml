@@ -131,7 +131,7 @@
 				<entry name="preferred-condition-16">inf: IF [[seismoacoustic = {d}]] THEN class = {1}</entry>
 				<entry name="preferred-condition-17">inf: IF [[ghazard = {b}]] THEN class = {1}</entry>
 				<entry name="preferred-condition-18">inf: IF [[ghazard = {c}]] THEN class = {1}</entry>
-<entry name="preferred-condition-19">inf: IF [[ghazard = {d}]] THEN class = {1}</entry>
+				<entry name="preferred-condition-19">inf: IF [[ghazard = {d}]] THEN class = {1}</entry>
 			</param>
 			<param name ="expert_forbidden_conditions">
 				
@@ -227,131 +227,131 @@
 	<datasets>
 		<dataset>
 			<label>class</label>
-			<out_directory>./seismic-bumps-results</out_directory>		
+			<out_directory>./results-seismic-bumps</out_directory>		
     
 			<training>  
 				 <report_file>training.txt</report_file>    
 
 				<train>
-					 <in_file>./seismic-bumps/seismic-bumps.arff</in_file>               	
-					 <model_file>seismic-bumps.mdl</model_file> 
+					 <in_file>../data/seismic-bumps/seismic-bumps.arff</in_file>               	
+					 <model_file>seismic-bumps-full.mdl</model_file> 
 				 </train>
-			<!--	 
+				 
 				 <train>
-					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-0.arff</in_file>               	
+					 <in_file>../data/seismic-bumps/seismic-bumps-train-0.arff</in_file>               	
 					 <model_file>seismic-bumps-0.mdl</model_file> 
 				 </train>
 				 
 				  <train>
-					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-1.arff</in_file>               	
+					 <in_file>../data/seismic-bumps/seismic-bumps-train-1.arff</in_file>               	
 					 <model_file>seismic-bumps-1.mdl</model_file> 
 				 </train>
 				 
 				  <train>
-					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-2.arff</in_file>               	
+					 <in_file>../data/seismic-bumps/seismic-bumps-train-2.arff</in_file>               	
 					 <model_file>seismic-bumps-2.mdl</model_file> 
 				 </train>
 				 
 				  <train>
-					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-3.arff</in_file>               	
+					 <in_file>../data/seismic-bumps/seismic-bumps-train-3.arff</in_file>               	
 					 <model_file>seismic-bumps-3.mdl</model_file> 
 				 </train>
 				 
 				  <train>
-					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-4.arff</in_file>               	
+					 <in_file>../data/seismic-bumps/seismic-bumps-train-4.arff</in_file>               	
 					 <model_file>seismic-bumps-4.mdl</model_file> 
 				 </train>
 				 
 				  <train>
-					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-5.arff</in_file>               	
+					 <in_file>../data/seismic-bumps/seismic-bumps-train-5.arff</in_file>               	
 					 <model_file>seismic-bumps-5.mdl</model_file> 
 				 </train>
 				 
 				  <train>
-					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-6.arff</in_file>               	
+					 <in_file>../data/seismic-bumps/seismic-bumps-train-6.arff</in_file>               	
 					 <model_file>seismic-bumps-6.mdl</model_file> 
 				 </train>
 				 
 				  <train>
-					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-7.arff</in_file>               	
+					 <in_file>../data/seismic-bumps/seismic-bumps-train-7.arff</in_file>               	
 					 <model_file>seismic-bumps-7.mdl</model_file> 
 				 </train>
 				 
 				  <train>
-					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-8.arff</in_file>               	
+					 <in_file>../data/seismic-bumps/seismic-bumps-train-8.arff</in_file>               	
 					 <model_file>seismic-bumps-8.mdl</model_file> 
 				 </train>
 
 				<train>
-					 <in_file>./seismic-bumps/cv-splits/seismic-bumps-train-9.arff</in_file>               		
+					 <in_file>../data/seismic-bumps/seismic-bumps-train-9.arff</in_file>               		
 					 <model_file>seismic-bumps-9.mdl</model_file>  
 				 </train>
 				 -->
 			</training>
-    <!--
+    
 			<prediction>
 				<performance_file>performance.csv</performance_file>  
 				<predict>
 					<model_file>seismic-bumps-0.mdl</model_file>      	
-					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-0.arff</test_file>            			
+					<test_file>../data/seismic-bumps/seismic-bumps-test-0.arff</test_file>            			
 					<predictions_file>seismic-bumps-pred-0.arff</predictions_file>  	  
 				</predict>
 				 
 				<predict>
 					<model_file>seismic-bumps-1.mdl</model_file>      	
-					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-1.arff</test_file>            			
+					<test_file>../data/seismic-bumps/seismic-bumps-test-1.arff</test_file>            			
 					<predictions_file>seismic-bumps-pred-1.arff</predictions_file>  	  
 				</predict>
 				 
 				<predict>
 					<model_file>seismic-bumps-2.mdl</model_file>      	
-					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-2.arff</test_file>            			
+					<test_file>../data/seismic-bumps/seismic-bumps-test-2.arff</test_file>            			
 					<predictions_file>seismic-bumps-pred-2.arff</predictions_file>  	  
 				</predict>
 				 
 				<predict>
 					<model_file>seismic-bumps-3.mdl</model_file>      	
-					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-3.arff</test_file>            			
+					<test_file>../data/seismic-bumps/seismic-bumps-test-3.arff</test_file>            			
 					<predictions_file>seismic-bumps-pred-3.arff</predictions_file>  	  
 				</predict>
 				 
 				<predict>
 					<model_file>seismic-bumps-4.mdl</model_file>      	
-					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-4.arff</test_file>            			
+					<test_file>../data/seismic-bumps/seismic-bumps-test-4.arff</test_file>            			
 					<predictions_file>seismic-bumps-pred-4.arff</predictions_file>  	  
 				</predict>
 				 
 				<predict>
 					<model_file>seismic-bumps-5.mdl</model_file>      	
-					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-5.arff</test_file>            			
+					<test_file>../data/seismic-bumps/seismic-bumps-test-5.arff</test_file>            			
 					<predictions_file>seismic-bumps-pred-5.arff</predictions_file>  	  
 				</predict>
 				 
 				<predict>
 					<model_file>seismic-bumps-6.mdl</model_file>      	
-					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-6.arff</test_file>            			
+					<test_file>../data/seismic-bumps/seismic-bumps-test-6.arff</test_file>            			
 					<predictions_file>seismic-bumps-pred-6.arff</predictions_file>  	  
 				</predict>
 				 
 				<predict>
 					<model_file>seismic-bumps-7.mdl</model_file>      	
-					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-7.arff</test_file>            			
+					<test_file>../data/seismic-bumps/seismic-bumps-test-7.arff</test_file>            			
 					<predictions_file>seismic-bumps-pred-7.arff</predictions_file>  	  
 				</predict>
 				 
 				<predict>
 					<model_file>seismic-bumps-8.mdl</model_file>      	
-					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-8.arff</test_file>            			
+					<test_file>../data/seismic-bumps/seismic-bumps-test-8.arff</test_file>            			
 					<predictions_file>seismic-bumps-pred-8.arff</predictions_file>  	  
 				</predict>
 
 				<predict>
 					<model_file>seismic-bumps-9.mdl</model_file>      	
-					<test_file>./seismic-bumps/cv-splits/seismic-bumps-test-9.arff</test_file>            			
+					<test_file>../data/seismic-bumps/seismic-bumps-test-9.arff</test_file>            			
 					<predictions_file>seismic-bumps-pred-9.arff</predictions_file>   	
 				</predict>
 			</prediction>
-			-->
+			
     
 		</dataset>
   	</datasets>

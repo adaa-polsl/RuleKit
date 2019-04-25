@@ -150,7 +150,9 @@ The `performance_file` is created for each parameter set under *<out_directory>/
 
 ## 1.4. Example
 
-Here we present how to prepare the XML experiment file for an example classification problem. The investigated dataset concerns a problem of forecasting high energy seismic bumps in coal mines and is named *seismic-bumps*. Let the user be interested in two parameter sets:
+Here we present how to prepare the XML experiment file for an example classification problem. The investigated dataset concerns a problem of forecasting high energy seismic bumps in coal mines and is named *seismic-bumps*. The entire dataset in ARFF format as well as 10-fold cross validation splits can be found [here](data/seismic-bumps).
+
+Let the user be interested in two parameter sets:
 * *mincov = 5* with *RSS* measure used for growing, pruning, and voting,
 * *mincov = 8* with *BinaryEntropy* measure used for growing, user-defined measure described by the equation *2p/n* for pruning, and *C2* for voting.
 
@@ -175,16 +177,16 @@ The corresponding parameter set definition is as follows:
 </parameter_sets>
 ```    
 
-The experiment will be performed on a single dataset in 10-fold cross validation scheme with existing splits ([download](examples/seismic-bumps/cv-splits)):
+The experiment will be performed in 10-fold cross validation scheme with existing splits:
 * name of the label attribute: `class`,
 * no weighting,
-* output directory: *./result* 
+* output directory: *./results-seismic-bumps* 
 * training files:
     * *./data/seismic-bumps-train-0.arff*
     * *./data/seismic-bumps-train-1.arff*
     * ...
     * *./data/seismic-bumps-train-9.arff*
-* training log file: *training-log.txt*
+* training log file: *training.log*
 * testing files:
     * *./data/seismic-bumps-test-0.arff*
     * *./data/seismic-bumps-test-1.arff*
@@ -197,22 +199,22 @@ The corresponding dataset definition is as follows:
 ```xml
 <dataset>
      <label>class</label>
-     <out_directory>./results</out_directory>		
+     <out_directory>./results-seismic-bumps</out_directory>		
     
     <training>  
-         <report_file>training-log.txt</report_file>           		
+         <report_file>training.log</report_file>           		
          <train>
-             <in_file>./data/seismic-bumps-train-0.arff</in_file>               	
+             <in_file>../data/seismic-bumps/seismic-bumps-train-0.arff</in_file>               	
              <model_file>seismic-bumps-0.mdl</model_file> 
          </train>
 		 
 		  <train>
-             <in_file>./data/seismic-bumps-train-1.arff</in_file>               	
+             <in_file>../data/seismic-bumps/seismic-bumps-train-1.arff</in_file>               	
              <model_file>seismic-bumps-1.mdl</model_file> 
          </train>
          ...
 		<train>
-             <in_file>/data/seismic-bumps-train-9.arff</in_file>               		
+             <in_file>../data/seismic-bumps/seismic-bumps-train-9.arff</in_file>               		
              <model_file>seismic-bumps-9.mdl</model_file>  
          </train>
 	 
@@ -223,20 +225,20 @@ The corresponding dataset definition is as follows:
      	<performance_file>performance.csv</performance_file>  
          <predict>
              <model_file>seismic-bumps-0.mdl</model_file>      	
-             <test_file>./data/seismic-bumps-test-0.arff</test_file>            			
+             <test_file>../data/seismic-bumps/seismic-bumps-test-0.arff</test_file>            			
              <predictions_file>seismic-bumps-pred-0.arff</predictions_file>  	  
          </predict>
 		 
 		  <predict>
              <model_file>seismic-bumps-1.mdl</model_file>      	
-             <test_file>./data/seismic-bumps-test-1.arff</test_file>            			
+             <test_file>../data/seismic-bumps/seismic-bumps-test-1.arff</test_file>            			
              <predictions_file>seismic-bumps-pred-1.arff</predictions_file>  	  
          </predict>
 		 ...
 	 
 		<predict>
              <model_file>seismic-bumps-9.mdl</model_file>      	
-             <test_file>./data/seismic-bumps-test-9.arff</test_file>            			
+             <test_file>../data/seismic-bumps/seismic-bumps-test-9.arff</test_file>            			
              <predictions_file>seismic-bumps-pred-9.arff</predictions_file>   	
          </predict>
 
@@ -249,28 +251,30 @@ The corresponding dataset definition is as follows:
 In the training phase, RuleKit generates a subdirectory in the output directory for every investigated parameter set. 
 Each of these subdirectories contains models (one per training file) and a common text report. 
 Therefore, the following files are produced as a result of the training:
-* *./results/mincov=5, RSS/seismic-bumps-0.mdl*
-* *./results/mincov=5, RSS/seismic-bumps-1.mdl*
+* *./results-seismic-bumps/mincov=5, RSS/seismic-bumps-0.mdl*
+* *./results-seismic-bumps/mincov=5, RSS/seismic-bumps-1.mdl*
 * *...*
-* *./results/mincov=5, RSS/seismic-bumps-9.mdl*
-* *./results/mincov=5, RSS/training-log.txt*
-* *./results/mincov=8, Entropy_User_C2/seismic-bumps-0.mdl*
-* *./results/mincov=8, Entropy_User_C2/seismic-bumps-1.mdl*
+* *./results-seismic-bumps/mincov=5, RSS/seismic-bumps-9.mdl*
+* *./results-seismic-bumps/mincov=5, RSS/training.log*
+* *./results-seismic-bumps/mincov=8, Entropy_User_C2/seismic-bumps-0.mdl*
+* *./results-seismic-bumps/mincov=8, Entropy_User_C2/seismic-bumps-1.mdl*
 * *...*
-* *./results/mincov=8, Entropy_User_C2/seismic-bumps-9.mdl*
-* *./results/mincov=8, Entropy_User_C2/training-log.txt*
+* *./results-seismic-bumps/mincov=8, Entropy_User_C2/seismic-bumps-9.mdl*
+* *./results-seismic-bumps/mincov=8, Entropy_User_C2/training-log.txt*
 
 In the prediction phase, previously-generated models are applied on the specified testing sets producing the following files:
-* *./results/mincov=5, RSS/seismic-bumps-pred-0.arff*
-* *./results/mincov=5, RSS/seismic-bumps-pred-1.arff*
+* *./results-seismic-bumps/mincov=5, RSS/seismic-bumps-pred-0.arff*
+* *./results-seismic-bumps/mincov=5, RSS/seismic-bumps-pred-1.arff*
 * *...*
-* *./results/mincov=5, RSS/seismic-bumps-pred-9.arff*
-* *./results/mincov=5, RSS/performance.csv*
-* *./results/mincov=8, Entropy_User_C2/seismic-bumps-pred-0.arff*
-* *./results/mincov=8, Entropy_User_C2/seismic-bumps-pred-1.arff*
+* *./results-seismic-bumps/mincov=5, RSS/seismic-bumps-pred-9.arff*
+* *./results-seismic-bumps/mincov=5, RSS/performance.csv*
+* *./results-seismic-bumps/mincov=8, Entropy_User_C2/seismic-bumps-pred-0.arff*
+* *./results-seismic-bumps/mincov=8, Entropy_User_C2/seismic-bumps-pred-1.arff*
 * *...*
-* *./results/mincov=8, Entropy_User_C2/seismic-bumps-pred-9.arff*
-* *./results/mincov=8, Entropy_User_C2/performance.csv*   
+* *./results-seismic-bumps/mincov=8, Entropy_User_C2/seismic-bumps-pred-9.arff*
+* *./results-seismic-bumps/mincov=8, Entropy_User_C2/performance.csv*   
+
+The complete experiment definition in XML format is available [here](examples/classification.xml). 
 
 # 2. RapidMiner plugin
 
@@ -299,7 +303,7 @@ The *RuleKit Performance* operator allows assesing the model. It conforms to the
 
 ## 2.3. Example
 
-In the following subsection we show an example regression analysis with a use of RuleKit RapidMiner plugin. The investigated dataset is named *methane* and concerns the problem of predicting methane concentration in a coal mine. The set is split into separate testing and training parts distributed in ARFF format ([download](examples/methane)). The analysis is divided into two parts: data preparation and main processing. Corresponding RapidMiner processes are presented in Figure 2.1 and 2.2.
+In the following subsection we show an example regression analysis with a use of RuleKit RapidMiner plugin. The investigated dataset is named *methane* and concerns the problem of predicting methane concentration in a coal mine. The set is split into separate testing and training parts distributed in ARFF format ([download](data/methane)). The analysis is divided into two parts: data preparation and main processing. Corresponding RapidMiner processes are presented in Figure 2.1 and 2.2.
 
 The role of the preparation process is to add metadata to the sets and store them in the RM format (RapidMiner does not support metadata for ARFF files). After loading sets with *Read ARFF*, the *Set Role* operator is used for setting *MM116_pred* as the label attribute (in the survival analysis, a *survival_time* role has to be additionally assigned to some other attribute). Then, the sets are saved in the RapidMiner local repository with *Store* operators.
 
@@ -405,7 +409,7 @@ ggplot(meltedSurv, aes(x=time, y=value, color=variable)) +
 | ![](doc/survival.png) | 
 | Figure 3.1. Survival function estimates for the rules and for the entire *BMT* dataset. |
 
-The entire R script for performing survival analysis for *BMT* dataset can be found [here](https://github.com/adaa-polsl/Expert-Rules-dev/blob/master/examples/survival.R).
+The entire R script for performing survival analysis for *BMT* dataset can be found [here](examples/survival.R).
 
 # 4. Quality and evaluation
  
@@ -723,7 +727,7 @@ User's guided induction may also be executed from RapidMiner plugin and R packag
 |:--:| 
 | Figure 6.1. RapidMiner wizard for specifying user's rules, preferred conditions/attributes, and forbidden conditions/attributes.  |
 
-The XML experimental files for test cases discussed in the GuideR paper can be found [here](https://github.com/adaa-polsl/Expert-Rules-dev/tree/master/examples)
+The XML experimental files for test cases discussed in the GuideR paper can be found [here](examples)
 
 # 7. Library API
 
