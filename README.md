@@ -510,27 +510,26 @@ In binary classification problems some additional metrices are computed :
 * `geometric_mean` - geometric mean of sensitivity and specificity,
 * `psep` - the sum of the positive predicitve value and the negative predictive value minus 1,
 * `lift` - the lift of the positive class,
-
 * `f_measure` - F1-score; combination of precision and recall: *F1 = 2 * PPV * TPR / (PPV + TPR)*,
 * `false_positive` - absolute number of incorrectly as positive classified examples,
 * `false_negative` - absolute number of incorrectly as negative classified examples,
 * `true_positive` - absolute number of correctly as positive classified examples,
-* `true_negative` - absolute number of correctly as negative classified examples,
+* `true_negative` - absolute number of correctly as negative classified examples.
 
 
 
 ### Regression
-
-* absolute_error 
-* relative_error
-* relative_error_lenient
-* relative_error_strict
-* normalized_absolute_error
-* root_mean_squared_error
-* root_relative_squared_error
-* squared_error
-* correlation
-* squared_correlation
+* `absolute_error` - the average of the difference between predicted and actual value, ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\sum_i{\left(|label_i-predicted_i|\right)}{\quad}/{\quad}%23examples)
+* `relative_error` - ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\sum_i{\left(|label_i-predicted_i|{\quad}/{\quad}label_i\right)}{\quad}/{\quad}%23examples); the relative error of label 0 and prediction 0 is defined as 0, the relative error of label 0 and prediction != 0 is infinite,
+* `relative_error_lenient` - ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\sum_i{\left(|label_i-predicted_i|{\quad}/{\quad}\max(label_i,predicted_i)\right)}{\quad}/{\quad}%23examples)
+* `relative_error_strict` -  ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\sum_i{\left(|label_i-predicted_i|{\quad}/{\quad}\min(label_i,predicted_i)\right)}{\quad}/{\quad}%23examples)
+* `normalized_absolute_error` - absolute error normalized by the error simply predicting the average of the actual values, ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl={\sum_i(|label_i-predicted_i|)}{\quad}/{\quad}{\sum_i(|\overline{label}-predicted_i|)})
+* `squared_error` - ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\sum_i{(label_i-predicted_i)^2}{\quad}/{\quad}%23examples)
+* `root_mean_squared_error` - ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\sqrt{\sum_i{(label_i-predicted_i)^2}{\quad}/{\quad}%23examples})
+* `root_relative_squared_error` - the total squared error made relative to what the error would have been
+ * if the prediction had been the average of the absolute value, ![](https://chart.googleapis.com/chart?cht=tx&chf=bg,s,00000000&chl=\sqrt{{\sum_i(label_i-predicted_i)^2}{\quad}/{\quad}{\sum_i(\overline{label}-predicted_i)^2}})
+* `correlation` - empirical corelation coefficient *r* between label and prediction,
+* `squared_correlation` - the square of the empirical corellation coefficient *r* between label and prediction.
 
 ### Survival
 
@@ -614,7 +613,7 @@ time, entire-set, r1, r2, r3, r4, r5,
 55.0, 0.9047619047619048, 0.9159663865546219,1.0,0.9133858267716537,0.975609756097561,0.6499999999999999,
 56.0, 0.8988095238095238, 0.9159663865546219,1.0,0.9133858267716537,0.9634146341463414,0.6499999999999999,
 ```
-The last element of the report are model indicators followed by the performance metrices evaluated on the training set. The contents of this section depends on the investigated problem. The detailed discussion of available metrices is presented in [4.3](#43-performance-metrices).  
+The last element of the report are [model indicators](#42-model-characteristics) followed by the [performance metrices](#43-performance-metrices) evaluated on the training set. The contents of this section depends on the investigated problem.  
 ```
 Model characteristics:
 time_total_s: 13.829900798
