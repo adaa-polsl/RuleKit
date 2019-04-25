@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 
 import com.rapidminer.example.Example;
@@ -27,10 +28,10 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 
 	protected boolean isVoting;
 	
+	protected InductionParameters params = null;
+	
 	protected Knowledge knowledge = null;
-	
-	protected List<IQualityMeasure> qualityMeasures = new ArrayList<IQualityMeasure>();
-	
+		
 	protected double totalTime;
 	
 	protected double growingTime;
@@ -51,6 +52,8 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 	
 	public boolean getIsVoting() { return isVoting; }
 	public void setIsVoting(boolean v) { isVoting = v; }
+	
+	public InductionParameters getParams() { return params; }
 	
 	public double calculateConditionsCount() {
 		double cnt = 0;
@@ -170,15 +173,22 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 	}
 	
 	
-	public RuleSetBase(ExampleSet exampleSet, boolean isVoting, Knowledge knowledge) {
+	public RuleSetBase(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
 		super(exampleSet);
 		this.trainingSet = exampleSet;
 		this.isVoting = isVoting;
+		this.params = params;
 		this.knowledge = knowledge;
 	}
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
+		
+		if (params != null) {
+			sb.append("Params:\n");
+			sb.append(params.toString());
+			sb.append("\n");
+		}
 		
 		if (knowledge != null) {
 			sb.append("Knowledge:\n");

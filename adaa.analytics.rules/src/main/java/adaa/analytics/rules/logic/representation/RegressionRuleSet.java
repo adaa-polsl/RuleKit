@@ -1,5 +1,7 @@
 package adaa.analytics.rules.logic.representation;
 
+import adaa.analytics.rules.logic.induction.InductionParameters;
+
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.OperatorException;
@@ -17,8 +19,8 @@ public class RegressionRuleSet extends RuleSetBase {
 	public void setDefaultValue(double defaultValue) { this.defaultValue = defaultValue; }
 	
 
-	public RegressionRuleSet(ExampleSet exampleSet, boolean isVoting, Knowledge knowledge) {
-		super(exampleSet, isVoting, knowledge);
+	public RegressionRuleSet(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
+		super(exampleSet, isVoting, params, knowledge);
 	}
 
 	@Override

@@ -13,6 +13,7 @@ public class RuleFactory {
 	protected int type;
 	protected boolean isVoting = true;
 	protected Knowledge knowledge;
+	protected InductionParameters params;
 	
 	public int getType() { return this.type; }
 	
@@ -20,7 +21,8 @@ public class RuleFactory {
 		this.type = type;
 	}
 	
-	public RuleFactory(int type, boolean isVoting, Knowledge knowledge) {
+	public RuleFactory(int type, boolean isVoting, InductionParameters params, Knowledge knowledge) {
+		this.params = params;
 		this.type = type;
 		this.knowledge = knowledge;
 	}
@@ -43,13 +45,13 @@ public class RuleFactory {
 	public RuleSetBase create(ExampleSet set) {
 		switch (type) {
 		case CLASSIFICATION:
-			return new ClassificationRuleSet(set, isVoting, knowledge);
+			return new ClassificationRuleSet(set, isVoting, params, knowledge);
 		case REGRESSION:
-			return new RegressionRuleSet(set, isVoting, knowledge);
+			return new RegressionRuleSet(set, isVoting, params, knowledge);
 		case SURVIVAL:
-			return new SurvivalRuleSet(set, isVoting, knowledge);
+			return new SurvivalRuleSet(set, isVoting, params, knowledge);
 		case ACTION:
-			return new ActionRuleSet(set, isVoting, knowledge);
+			return new ActionRuleSet(set, isVoting, params, knowledge);
 		}
 		
 		return null;

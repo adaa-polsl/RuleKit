@@ -298,8 +298,9 @@ public class TrainTestValidationExperiment extends ExperimentBase {
                         double avg = performance.getCriterion(name).getAverage();
                         row.append(avg).append(", ");
                     }
-
-                    qualityReport.add(new String[] { ruleGenerator.toString(), performanceHeader.toString()}, row.toString());
+                    
+                    String configString = "Parameters: " + model.getParams().toString().replace("\n", "; ");
+                    qualityReport.add(new String[] { configString, performanceHeader.toString()}, row.toString());
                 }
             }
         } catch (Exception e) {

@@ -51,9 +51,9 @@ public class RuleTranslator extends Operator {
 		// create rule set
 		RuleSetBase ruleset;
 		if (dataset.getAttributes().getLabel().isNominal()) {
-			ruleset = new ClassificationRuleSet(dataset, false, null);
+			ruleset = new ClassificationRuleSet(dataset, false, null, null);
 		} else {
-			ruleset = new RegressionRuleSet(dataset, false, null);
+			ruleset = new RegressionRuleSet(dataset, false, null, null);
 		}
 		
 		// perform rule translation

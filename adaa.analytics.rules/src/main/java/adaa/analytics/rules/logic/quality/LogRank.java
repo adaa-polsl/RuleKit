@@ -6,10 +6,13 @@ import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
 import com.rapidminer.tools.container.Pair;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class LogRank implements IQualityMeasure {
+public class LogRank implements IQualityMeasure, Serializable {
+	
+	private static final long serialVersionUID = -6859067049486703913L;
 	
 	protected ChiSquaredDistribution dist = new ChiSquaredDistribution(1.0);
 	

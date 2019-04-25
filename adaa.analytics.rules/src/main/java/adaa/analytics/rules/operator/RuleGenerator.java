@@ -264,26 +264,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 			return defaultMeasure;
 		}
 	}
-	 
-	 @Override
-	 public String toString() {
-		
-		 String msg = null;
-		 
-		 try {
-			msg = "RuleGenerator: " + 
-				PARAMETER_MIN_RULE_COVERED + "=" + getParameterAsDouble(PARAMETER_MIN_RULE_COVERED) + "; " +
-				PARAMETER_INDUCTION_MEASURE + "=" + getParameter(PARAMETER_INDUCTION_MEASURE) + "; " +
-				PARAMETER_PRUNING_ENABLED + "=" + getParameterAsBoolean(PARAMETER_PRUNING_ENABLED) + "; " +
-				PARAMETER_PRUNING_MEASURE + "=" + getParameter(PARAMETER_PRUNING_MEASURE);
-		
-		} catch (UndefinedParameterError e) {
-			e.printStackTrace();
-		}
-		
-		return msg;
-	 }
-	 
+	  
 	 public static PerformanceVector recalculatePerformance(RuleSetBase rs) {
 		PerformanceVector pv = new PerformanceVector();
 		

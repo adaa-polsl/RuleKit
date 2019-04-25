@@ -1,5 +1,7 @@
 package adaa.analytics.rules.logic.representation;
 
+import adaa.analytics.rules.logic.induction.InductionParameters;
+
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
@@ -31,8 +33,8 @@ public class SurvivalRuleSet extends RuleSetBase {
 	
 
 	
-	public SurvivalRuleSet(ExampleSet exampleSet, boolean isVoting, Knowledge knowledge) {
-		super(exampleSet, isVoting, knowledge);
+	public SurvivalRuleSet(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
+		super(exampleSet, isVoting, params, knowledge);
 		
 		trainingEstimator = new KaplanMeierEstimator(exampleSet);
 	}

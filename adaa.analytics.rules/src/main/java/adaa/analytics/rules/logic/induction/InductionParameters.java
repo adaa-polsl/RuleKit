@@ -1,9 +1,13 @@
 package adaa.analytics.rules.logic.induction;
 
+import java.io.Serializable;
+
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 
-public class InductionParameters {
+public class InductionParameters implements Serializable {
+	
+	private static final long serialVersionUID = -7902085678266232822L;
 	
 	private IQualityMeasure inductionMeasure = new ClassificationMeasure(ClassificationMeasure.Correlation);
 	private IQualityMeasure pruningMeasure = new ClassificationMeasure(ClassificationMeasure.Correlation);
@@ -38,4 +42,13 @@ public class InductionParameters {
 	
 	public double getMaxGrowingConditions() { return maxGrowingConditions; }
 	public void setMaxGrowingConditions(double maxGrowingConditions) { this.maxGrowingConditions = maxGrowingConditions; }
+	
+	public String toString() {
+		return	
+			"min_rule_covered=" + minimumCovered + "\n" +
+			"induction_measure=" + inductionMeasure.getName() + "\n" +
+			"pruning_measure=" + pruningMeasure.getName() + "\n" +
+			"voting_measure=" + votingMeasure.getName() + "\n";
+
+	}
 }

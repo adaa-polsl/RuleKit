@@ -1,5 +1,7 @@
 package adaa.analytics.rules.logic.representation;
 
+import adaa.analytics.rules.logic.induction.InductionParameters;
+
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
@@ -22,8 +24,8 @@ public class ClassificationRuleSet extends RuleSetBase {
 	public int getDefaultClass() { return defaultClass; }
 	public void setDefaultClass(int defaultClass) { this.defaultClass = defaultClass; }
 	
-	public ClassificationRuleSet(ExampleSet exampleSet, boolean isVoting, Knowledge knowledge) {
-		super(exampleSet, isVoting, knowledge);
+	public ClassificationRuleSet(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
+		super(exampleSet, isVoting, params, knowledge);
 		// TODO Auto-generated constructor stub
 	}
 	

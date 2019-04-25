@@ -29,7 +29,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 			InductionParameters params,
 			Knowledge knowledge) {
 		super(finder, params);
-		factory = new RuleFactory(RuleFactory.REGRESSION, true, knowledge);
+		factory = new RuleFactory(RuleFactory.REGRESSION, true, params, knowledge);
 		this.knowledge = (Knowledge)SerializationUtils.clone(knowledge);
 		RegressionExpertFinder erf = (RegressionExpertFinder)finder;
 		erf.setKnowledge(this.knowledge);

@@ -19,7 +19,7 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 	public ActionSnC(ActionFinder finder_, ActionInductionParameters params) {
 		super(params);
 		finder = finder_;
-		this.factory = new RuleFactory(RuleFactory.ACTION, false, null);
+		this.factory = new RuleFactory(RuleFactory.ACTION, false, params, null);
 	}
 	
 	public ActionRuleSet getUnprunedRules() throws Exception {

@@ -22,7 +22,7 @@ public class SurvivalClassificationSnC extends ClassificationSnC {
 	@Override
 	public RuleSetBase run(ExampleSet trainSet) {
 	
-		SurvivalRuleSet survSet = new SurvivalRuleSet(trainSet, true, null);
+		SurvivalRuleSet survSet = new SurvivalRuleSet(trainSet, true, params, null);
 		
 		Attribute survTime = trainSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
 		Attribute survStat = trainSet.getAttributes().getLabel();

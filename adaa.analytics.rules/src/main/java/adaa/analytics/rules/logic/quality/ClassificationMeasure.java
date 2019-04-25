@@ -8,9 +8,11 @@ import com.rapidminer.operator.OperatorException;
 import java.io.*;
 
 public class
-ClassificationMeasure implements IQualityMeasure {
+ClassificationMeasure implements IQualityMeasure, Serializable {
 
-    public static final int Accuracy = 0;
+	private static final long serialVersionUID = -2509268153427193088L;
+	
+	public static final int Accuracy = 0;
     public static final int BinaryEntropy = 1;
     public static final int C1 = 2;
     public static final int C2 = 3;
