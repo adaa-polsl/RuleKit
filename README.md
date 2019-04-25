@@ -411,7 +411,7 @@ The entire R script for performing survival analysis for *BMT* dataset can be fo
  
 ## 4.1. Rule quality
 
-An important factor determining performance and comprehensibility of the resulting model is a selection of a rule quality measure. RuleKit provides user with a number of state-of-art measures calculated on the basis of the confusion matrix. The matrix consists of the number of positive and negative examples in the entire training set (*P* and *N*) and the number of positive and negative examples covered by the rule (*p* and *n*). The measures based on the confusion matrix can be used for classification and regression problems (note, that for the former *P* and *N* are fixed for each analyzed class, while for the latter *P* and *N* are determined for every rule on the basis of covered examples). In the case of survivall problems, log-rank statistics is always used for determining rules quality (for simplicity, all examples are assumed positive, thus *N* and *n* equal to 0). Below one can find all available measures together with formulas. 
+An important factor determining performance and comprehensibility of the resulting model is a selection of a rule quality measure. RuleKit provides user with a number of state-of-art measures calculated on the basis of the confusion matrix. Additionally, there is a possibility to define own measures. The confusion matrix consists of the number of positive and negative examples in the entire training set (*P* and *N*) and the number of positive and negative examples covered by the rule (*p* and *n*). The measures based on the confusion matrix can be used for classification and regression problems (note, that for the former *P* and *N* are fixed for each analyzed class, while for the latter *P* and *N* are determined for every rule on the basis of covered examples). In the case of survival problems, log-rank statistics is always used for determining rules quality (for simplicity, all examples are assumed positive, thus *N* and *n* equal to 0). Below one can find all built-in measures together with formulas. 
 
 | Quality measure 			| Formula |
 | :--- 						| :--- |
@@ -476,7 +476,7 @@ These indicators are common for all types of problems and their values are estab
 * `fraction_0.05_FDR_significant` - fraction of significant rules at 0.05 level (with FDR correction),
 * `fraction_0.05_FWER_significant` - fraction of significant rules at 0.05 level (with FWER correction).
 
-During model construction, the rule *p*-values are determined using following tests:
+Rule *p*-values are determined during model construction using following tests:
 * classification: Fisher's exact test for for comparing confusion matrices,
 * regression: &Chi;<sup>2</sup>- test for comparing label variance of covered vs. uncovered examples,
 * survival: log-rank for comparing survival functions of covered vs. uncovered examples. 
@@ -487,36 +487,37 @@ Performance metrices are established on the basis of model outcome and real exam
 
 ### Classification
 
-* accuracy
-* classification_error
-* balanced_accuracy
-* kappa  
-* #rules_per_example - average number of rules covering an example,
-* #voting_conflicts - number of voting conflicts (example covered by rules pointing to different classes),
-* #negative_voting_conflicts - number of voiting conflicts resolved incorrectly,
-* cross-entropy
-* margin
-* soft_margin_loss
-* logistic_loss
+* `accuracy` - relative number of correctly classified examples among all examples,
+* `classification_error` - equal to 1 minus accuracy,
+* `balanced_accuracy` - averaged relative numbers of correctly classified examples from all classes,
+* `kappa`  - kappa statistics for multi class problems,
+* `#rules_per_example` - average number of rules covering an example,
+* `#voting_conflicts` - number of voting conflicts (example covered by rules pointing to different classes),
+* `#negative_voting_conflicts` - number of voiting conflicts resolved incorrectly,
+* `cross-entropy` - cross-entropy for the predictions of a classifier,
+* `margin` - the margin of a classifier, defined as the minimal confidence for the correct label,
+* `soft_margin_loss` - the soft margin loss of a classifier, defined as the average over all *1 - y * f(x)*,
+* `logistic_loss` - the logistic loss of a classifier, defined as the average over all *ln(1 + exp(-y * f(x)))*.
 
-In binary classification problems some additional metrices are computed:
+In binary classification problems some additional metrices are computed :
 
-* precision
-* recall
-* lift
-* fallout
-* f_measure
-* false_positive
-* false_negative
-* true_positive
-* true_negative
-* sensitivity
-* specificity
-* youden
-* positive_predictive_value
-* negative_predictive_value
-* psep
-* geometric_mean
+* `precision` (positive predictive value, PPV) - relative number of correctly as positive classified examples among all examples classified as positive,
+* `sensitivity` (recall, true positive rate, TPR) - relative number of correctly as positive classified examples among all positive examples,  
+* `specificity` (selectivity, true negative rate, TNR) - relative number of correctly as negative classified examples among all negative examples,
+* `negative_predictive_value` (NPV) - relative number of correctly as negative classified examples among all examples classified as negative,
+* `fallout` (false positive rate, FPR) - relative number of incorrectly as positive classified examples among all negative examples,
+* `youden` - the sum of sensitivity and specificity minus 1,
+* `geometric_mean` - geometric mean of sensitivity and specificity,
+* `psep` - the sum of the positive predicitve value and the negative predictive value minus 1,
+* `lift` - the lift of the positive class,
+
+* `f_measure` - F1-score; combination of precision and recall: *F1 = 2 * PPV * TPR / (PPV + TPR)*,
+* `false_positive` - absolute number of incorrectly as positive classified examples,
+* `false_negative` - absolute number of incorrectly as negative classified examples,
+* `true_positive` - absolute number of correctly as positive classified examples,
+* `true_negative` - absolute number of correctly as negative classified examples,
+
+
 
 ### Regression
 
@@ -540,6 +541,7 @@ In binary classification problems some additional metrices are computed:
 During training phase, RuleKit produces following types of files:
 * a model file (one per each training set) that can be applied in the prediction stage,
 * a text report (common for all training files).
+
 The result of the prediction phase are:
 * a prediction file (one per each testing set), 
 * a performance report (common for all testing files).
@@ -551,20 +553,29 @@ The report consists of separated sections, each corresponding to a single tranin
 
 ```
 ================================================================================
-bone-marrow-test-0.arff
+bmt-train-0.arff
 
 ... # content
 
 ================================================================================
-bone-marrow-test-1.arff
+bmt-train-1.arff
 
 ... # content
 
 ```
 
-At the beginning of a section, a rule model is given:
-
+At the beginning of a section, induction parameters are given: 
 ```
+Params:
+min_rule_covered=5.0
+induction_measure=LogRankStatistics
+pruning_measure=LogRankStatistics
+voting_measure=LogRankStatistics
+```
+
+Next, a rule model is presented:
+```
+Rules:
 r1: IF Relapse = {0} AND Donorage = (-inf, 45.526027) AND Recipientage = (-inf, 17.45) THEN survival_status = {NaN} (p=119.0, n=0.0, P=168.0, N=0.0, weight=0.9999992726837377, pvalue=7.27316262327804E-7)
 r2: IF HLAmismatch = {0} AND Relapse = {1} THEN survival_status = {NaN} (p=21.0, n=0.0, P=168.0, N=0.0, weight=0.9981544870337137, pvalue=0.0018455129662863223)
 r3: IF Relapse = {0} AND Rbodymass = (-inf, 69.0) AND Recipientage = (-inf, 18.0) THEN survival_status = {NaN} (p=127.0, n=0.0, P=168.0, N=0.0, weight=0.9999999653103507, pvalue=3.468964926423013E-8)
@@ -605,6 +616,7 @@ time, entire-set, r1, r2, r3, r4, r5,
 ```
 The last element of the report are model indicators followed by the performance metrices evaluated on the training set. The contents of this section depends on the investigated problem. The detailed discussion of available metrices is presented in [4.3](#43-performance-metrices).  
 ```
+Model characteristics:
 time_total_s: 13.829900798
 time_growing_s: 11.434164728999999
 time_pruning_s: 2.3417725849999997
@@ -620,25 +632,27 @@ avg_FWER_pvalue: 3.726949446670513E-4
 fraction_0.05_significant: 1.0
 fraction_0.05_FDR_significant: 1.0
 fraction_0.05_FWER_significant: 1.0
-integrated_brier_score: 0.20866685101468796
+
+Training set performance:
+integrated_brier_score: 0.20504955695116336
 ```
 
 ## 5.2. Prediction performance report
 
 The prediction performance report has the form of comma-separated table with rows corresponding to testing sets and columns representing model indicators and, optionally, performance metrices. The latter are reported only when real labels are provided in the testing set.
 ```
-RuleGenerator: min_rule_covered=5.0; induction_measure=Accuracy; pruning_enabled=true; pruning_measure=null
+Parameters: min_rule_covered=5.0; induction_measure=LogRankStatistics; pruning_measure=LogRankStatistics; voting_measure=LogRankStatistics; 
 Dataset, time started, elapsed[s], time_total_s,time_growing_s,time_pruning_s,#rules,#conditions_per_rule,#induced_conditions_per_rule,avg_rule_coverage,avg_rule_precision,avg_rule_quality,avg_pvalue,avg_FDR_pvalue,avg_FWER_pvalue,fraction_0.05_significant,fraction_0.05_FDR_significant,fraction_0.05_FWER_significant,integrated_brier_score,
-bone-marrow-test-0.arff,2018.10.10_19.22.19,14.197630903,13.829900798, 11.434164728999999, 2.3417725849999997, 5.0, 3.6, 73.6, 0.43928571428571433, 1.0, 0.9996291809031488, 3.7081909685121595E-4, 3.71317511237688E-4, 3.726949446670513E-4, 1.0, 1.0, 1.0, 0.20866685101468796, 
-bone-marrow-test-r0-f1.arff,2018.10.10_19.22.33,8.816920328,8.785011626, 7.139117646, 1.644193643, 3.0, 2.0, 81.33333333333333, 0.5277777777777778, 1.0, 0.9999840894880433, 1.591051195670712E-5, 1.593935102948511E-5, 1.5968190102263097E-5, 1.0, 1.0, 1.0, 0.32738956730627355, 
-bone-marrow-test-r0-f2.arff,2018.10.10_19.22.42,11.202350452,11.139475589, 9.226062807, 1.9120130830000002, 5.0, 3.4, 65.0, 0.4238095238095238, 1.0, 0.995274964099923, 0.004725035900076935, 0.004725037058680282, 0.004725040534490322, 1.0, 1.0, 1.0, 0.2193283512681922, 
-bone-marrow-test-r0-f3.arff,2018.10.10_19.22.53,11.235637043,11.117153526, 9.119976444, 1.995392923, 7.0, 3.857142857142857, 60.57142857142857, 0.35289115646258506, 1.0, 0.9801963244964088, 0.019803675503591172, 0.01986258037321523, 0.020129896761985813, 0.8571428571428571, 0.8571428571428571, 0.8571428571428571, 0.1969380949017121, 
-bone-marrow-test-r0-f4.arff,2018.10.10_19.23.04,10.668216899,10.551245553, 8.727900207000001, 1.822214638, 4.0, 2.25, 67.75, 0.49999999999999994, 1.0, 0.9999999359313667, 6.406863328756174E-8, 6.406863328756174E-8, 6.406863328756174E-8, 1.0, 1.0, 1.0, 0.17517417672611418, 
-bone-marrow-test-r0-f5.arff,2018.10.10_19.23.15,10.523336237,10.4100414, 8.722353154, 1.6866635950000002, 4.0, 4.0, 76.0, 0.4821428571428571, 1.0, 0.9781969933568722, 0.021803006643127898, 0.02181038208090318, 0.021823023749909604, 0.75, 0.75, 0.75, 0.25878170984273013, 
-bone-marrow-test-r0-f6.arff,2018.10.10_19.23.25,12.877260506,12.7574517, 10.616004643, 2.140288125, 5.0, 3.2, 77.6, 0.39880952380952384, 1.0, 0.9995242324316976, 4.7576756830243206E-4, 4.805232398770713E-4, 4.946063707460313E-4, 1.0, 1.0, 1.0, 0.19484740108158835, 
-bone-marrow-test-r0-f7.arff,2018.10.10_19.23.38,17.133387559,17.01621479, 14.541448512999997, 2.473219469, 7.0, 4.571428571428571, 63.57142857142857, 0.23245984784446325, 1.0, 0.9961646528405262, 0.003835347159473836, 0.004022999396535294, 0.004865332297101272, 1.0, 1.0, 1.0, 0.1759002883753468, 
-bone-marrow-test-r0-f8.arff,2018.10.10_19.23.55,22.294961552,22.183485085, 18.778375772, 3.403339693, 9.0, 4.777777777777778, 67.11111111111111, 0.23537146614069693, 1.0, 0.9949077503124099, 0.005092249687590009, 0.005743702908769271, 0.009426945617211135, 1.0, 1.0, 1.0, 0.16894150945629255, 
-bone-marrow-test-r0-f9.arff,2018.10.10_19.24.18,7.400985905,7.287232628, 6.234206981, 1.052146398, 3.0, 3.0, 61.333333333333336, 0.35897435897435903, 1.0, 0.9991030527299692, 8.969472700306828E-4, 8.969472700306828E-4, 8.969472700306828E-4, 1.0, 1.0, 1.0, 0.19829001480313704, 
+bmt-test-0.arff,2018.10.10_19.22.19,14.197630903,13.829900798, 11.434164728999999, 2.3417725849999997, 5.0, 3.6, 73.6, 0.43928571428571433, 1.0, 0.9996291809031488, 3.7081909685121595E-4, 3.71317511237688E-4, 3.726949446670513E-4, 1.0, 1.0, 1.0, 0.20866685101468796, 
+bmt-test-1.arff,2018.10.10_19.22.33,8.816920328,8.785011626, 7.139117646, 1.644193643, 3.0, 2.0, 81.33333333333333, 0.5277777777777778, 1.0, 0.9999840894880433, 1.591051195670712E-5, 1.593935102948511E-5, 1.5968190102263097E-5, 1.0, 1.0, 1.0, 0.32738956730627355, 
+bmt-test-2.arff,2018.10.10_19.22.42,11.202350452,11.139475589, 9.226062807, 1.9120130830000002, 5.0, 3.4, 65.0, 0.4238095238095238, 1.0, 0.995274964099923, 0.004725035900076935, 0.004725037058680282, 0.004725040534490322, 1.0, 1.0, 1.0, 0.2193283512681922, 
+bmt-test-3.arff,2018.10.10_19.22.53,11.235637043,11.117153526, 9.119976444, 1.995392923, 7.0, 3.857142857142857, 60.57142857142857, 0.35289115646258506, 1.0, 0.9801963244964088, 0.019803675503591172, 0.01986258037321523, 0.020129896761985813, 0.8571428571428571, 0.8571428571428571, 0.8571428571428571, 0.1969380949017121, 
+bmt-test-4.arff,2018.10.10_19.23.04,10.668216899,10.551245553, 8.727900207000001, 1.822214638, 4.0, 2.25, 67.75, 0.49999999999999994, 1.0, 0.9999999359313667, 6.406863328756174E-8, 6.406863328756174E-8, 6.406863328756174E-8, 1.0, 1.0, 1.0, 0.17517417672611418, 
+bmt-test-5.arff,2018.10.10_19.23.15,10.523336237,10.4100414, 8.722353154, 1.6866635950000002, 4.0, 4.0, 76.0, 0.4821428571428571, 1.0, 0.9781969933568722, 0.021803006643127898, 0.02181038208090318, 0.021823023749909604, 0.75, 0.75, 0.75, 0.25878170984273013, 
+bmt-test-6.arff,2018.10.10_19.23.25,12.877260506,12.7574517, 10.616004643, 2.140288125, 5.0, 3.2, 77.6, 0.39880952380952384, 1.0, 0.9995242324316976, 4.7576756830243206E-4, 4.805232398770713E-4, 4.946063707460313E-4, 1.0, 1.0, 1.0, 0.19484740108158835, 
+bmt-test-7.arff,2018.10.10_19.23.38,17.133387559,17.01621479, 14.541448512999997, 2.473219469, 7.0, 4.571428571428571, 63.57142857142857, 0.23245984784446325, 1.0, 0.9961646528405262, 0.003835347159473836, 0.004022999396535294, 0.004865332297101272, 1.0, 1.0, 1.0, 0.1759002883753468, 
+bmt-test-8.arff,2018.10.10_19.23.55,22.294961552,22.183485085, 18.778375772, 3.403339693, 9.0, 4.777777777777778, 67.11111111111111, 0.23537146614069693, 1.0, 0.9949077503124099, 0.005092249687590009, 0.005743702908769271, 0.009426945617211135, 1.0, 1.0, 1.0, 0.16894150945629255, 
+bmt-test-9.arff,2018.10.10_19.24.18,7.400985905,7.287232628, 6.234206981, 1.052146398, 3.0, 3.0, 61.333333333333336, 0.35897435897435903, 1.0, 0.9991030527299692, 8.969472700306828E-4, 8.969472700306828E-4, 8.969472700306828E-4, 1.0, 1.0, 1.0, 0.19829001480313704, 
 
 ``` 
 
@@ -647,7 +661,7 @@ bone-marrow-test-r0-f9.arff,2018.10.10_19.24.18,7.400985905,7.287232628, 6.23420
 
 RuleKit suite allows user-guided rule induction which follows the scheme introduced by the GuideR algorithm (Sikora et al, 2019). The user's knowledge is specified by the following parameters:
 
-```
+```xml
 <parameter_set name="paramset_1">
   	...
   	<param name="use_expert">true</param>
@@ -695,7 +709,7 @@ Let us consider the following user's knowledge (superscripts next to C<sub>&oplu
 * A<sub>&ominus;</sub><sup>1</sup> = { ghazard }.
 
 The XML definition of this knowledge is presented below.
-```
+```xml
 <param name ="expert_rules">
 	<entry name="rule-1">IF [[gimpuls = (-inf, 750)]] THEN class = {0}</entry>
 	<entry name="rule-2">IF [[gimpuls = &lt;750, inf)]] THEN class = {1}</entry>
