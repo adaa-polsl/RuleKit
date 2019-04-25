@@ -385,7 +385,7 @@ data <- lapply(estimates[2:length(estimates)], function(row) {
 surv <- data.frame(matrix(unlist(data), nrow=length(data), byrow=T))
 colnames(surv) <- names
 ```
-Survival function estimates of the entire dataset as well as those corresponding to particular rules are then plotted.
+Survival function estimates for the rules and for the entire dataset are then plotted (Figure 3.1).
 ```r
 library(ggplot2)
 library(reshape2)
@@ -398,6 +398,12 @@ ggplot(meltedSurv, aes(x=time, y=value, color=variable)) +
   xlab("time") + ylab("survival probability") +
   theme_bw() + theme(legend.title=element_blank())
 ```
+
+
+||
+|:--:| 
+| ![](doc/survival.png) | 
+| Figure 3.1. Survival function estimates for the rules and for the entire *BMT* dataset. |
 
 The entire R script for performing survival analysis for *BMT* dataset can be found [here](https://github.com/adaa-polsl/Expert-Rules-dev/blob/master/examples/survival.R).
 
@@ -640,7 +646,7 @@ bone-marrow-test-r0-f9.arff,2018.10.10_19.24.18,7.400985905,7.287232628, 6.23420
 
 # 6. User-guided induction
 
-RuleKit suite allows user-guided rule induction which follows the scheme introduced by the GuideR algorithm. The user's knowledge is specified by the following parameters:
+RuleKit suite allows user-guided rule induction which follows the scheme introduced by the GuideR algorithm (Sikora et al, 2019). The user's knowledge is specified by the following parameters:
 
 ```
 <parameter_set name="paramset_1">
@@ -717,6 +723,7 @@ User's guided induction may also be executed from RapidMiner plugin and R packag
 |:--:| 
 | Figure 6.1. RapidMiner wizard for specifying user's rules, preferred conditions/attributes, and forbidden conditions/attributes.  |
 
+The XML experimental files for test cases discussed in the GuideR paper can be found [here](https://github.com/adaa-polsl/Expert-Rules-dev/tree/master/examples)
 
 # 7. Library API
 
