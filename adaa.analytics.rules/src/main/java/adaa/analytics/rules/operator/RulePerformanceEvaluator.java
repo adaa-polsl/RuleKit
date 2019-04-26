@@ -82,21 +82,19 @@ public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 	
 	private static final CriterionClassWrapper[] BINARY_CRITERIA_CLASSES = { 
 		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.PRECISION),
-		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.RECALL),
-		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.LIFT),
+		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.SENSITIVITY),
+		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.SPECIFICITY),
+		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.NEGATIVE_PREDICTIVE_VALUE),
 		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.FALLOUT),
+		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.YOUDEN),
+		new CriterionClassWrapper(ExtendedBinaryPerformance.class),
+		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.PSEP),
+		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.LIFT),
 		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.F_MEASURE),
 		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.FALSE_POSITIVE),
 		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.FALSE_NEGATIVE),
 		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.TRUE_POSITIVE),
 		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.TRUE_NEGATIVE),
-		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.SENSITIVITY),
-		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.SPECIFICITY),
-		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.YOUDEN),
-		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.POSITIVE_PREDICTIVE_VALUE),
-		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.NEGATIVE_PREDICTIVE_VALUE),
-		new CriterionClassWrapper(BinaryClassificationPerformance.class, BinaryClassificationPerformance.PSEP),
-		new CriterionClassWrapper(ExtendedBinaryPerformance.class)
 	};
 	
 	private static final CriterionClassWrapper[] REGRESSION_CRITERIA_CLASSES = {
@@ -105,9 +103,9 @@ public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 		new CriterionClassWrapper(LenientRelativeError.class),
 		new CriterionClassWrapper(StrictRelativeError.class),
 		new CriterionClassWrapper(NormalizedAbsoluteError.class),
+		new CriterionClassWrapper(SquaredError.class),
 		new CriterionClassWrapper(RootMeanSquaredError.class),
 		new CriterionClassWrapper(RootRelativeSquaredError.class),
-		new CriterionClassWrapper(SquaredError.class),
 		new CriterionClassWrapper(CorrelationCriterion.class),
 		new CriterionClassWrapper(SquaredCorrelationCriterion.class)
 	};
