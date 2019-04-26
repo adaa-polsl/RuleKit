@@ -533,7 +533,7 @@ In binary classification problems some additional metrices are computed :
 
 ### Survival
 
-* integrated_brier_score
+* `integrated_brier_score` (IBS) - the Brier score (BS) represents the squared difference between true event status at time T and predicted event status at that time; the integrated Brier score summarizes the prediction error over all observations and over all times in a test set.
 
 # 5. Output files
 
