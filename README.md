@@ -739,7 +739,7 @@ The XML experimental files for test cases discussed in the GuideR paper can be f
 
 # 7. Library API
 
-RuleKit was implemented in Java 1.8 programming language on the basis of RapidMiner API. Therefore, it extends the Rapidminer class hierarchy. The main classes provided by our library are `ExpertRuleGenerator` which inherits from RapidMiner `AbstractLearner` and ` RulePerformanceEvaluator` derived from `AbstractPerformanceEvaluator`. In the following example we present employing RuleKit API for performing classification analysis on [*deals*](data/seismic-bumps) dataset, which concerns a problem of predicting whether a person making a purchase will be a future customer. The set is divided into separate training (*deals-train.arff*) and testing (*deals-test.arff*) subsets. 
+RuleKit was implemented in Java 1.8 programming language on the basis of RapidMiner API. Therefore, it extends the Rapidminer class hierarchy. The main classes provided by our library are `ExpertRuleGenerator` which inherits from RapidMiner `AbstractLearner` and ` RulePerformanceEvaluator` derived from `AbstractPerformanceEvaluator`. In the following example we present employing RuleKit API for performing classification analysis on [*deals*](data/deals) dataset, which concerns a problem of predicting whether a person making a purchase will be a future customer. The set is divided into separate training (*deals-train.arff*) and testing (*deals-test.arff*) subsets. 
 
 The analysis is preceded by importing all neccessary RuleKit and Rapidminer packages:
 ```java
@@ -847,7 +847,7 @@ System.out.print(performance);
 System.out.print(model);
 ```
 
-The entire Java file can be downloaded from [here](adaa.analytics.rules/src/main/java/adaa/analytics/rules/consoles/APITestConsole.java).  
+The entire Java file can be found [here](adaa.analytics.rules/src/main/java/adaa/analytics/rules/consoles/APITestConsole.java).  
  
 # References
 
