@@ -1,6 +1,6 @@
 # RuleKit
 
-RuleKit is a comprehensive library for inducing rule-based data models [X]. It has the ability to produce classification [X], regression [X], and survival rules [X]. The suite provides user with the possibility to introduce a priori knowledge [X]. The powerful and flexible experimental environment allows straightforward investigation of different induction schemes. The analysis can be performed in batch mode, through RapidMiner plugin, or R package. A Java API is also provided for convinience. 
+Rule-based models are of large interest in data analysis as they combine interpretability with high predictive power. We present RuleKit, a versatile tool for rule learning. Based on a sequential covering induction algorithm, it is suitable for classification, regression, and survival problems. The software is equipped with user-guided induction mode, which is particularly useful in verifying hypotheses concerning data. The powerful and flexible experimental environment allows straightforward investigation of different induction schemes. The analysis can be performed in batch mode, through RapidMiner plugin, or R package. A well-documented Java API is also provided for convenience.
 
 # Table of contents
 
@@ -270,7 +270,7 @@ In the prediction phase, previously-generated models are applied on the specifie
 * *./results-seismic-bumps/mincov=8, Entropy_User_C2/seismic-bumps-pred-9.arff*
 * *./results-seismic-bumps/mincov=8, Entropy_User_C2/performance.csv*   
 
-The complete experiment definition in the XML format is available [here](examples/classification.xml). 
+The complete experiment definition in the XML format is available [here](examples/classification-seismic.xml). 
 
 # 2. RapidMiner plugin
 
@@ -575,11 +575,11 @@ voting_measure=LogRankStatistics
 Next, a rule model is presented:
 ```
 Rules:
-r1: IF Relapse = {0} AND Donorage = (-inf, 45.526027) AND Recipientage = (-inf, 17.45) THEN survival_status = {NaN} (p=119.0, n=0.0, P=168.0, N=0.0, weight=0.9999992726837377, pvalue=7.27316262327804E-7)
-r2: IF HLAmismatch = {0} AND Relapse = {1} THEN survival_status = {NaN} (p=21.0, n=0.0, P=168.0, N=0.0, weight=0.9981544870337137, pvalue=0.0018455129662863223)
-r3: IF Relapse = {0} AND Rbodymass = (-inf, 69.0) AND Recipientage = (-inf, 18.0) THEN survival_status = {NaN} (p=127.0, n=0.0, P=168.0, N=0.0, weight=0.9999999653103507, pvalue=3.468964926423013E-8)
-r4: IF aGvHDIIIIV = {1} AND ANCrecovery = (-inf, 19.5) AND Stemcellsource = {1} AND Txpostrelapse = {0} THEN survival_status = {NaN} (p=82.0, n=0.0, P=168.0, N=0.0, weight=0.999992179496458, pvalue=7.820503541977608E-6)
-r5: IF Donorage = <28.028767000000002, inf) AND CD34kgx10d6 = <1.2650000000000001, 6.720000000000001) AND CD3dCD34 = <0.8878985, inf) AND Rbodymass = <31.5, inf) AND Recipientage = <11.55, inf) THEN survival_status = {NaN} (p=20.0, n=0.0, P=168.0, N=0.0, weight=0.9999999999914838, pvalue=8.516187754992188E-12)
+r1: IF Relapse = {0} AND Donorage = (-inf, 45.526027) AND Recipientage = (-inf, 17.45) THEN survival_status = {NaN} (p=119.0, n=0.0, P=168.0, N=0.0, weight=0.9999992726837377, pval=7.27316262327804E-7)
+r2: IF HLAmismatch = {0} AND Relapse = {1} THEN survival_status = {NaN} (p=21.0, n=0.0, P=168.0, N=0.0, weight=0.9981544870337137, pval=0.0018455129662863223)
+r3: IF Relapse = {0} AND Rbodymass = (-inf, 69.0) AND Recipientage = (-inf, 18.0) THEN survival_status = {NaN} (p=127.0, n=0.0, P=168.0, N=0.0, weight=0.9999999653103507, pval=3.468964926423013E-8)
+r4: IF aGvHDIIIIV = {1} AND ANCrecovery = (-inf, 19.5) AND Stemcellsource = {1} AND Txpostrelapse = {0} THEN survival_status = {NaN} (p=82.0, n=0.0, P=168.0, N=0.0, weight=0.999992179496458, pval=7.820503541977608E-6)
+r5: IF Donorage = <28.028767000000002, inf) AND CD34kgx10d6 = <1.2650000000000001, 6.720000000000001) AND CD3dCD34 = <0.8878985, inf) AND Rbodymass = <31.5, inf) AND Recipientage = <11.55, inf) THEN survival_status = {NaN} (p=20.0, n=0.0, P=168.0, N=0.0, weight=0.9999999999914838, pval=8.516187754992188E-12)
 ```
 For each rule, additional statistics are given in the parentheses:
 * elements of confusion matrix *p*, *n*, *P*, *N*,
@@ -739,8 +739,116 @@ The XML experimental files for test cases discussed in the GuideR paper can be f
 
 # 7. Library API
 
-RuleKit was implemented upon RapidMiner API, thus it 
+RuleKit was implemented in Java 1.8 programming language on the basis of RapidMiner API. Therefore, it extends the Rapidminer class hierarchy. The main classes provided by our library are `ExpertRuleGenerator` which inherits from RapidMiner `AbstractLearner` and ` RulePerformanceEvaluator` derived from `AbstractPerformanceEvaluator`. In the following example we present employing RuleKit API for performing classification analysis on [*deals*](data/seismic-bumps) dataset, which concerns a problem of predicting whether a person making a purchase will be a future customer. The set is divided into separate training (*deals-train.arff*) and testing (*deals-test.arff*) subsets. 
 
+The analysis is preceded by importing all neccessary RuleKit and Rapidminer packages:
+```java
+import adaa.analytics.rules.logic.quality.ClassificationMeasure;
+import adaa.analytics.rules.operator.ExpertRuleGenerator;
+import adaa.analytics.rules.operator.RulePerformanceEvaluator;
+import adaa.analytics.rules.utils.RapidMiner5;
+
+import com.rapidminer.RapidMiner;
+import com.rapidminer.example.Attributes;
+import com.rapidminer.operator.IOContainer;
+import com.rapidminer.operator.IOObject;
+import com.rapidminer.operator.Model;
+import com.rapidminer.operator.ModelApplier;
+import com.rapidminer.operator.OperatorCreationException;
+import com.rapidminer.operator.OperatorException;
+import com.rapidminer.operator.learner.AbstractLearner;
+import com.rapidminer.operator.performance.AbstractPerformanceEvaluator;
+import com.rapidminer.operator.performance.PerformanceVector;
+import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
+import com.rapidminer.tools.OperatorService;
+import com.rapidminer5.operator.io.ArffExampleSource;
+```
+
+The first step is to link operators in the Rapidminer process:
+```java
+RapidMiner.init();
+			
+// create all operators
+ArffExampleSource trainArff = RapidMiner5.createOperator(ArffExampleSource.class);
+ArffExampleSource testArff = RapidMiner5.createOperator(ArffExampleSource.class);
+
+ChangeAttributeRole trainRoleSetter = (ChangeAttributeRole)OperatorService.createOperator(ChangeAttributeRole.class);
+ChangeAttributeRole testRoleSetter = (ChangeAttributeRole)OperatorService.createOperator(ChangeAttributeRole.class);
+
+AbstractLearner ruleGenerator = RapidMiner5.createOperator(ExpertRuleGenerator.class);
+ModelApplier applier = OperatorService.createOperator(ModelApplier.class);
+AbstractPerformanceEvaluator evaluator = RapidMiner5.createOperator(RulePerformanceEvaluator.class);
+
+// configure process workflow
+com.rapidminer.Process process = new com.rapidminer.Process();
+process.getRootOperator().getSubprocess(0).addOperator(trainArff);
+process.getRootOperator().getSubprocess(0).addOperator(testArff);
+process.getRootOperator().getSubprocess(0).addOperator(trainRoleSetter);
+process.getRootOperator().getSubprocess(0).addOperator(testRoleSetter);
+process.getRootOperator().getSubprocess(0).addOperator(ruleGenerator);
+process.getRootOperator().getSubprocess(0).addOperator(applier);
+process.getRootOperator().getSubprocess(0).addOperator(evaluator);
+
+// training set is passed to the role setter and then to the rule generator
+trainArff.getOutputPorts().getPortByName("output").connectTo(trainRoleSetter.getInputPorts().getPortByName("example set input"));	
+trainRoleSetter.getOutputPorts().getPortByName("example set output").connectTo(ruleGenerator.getInputPorts().getPortByName("training set"));
+
+// testing set is passed to the role setter and then to the model applier as unlabelled data
+testArff.getOutputPorts().getPortByName("output").connectTo(testRoleSetter.getInputPorts().getPortByName("example set input"));	
+testRoleSetter.getOutputPorts().getPortByName("example set output").connectTo(applier.getInputPorts().getPortByName("unlabelled data"));
+
+// trained model is applied on unlabelled data
+ruleGenerator.getOutputPorts().getPortByName("model").connectTo(applier.getInputPorts().getPortByName("model"));
+
+// labelled data together are used for performance evaluation 
+applier.getOutputPorts().getPortByName("labelled data").connectTo(
+		evaluator.getInputPorts().getPortByName("labelled data"));
+
+// model characteristics are also passed to the evaluator
+ruleGenerator.getOutputPorts().getPortByName("estimated performance").connectTo(
+		evaluator.getInputPorts().getPortByName("performance"));
+
+// return model and performance from the process
+evaluator.getOutputPorts().getPortByName("performance").connectTo(
+		process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(0));
+applier.getOutputPorts().getPortByName("model").connectTo(
+		process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(1));
+```
+
+After that the operator parameters are set:
+```java
+// set names of the input files
+trainArff.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, "../data/deals/deals-train.arff");
+testArff.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, "../data/deals/deals-test.arff");
+
+// use "Future Customer" as the label attribute
+trainRoleSetter.setParameter(trainRoleSetter.PARAMETER_NAME, "Future Customer");
+trainRoleSetter.setParameter(trainRoleSetter.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME); 	
+testRoleSetter.setParameter(testRoleSetter.PARAMETER_NAME, "Future Customer");
+testRoleSetter.setParameter(testRoleSetter.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
+
+// configure rule induction algorithm
+ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_MIN_RULE_COVERED, "8");
+ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_INDUCTION_MEASURE, ClassificationMeasure.getName(ClassificationMeasure.BinaryEntropy));
+ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_PRUNING_MEASURE, ClassificationMeasure.getName(ClassificationMeasure.UserDefined));
+ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_USER_PRUNING_EQUATION, "2 * p / n");
+ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_VOTING_MEASURE, ClassificationMeasure.getName(ClassificationMeasure.C2));
+``` 
+
+Finally, the process is executed and its results are collected:
+```java
+IOContainer out = process.run();
+IOObject[] objs = out.getIOObjects();
+
+PerformanceVector performance = (PerformanceVector)objs[0];	
+Model model = (Model)objs[1];
+
+System.out.print(performance);
+System.out.print(model);
+```
+
+The entire Java file can be downloaded from [here](github-sources/adaa.analytics.rules/src/main/java/adaa/analytics/rules/consoles/APITestConsole.java).  
+ 
 # References
 
 [Sikora, M, Wróbel, Ł, Gudyś, A (2018) GuideR: a guided separate-and-conquer rule learning in classification, regression, and survival settings, Knowledge-Based Systems, 173:1-14.](https://www.sciencedirect.com/science/article/abs/pii/S0950705119300802?dgcid=coauthor)
