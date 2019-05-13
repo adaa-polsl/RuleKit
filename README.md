@@ -847,7 +847,7 @@ System.out.print(performance);
 System.out.print(model);
 ```
 
-The entire Java file can be downloaded from [here](github-sources/adaa.analytics.rules/src/main/java/adaa/analytics/rules/consoles/APITestConsole.java).  
+The entire Java file can be downloaded from [here](adaa.analytics.rules/src/main/java/adaa/analytics/rules/consoles/APITestConsole.java).  
  
 # References
 
