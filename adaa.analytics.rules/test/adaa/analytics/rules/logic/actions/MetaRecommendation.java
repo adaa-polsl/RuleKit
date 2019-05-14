@@ -10,6 +10,7 @@ import com.rapidminer.example.ExampleSet;
 import adaa.analytics.rules.logic.actions.ActionMetaTable.AnalysisResult;
 import adaa.analytics.rules.logic.induction.ActionSnC;
 import adaa.analytics.rules.logic.induction.Covering;
+import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.representation.ActionRule;
 import adaa.analytics.rules.logic.representation.ActionRuleSet;
 import adaa.analytics.rules.logic.representation.Logger;
@@ -51,11 +52,11 @@ public class MetaRecommendation extends Recommendation {
 		for(int i = 0; i < set.size(); i++) {
 			Example example = set.getExample(i);
 			
-			AnalysisResult res = table.analyze(example, fromClassId, toClassId, trainSet);
+			AnalysisResult res = table.analyze(example, fromClassId, toClassId);
 			results.add(res);
 		}
 		
-		ActionRuleSet rules = new ActionRuleSet(set, false, null);
+		ActionRuleSet rules = new ActionRuleSet(set, false, new InductionParameters(), null);
 		for (int j = 0; j < results.size(); j++) {
 			
 			AnalysisResult res = results.get(j);

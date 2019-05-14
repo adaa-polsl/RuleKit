@@ -14,6 +14,7 @@ import com.rapidminer.RapidMiner.ExitMode;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.ExampleSetFactory;
 import com.rapidminer.example.set.Partition;
 import com.rapidminer.example.set.SplittedExampleSet;
 import com.rapidminer.example.set.StratifiedPartitionBuilder;
@@ -40,6 +41,7 @@ public class ActionMetaTableTest {
 
 	protected InMemoryActionRuleRepository repo;
 	protected ExampleSet set;
+	private ActionInductionParameters actionInductionParams;
 	
 	
 	public void prepare() {
@@ -119,7 +121,7 @@ public class ActionMetaTableTest {
 		ActionRangeDistribution dist = new ActionRangeDistribution(actions, set);
 		dist.calculateActionDistribution();
 		ActionMetaTable table = new ActionMetaTable(dist);
-		AnalysisResult me = table.analyze(set.getExample(0), 0, 2, set);
+		AnalysisResult me = table.analyze(set.getExample(0), 0, 2);
 		System.out.println(me.example);
 		System.out.println(me.primeMetaExample);
 		System.out.println(me.contraMetaExample);
@@ -130,22 +132,22 @@ public class ActionMetaTableTest {
 		ActionFindingParameters findingParams = new ActionFindingParameters();
 		findingParams.setUseNotIntersectingRangesOnly(RangeUsageStrategy.EXCLUSIVE_ONLY);
 		
-		ActionInductionParameters params = new ActionInductionParameters(findingParams);
-		params.setInductionMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
-		params.setPruningMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
+		actionInductionParams = new ActionInductionParameters(findingParams);
+		actionInductionParams.setInductionMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
+		actionInductionParams.setPruningMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
 		//true, true, 5.0, 0.05, 0.9, "0", "1"
-		params.setEnablePruning(true);
-		params.setIgnoreMissing(true);
-		params.setMinimumCovered(5.0);
-		params.setMaximumUncoveredFraction(0.05);
-		params.setMaxGrowingConditions(0.9);
+		actionInductionParams.setEnablePruning(true);
+		actionInductionParams.setIgnoreMissing(true);
+		actionInductionParams.setMinimumCovered(5.0);
+		actionInductionParams.setMaximumUncoveredFraction(0.05);
+		actionInductionParams.setMaxGrowingConditions(0.9);
 		
-		params.addClasswiseTransition("0", "1");
+		actionInductionParams.addClasswiseTransition("0", "1");
 		
 		RapidMiner.init();
 		ExampleSet examples = ArffFileLoader.load(Paths.get("C:/Users/pmatyszok/desktop/action-rules/datasets/mixed", "monk1_train.arff"), "class");
 		
-		ActionSnC snc = new ActionSnC(new ActionFinder(params), params);
+		ActionSnC snc = new ActionSnC(new ActionFinder(actionInductionParams), actionInductionParams);
 		ActionRuleSet actions = (ActionRuleSet)snc.run(examples);
 		
 		ActionRangeDistribution dist = new ActionRangeDistribution(actions, examples);
@@ -156,7 +158,7 @@ public class ActionMetaTableTest {
 		for (int i = 0; i < testExamples.size(); i++) {
 			Example example = testExamples.getExample(i);
 			if (example.getLabel() == 0.0) continue;
-			AnalysisResult me = table.analyze(example, 1, 0, testExamples);
+			AnalysisResult me = table.analyze(example, 1, 0);
 			System.out.println(me.example);
 			System.out.println(me.primeMetaExample);
 			System.out.println(me.contraMetaExample);
@@ -197,7 +199,7 @@ public class ActionMetaTableTest {
 		for (int i = 0; i < testExamples.size(); i++) {
 			Example example = testExamples.getExample(i);
 			if (example.getLabel() == 1.0) continue;
-			AnalysisResult me = table.analyze(example, 0, 1, testExamples);
+			AnalysisResult me = table.analyze(example, 0, 1);
 			System.out.println(me.example);
 			System.out.println(me.primeMetaExample);
 			System.out.println(me.contraMetaExample);
@@ -214,18 +216,18 @@ public class ActionMetaTableTest {
 		ActionFindingParameters findingParams = new ActionFindingParameters();
 		findingParams.setUseNotIntersectingRangesOnly(RangeUsageStrategy.EXCLUSIVE_ONLY);
 		
-		ActionInductionParameters params = new ActionInductionParameters(findingParams);
-		params.setInductionMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
-		params.setPruningMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
+		actionInductionParams = new ActionInductionParameters(findingParams);
+		actionInductionParams.setInductionMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
+		actionInductionParams.setPruningMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
 		//true, true, 5.0, 0.05, 0.9, "0", "1"
-		params.setEnablePruning(true);
-		params.setIgnoreMissing(true);
-		params.setMinimumCovered(5.0);
-		params.setMaximumUncoveredFraction(0.05);
-		params.setMaxGrowingConditions(0.9);
+		actionInductionParams.setEnablePruning(true);
+		actionInductionParams.setIgnoreMissing(true);
+		actionInductionParams.setMinimumCovered(5.0);
+		actionInductionParams.setMaximumUncoveredFraction(0.05);
+		actionInductionParams.setMaxGrowingConditions(0.9);
 		
-		params.addClasswiseTransition("unacc", "acc");
-		ActionSnC snc = new ActionSnC(new ActionFinder(params), params);
+		actionInductionParams.addClasswiseTransition("unacc", "acc");
+		ActionSnC snc = new ActionSnC(new ActionFinder(actionInductionParams), actionInductionParams);
 		
 		
 		RapidMiner.init();
@@ -235,7 +237,7 @@ public class ActionMetaTableTest {
 		double to = examples.getAttributes().get("class").getMapping().getIndex("acc");;
 		
 		
-		testInternal(examples, 0.95, snc, (int)from, (int)to);
+		testInternal(examples, 0.99, snc, (int)from, (int)to);
 		RapidMiner.quit(ExitMode.NORMAL);
 	}
 
@@ -245,18 +247,18 @@ public class ActionMetaTableTest {
 		ActionFindingParameters findingParams = new ActionFindingParameters();
 		findingParams.setUseNotIntersectingRangesOnly(RangeUsageStrategy.EXCLUSIVE_ONLY);
 		
-		ActionInductionParameters params = new ActionInductionParameters(findingParams);
-		params.setInductionMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
-		params.setPruningMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
+		actionInductionParams = new ActionInductionParameters(findingParams);
+		actionInductionParams.setInductionMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
+		actionInductionParams.setPruningMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
 		//true, true, 5.0, 0.05, 0.9, "0", "1"
-		params.setEnablePruning(true);
-		params.setIgnoreMissing(true);
-		params.setMinimumCovered(5.0);
-		params.setMaximumUncoveredFraction(0.05);
-		params.setMaxGrowingConditions(0.9);
+		actionInductionParams.setEnablePruning(true);
+		actionInductionParams.setIgnoreMissing(true);
+		actionInductionParams.setMinimumCovered(5.0);
+		actionInductionParams.setMaximumUncoveredFraction(0.05);
+		actionInductionParams.setMaxGrowingConditions(0.9);
 		
-		params.addClasswiseTransition("3", "4");
-		ActionSnC snc = new ActionSnC(new ActionFinder(params), params);
+		actionInductionParams.addClasswiseTransition("3", "4");
+		ActionSnC snc = new ActionSnC(new ActionFinder(actionInductionParams), actionInductionParams);
 	
 		
 		RapidMiner.init();
@@ -266,7 +268,7 @@ public class ActionMetaTableTest {
 		double to = examples.getAttributes().get("class").getMapping().getIndex("4");;
 		
 		
-		testInternal(examples, 0.95, snc, (int)from, (int)to);
+		testInternal(examples, 0.99, snc, (int)from, (int)to);
 		RapidMiner.quit(ExitMode.NORMAL);
 	}
 	
@@ -294,11 +296,13 @@ public class ActionMetaTableTest {
 		for(int i = 0; i < set.size(); i++) {
 			Example example = set.getExample(i);
 			
-			AnalysisResult res = table.analyze(example, fromClass, toClass, set);
+			AnalysisResult res = table.analyze(example, fromClass, toClass);
 			results.add(res);
-
+			System.out.println("Processed rule " + i);
 		}
-		ActionRuleSet rules = new ActionRuleSet(set, false, null);
+		set.invertSelection();
+		ActionRuleSet rules = new ActionRuleSet(set, false, actionInductionParams, null);
+		
 		for (int j = 0; j < results.size(); j++) {
 			
 			AnalysisResult res = results.get(j);
@@ -322,22 +326,22 @@ public class ActionMetaTableTest {
 		ActionFindingParameters findingParams = new ActionFindingParameters();
 		findingParams.setUseNotIntersectingRangesOnly(RangeUsageStrategy.EXCLUSIVE_ONLY);
 		
-		ActionInductionParameters params = new ActionInductionParameters(findingParams);
-		params.setInductionMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
-		params.setPruningMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
+		actionInductionParams = new ActionInductionParameters(findingParams);
+		actionInductionParams.setInductionMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
+		actionInductionParams.setPruningMeasure(new ClassificationMeasure(ClassificationMeasure.Correlation));
 		//true, true, 5.0, 0.05, 0.9, "0", "1"
-		params.setEnablePruning(true);
-		params.setIgnoreMissing(true);
-		params.setMinimumCovered(5.0);
-		params.setMaximumUncoveredFraction(0.05);
-		params.setMaxGrowingConditions(0.9);
+		actionInductionParams.setEnablePruning(true);
+		actionInductionParams.setIgnoreMissing(true);
+		actionInductionParams.setMinimumCovered(5.0);
+		actionInductionParams.setMaximumUncoveredFraction(0.05);
+		actionInductionParams.setMaxGrowingConditions(0.9);
 		
-		params.addClasswiseTransition("3", "4");
+		actionInductionParams.addClasswiseTransition("3", "4");
 		
 		RapidMiner.init();
 		ExampleSet examples = ArffFileLoader.load(Paths.get("C:/Users/pmatyszok/desktop/action-rules/datasets/mixed", "furnace_control.arff"), "class");
 		
-		ActionSnC snc = new ActionSnC(new ActionFinder(params), params);
+		ActionSnC snc = new ActionSnC(new ActionFinder(actionInductionParams), actionInductionParams);
 		ActionRuleSet actions = (ActionRuleSet)snc.run(examples);
 		
 		ActionRangeDistribution dist = new ActionRangeDistribution(actions, examples);
@@ -348,7 +352,7 @@ public class ActionMetaTableTest {
 		for (int i = 0; i < testExamples.size(); i++) {
 			Example example = testExamples.getExample(i);
 			if (example.getLabel() == 3.0) continue;
-			AnalysisResult me = table.analyze(example, 2, 3, testExamples);
+			AnalysisResult me = table.analyze(example, 2, 3);
 			System.out.println(me.example);
 			System.out.println(me.primeMetaExample);
 			System.out.println(me.contraMetaExample);

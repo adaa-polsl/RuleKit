@@ -148,8 +148,8 @@ public class MetaExample {
 	}
 	
 	public boolean covers(Example ex) {
-		
-		boolean partial = false;
+		//conjuction only, default (if empty) true
+		boolean partial = true;
 		
 		for (Map.Entry<String, MetaValue> mv : data.entrySet()) {
 			
@@ -193,13 +193,44 @@ public class MetaExample {
 		return rules.orElse(new ArrayList<Rule>()).size();
 	}
 	
-	public Pair<Covering, Covering> getCoverage(ExampleSet examples, int toClass, int fromClass) {
+	public Covering getCoverageForClass(ExampleSet examples, int fixedClass, Set<Integer> positives, Set<Integer> negatives) {
+		
+		assert(positives != null);
+		assert(negatives != null);
+		int id = 0;
+		Covering cov = new Covering();
+		for (Example ex: examples) {
+			
+			boolean classAgree = Double.compare(ex.getLabel(), fixedClass) == 0;
+			
+			if (classAgree) {
+				cov.weighted_P++;
+			} else {
+				cov.weighted_N++;
+			}
+		
+			if (this.covers(ex)) {
+				if (classAgree) {
+					cov.weighted_p++;
+					positives.add(id);
+				} else {
+					cov.weighted_n++;
+					negatives.add(id);
+				}
+			}
+			
+			id++;
+		}
+		return cov;
+	}
+	
+	public Pair<Covering, Covering> getCoverage(ExampleSet examples, int toClass, int fromClass, Set<Integer> covered) {
 		
 		Covering classToCov = new Covering();
 		Covering classFromCov = new Covering();
 		
-		for (Example ex : examples) {
-			
+		for (int id : covered) {
+			Example ex = examples.getExample(id);
 			if (this.covers(ex)) {
 				classToCov.weighted_p++;
 				classFromCov.weighted_p++;

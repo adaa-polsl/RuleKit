@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.rapidminer.example.ExampleSet;
+
+import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.induction.RuleFactory;
 import adaa.analytics.rules.logic.representation.Action;
 import adaa.analytics.rules.logic.representation.ActionRule;
@@ -24,7 +26,7 @@ public class InMemoryActionRuleRepository {
 	public ActionRuleSet getActionRulest() {
 		
 		
-		RuleFactory factory = new RuleFactory(RuleFactory.ACTION, false, null);
+		RuleFactory factory = new RuleFactory(RuleFactory.ACTION, false, new InductionParameters(), null);
 		ActionRuleSet actions = (ActionRuleSet) factory.create(set);
 		
 		List<String> m1 = Collections.unmodifiableList(Arrays.asList("1", "2", "3"));
