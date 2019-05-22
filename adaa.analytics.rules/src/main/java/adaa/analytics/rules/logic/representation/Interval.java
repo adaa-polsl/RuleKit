@@ -105,6 +105,9 @@ public class Interval implements IValueSet, Serializable {
 		}
 		if (set instanceof Interval) {
 			Interval other = (Interval)set;
+			if (!this.intersects(other)) {
+				return null;
+			}
 			return new Interval(
 				Math.max(this.left, other.left),
 				Math.min(this.right, other.right),
