@@ -63,7 +63,8 @@ public class IntervalTest {
 		Interval intersectionInterval2 = (Interval)intersection2;
 
 		// Then
-		// TODO
+		assertEquals(null, intersectionInterval2);
+		assertEquals(null, intersectionInterval1);
 	}
 
 	@Test
