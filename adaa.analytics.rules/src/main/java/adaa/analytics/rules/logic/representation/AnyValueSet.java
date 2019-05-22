@@ -19,7 +19,7 @@ public class AnyValueSet implements IValueSet {
 	public IValueSet getIntersection(IValueSet set) {
 		return set;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "ANY";
@@ -29,11 +29,22 @@ public class AnyValueSet implements IValueSet {
 	public int hashCode() {
 		return 1;
 	}
-	
+
 	@Override
 	public List<IValueSet> getDifference(IValueSet set) {
 		List<IValueSet> ret = new ArrayList<IValueSet>();
 		return ret; //or throw ?
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj instanceof AnyValueSet) {
+			return true;
+		}
+		return false;
 	}
 
 }

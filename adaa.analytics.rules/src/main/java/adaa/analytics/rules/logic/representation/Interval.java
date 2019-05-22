@@ -101,14 +101,14 @@ public class Interval implements IValueSet, Serializable {
 	@Override
 	public IValueSet getIntersection(IValueSet set) {
 		if (set instanceof AnyValueSet) {
-			return set;
+			return this;
 		}
 		if (set instanceof Interval) {
 			Interval other = (Interval)set;
 			return new Interval(
 				Math.max(this.left, other.left),
 				Math.min(this.right, other.right),
-				this.left < other.left ? other.leftClosed : this.rightClosed,	
+				this.left < other.left ? other.leftClosed : this.leftClosed,
 				this.right > other.right ? other.rightClosed : this.rightClosed);
 		} else {
 			return null;
