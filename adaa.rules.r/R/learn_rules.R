@@ -167,5 +167,55 @@ learn_rules <- function(formula, control, train_data, test_data = train_data) {
   }
   command <- paste0("java -jar ",jar," ",directories$config)
   system(command)
-  return (.getResults(directories$reports))
+
+  results = .getResults(directories$reports)
+
+  report <- results[[2]]      # text report
+
+  output = list()
+
+  # get separating empty lines in the report
+  seps = which(report == "")
+
+  # extract rules from the report
+  start = which(report == "Rules:") + 1
+  rules = report[start : (seps[which(seps > start)[1]] - 1)] # first separator after start
+  rules = lapply(rules, function(rule) {
+    substr(rule, regexpr(":",rule,fixed=TRUE)[1] + 2, nchar(rule))
+  })
+  names(rules) = lapply(1:length(rules), function(ri) {
+    paste0("r", ri)
+  })
+
+  output[["rules"]] = rules
+
+  # extract rules covering each example
+  coverage = report[which(report == "Coverage of training examples by rules (1-based):") + 1]
+  coverage = as.list(strsplit(coverage, ';')[[1]])
+  output[["train-coverage"]] = coverage
+
+  # extract survival function estimates from the report
+  start = which(report == "Estimator:") + 1
+
+  if (length(start) > 0) {
+    estimates = report[start : (seps[which(seps > start)[1]] - 1)] # first separator after start
+
+    # convert estimates into data frame with following columns:
+    # - time - survival time,
+    # - entire-set - values of survival function of entire dataset,
+    # - r1, r2, ... - values of survival function for rules r1, r2, etc.
+    names = strsplit(estimates[1],',')[[1]]
+    data = lapply(estimates[2:length(estimates)], function(row) {
+      return(as.numeric(strsplit(row,',')[[1]]))
+    })
+    surv <- data.frame(matrix(unlist(data), nrow=length(data), byrow=T))
+    colnames(surv) <- names
+
+    output[["estimator"]] = surv
+  }
+
+  output[["train-report"]] = report
+  output[["test-performance"]] = results[[1]]
+
+  return (output)
 }

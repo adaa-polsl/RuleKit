@@ -203,7 +203,7 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 			++rid;
 		}
 		
-		sb.append("\nBest rules covering examples from training set (1-based):\n");
+		sb.append("\nCoverage of training examples by rules (1-based):\n");
 		for (int eid = 0; eid < trainingSet.size(); ++eid){
 			Example ex = trainingSet.getExample(eid);
 			int bestRuleId = -1;
