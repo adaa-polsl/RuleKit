@@ -12,7 +12,7 @@ public class SurvivalLogRankSnC extends RegressionSnC {
 
 	public SurvivalLogRankSnC(RegressionFinder finder, InductionParameters params) {
 		super(finder, params);
-		this.factory = new RuleFactory(RuleFactory.SURVIVAL, true);
+		this.factory = new RuleFactory(RuleFactory.SURVIVAL, true, params, null);
 	}
 	
 	@Override

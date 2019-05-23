@@ -9,14 +9,14 @@ results <- learn_rules(formula,control,bone_marrow)
 # extract outputs:
 rules = results[["rules"]]        # list of rules
 cov = results[["train-coverage"]] # coverage of training examples by rules
-surv = results[["survival"]]      # data frame with survival function estimates
+surv = results[["estimator"]]      # data frame with survival function estimates
 perf = results[["test-performance"]]   # data frame with performance metrices
 
 # melt dataset for automatic plotting of multiple series
-melted_surv = melt(su, id.var="time")
+melted_surv = melt(surv, id.var="time")
 
 # plot survival functions estimates
-ggplot(melted_surv, aes(x=timerv, y=value, color=variable)) +
+ggplot(melted_surv, aes(x=time, y=value, color=variable)) +
   geom_line(size=1.0) +
   xlab("time") + ylab("survival probability") +
   theme_bw() + theme(text = element_text(size=8),legend.title=element_blank())

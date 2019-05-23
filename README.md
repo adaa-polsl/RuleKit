@@ -150,7 +150,7 @@ The `performance_file` is created for each parameter set under *<out_directory>/
 
 ## 1.4. Example
 
-Here we present how to prepare the XML experiment file for an example classification analysis. The investigated dataset concerns a problem of forecasting high energy seismic bumps in coal mines and is named *seismic-bumps*. The entire dataset in ARFF format as well as 10-fold cross validation splits can be found [here](data/seismic-bumps).
+Here we present how to prepare the XML experiment file for an example classification analysis. The investigated dataset named *deals* concerns a problem of predicting whether a person making a purchase will be a future customer. The entire dataset in is split in train and test parts and can be found [here](data/deals).
 
 Let the user be interested in two parameter sets:
 * *mincov = 5* with *RSS* measure used for growing, pruning, and voting,
@@ -177,100 +177,132 @@ The corresponding parameter set definition is as follows:
 </parameter_sets>
 ```    
 
-The experiment will be performed in 10-fold cross validation scheme with existing splits according o the scheme below:
+The experiment will be performed according to the scheme below:
 * name of the label attribute: `class`,
 * no weighting,
-* output directory: *./results-seismic-bumps* 
-* training files:
-    * ../data/seismic-bumps/seismic-bumps-train-0.arff*
-    * *../data/seismic-bumps/seismic-bumps-train-1.arff*
-    * ...
-    * *../data/seismic-bumps/seismic-bumps-train-9.arff*
+* output directory: *./results-deals* 
+* training set: *../data/deals/deals-train.arff*
 * training log file: *training.log*
-* testing files:
-    * *../data/seismic-bumps/seismic-bumps-test-0.arff*
-    * *../data/seismic-bumps/seismic-bumps-test-1.arff*
-    * ...
-    * *../data/seismic-bumps/seismic-bumps-test-9.arff*
+* testing set: *../data/deals/deals-test.arff*
 * testing performance file: *performance.csv*
 
 The corresponding dataset definition is as follows:
-
 ```xml
 <dataset>
-     <label>class</label>
-     <out_directory>./results-seismic-bumps</out_directory>		
-    
-    <training>  
-         <report_file>training.log</report_file>           		
-         <train>
-             <in_file>../data/seismic-bumps/seismic-bumps-train-0.arff</in_file>               	
-             <model_file>seismic-bumps-0.mdl</model_file> 
-         </train>
-		 
-		 <train>
-             <in_file>../data/seismic-bumps/seismic-bumps-train-1.arff</in_file>               	
-             <model_file>seismic-bumps-1.mdl</model_file> 
-         </train>
-         ...
-		 <train>
-             <in_file>../data/seismic-bumps/seismic-bumps-train-9.arff</in_file>               		
-             <model_file>seismic-bumps-9.mdl</model_file>  
-         </train>
-    </training>
-    
-    <prediction>
-     	<performance_file>performance.csv</performance_file>  
-         <predict>
-             <model_file>seismic-bumps-0.mdl</model_file>      	
-             <test_file>../data/seismic-bumps/seismic-bumps-test-0.arff</test_file>            			
-             <predictions_file>seismic-bumps-pred-0.arff</predictions_file>  	  
-         </predict>
-		 
-		  <predict>
-             <model_file>seismic-bumps-1.mdl</model_file>      	
-             <test_file>../data/seismic-bumps/seismic-bumps-test-1.arff</test_file>            			
-             <predictions_file>seismic-bumps-pred-1.arff</predictions_file>  	  
-         </predict>
-		 ...
-	 
+	<label>Future Customer</label>
+	<out_directory>./results-deals</out_directory>		
+	<training>  
+		<report_file>training.log</report_file>           		
+		<train>
+			<in_file>../data/deals/deals-train.arff</in_file>               	
+			<model_file>deals.mdl</model_file> 
+		</train>
+	</training>
+	<prediction>
+		<performance_file>performance.csv</performance_file>  
 		<predict>
-             <model_file>seismic-bumps-9.mdl</model_file>      	
-             <test_file>../data/seismic-bumps/seismic-bumps-test-9.arff</test_file>            			
-             <predictions_file>seismic-bumps-pred-9.arff</predictions_file>   	
-         </predict>
-    </prediction>
-    
+			<model_file>deals.mdl</model_file>      	
+			<test_file>../data/deals/deals-test.arff</test_file>            			
+			<predictions_file>deals-pred.arff</predictions_file>  	  
+		</predict>
+	</prediction>
 </dataset>
 ```
 
 In the training phase, RuleKit generates a subdirectory in the output directory for every investigated parameter set. 
 Each of these subdirectories contains models (one per training file) and a common text report. 
 Therefore, the following files are produced as a result of the training:
-* *./results-seismic-bumps/mincov=5, RSS/seismic-bumps-0.mdl*
-* *./results-seismic-bumps/mincov=5, RSS/seismic-bumps-1.mdl*
-* *...*
-* *./results-seismic-bumps/mincov=5, RSS/seismic-bumps-9.mdl*
+* *./results-seismic-bumps/mincov=5, RSS/deals.mdl*
 * *./results-seismic-bumps/mincov=5, RSS/training.log*
-* *./results-seismic-bumps/mincov=8, Entropy_User_C2/seismic-bumps-0.mdl*
-* *./results-seismic-bumps/mincov=8, Entropy_User_C2/seismic-bumps-1.mdl*
-* *...*
-* *./results-seismic-bumps/mincov=8, Entropy_User_C2/seismic-bumps-9.mdl*
+* *./results-seismic-bumps/mincov=8, Entropy_User_C2/deals.mdl*
 * *./results-seismic-bumps/mincov=8, Entropy_User_C2/training.log*
 
 In the prediction phase, previously-generated models are applied on the specified testing sets producing the following files:
-* *./results-seismic-bumps/mincov=5, RSS/seismic-bumps-pred-0.arff*
-* *./results-seismic-bumps/mincov=5, RSS/seismic-bumps-pred-1.arff*
-* *...*
-* *./results-seismic-bumps/mincov=5, RSS/seismic-bumps-pred-9.arff*
+* *./results-seismic-bumps/mincov=5, RSS/deals-pred.arff*
 * *./results-seismic-bumps/mincov=5, RSS/performance.csv*
-* *./results-seismic-bumps/mincov=8, Entropy_User_C2/seismic-bumps-pred-0.arff*
-* *./results-seismic-bumps/mincov=8, Entropy_User_C2/seismic-bumps-pred-1.arff*
-* *...*
-* *./results-seismic-bumps/mincov=8, Entropy_User_C2/seismic-bumps-pred-9.arff*
-* *./results-seismic-bumps/mincov=8, Entropy_User_C2/performance.csv*   
+* *./results-seismic-bumps/mincov=8, Entropy_User_C2/deals-pred.arff*
+* *./results-seismic-bumps/mincov=8, Entropy_User_C2/performance.csv*  
 
-The complete experiment definition in the XML format is available [here](examples/classification-seismic.xml). 
+The complete experiment definition in the XML format is available [here](examples/classification-deals.xml). 
+
+Presented aproach can be easily suited to cross-validation experiment with existing splits by specifying multiple `train` and `predict` sections . E.g., let us assume the following scheme:
+* trainig sets: *deals-train-1.arff*, *deals-train-2.arff*, ..., *deals-train-10.arff*,
+* testing sets: *deals-test-1.arff*, *deals-test-2.arff*, ..., *deals-test-10.arff*,
+
+The corresponding dataset definition is as follows:
+
+```xml
+<dataset>
+     <label>class</label>
+     <out_directory>./results-deals</out_directory>		
+    
+    <training>  
+         <report_file>training.log</report_file>           		
+         <train>
+             <in_file>../data/deals/deals-train-0.arff</in_file>               	
+             <model_file>deals-0.mdl</model_file> 
+         </train>
+		 
+		 <train>
+             <in_file>../data/deals/deals-train-1.arff</in_file>               	
+             <model_file>deals-1.mdl</model_file> 
+         </train>
+         ...
+		 <train>
+             <in_file>../data/deals/deals-train-9.arff</in_file>               		
+             <model_file>deals-9.mdl</model_file>  
+         </train>
+    </training>
+    
+    <prediction>
+     	<performance_file>performance.csv</performance_file>  
+         <predict>
+             <model_file>deals-0.mdl</model_file>      	
+             <test_file>../data/deals/deals-test-0.arff</test_file>            			
+             <predictions_file>deals-pred-0.arff</predictions_file>  	  
+         </predict>
+		 
+		  <predict>
+             <model_file>deals-1.mdl</model_file>      	
+             <test_file>../data/deals/deals-test-1.arff</test_file>            			
+             <predictions_file>deals-pred-1.arff</predictions_file>  	  
+         </predict>
+		 ...
+	 
+		<predict>
+             <model_file>deals-9.mdl</model_file>      	
+             <test_file>../data/deals/deals-test-9.arff</test_file>            			
+             <predictions_file>deals-pred-9.arff</predictions_file>   	
+         </predict>
+    </prediction>
+    
+</dataset>
+```
+
+The following files are produced as a result of the training:
+* *./results-deals/mincov=5, RSS/deals-0.mdl*
+* *./results-deals/mincov=5, RSS/deals-1.mdl*
+* *...*
+* *./results-deals/mincov=5, RSS/deals-9.mdl*
+* *./results-deals/mincov=5, RSS/training.log*
+* *./results-deals/mincov=8, Entropy_User_C2/deals-0.mdl*
+* *./results-deals/mincov=8, Entropy_User_C2/deals-1.mdl*
+* *...*
+* *./results-deals/mincov=8, Entropy_User_C2/deals-9.mdl*
+* *./results-deals/mincov=8, Entropy_User_C2/training.log*
+
+and prediction:
+* *./results-deals/mincov=5, RSS/deals-pred-0.arff*
+* *./results-deals/mincov=5, RSS/deals-pred-1.arff*
+* *...*
+* *./results-deals/mincov=5, RSS/deals-pred-9.arff*
+* *./results-deals/mincov=5, RSS/performance.csv*
+* *./results-deals/mincov=8, Entropy_User_C2/deals-pred-0.arff*
+* *./results-deals/mincov=8, Entropy_User_C2/deals-pred-1.arff*
+* *...*
+* *./results-deals/mincov=8, Entropy_User_C2/deals-pred-9.arff*
+* *./results-deals/mincov=8, Entropy_User_C2/performance.csv*   
+
 
 # 2. RapidMiner plugin
 
@@ -348,7 +380,7 @@ Parameters:
 
 ## 3.3. Example
 
-In this subsection we present a survival analysis of *BMT-Ch* dataset with RuleKit R package. After loading the package,  survival time and survival status variables are specified and induction parameters are set. Note, that in survival problems, log-rank statistic is always used as a rule quality measure. 
+In this subsection we present a survival analysis of *BMT-Ch* dataset with RuleKit R package. The set concerns the problem of analyzing factors contributing to the patients’ survival following bone marrow transplants. After loading the package,  survival time and survival status variables are specified and induction parameters are set. Note, that in survival problems, log-rank statistic is always used as a rule quality measure. 
 ```r
 library(adaa.rules)
 formula <- survival::Surv(survival_time, survival_status) ~ .
@@ -735,7 +767,10 @@ User's guided induction may also be executed from RapidMiner plugin and R packag
 |:--:| 
 | Figure 6.1. RapidMiner wizard for specifying user's rules, preferred conditions/attributes, and forbidden conditions/attributes.  |
 
-The XML experimental files for test cases discussed in the GuideR paper can be found [here](examples)
+The XML experimental files for test cases discussed in the GuideR paper can be found [here](examples). The investigated datasets are:
+* [*seismic-bumps*](data/seismic-bumps) - forecasting high energy seismic bumps in coal mines,
+* [*methane*](data/methane) - predicting methane concentration in a coal mine,
+* [*bmt*](data/bmt) - analyzing factors contributing to the patients’ survival following bone marrow transplants. 
 
 # 7. Library API
 

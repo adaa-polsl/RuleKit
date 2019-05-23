@@ -195,9 +195,10 @@ learn_rules <- function(formula, control, train_data, test_data = train_data) {
   output[["train-coverage"]] = coverage
 
   # extract survival function estimates from the report
-  start = which(report == "Estimator:") + 1
+  start = which(report == "Estimator:")
 
   if (length(start) > 0) {
+    start = start + 1
     estimates = report[start : (seps[which(seps > start)[1]] - 1)] # first separator after start
 
     # convert estimates into data frame with following columns:
