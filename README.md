@@ -388,34 +388,11 @@ control <- list(min_rule_covered = 5)
 ```
 In the next step, the analysis is initialized (training and testing performed on the same set) and the results are gathered. 
 ```r
-results <- learn_rules(formula, control, bone_marrow)
-performance <- results[[1]] # data frame with validation performance metrics
-report <- results[[2]]      # text training report
-```
-The second element of resulting list is a [training report](#51-training-report). In the following lines, the list of rules and survival functions are extracted from the report.
-```r
-# get separating empty lines in the report
-separators <- which(report == "")
+rules = results[["rules"]]        # list of rules
+cov = results[["train-coverage"]] # coverage of training examples by rules
+surv = results[["estimator"]]      # data frame with survival function estimates
+perf = results[["test-performance"]]   # data frame with performance metrices
 
-# extract rules from the report
-start <- which(report == "Rules:") + 1
-rules <- report[start : (separators[which(separators > start)[1]] - 1)] # first separator after start
-
-# extract survival function estimates from the report
-start <- which(report == "Estimator:") + 1
-estimates <- report[start : (separators[which(separators > start)[1]] - 1)] # first separator after start
-
-# convert estimates into data frame with following columns:
-# - time - survival time,
-# - entire-set - values of survival function of entire dataset,
-# - r1, r2, ... - values of survival function for rules r1, r2, etc.
-names <- strsplit(estimates[1],',')[[1]]
-data <- lapply(estimates[2:length(estimates)], function(row) {
-  vals <- strsplit(row,',')[[1]]
-  as.numeric(vals)
-})
-surv <- data.frame(matrix(unlist(data), nrow=length(data), byrow=T))
-colnames(surv) <- names
 ```
 Survival function estimates for the entire dataset and for the rules are then plotted (Figure 3.1).
 ```r
