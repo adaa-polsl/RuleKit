@@ -66,7 +66,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 		
 		boolean carryOn = true; 
 		double uncovered_pn = weighted_PN;
-		Logger.log("Processing expert rules...\n", Level.INFO);
+		Logger.log("Processing expert rules...\n", Level.FINE);
 		
 		// add expert rules to the ruleset and try to refine them
 		for (Rule r : knowledge.getRules()) {
@@ -95,8 +95,8 @@ public class RegressionExpertSnC extends RegressionSnC {
 				finder.prune(rule, ses);
 				ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 			}
-			Logger.log("Candidate rule: " + rule.toString() + "\n", Level.INFO);
-			
+			Logger.log("Candidate rule: " + rule.toString() + "\n", Level.FINE);
+			Logger.log(".", Level.INFO);
 			
 			ruleset.addRule(rule);
 			cov = rule.covers(ses);
@@ -113,7 +113,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 		}
 		
 		// try to generate new rules
-		Logger.log("Processing other rules...\n", Level.INFO);
+		Logger.log("Processing other rules...\n", Level.FINE);
 		carryOn = uncovered.size() > 0; 
 		while (carryOn) {
 			Logger.log("Uncovered positive weight: " + uncovered_pn +  "/" + weighted_PN + "\n", Level.FINE);
@@ -133,7 +133,8 @@ public class RegressionExpertSnC extends RegressionSnC {
 					finder.prune(rule, ses);
 					ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 				}
-				Logger.log("Candidate rule: " + rule.toString() + "\n", Level.INFO);
+				Logger.log("Candidate rule: " + rule.toString() + "\n", Level.FINE);
+				Logger.log(".", Level.INFO);
 				
 				Covering covered = rule.covers(ses);
 				

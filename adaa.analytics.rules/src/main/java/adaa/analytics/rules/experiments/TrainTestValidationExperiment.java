@@ -185,8 +185,10 @@ public class TrainTestValidationExperiment extends ExperimentBase {
             DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss");
 
             // Train process
+            Logger.log("TRAINING\n"
+            		+ "Log file: " + modelReport.getFile() + "\n",  Level.INFO);
             for(ExperimentalConsole.TrainElement te : trainElements){
-
+            	Logger.log("Building model " + te.modelFile + " from dataset " + te.inFile + "", Level.INFO);
                 File f = new File(te.modelFile);
                 String modelFilePath = f.isAbsolute() ? te.modelFile : (outDirPath + "/" + te.modelFile);
                 f = new File(te.inFile);
@@ -218,7 +220,8 @@ public class TrainTestValidationExperiment extends ExperimentBase {
 
                     sb.append("\nModel characteristics:\n");
                     	
-                    performance = RuleGenerator.recalculatePerformance((RuleSetBase)model);
+                    RuleSetBase ruleModel = (RuleSetBase)model;
+                    performance = RuleGenerator.recalculatePerformance(ruleModel);
                     for (String name : performance.getCriteriaNames()) {
                         double avg = performance.getCriterion(name).getAverage();
                         sb.append(name).append(": ").append(avg).append("\n");
@@ -235,12 +238,15 @@ public class TrainTestValidationExperiment extends ExperimentBase {
 
                     sb.append("\n\n");
                     modelReport.append(sb.toString());
+                    Logger.log("OK (" + ruleModel.getRules().size() + " rules)\n", Level.INFO);
                 }
             }
 
             // Test process
-            for(ExperimentalConsole.PredictElement pe : predictElements){
-
+            Logger.log("PREDICTION\n"
+            		+ "Performance file: " + qualityReport.getFile() + "\n", Level.INFO);
+            for(ExperimentalConsole.PredictElement pe : predictElements) {
+            	Logger.log("Applying model " + pe.modelFile + " on " + pe.testFile + ", saving predictions in " +  pe.testFile + "...", Level.INFO);
                 Date begin = new Date();
                 String dateString = dateFormat.format(begin);
 
@@ -302,6 +308,8 @@ public class TrainTestValidationExperiment extends ExperimentBase {
                     String configString = "Parameters: " + model.getParams().toString().replace("\n", "; ");
                     qualityReport.add(new String[] { configString, performanceHeader.toString()}, row.toString());
                 }
+                
+                Logger.log("OK\n", Level.INFO);
             }
         } catch (Exception e) {
             e.printStackTrace();

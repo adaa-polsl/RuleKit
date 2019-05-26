@@ -10,6 +10,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.StringUtils;
+
 import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
@@ -122,7 +124,9 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 							finder.prune(rule, dataset);
 							ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 						}
-						Logger.log("Class " + classId + ", candidate rule " + ruleset.getRules().size() +  ":" + rule.toString() + "\n", Level.INFO);
+						Logger.log(".", Level.INFO);
+						
+						Logger.log("Class " + classId + ", candidate rule " + ruleset.getRules().size() +  ":" + rule.toString() + "\n", Level.FINE);
 						Covering covered = rule.covers(dataset, uncovered);
 						
 						// remove covered examples

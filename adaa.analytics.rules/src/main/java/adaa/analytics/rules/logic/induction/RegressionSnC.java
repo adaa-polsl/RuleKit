@@ -81,7 +81,8 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 					finder.prune(rule, ses);
 					ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 				}
-				Logger.log("Candidate rule: " + rule.toString() + "\n", Level.INFO);
+				Logger.log("Candidate rule: " + rule.toString() + "\n", Level.FINE);
+				Logger.log(".", Level.INFO);
 				
 				Covering covered = rule.covers(ses, uncovered);
 				

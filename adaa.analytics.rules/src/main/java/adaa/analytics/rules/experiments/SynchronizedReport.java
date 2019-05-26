@@ -8,8 +8,13 @@ public class SynchronizedReport {
 	
 	protected boolean empty = true;
 	
+	protected String file;
+	
+	public String getFile() { return file; }
+	
 	public SynchronizedReport(String name) throws UnsupportedEncodingException, FileNotFoundException {
-    	writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(name), "utf-8"));
+    	file = name;
+		writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(name), "utf-8"));
 	}
 	
 	

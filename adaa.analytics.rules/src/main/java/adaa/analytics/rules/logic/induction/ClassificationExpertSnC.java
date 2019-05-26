@@ -94,7 +94,7 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 			}
 			
 			// add expert rules to the ruleset and try to refine them
-			Logger.log("Processing expert rules...\n", Level.INFO);
+			Logger.log("Processing expert rules...\n", Level.FINE);
 			for (Rule r : knowledge.getRules(classId)) {
 				Rule rule = (Rule) SerializationUtils.clone(r);
 				rule.setWeighted_P(weighted_P);
@@ -122,7 +122,8 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 					finder.prune(rule, dataset);
 					ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 				}
-				Logger.log("Candidate rule:" + rule.toString() + "\n", Level.INFO);
+				Logger.log(".", Level.INFO);
+				Logger.log("Candidate rule:" + rule.toString() + "\n", Level.FINE);
 				
 				ruleset.addRule(rule);
 				
@@ -135,7 +136,7 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 			}
 			
 			// try to generate new rules
-			Logger.log("Processing other rules...\n", Level.INFO);
+			Logger.log("Processing other rules...\n", Level.FINE);
 			boolean carryOn = uncoveredPositives.size() > 0; 
 			while (carryOn) {
 				Rule rule = new ClassificationRule(
@@ -158,7 +159,8 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 						finder.prune(rule, dataset);
 						ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 					}
-					Logger.log("Candidate rule:" + rule.toString() + "\n", Level.INFO);
+					Logger.log("Candidate rule:" + rule.toString() + "\n", Level.FINE);
+					Logger.log(".", Level.INFO);
 					
 					Covering covered = rule.covers(dataset, uncovered);
 					
