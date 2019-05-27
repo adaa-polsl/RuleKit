@@ -7,15 +7,19 @@ import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.RuleGenerator;
 import adaa.analytics.rules.operator.RulePerformanceEvaluator;
 import adaa.analytics.rules.utils.RapidMiner5;
+
 import com.rapidminer.example.Attributes;
 import com.rapidminer.operator.*;
 import com.rapidminer.operator.performance.PerformanceVector;
 import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
+import com.rapidminer.tools.LogService;
 import com.rapidminer.tools.OperatorService;
 import com.rapidminer5.operator.io.ArffExampleSetWriter;
 import com.rapidminer5.operator.io.ArffExampleSource;
 import com.rapidminer5.operator.io.ModelWriter;
 import com.rapidminer5.operator.io.ModelLoader;
+import com.sun.tools.javac.util.Pair;
+
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -51,12 +55,15 @@ public class TrainTestValidationExperiment extends ExperimentBase {
     private ModelLoader modelLoader = null;
     private ChangeAttributeRole testRoleSetter = null;
     private ArffExampleSetWriter testWriteArff = null;
+    
+	Pair<String,Map<String,Object>> paramSet;
+
 
     public TrainTestValidationExperiment(SynchronizedReport trainingReport, SynchronizedReport predictionPerformance,
-                                         String labelAttribute, Map<String, String> options, Map<String, Object> params,
+                                         String labelAttribute, Map<String, String> options, Pair<String,Map<String, Object>> paramSet,
                                          String outDirPath, List<ExperimentalConsole.TrainElement> trainElements,
                                          List<ExperimentalConsole.PredictElement> predictElements){
-        super(predictionPerformance, trainingReport, params);
+        super(predictionPerformance, trainingReport);
 
         File f = new File(outDirPath);
         this.outDirPath = f.isAbsolute() ? outDirPath : (System.getProperty("user.dir") + "/" + outDirPath);
@@ -65,9 +72,8 @@ public class TrainTestValidationExperiment extends ExperimentBase {
         this.predictElements = predictElements;
 
         try {
-            this.paramsSets = new ArrayList<>();
-            paramsSets.add(params);
-
+            this.paramSet = paramSet;
+         
             prepareTrainProcess();
             prepareTestProcess();
 
@@ -114,6 +120,8 @@ public class TrainTestValidationExperiment extends ExperimentBase {
         process.getRootOperator().getSubprocess(0).addOperator(ruleGenerator);
         process.getRootOperator().getSubprocess(0).addOperator(trainApplier);
         process.getRootOperator().getSubprocess(0).addOperator(trainModelWriter);
+        
+        process.getRootOperator().setParameter(ProcessRootOperator.PARAMETER_LOGVERBOSITY, "" + LogService.OFF);
 
         trainArff.getOutputPorts().getPortByName("output").connectTo(trainRoleSetter.getInputPorts().getPortByName("example set input"));
         trainRoleSetter.getOutputPorts().getPortByName("example set output").connectTo(ruleGenerator.getInputPorts().getPortByName("training set"));
@@ -150,6 +158,9 @@ public class TrainTestValidationExperiment extends ExperimentBase {
         processTest.getRootOperator().getSubprocess(0).addOperator(validationEvaluator);
         processTest.getRootOperator().getSubprocess(0).addOperator(testWriteArff);
         processTest.getRootOperator().getSubprocess(0).addOperator(modelLoader);
+        
+        processTest.getRootOperator().setParameter(ProcessRootOperator.PARAMETER_LOGVERBOSITY, "" + LogService.OFF);
+
 
         testArff.getOutputPorts().getPortByName("output").connectTo(testRoleSetter.getInputPorts().getPortByName("example set input"));
         testRoleSetter.getOutputPorts().getPortByName("example set output").connectTo(applier.getInputPorts().getPortByName("unlabelled data"));
@@ -168,7 +179,8 @@ public class TrainTestValidationExperiment extends ExperimentBase {
 
         try {
 
-            Map<String, Object> params = paramsSets.get(0);
+        	Logger.log("\nPARAMETER SET: " + paramSet.fst + "\n", Level.INFO);
+            Map<String, Object> params = paramSet.snd;
 
             for (String key: params.keySet()) {
                 Object o = params.get(key);
@@ -187,8 +199,9 @@ public class TrainTestValidationExperiment extends ExperimentBase {
             // Train process
             Logger.log("TRAINING\n"
             		+ "Log file: " + modelReport.getFile() + "\n",  Level.INFO);
+            
             for(ExperimentalConsole.TrainElement te : trainElements){
-            	Logger.log("Building model " + te.modelFile + " from dataset " + te.inFile + "", Level.INFO);
+            	Logger.log("Building model " + te.modelFile + " from dataset " + te.inFile + "\n", Level.INFO);
                 File f = new File(te.modelFile);
                 String modelFilePath = f.isAbsolute() ? te.modelFile : (outDirPath + "/" + te.modelFile);
                 f = new File(te.inFile);
@@ -238,7 +251,7 @@ public class TrainTestValidationExperiment extends ExperimentBase {
 
                     sb.append("\n\n");
                     modelReport.append(sb.toString());
-                    Logger.log("OK (" + ruleModel.getRules().size() + " rules)\n", Level.INFO);
+                    Logger.log(" [OK]\n", Level.INFO);
                 }
             }
 
@@ -246,7 +259,7 @@ public class TrainTestValidationExperiment extends ExperimentBase {
             Logger.log("PREDICTION\n"
             		+ "Performance file: " + qualityReport.getFile() + "\n", Level.INFO);
             for(ExperimentalConsole.PredictElement pe : predictElements) {
-            	Logger.log("Applying model " + pe.modelFile + " on " + pe.testFile + ", saving predictions in " +  pe.testFile + "...", Level.INFO);
+            	Logger.log("Applying model " + pe.modelFile + " on " + pe.testFile + ", saving predictions in " +  pe.testFile + "\n", Level.INFO);
                 Date begin = new Date();
                 String dateString = dateFormat.format(begin);
 
@@ -309,7 +322,7 @@ public class TrainTestValidationExperiment extends ExperimentBase {
                     qualityReport.add(new String[] { configString, performanceHeader.toString()}, row.toString());
                 }
                 
-                Logger.log("OK\n", Level.INFO);
+                Logger.log(" [OK]\n", Level.INFO);
             }
         } catch (Exception e) {
             e.printStackTrace();

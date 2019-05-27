@@ -5,6 +5,7 @@ import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.RuleGenerator;
 import adaa.analytics.rules.utils.RapidMiner5;
+
 import com.rapidminer.example.Attributes;
 import com.rapidminer.example.set.SplittedExampleSet;
 import com.rapidminer.operator.*;
@@ -33,22 +34,9 @@ public class InternalXValidationExperiment extends ExperimentBase {
 	protected String modelFile; 
 	
 	protected File arffFile;
-
-	public InternalXValidationExperiment(
-			File arffFile, 
-			SynchronizedReport qualityReport,
-			SynchronizedReport modelReport,
-			String labelParameter,
-			int foldCount,
-			Type experimentType,
-			Map<String,Object> params) {
-		this(arffFile, qualityReport, modelReport, labelParameter, foldCount, experimentType, (List<Map<String,Object>>)null);
-		
-		this.paramsSets = new ArrayList<Map<String, Object>>();
-		this.modelFile = modelFile;
-		paramsSets.add(params);
-	}
 	
+	protected List<Map<String,Object>> paramsSets;
+
 	
 	public InternalXValidationExperiment(
 			File arffFile, 
@@ -59,10 +47,11 @@ public class InternalXValidationExperiment extends ExperimentBase {
 			Type experimentType,
 			List<Map<String,Object>> paramsSets) {
 		
-		super(qualityReport, modelReport, paramsSets);
+		super(qualityReport, modelReport);
 		
 		try {
 			this.arffFile = arffFile;
+			this.paramsSets = paramsSets = paramsSets;
 			
 			ArffExampleSource arffSource = RapidMiner5.createOperator(ArffExampleSource.class);
 	    	ChangeAttributeRole roleSetter = (ChangeAttributeRole)OperatorService.createOperator(ChangeAttributeRole.class);

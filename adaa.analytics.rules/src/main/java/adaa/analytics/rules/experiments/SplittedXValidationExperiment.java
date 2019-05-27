@@ -12,10 +12,12 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.utils.RapidMiner5;
+
 import org.apache.commons.lang.StringUtils;
 
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
+
 import com.rapidminer.example.Attributes;
 import com.rapidminer.operator.IOContainer;
 import com.rapidminer.operator.IOObject;
@@ -25,6 +27,7 @@ import com.rapidminer5.operator.io.ArffExampleSource;
 import com.rapidminer.operator.performance.PerformanceVector;
 import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
 import com.rapidminer.tools.OperatorService;
+import com.sun.tools.javac.util.Pair;
 
 public class SplittedXValidationExperiment extends ExperimentBase {
 
@@ -34,21 +37,22 @@ public class SplittedXValidationExperiment extends ExperimentBase {
 	
 	protected ArffExampleSource testArff;
 	
+	Pair<String,Map<String,Object>> paramSet;
+	
 	public SplittedXValidationExperiment(
 		File arffDir,
 		SynchronizedReport qualityReport,
 		SynchronizedReport modelReport,
 		String labelAttribute,
 		Map<String, String> options,
-		Map<String, Object> params) {
+		Pair<String,Map<String, Object>> paramSet) {
 		
-		super(qualityReport, modelReport, params); 
+		super(qualityReport, modelReport); 
 		
 		try {
 			this.arffDir = arffDir;
-		
-			this.paramsSets = new ArrayList<Map<String, Object>>();
-			paramsSets.add(params);
+			this.paramSet = paramSet;
+			
 			
 			trainArff = RapidMiner5.createOperator(ArffExampleSource.class);
 	    	testArff = RapidMiner5.createOperator(ArffExampleSource.class);
@@ -121,7 +125,7 @@ public class SplittedXValidationExperiment extends ExperimentBase {
 	public void run() {
 		try {
 			
-			Map<String, Object> params = paramsSets.get(0);
+			Map<String, Object> params = paramSet.snd;
 			
 			for (String key: params.keySet()) {
 				Object o = params.get(key);

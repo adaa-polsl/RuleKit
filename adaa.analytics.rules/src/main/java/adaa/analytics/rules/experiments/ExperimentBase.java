@@ -30,28 +30,14 @@ public abstract class ExperimentBase implements Runnable {
 	
 	protected SynchronizedReport modelReport;
 	
-	protected List<Map<String,Object>> paramsSets;
-	
-	public ExperimentBase(
-			SynchronizedReport qualityReport,
-			SynchronizedReport modelReport,
-			Map<String,Object> params) {
-		this(qualityReport, modelReport, (List<Map<String,Object>>)null);
-		
-		this.paramsSets = new ArrayList<Map<String, Object>>();
-		paramsSets.add(params);
-	}
-	
 	public ExperimentBase (
 			SynchronizedReport qualityReport,
-			SynchronizedReport modelReport,
-			List<Map<String,Object>> paramsSets) {
+			SynchronizedReport modelReport) {
 
 		try {
 			
 			this.qualityReport = qualityReport;
 			this.modelReport = modelReport;
-			this.paramsSets = paramsSets;
 		 	process = new com.rapidminer.Process();
 		    
 			ruleGenerator = RapidMiner5.createOperator(ExpertRuleGenerator.class);

@@ -2,9 +2,12 @@ package adaa.analytics.rules.logic.induction;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang.StringUtils;
 
 import adaa.analytics.rules.logic.representation.ClassificationRule;
 import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
@@ -14,6 +17,7 @@ import adaa.analytics.rules.logic.representation.Knowledge;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.SingletonSet;
+
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
@@ -40,6 +44,9 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 		ClassificationRuleSet ruleset = (ClassificationRuleSet)factory.create(dataset);
 		Attribute label = dataset.getAttributes().getLabel();
 		NominalMapping mapping = label.getMapping();
+		
+		int totalExpertRules = 0;
+		int totalAutoRules = 0;
 		
 		double defaultClassWeight = 0;
 		
@@ -126,6 +133,8 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 				Logger.log("Candidate rule:" + rule.toString() + "\n", Level.FINE);
 				
 				ruleset.addRule(rule);
+				Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
+				Logger.log("\t" + (++totalExpertRules) + " expert rules, " + totalAutoRules + " auto rules" , Level.INFO);
 				
 				cov = rule.covers(dataset, uncovered);
 				
@@ -180,6 +189,8 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 						carryOn = false; 
 					} else {
 						ruleset.addRule(rule);
+						Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
+						Logger.log("\t" + totalExpertRules + " expert rules, " + (++totalAutoRules) + " auto rules" , Level.INFO);
 					}
 				}
 			}

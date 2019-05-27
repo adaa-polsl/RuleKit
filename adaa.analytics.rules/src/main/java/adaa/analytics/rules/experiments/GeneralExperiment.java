@@ -4,12 +4,14 @@ import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.RDataExampleSource;
 import adaa.analytics.rules.utils.RapidMiner5;
+
 import com.rapidminer.example.Attributes;
 import com.rapidminer.operator.*;
 import com.rapidminer.operator.performance.PerformanceVector;
 import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
 import com.rapidminer.tools.OperatorService;
 import com.rapidminer5.operator.io.ArffExampleSource;
+
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -32,6 +34,9 @@ public class GeneralExperiment extends ExperimentBase {
     protected Operator testOperator;
 
     protected Extension ext;
+    
+	protected List<Map<String,Object>> paramsSets;
+
 
     public GeneralExperiment(
             File file,
@@ -41,13 +46,12 @@ public class GeneralExperiment extends ExperimentBase {
             Map<String, String> options,
             Map<String, Object> params) {
 
-        super(qualityReport, modelReport, params);
+        super(qualityReport, modelReport);
         try {
             this.file = file;
 
-            this.paramsSets = new ArrayList<Map<String, Object>>();
-            paramsSets.add(params);
-
+            this.paramsSets = paramsSets;
+           
             //Creating Operators
             //Different operator for different data file formats
             ext = getExtension(file);

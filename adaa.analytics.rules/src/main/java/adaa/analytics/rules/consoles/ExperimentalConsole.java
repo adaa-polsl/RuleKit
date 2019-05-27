@@ -8,7 +8,10 @@ import adaa.analytics.rules.operator.ExpertRuleGenerator;
 
 import com.rapidminer.RapidMiner;
 import com.rapidminer.example.Attributes;
+import com.rapidminer.tools.I18N;
+import com.rapidminer.tools.LogService;
 import com.rapidminer.tools.ParameterService;
+import com.sun.tools.javac.util.Pair;
 
 import org.apache.lucene.util.ArrayUtil;
 import org.w3c.dom.Document;
@@ -97,6 +100,8 @@ public class ExperimentalConsole {
 	    	Logger.getInstance().addStream(System.out, isVerbose ? Level.FINE : Level.INFO);	
 	    
             if (argList.size() == 1) {
+            	LogService.getRoot().setLevel(Level.OFF);
+            	
             	RapidMiner.init();
             	execute(args[0]);
 
@@ -129,7 +134,7 @@ public class ExperimentalConsole {
 
         NodeList paramSetNodes = doc.getElementsByTagName("parameter_set");
 
-        Logger.log("Loading XML experiment file: " + configFile + "..." , Level.INFO);
+        Logger.log("Loading XML experiment file: " + configFile, Level.INFO);
         
         for (int setId = 0; setId < paramSetNodes.getLength(); setId++) {
             ParamSetWrapper wrapper = new ParamSetWrapper();
@@ -248,7 +253,7 @@ public class ExperimentalConsole {
                 }
             }
             
-            Logger.log("OK\n", Level.INFO);
+            Logger.log(" [OK]\n", Level.INFO);
             
             // create experiments for all params sets
             for (ParamSetWrapper wrapper : paramSets) {
@@ -286,10 +291,9 @@ public class ExperimentalConsole {
                         null : new SynchronizedReport(outDirPath + "/" + trainingReportFilePath);
 
                 ttValidationExp = new TrainTestValidationExperiment(trainingSynchronizedReport, predictionSynchronizedReport,
-                        label, options, wrapper.map, outDirPath, trainElements, predictElements);
+                        label, options, new Pair<String, Map<String,Object>>(wrapper.name, wrapper.map), 
+                        outDirPath, trainElements, predictElements);
 
-                
-                Logger.log("\nPARAMETER SET: " + wrapper.name + "\n", Level.INFO);
                 f = pool.submit(ttValidationExp);
                 futures.add(f);
             }

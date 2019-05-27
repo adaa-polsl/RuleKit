@@ -2,7 +2,10 @@ package adaa.analytics.rules.logic.induction;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
+
+import org.apache.commons.lang.StringUtils;
 
 import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
@@ -60,6 +63,7 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 			weighted_PN += w;
 		}
 		
+		int totalRules = 0;
 		boolean carryOn = true; 
 		double uncovered_pn = weighted_PN;
 		
@@ -107,6 +111,8 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 					carryOn = false; 
 				} else {
 					ruleset.addRule(rule);
+					Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
+					Logger.log("\t" + (++totalRules) + " rules" , Level.INFO);
 				}
 			}
 		}

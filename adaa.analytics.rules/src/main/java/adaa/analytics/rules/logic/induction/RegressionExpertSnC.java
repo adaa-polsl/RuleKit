@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang.StringUtils;
 
 import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
@@ -47,7 +48,6 @@ public class RegressionExpertSnC extends RegressionSnC {
 		SortedExampleSet ses = new SortedExampleSet(dataset, label, SortedExampleSet.INCREASING);
 		ses.recalculateAttributeStatistics(ses.getAttributes().getLabel());
 		
-			
 		if (factory.getType() == RuleFactory.REGRESSION) {
 			double median = ses.getExample(ses.size() / 2).getLabel();
 			RegressionRuleSet tmp = (RegressionRuleSet)ruleset;
@@ -64,6 +64,8 @@ public class RegressionExpertSnC extends RegressionSnC {
 			weighted_PN += w;
 		}
 		
+		int totalExpertRules = 0;
+		int totalAutoRules = 0;
 		boolean carryOn = true; 
 		double uncovered_pn = weighted_PN;
 		Logger.log("Processing expert rules...\n", Level.FINE);
@@ -96,7 +98,9 @@ public class RegressionExpertSnC extends RegressionSnC {
 				ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 			}
 			Logger.log("Candidate rule: " + rule.toString() + "\n", Level.FINE);
-			Logger.log(".", Level.INFO);
+
+			Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
+			Logger.log("\t" + totalExpertRules + " expert rules, " + (++totalAutoRules) + " auto rules" , Level.INFO);
 			
 			ruleset.addRule(rule);
 			cov = rule.covers(ses);
@@ -159,6 +163,8 @@ public class RegressionExpertSnC extends RegressionSnC {
 					carryOn = false; 
 				} else {
 					ruleset.addRule(rule);
+					Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
+					Logger.log("\t" + totalExpertRules + " expert rules, " + (++totalAutoRules) + " auto rules" , Level.INFO);
 				}
 			}
 		}

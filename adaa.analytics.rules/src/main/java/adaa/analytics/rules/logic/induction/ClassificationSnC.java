@@ -8,6 +8,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 import org.apache.commons.lang.StringUtils;
@@ -59,6 +61,8 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 		
 		int threadCount = Runtime.getRuntime().availableProcessors();
 		ExecutorService pool = Executors.newFixedThreadPool(threadCount);
+		Semaphore mutex = new Semaphore(1);
+		AtomicInteger totalRules = new AtomicInteger(0);
 		
 		// array of futures, each consisting of ruleset and P value
 		List<Future<Pair<ClassificationRuleSet, Double>>> futures = new ArrayList<Future<Pair<ClassificationRuleSet, Double>>>();
@@ -124,7 +128,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 							finder.prune(rule, dataset);
 							ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 						}
-						Logger.log(".", Level.INFO);
+						
 						
 						Logger.log("Class " + classId + ", candidate rule " + ruleset.getRules().size() +  ":" + rule.toString() + "\n", Level.FINE);
 						Covering covered = rule.covers(dataset, uncovered);
@@ -151,6 +155,10 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 							carryOn = false; 
 						} else {
 							ruleset.addRule(rule);
+							mutex.acquire(1);
+							Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
+							Logger.log("\t" + totalRules.incrementAndGet() + " rules" , Level.INFO);
+							mutex.release(1);
 						}
 					}
 				}
