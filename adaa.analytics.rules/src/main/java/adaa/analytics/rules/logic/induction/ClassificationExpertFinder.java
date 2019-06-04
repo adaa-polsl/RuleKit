@@ -33,7 +33,7 @@ import java.util.logging.Level;
 /**
  * Class for growing and pruning classification rules with user's knowledge.
  * 
- * @author Adam Gudyœ
+ * @author Adam Gudys
  *
  */
 public class ClassificationExpertFinder extends ClassificationFinder implements IExpertFinder {

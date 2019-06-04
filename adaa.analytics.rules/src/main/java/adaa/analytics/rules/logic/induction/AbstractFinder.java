@@ -35,7 +35,7 @@ import com.rapidminer.tools.container.Pair;
 /**
  * Abstract base class for growing and pruning procedures for all types of rules (classification, regression, survival).
  * 
- * @author Adam Gudyœ
+ * @author Adam Gudys
  * 
  */
 public abstract class AbstractFinder {

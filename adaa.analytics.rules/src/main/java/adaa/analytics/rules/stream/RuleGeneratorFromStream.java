@@ -40,9 +40,9 @@ public class RuleGeneratorFromStream extends ExpertRuleGenerator {
 		
 		try{
 			InductionParameters params = new InductionParameters();
-			params.setInductionMeasure(createMeasure(MeasureType.INDUCTION, new ClassificationMeasure(ClassificationMeasure.Correlation)));
-			params.setPruningMeasure(createMeasure(MeasureType.PRUNING, params.getInductionMeasure() )); 
-			params.setVotingMeasure(createMeasure(MeasureType.VOTING, params.getInductionMeasure()));
+			params.setInductionMeasure(createMeasure(MeasureDestination.INDUCTION, new ClassificationMeasure(ClassificationMeasure.Correlation)));
+			params.setPruningMeasure(createMeasure(MeasureDestination.PRUNING, params.getInductionMeasure() )); 
+			params.setVotingMeasure(createMeasure(MeasureDestination.VOTING, params.getInductionMeasure()));
 
 			params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
 			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MIN_RULE_COVERED));
@@ -53,16 +53,16 @@ public class RuleGeneratorFromStream extends ExpertRuleGenerator {
 			
 			if (exampleSet.getAttributes().findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
 				// survival problem
-				if (getParameterAsBoolean(PARAMETER_LOGRANK_SURVIVAL)) {
+			//	if (getParameterAsBoolean(PARAMETER_LOGRANK_SURVIVAL)) {
 					params.setInductionMeasure(new LogRank());
 					params.setPruningMeasure(new LogRank());
 					params.setVotingMeasure(new LogRank());
 					SurvivalLogRankFinder finder = new SurvivalLogRankFinder(params);
 					snc = new SurvivalLogRankSnC(finder, params);
-				} else {
-					ClassificationFinder finder = new ClassificationFinder(params);
-					snc = new SurvivalClassificationSnC(finder, params);
-				}
+			//	} else {
+			//		ClassificationFinder finder = new ClassificationFinder(params);
+			//		snc = new SurvivalClassificationSnC(finder, params);
+			//	}
 			} else if (exampleSet.getAttributes().getLabel().isNumerical()) {
 				// regression problem
 				RegressionFinder finder = new RegressionFinder(params);

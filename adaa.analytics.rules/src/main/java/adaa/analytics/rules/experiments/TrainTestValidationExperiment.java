@@ -273,7 +273,7 @@ public class TrainTestValidationExperiment extends ExperimentBase {
             Logger.log("PREDICTION\n"
             		+ "Performance file: " + qualityReport.getFile() + "\n", Level.INFO);
             for(ExperimentalConsole.PredictElement pe : predictElements) {
-            	Logger.log("Applying model " + pe.modelFile + " on " + pe.testFile + ", saving predictions in " +  pe.testFile + "\n", Level.INFO);
+            	Logger.log("Applying model " + pe.modelFile + " on " + pe.testFile + ", saving predictions in " +  pe.testFile, Level.INFO);
                 Date begin = new Date();
                 String dateString = dateFormat.format(begin);
 

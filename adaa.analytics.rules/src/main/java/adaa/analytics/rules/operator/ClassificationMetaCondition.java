@@ -21,18 +21,29 @@ import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 import com.rapidminer.parameter.ParameterHandler;
 import com.rapidminer.parameter.conditions.ParameterCondition;
 
+/**
+ * Class representing condition fulfilled by classification problems.
+ * Condition is verified on the basis of metadeta of example set connected to the one of operator's input:
+ * - training set,
+ * - labelled data.
+ * 
+ * @author Adam Gudys
+ *
+ */
 public class ClassificationMetaCondition extends ParameterCondition {
 
-	protected Operator operator;
-	
-	
-	public ClassificationMetaCondition(ParameterHandler parameterHandler, boolean becomeMandatory, Operator operator) {
-		super(parameterHandler, becomeMandatory);
-		this.operator = operator;
+	/**
+	 * Invokes base class constructor.
+	 * @param parameterHandler Operator which inputs are examined.
+	 */
+	public ClassificationMetaCondition(ParameterHandler parameterHandler) {
+		super(parameterHandler, false);
 	}
 	
 	@Override
 	public boolean isConditionFullfilled() {
+		Operator operator = (Operator)parameterHandler;
+				
 		if (operator == null) {
 			throw new IllegalAccessError("Invalid classification meta condition!");
 		}

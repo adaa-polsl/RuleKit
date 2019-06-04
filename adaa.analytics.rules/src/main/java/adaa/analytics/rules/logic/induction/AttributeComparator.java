@@ -21,7 +21,7 @@ import java.util.Comparator;
 /**
  * Auxilliary class that compares attributes w.r.t. their ordering in the dataset.
  * 
- * @author Adam Gudyœ
+ * @author Adam Gudys
  *
  */
 public class AttributeComparator implements Comparator<Attribute>{

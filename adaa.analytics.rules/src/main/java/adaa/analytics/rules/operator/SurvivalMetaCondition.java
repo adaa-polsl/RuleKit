@@ -21,18 +21,30 @@ import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 import com.rapidminer.parameter.ParameterHandler;
 import com.rapidminer.parameter.conditions.ParameterCondition;
 
+
+/**
+ * Class representing condition fulfilled by survival problems.
+ * Condition is verified on the basis of metadeta of example set connected to the one of operator's input:
+ * - training set,
+ * - labelled data.
+ * 
+ * @author Adam Gudys
+ *
+ */
 public class SurvivalMetaCondition extends ParameterCondition{
 
-	protected Operator operator;
-	
-	public SurvivalMetaCondition(ParameterHandler parameterHandler, boolean becomeMandatory, Operator operator) {
-		super(parameterHandler, becomeMandatory);
-		this.operator = operator;
+	/**
+	 * Invokes base class constructor.
+	 * @param parameterHandler Operator which inputs are examined.
+	 */
+	public SurvivalMetaCondition(ParameterHandler parameterHandler) {
+		super(parameterHandler, true);
 	}
-	
 	
 	@Override
 	public boolean isConditionFullfilled() {
+		Operator operator = (Operator)parameterHandler;
+		
 		if (operator == null) {
 			throw new IllegalAccessError("Invalid classification meta condition!");
 		}

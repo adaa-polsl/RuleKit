@@ -28,7 +28,7 @@ import java.util.Set;
 
 /**
  * Class representing a classification rule.
- * @author Adam Gudyœ
+ * @author Adam Gudys
  *
  */
 public class ClassificationRule extends Rule {

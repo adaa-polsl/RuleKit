@@ -21,7 +21,7 @@ import com.rapidminer.example.ExampleSet;
  * Abstract base class for all separate and conquer rule-based models induction algorithms 
  * (classification, regression, survival).
  * 
- * @author Adam Gudyœ
+ * @author Adam Gudys
  * 
  */
 public abstract class AbstractSeparateAndConquer {

@@ -138,7 +138,6 @@ public class LogRankConsole {
     	roles.add(new String[]{"survival_time", SurvivalRule.SURVIVAL_TIME_ROLE});
     	roleSetter.setListParameter(roleSetter.PARAMETER_CHANGE_ATTRIBUTES, roles);
     	
-    	ruleGenerator.setParameter(ruleGenerator.PARAMETER_LOGRANK_SURVIVAL, "true");
     	modelWriter.setParameter(modelWriter.PARAMETER_MODEL_FILE, binaryModel);
     	
     	Logger.log("Building a model...\n", Level.INFO);	

@@ -117,10 +117,6 @@ public class InternalXValidationExperiment extends ExperimentBase {
 	    	
 	    	ModelApplier applier = (ModelApplier)OperatorService.createOperator(ModelApplier.class);
 	    	
-	    	if (experimentType == Type.SURVIVAL_BY_REGRESSION) {
-	    		ruleGenerator.setParameter(ruleGenerator.PARAMETER_LOGRANK_SURVIVAL, "" + true);
-	    	}
-	    
 	    	tester.addOperator(applier);
 	    	tester.addOperator(validationEvaluator);
 	    	

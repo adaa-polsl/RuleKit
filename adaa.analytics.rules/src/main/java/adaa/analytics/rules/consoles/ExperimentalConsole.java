@@ -14,29 +14,6 @@
  ******************************************************************************/
 package adaa.analytics.rules.consoles;
 
-import adaa.analytics.rules.experiments.SynchronizedReport;
-import adaa.analytics.rules.experiments.TrainTestValidationExperiment;
-import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
-import adaa.analytics.rules.operator.ExpertRuleGenerator;
-
-import com.rapidminer.RapidMiner;
-import com.rapidminer.example.Attributes;
-import com.rapidminer.tools.I18N;
-import com.rapidminer.tools.LogService;
-import com.rapidminer.tools.ParameterService;
-import com.sun.tools.javac.util.Pair;
-
-import org.apache.lucene.util.ArrayUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,6 +27,26 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import adaa.analytics.rules.experiments.SynchronizedReport;
+import adaa.analytics.rules.experiments.TrainTestValidationExperiment;
+import adaa.analytics.rules.logic.representation.Logger;
+import adaa.analytics.rules.logic.representation.SurvivalRule;
+import adaa.analytics.rules.operator.ExpertRuleGenerator;
+
+import com.rapidminer.RapidMiner;
+import com.rapidminer.example.Attributes;
+import com.rapidminer.tools.LogService;
+import com.sun.tools.javac.util.Pair;
 
 public class ExperimentalConsole {
 
@@ -107,7 +104,7 @@ public class ExperimentalConsole {
 	    	System.out.print("RuleKit version " + VERSION + " (" + BUILD_DATE + ")\n" 
 			+ "    RuleKit Development Team (c) 2018\n\n");
     	
-	    	ArrayList<String> argList = new ArrayList();
+	    	ArrayList<String> argList = new ArrayList<String>();
 	    	argList.addAll(Arrays.asList(args));
 	    
 	    	boolean isVerbose = findSwitch(argList, "-v");

@@ -50,7 +50,7 @@ import com.rapidminer.tools.container.Pair;
 /**
  * Class for growing and pruning classification rules.
  * 
- * @author Adam Gudyœ
+ * @author Adam Gudys
  *
  */
 public class ClassificationFinder extends AbstractFinder {
