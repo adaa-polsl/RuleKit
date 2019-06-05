@@ -13,7 +13,7 @@
 	<datasets>
 		<dataset>
 			<label>Future Customer</label>
-			<out_directory>./results-deals</out_directory>		
+			<out_directory>./results-minimal/deals</out_directory>		
 			<training>  
 				<report_file>training.log</report_file>           		
 				<train>

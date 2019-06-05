@@ -150,7 +150,7 @@ The `performance_file` is created for each parameter set under *<out_directory>/
 
 ## 1.4. Example
 
-Here we present how to prepare the XML experiment file for an example classification analysis. The investigated dataset named *deals* concerns a problem of predicting whether a person making a purchase will be a future customer. The entire dataset in is split in train and test parts and can be found [here](data/deals).
+Here we present how to prepare the XML experiment file for an example classification analysis. The investigated dataset named *deals* concerns a problem of predicting whether a person making a purchase will be a future customer. The entire dataset is split in train and test parts and can be found [here](data/deals).
 
 Let the user be interested in two parameter sets:
 * *mincov = 5* with *RSS* measure used for growing, pruning, and voting,
@@ -223,10 +223,10 @@ In the prediction phase, previously-generated models are applied on the specifie
 * *./results-seismic-bumps/mincov=8, Entropy_User_C2/deals-pred.arff*
 * *./results-seismic-bumps/mincov=8, Entropy_User_C2/performance.csv*  
 
-The complete experiment definition in the XML format is available [here](examples/classification-deals.xml). 
+The complete experiment definition in the XML format is available [here](examples/minimal-deals.xml). 
 
 Presented aproach can be easily suited to cross-validation experiment with existing splits by specifying multiple `train` and `predict` sections . E.g., let us assume the following scheme:
-* trainig sets: *deals-train-1.arff*, *deals-train-2.arff*, ..., *deals-train-10.arff*,
+* training sets: *deals-train-1.arff*, *deals-train-2.arff*, ..., *deals-train-10.arff*,
 * testing sets: *deals-test-1.arff*, *deals-test-2.arff*, ..., *deals-test-10.arff*,
 
 The corresponding dataset definition is as follows:
