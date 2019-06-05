@@ -1,0 +1,95 @@
+================================================================================
+seismic-bumps-train-minimal.arff
+
+Params:
+min_rule_covered=8.0
+induction_measure=BinaryEntropy
+pruning_measure=BinaryEntropy
+voting_measure=C2
+
+Knowledge:
+extendUsingPreferred=false
+extendUsingAutomatic=false
+induceUsingPreferred=true
+induceUsingAutomatic=true
+considerOtherClasses=false
+preferredConditionsPerRule=2147483647
+preferredAttributesPerRule=2
+
+Expert rules:
+	Class 0
+	Class 1
+Preferred conditions:
+	Class 0
+	Class 1
+Preferred attributes:
+	Class 0
+		2147483647: gimpuls
+		2147483647: genergy
+		2147483647: senergy
+	Class 1
+		2147483647: gimpuls
+		2147483647: genergy
+		2147483647: senergy
+Forbidden conditions:
+	Class 0
+	Class 1
+Forbidden attributes:
+	Class 0
+	Class 1
+
+Rules:
+r1: IF genergy = (-inf, 18890.0) THEN class = {0} (p=81.0, n=0.0, P=187.0, N=13.0, weight=0.7165775401069518, pval=8.841981707217416E-4)
+r2: IF [genergy = <910.0, inf)] AND [gimpuls = (-inf, 1350.5)] AND goenergy = <-73.5, inf) AND nbumps = (-inf, 2.5) THEN class = {0} (p=161.0, n=4.0, P=187.0, N=13.0, weight=0.583448636924573, pval=2.539344965428525E-5)
+r3: IF [genergy = <910.0, inf)] AND [gimpuls = (-inf, 1350.5)] AND goenergy = (-inf, 58.5) AND goimpuls = (-inf, 36.5) AND shift = {W} AND senergy = <1650.0, 87750.0) THEN class = {0} (p=26.0, n=4.0, P=187.0, N=13.0, weight=-0.5987248046071573, pval=0.9707682334727253)
+r4: IF [genergy = <910.0, inf)] AND [gimpuls = (-inf, 2784.0)] AND goenergy = <-73.5, inf) AND nbumps2 = (-inf, 0.5) THEN class = {0} (p=144.0, n=5.0, P=187.0, N=13.0, weight=0.4281208329767344, pval=0.0048863984930590946)
+r5: IF [genergy = <18890.0, inf)] AND [gimpuls = <174.5, inf)] AND ghazard = {a} AND goenergy = (-inf, 9.0) AND maxenergy = (-inf, 6500.0) AND goimpuls = (-inf, 10.5) AND shift = {W} AND nbumps3 = <0.5, inf) THEN class = {1} (p=8.0, n=9.0, P=13.0, N=187.0, weight=0.3503641687032691, pval=4.5815805543622256E-7)
+
+Coverage of training examples by rules (1-based):
+2*;2*,3,4,5;2*,4;-;-;3,5*;2*,3;3,5*;1*,2,4;2*,4;1*,2,4;1*,2,4;1*,2,4;2*;1*,2,4;2*,4,5;2*,4;2*,4;2*,4;2*,4;2*,4;2*,4;2*,4;2*;2*,3,4,5;3,5*;1*,2;2*;5*;1*,2,4;1*,2,4;1*,2,4;1*,2,4;2*;4*;2*,3,4;1*,2,4;1*,2,4;1*,2,4;3*;2*,4;2*;2*,4;1*,2,4;1*,2,4;1*;2*,3,4,5;2*,4;4*;4*,5;3,4*;5*;2*,4,5;2*,3,4,5;2*;3*;1*,2,4;2*,4;4*;1*,2,4;1*,2,3,4;2*,4;2*,4;2*,4;1*,2,4;1*,2,4;1*,2,4;1*,2,4;1*,2,4;1*;1*,2,3;1*,2,4;2*,3,4;3*;3*;2*,3,5;1*,2;1*,2,4;1*,2,4;1*,2,4;2*,4;2*,4;1*,2,4;2*,4;2*,4;2*,4;2*,4;1*;2*,3,4;2*;1*;1*,2,4;2*,4;2*,4;4*;3*;4*;3*;3,5*;1*;2*,4;2*,4;1*,2,4;1*,2,4;2*,4;1*,2,4;2*,4;1*,2,3,4;1*,2,4;2*,4;2*,4;1*,2,4;1*,2,4;2*,4;2*,4;1*,2,4;2*,4;2*;2*,4;2*,4;1*,2,4;2*;2*,4;2*;2*,4;-;2*,4;1*,2,4;1*,2,4;1*,2,4;1*,2,4;2*,4;1*,2,4;2*,4;1*,2,4;2*,4;2*;2*;1*,2,4;1*,2,4;2*,4;4*;2*;4*,5;1*,2,4;2*;1*,2,4;2*,4;1*,2,4;2*,4;2*,4;2*;2*;5*;-;3*;1*,2,3;1*,2,3;1*,2,4;1*,2,4;1*,2,4;1*,2,3,4;1*,2,4;2*,4;2*,4;2*,4;1*,2,4;1*,2,4;2*,3,4;2*,4;2*,4;1*,2,4;1*,2,4;4*;4*,5;1*;2*,4;1*,2,4;2*,4;1*,2,4;1*,2,4;1*,2,4;1*,2,4;1*,2,4;1*,2,4;1*,2,4;1*,2,4;2*;1*,2,4;2*;2*,4;2*,3,4;2*,4;2*;2*,3,4;1*,2,4;2*,4;2*,4;1*,2,4;1*,2,4
+
+Model characteristics:
+time_total_s: 0.119298274
+time_growing_s: 0.10870019899999998
+time_pruning_s: 0.009157744
+#rules: 5.0
+#conditions_per_rule: 4.8
+#induced_conditions_per_rule: 29.4
+avg_rule_coverage: 0.442
+avg_rule_precision: 0.8558910861476988
+avg_rule_quality: 0.2959572748208742
+avg_pvalue: 0.19531293634884317
+avg_FDR_pvalue: 0.19568313392426634
+avg_FWER_pvalue: 0.19665949791198062
+fraction_0.05_significant: 0.8
+fraction_0.05_FDR_significant: 0.8
+fraction_0.05_FWER_significant: 0.8
+
+Training set performance:
+accuracy: 0.955
+classification_error: 0.04500000000000004
+kappa: 0.5490981963927851
+balanced_accuracy: 0.7254216371863431
+#rules_per_example: 2.21
+#voting_conflicts: 14.0
+#negative_voting_conflicts: 3.0
+cross-entropy: Infinity
+margin: 0.0
+soft_margin_loss: 1.0
+logistic_loss: 0.6931471805599465
+precision: 0.75
+sensitivity: 0.46153846153846156
+specificity: 0.9893048128342246
+negative_predictive_value: 0.9635416666666666
+fallout: 0.0106951871657754
+youden: 0.4508432743726861
+geometric_mean: 0.675723479914753
+psep: 0.7135416666666666
+lift: 11.538461538461538
+f_measure: 0.5714285714285714
+false_positive: 2.0
+false_negative: 7.0
+true_positive: 6.0
+true_negative: 185.0
+
+

@@ -1,0 +1,3 @@
+Parameters: min_rule_covered=5.0; induction_measure=LogRankStatistics; pruning_measure=LogRankStatistics; voting_measure=LogRankStatistics; 
+Dataset, time started, elapsed[s], time_total_s,time_growing_s,time_pruning_s,#rules,#conditions_per_rule,#induced_conditions_per_rule,avg_rule_coverage,avg_rule_precision,avg_rule_quality,avg_pvalue,avg_FDR_pvalue,avg_FWER_pvalue,fraction_0.05_significant,fraction_0.05_FDR_significant,fraction_0.05_FWER_significant,integrated_brier_score,
+bmt-test-0.arff,2019.06.05_18.22.36,0.039497526,2.362098215, 1.9359338569999998, 0.42136824, 4.0, 2.0, 25.5, 0.37648809523809523, 1.0, 0.9846075350188652, 0.015392464981134807, 0.01589389331553483, 0.01689674998433488, 0.75, 0.75, 0.75, 0.2755317172958846, 

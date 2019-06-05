@@ -1,0 +1,110 @@
+================================================================================
+seismic-bumps-train-minimal.arff
+
+Params:
+min_rule_covered=8.0
+induction_measure=BinaryEntropy
+pruning_measure=BinaryEntropy
+voting_measure=C2
+
+Knowledge:
+extendUsingPreferred=false
+extendUsingAutomatic=false
+induceUsingPreferred=false
+induceUsingAutomatic=true
+considerOtherClasses=false
+preferredConditionsPerRule=2147483647
+preferredAttributesPerRule=2147483647
+
+Expert rules:
+	Class 0
+	Class 1
+Preferred conditions:
+	Class 0
+	Class 1
+Preferred attributes:
+	Class 0
+	Class 1
+Forbidden conditions:
+	Class 0
+	Class 1
+Forbidden attributes:
+	Class 0
+		nbumps7
+		nbumps3
+		nbumps6
+		nbumps4
+		nbumps
+		nbumps5
+		nbumps2
+		nbumps89
+		maxenergy
+		seismic
+		senergy
+	Class 1
+		nbumps2
+		nbumps5
+		senergy
+		nbumps
+		nbumps7
+		seismic
+		nbumps3
+		maxenergy
+		nbumps89
+		nbumps4
+		nbumps6
+
+Rules:
+r1: IF genergy = (-inf, 18890.0) THEN class = {0} (p=81.0, n=0.0, P=187.0, N=13.0, weight=0.7165775401069518, pval=8.841981707217416E-4)
+r2: IF goenergy = <-73.5, inf) AND gimpuls = (-inf, 1350.5) THEN class = {0} (p=172.0, n=7.0, P=187.0, N=13.0, weight=0.382389710191222, pval=6.96094004667681E-4)
+r3: IF ghazard = {a} AND gimpuls = <409.5, inf) AND goimpuls = (-inf, 111.0) AND genergy = <52595.0, inf) THEN class = {0} (p=26.0, n=6.0, P=187.0, N=13.0, weight=-1.073323735088441, pval=0.9987769519990918)
+r4: IF ghazard = {a} AND goenergy = <-38.5, 9.0) AND gimpuls = <263.0, 1878.0) AND genergy = <24830.0, 314675.0) AND goimpuls = (-inf, 17.5) AND shift = {W} THEN class = {1} (p=8.0, n=18.0, P=13.0, N=187.0, weight=0.2096478182451033, pval=2.3542899225505993E-5)
+
+Coverage of training examples by rules (1-based):
+2*,3;2*,3;2*;3*;3*;2*,3,4;2*,4;2*,3,4;1*,2;2*;1*,2;1*,2;1*,2;2*;1*,2;2*,4;2*,4;2*;2*,3,4;2*,3;2*;2*;2*;2*,3;2*,3;2*,4;1*,2;2*,3,4;3*;1*,2;1*,2;1*,2;1*,2;2*;-;2*,4;1*,2;1*,2;1*,2;2*;2*;2*,3;2*;1*,2;1*,2;1*;2*,3;2*;3*;3*;2*,3;3,4*;2*,4;2*,4;2*,4;2*;1*,2;2*;-;1*,2;1*,2;2*,4;2*;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*;1*,2;1*,2;2*;2*;2*;2*;1*,2;1*,2;1*,2;1*,2;2*;2*;1*,2;2*;2*;2*;2*;1*;2*;2*;1*;1*,2;2*;2*,3;3*;2*;3*;2*;2*;1*,2;2*;2*;1*,2;1*,2;2*;1*,2;2*;1*,2;1*,2;2*;2*;1*,2;1*,2;2*;2*;1*,2;2*;2*;2*,4;2*,4;1*,2;2*;2*;2*;2*;2*;2*;1*,2;1*,2;1*,2;1*,2;2*,4;1*,2;2*;1*,2;2*;2*;2*,4;1*,2;1*,2;2*;3*;2*,3,4;3,4*;1*,2;2*;1*,2;2*;1*,2;2*;2*;2*,3,4;2*,3;3,4*;3*;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*,3;2*;2*,3;1*,2;1*,2;2*;2*;2*,4;1*,2;1*,2;3*;3*;1*;2*,4;1*,2;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;1*,2;2*;2*,4;2*;2*;2*;2*;1*,2;2*,4;2*;1*,2;1*,2
+
+Model characteristics:
+time_total_s: 0.029423324
+time_growing_s: 0.025074956
+time_pruning_s: 0.003342957
+#rules: 4.0
+#conditions_per_rule: 4.0
+#induced_conditions_per_rule: 17.75
+avg_rule_coverage: 0.39749999999999996
+avg_rule_precision: 0.7702715406102278
+avg_rule_quality: 0.05882283336370901
+avg_pvalue: 0.2500951967684267
+avg_FDR_pvalue: 0.2503605606249062
+avg_FWER_pvalue: 0.2506819504878601
+fraction_0.05_significant: 0.75
+fraction_0.05_FDR_significant: 0.75
+fraction_0.05_FWER_significant: 0.75
+
+Training set performance:
+accuracy: 0.93
+classification_error: 0.06999999999999995
+kappa: 0.327892462794048
+balanced_accuracy: 0.6404771698889347
+#rules_per_example: 1.59
+#voting_conflicts: 26.0
+#negative_voting_conflicts: 9.0
+cross-entropy: Infinity
+margin: 0.0
+soft_margin_loss: 1.0
+logistic_loss: 0.6931471805599465
+precision: 0.4444444444444444
+sensitivity: 0.3076923076923077
+specificity: 0.9732620320855615
+negative_predictive_value: 0.9528795811518325
+fallout: 0.026737967914438502
+youden: 0.2809543397778692
+geometric_mean: 0.547234173495873
+psep: 0.3973240255962769
+lift: 6.837606837606838
+f_measure: 0.36363636363636365
+false_positive: 5.0
+false_negative: 9.0
+true_positive: 4.0
+true_negative: 182.0
+
+

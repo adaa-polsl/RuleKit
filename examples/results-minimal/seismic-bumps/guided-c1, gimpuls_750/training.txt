@@ -1,0 +1,88 @@
+================================================================================
+seismic-bumps-train-minimal.arff
+
+Params:
+min_rule_covered=8.0
+induction_measure=BinaryEntropy
+pruning_measure=BinaryEntropy
+voting_measure=C2
+
+Knowledge:
+extendUsingPreferred=false
+extendUsingAutomatic=false
+induceUsingPreferred=false
+induceUsingAutomatic=false
+considerOtherClasses=false
+preferredConditionsPerRule=2147483647
+preferredAttributesPerRule=2147483647
+
+Expert rules:
+	Class 0
+		IF [[gimpuls = (-inf, 750.0)]] THEN class = {0}
+	Class 1
+		IF [[gimpuls = <750.0, inf)]] THEN class = {1}
+Preferred conditions:
+	Class 0
+	Class 1
+Preferred attributes:
+	Class 0
+	Class 1
+Forbidden conditions:
+	Class 0
+	Class 1
+Forbidden attributes:
+	Class 0
+	Class 1
+
+Rules:
+r1: IF [[gimpuls = (-inf, 750.0)]] THEN class = {0} (p=152.0, n=7.0, P=187.0, N=13.0, weight=0.2924916371087293, pval=0.02885904680389575)
+r2: IF  THEN class = {1} (p=13.0, n=187.0, P=13.0, N=187.0, weight=0.0, pval=1.0)
+
+Coverage of training examples by rules (1-based):
+1*,2;2*;1*,2;2*;1*,2;2*;1*,2;2*;1*,2;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;2*;2*;1*,2;1*,2;1*,2;1*,2;2*;1*,2;1*,2;2*;2*;1*,2;1*,2;1*,2;1*,2;2*;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;1*,2;2*;2*;2*;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;1*,2;1*,2;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;2*;1*,2;1*,2;1*,2;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;2*;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;2*;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;1*,2;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;1*,2;1*,2
+
+Model characteristics:
+time_total_s: 0.005184855
+time_growing_s: 4.888059999999999E-4
+time_pruning_s: 9.42973E-4
+#rules: 2.0
+#conditions_per_rule: 0.5
+#induced_conditions_per_rule: 0.0
+avg_rule_coverage: 0.8975
+avg_rule_precision: 0.5104874213836478
+avg_rule_quality: 0.14624581855436464
+avg_pvalue: 0.5144295234019479
+avg_FDR_pvalue: 0.5288590468038957
+avg_FWER_pvalue: 0.5288590468038957
+fraction_0.05_significant: 0.5
+fraction_0.05_FDR_significant: 0.0
+fraction_0.05_FWER_significant: 0.0
+
+Training set performance:
+accuracy: 0.79
+classification_error: 0.20999999999999996
+kappa: 0.13704540784877747
+balanced_accuracy: 0.637186343068696
+#rules_per_example: 1.795
+#voting_conflicts: 159.0
+#negative_voting_conflicts: 7.0
+cross-entropy: Infinity
+margin: 0.0
+soft_margin_loss: 1.0
+logistic_loss: 0.6931471805599465
+precision: 0.14634146341463414
+sensitivity: 0.46153846153846156
+specificity: 0.8128342245989305
+negative_predictive_value: 0.9559748427672956
+fallout: 0.18716577540106952
+youden: 0.274372686137392
+geometric_mean: 0.6124983734731045
+psep: 0.10231630618192974
+lift: 2.2514071294559104
+f_measure: 0.2222222222222222
+false_positive: 35.0
+false_negative: 7.0
+true_positive: 6.0
+true_negative: 152.0
+
+
