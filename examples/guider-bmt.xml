@@ -100,7 +100,7 @@
 		<dataset>
 			<label>survival_status</label>
 			<survival_time>survival_time</survival_time>
-			<out_directory>./results-bmt</out_directory>		
+			<out_directory>./results-guider/bmt</out_directory>		
     
 			<training>  
 				 <report_file>training.log</report_file> 
