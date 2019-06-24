@@ -115,7 +115,7 @@ public class ExperimentalConsole {
             	LogService.getRoot().setLevel(Level.OFF);
             	
             	RapidMiner.init();
-            	execute(args[0]);
+            	execute(argList.get(0));
 
             } else {
                 Logger.log("Usage:\njava -jar RuleKit.jar [-v] <experiment_xml>\n"
