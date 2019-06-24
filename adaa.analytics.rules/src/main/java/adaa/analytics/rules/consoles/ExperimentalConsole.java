@@ -15,7 +15,6 @@
 package adaa.analytics.rules.consoles;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +32,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.vfs2.FileNotFolderException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -127,7 +125,11 @@ public class ExperimentalConsole {
             }
     	
         } catch (IOException | ParserConfigurationException | SAXException | InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            if (isVerbose) {
+            	e.printStackTrace();
+            } else {
+            	Logger.log(e.getMessage() + "\n", Level.SEVERE);
+            }
         }
     }
 
