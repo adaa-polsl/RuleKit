@@ -15,6 +15,7 @@
 package adaa.analytics.rules.consoles;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +33,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.vfs2.FileNotFolderException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -91,6 +93,7 @@ public class ExperimentalConsole {
     static final String VERSION = "1.0.0"; 
     static final String BUILD_DATE = "26.05.2019";
     
+    protected boolean isVerbose = false; 
    
     public static void main(String[] args) {
         
@@ -102,12 +105,12 @@ public class ExperimentalConsole {
     	try {
     		
 	    	System.out.print("RuleKit version " + VERSION + " (" + BUILD_DATE + ")\n" 
-			+ "    RuleKit Development Team (c) 2018\n\n");
+			+ "    RuleKit Development Team (c) 2019\n\n");
     	
 	    	ArrayList<String> argList = new ArrayList<String>();
 	    	argList.addAll(Arrays.asList(args));
 	    
-	    	boolean isVerbose = findSwitch(argList, "-v");
+	    	isVerbose = findSwitch(argList, "-v");
 	    	Logger.getInstance().addStream(System.out, isVerbose ? Level.FINE : Level.INFO);	
 	    
             if (argList.size() == 1) {
@@ -304,6 +307,8 @@ public class ExperimentalConsole {
                 ttValidationExp = new TrainTestValidationExperiment(trainingSynchronizedReport, predictionSynchronizedReport,
                         label, options, new Pair<String, Map<String,Object>>(wrapper.name, wrapper.map), 
                         outDirPath, trainElements, predictElements);
+                
+                ttValidationExp.setVerbose(isVerbose);
 
                 f = pool.submit(ttValidationExp);
                 futures.add(f);

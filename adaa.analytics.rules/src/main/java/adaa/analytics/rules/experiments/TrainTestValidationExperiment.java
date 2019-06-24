@@ -26,6 +26,7 @@ import com.rapidminer.example.Attributes;
 import com.rapidminer.operator.*;
 import com.rapidminer.operator.performance.PerformanceVector;
 import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
+import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.tools.LogService;
 import com.rapidminer.tools.OperatorService;
 import com.rapidminer5.operator.io.ArffExampleSetWriter;
@@ -37,6 +38,7 @@ import com.sun.tools.javac.util.Pair;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.security.InvalidParameterException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -45,6 +47,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+
+import javax.swing.JTable.PrintMode;
 
 public class TrainTestValidationExperiment extends ExperimentBase {
 
@@ -69,10 +73,14 @@ public class TrainTestValidationExperiment extends ExperimentBase {
     private ModelLoader modelLoader = null;
     private ChangeAttributeRole testRoleSetter = null;
     private ArffExampleSetWriter testWriteArff = null;
+
+    private Pair<String,Map<String,Object>> paramSet;
     
-	Pair<String,Map<String,Object>> paramSet;
-
-
+    private boolean isVerbose = false;
+    
+    public void setVerbose(boolean v) { isVerbose = v; }
+    public boolean getVerbose() { return isVerbose; }
+    
     public TrainTestValidationExperiment(SynchronizedReport trainingReport, SynchronizedReport predictionPerformance,
                                          String labelAttribute, Map<String, String> options, Pair<String,Map<String, Object>> paramSet,
                                          String outDirPath, List<ExperimentalConsole.TrainElement> trainElements,
@@ -199,12 +207,17 @@ public class TrainTestValidationExperiment extends ExperimentBase {
             for (String key: params.keySet()) {
                 Object o = params.get(key);
 
-                if (o instanceof String) {
-                    ruleGenerator.setParameter(key, (String)o);
-                } else if (o instanceof List) {
-                    ruleGenerator.setListParameter(key, (List<String[]>)o);
+                boolean paramOk = ruleGenerator.getParameters().getKeys().contains(key);
+                
+                if (paramOk)   
+	                if (o instanceof String) {
+	                    ruleGenerator.setParameter(key, (String)o);
+	                } else if (o instanceof List) {
+	                    ruleGenerator.setListParameter(key, (List<String[]>)o);
+	                } else {
+                    throw new InvalidParameterException("Invalid paramter type: " + key);
                 } else {
-                    throw new InvalidParameterException();
+                	throw new UndefinedParameterError(key, "Undefined parameter: " + key);
                 }
             }
 
@@ -338,8 +351,13 @@ public class TrainTestValidationExperiment extends ExperimentBase {
                 
                 Logger.log(" [OK]\n", Level.INFO);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }  catch (Exception e) {
+           if (isVerbose) {
+        	   e.printStackTrace();
+           } else {
+        	   Logger.log(e.getMessage() + "\n", Level.SEVERE);
+           }
+        	
         }
     }
 }
