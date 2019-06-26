@@ -26,13 +26,20 @@
              <key>rule_performance</key>
              <class>adaa.analytics.rules.operator.RulePerformanceEvaluator</class>
           </operator>
+          
+          
+          <operator>
+             <key>write_arff_rm5</key>
+             <class>com.rapidminer5.operator.io.ArffExampleSetWriter</class>
+          </operator>
+          
+           <operator>
+             <key>read_arff_rm5</key>
+             <class>com.rapidminer5.operator.io.ArffExampleSource</class>
+          </operator>
+          
 
 <!--
-
-            <operator>
-                <key>rule_generator</key>
-                <class>adaa.analytics.rules.operator.RuleGenerator</class>
-            </operator>
 
             <operator>
                 <key>rule_translator</key>

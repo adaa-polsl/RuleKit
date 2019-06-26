@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><process version="8.0.001">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="8.0.001" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="true" class="retrieve" compatibility="8.0.001" expanded="true" height="68" name="Retrieve - train" width="90" x="447" y="34">
+        <parameter key="repository_entry" value="//Local Repository/methane-train-minimal"/>
+      </operator>
+      <operator activated="true" class="adaa_rules:expert_rule_generator" compatibility="1.0.000" expanded="true" height="103" name="RuleKit Generator" width="90" x="581" y="34">
+        <parameter key="min_rule_covered" value="4.0"/>
+        <parameter key="max_uncovered_fraction" value="0.0"/>
+        <parameter key="max_growing" value="0.0"/>
+        <parameter key="induction_measure" value="RSS"/>
+        <parameter key="pruning_enabled" value="true"/>
+        <parameter key="pruning_measure" value="RSS"/>
+        <parameter key="voting_measure" value="RSS"/>
+        <parameter key="ignore_missing" value="false"/>
+        <parameter key="use_expert" value="false"/>
+        <list key="expert_rules"/>
+        <list key="expert_preferred_conditions"/>
+        <list key="expert_forbidden_conditions"/>
+        <parameter key="extend_using_preferred" value="false"/>
+        <parameter key="extend_using_automatic" value="false"/>
+        <parameter key="induce_using_preferred" value="false"/>
+        <parameter key="induce_using_automatic" value="false"/>
+        <parameter key="consider_other_classes" value="false"/>
+        <parameter key="preferred_conditions_per_rule" value="2147483647"/>
+        <parameter key="preferred_attributes_per_rule" value="2147483647"/>
+      </operator>
+      <operator activated="true" class="retrieve" compatibility="8.0.001" expanded="true" height="68" name="Retrieve - test" width="90" x="447" y="136">
+        <parameter key="repository_entry" value="//Local Repository/methane-test-minimal"/>
+      </operator>
+      <operator activated="true" class="apply_model" compatibility="8.0.001" expanded="true" height="82" name="Apply Model" width="90" x="715" y="136">
+        <list key="application_parameters"/>
+        <parameter key="create_view" value="false"/>
+      </operator>
+      <operator activated="true" class="adaa_rules:rule_performance" compatibility="1.0.000" expanded="true" height="82" name="RuleKit Performance" width="90" x="849" y="34">
+        <parameter key="main_criterion" value="first"/>
+        <parameter key="accuracy" value="false"/>
+        <parameter key="classification_error" value="false"/>
+        <parameter key="kappa" value="false"/>
+        <parameter key="balanced_accuracy" value="false"/>
+        <parameter key="#rules_per_example" value="false"/>
+        <parameter key="#voting_conflicts" value="false"/>
+        <parameter key="#negative_voting_conflicts" value="false"/>
+        <parameter key="cross-entropy" value="false"/>
+        <parameter key="margin" value="false"/>
+        <parameter key="soft_margin_loss" value="false"/>
+        <parameter key="logistic_loss" value="false"/>
+        <parameter key="precision" value="false"/>
+        <parameter key="sensitivity" value="false"/>
+        <parameter key="specificity" value="false"/>
+        <parameter key="negative_predictive_value" value="false"/>
+        <parameter key="fallout" value="false"/>
+        <parameter key="youden" value="false"/>
+        <parameter key="geometric_mean" value="false"/>
+        <parameter key="psep" value="false"/>
+        <parameter key="lift" value="false"/>
+        <parameter key="f_measure" value="false"/>
+        <parameter key="false_positive" value="false"/>
+        <parameter key="false_negative" value="false"/>
+        <parameter key="true_positive" value="false"/>
+        <parameter key="true_negative" value="false"/>
+        <parameter key="absolute_error" value="true"/>
+        <parameter key="relative_error" value="true"/>
+        <parameter key="relative_error_lenient" value="true"/>
+        <parameter key="relative_error_strict" value="true"/>
+        <parameter key="normalized_absolute_error" value="true"/>
+        <parameter key="squared_error" value="true"/>
+        <parameter key="root_mean_squared_error" value="true"/>
+        <parameter key="root_relative_squared_error" value="true"/>
+        <parameter key="correlation" value="true"/>
+        <parameter key="squared_correlation" value="true"/>
+        <parameter key="integrated_brier_score" value="false"/>
+        <parameter key="skip_undefined_labels" value="true"/>
+        <parameter key="use_example_weights" value="true"/>
+      </operator>
+      <connect from_op="Retrieve - train" from_port="output" to_op="RuleKit Generator" to_port="training set"/>
+      <connect from_op="RuleKit Generator" from_port="model" to_op="Apply Model" to_port="model"/>
+      <connect from_op="RuleKit Generator" from_port="estimated performance" to_op="RuleKit Performance" to_port="performance"/>
+      <connect from_op="Retrieve - test" from_port="output" to_op="Apply Model" to_port="unlabelled data"/>
+      <connect from_op="Apply Model" from_port="labelled data" to_op="RuleKit Performance" to_port="labelled data"/>
+      <connect from_op="Apply Model" from_port="model" to_port="result 2"/>
+      <connect from_op="RuleKit Performance" from_port="performance" to_port="result 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+      <portSpacing port="sink_result 3" spacing="0"/>
+    </process>
+  </operator>
+</process>
