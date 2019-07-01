@@ -2,12 +2,35 @@
 
 Rule-based models are often used for data analysis as they combine interpretability with predictive power. We present RuleKit, a versatile tool for rule learning. Based on a sequential covering induction algorithm, it is suitable for classification, regression, and survival problems. The presence of user-guided induction mode facilitates verifying hypotheses concerning data dependencies which are expected or of interest. The powerful and flexible experimental environment allows straightforward investigation of different induction schemes. The analysis can be performed in batch mode, through RapidMiner plug-in, or R package. A documented Java API is also provided for convenience. The software is publicly available under GNU AGPL-3.0 license.
 
-Below we provide brief introduction on how to use RuleKit. The detailed instructions can be found on our [Wiki pages](./wiki).
-
 RuleKit provides all the functionalities included in our previous packages:
 * [LR-Rules](https://github.com/adaa-polsl/LR-Rules) (Sikora et al, 2017) for survival rules induction,
 * [GuideR](https://github.com/adaa-polsl/GuideR) (Wróbel et al, 2019) for user-guided induction.
 As these packages are no longer updated, please use RuleKit instead. 
+
+In the this file we provide brief introduction on how to use RuleKit. The detailed instructions can be found on our [Wiki pages](../../wiki) which cover the following topics: 
+
+1. [Batch interface](../../wiki/1-Batch-interface)
+    1. [General information](../../wiki/1-Batch-interface#11-general-information)
+    2. [Parameter set definition](../../wiki/1-Batch-interface#12-parameter-set-definition)
+    3. [Dataset definition](../../wiki/1-Batch-interface#13-dataset-definition)
+    4. [Example](../../wiki/1-Batch-interface#14-example)
+2. [RapidMiner plugin](../../wiki/2-RapidMiner-plugin)
+	1. [Installation](../../wiki/2-RapidMiner-plugin#21-installation)
+	2. [Usage](../../wiki/2-RapidMiner-plugin#22-usage)
+	3. [Example](../../wiki/2-RapidMiner-plugin#23-example)
+3. [R package](../../wiki/3-R-package)
+	1. [Installation](../../wiki/3-R-package#31-installation)
+	2. [Usage](../../wiki/3-R-package#32-usage)
+	3. [Example](../../wiki/3-R-package#33-example)
+4. [Quality and evaluation](../../wiki/4-Quality-and-evaluation)
+    1. [Rule quality](../../wiki/4-Quality-and-evaluation#41-rule-quality)
+	2. [Model characteristics](../../wiki/4-Quality-and-evaluation#42-model-characteristics)
+	2. [Performance metrices](../../wiki/4-Quality-and-evaluation#43-performance-metrices)
+5. [Output files](../../wiki/5-Output-files)
+    1. [Training report](../../wiki/5-Output-files#51-training-report)
+    2. [Prediction performance report](../../wiki/5-Output-files#52-prediction-performance-report)    	
+6. [User-guided induction](../../wiki/6-User-guided-induction)
+7. [Library API](../../wiki/7-Library-API)
 
 
 # Installation
@@ -22,22 +45,24 @@ The example batch analysis concerns the problem of classifying whether a person 
 ```
 java -jar RuleKit.jar minimal-deals.xml
 ```
-The results of the analysis will be located in *./examples/results-minimal/deals/* folder. Note, that the repository already contain reference results - they will be overwritten. See [this Wiki section][./wiki/1-Batch-interface] for detailed information how to configure batch analyses in RuleKit. 
+The results of the analysis will be located in *./examples/results-minimal/deals/* folder. Note, that the repository already contain reference results - they will be overwritten. See [this Wiki section](../../wiki/1-Batch-interface) for detailed information how to configure batch analyses in RuleKit. 
 
 
 ## RapidMiner plug-in
 
 In the following subsection we show an example regression analysis with a use of RuleKit RapidMiner plugin. The investigated dataset is named *methane* and concerns the problem of predicting methane concentration in a coal mine. The set is split into separate testing and training parts distributed in ARFF format ([download](data/methane)). For demonstration needs, a smaller version of these datasets suffixed with *-minimal* have been provided. 
 
-To perform the analysis under RapidMiner, load and execute [./examples/preparation.rmp](/examples/preparation.rmp) process. Its role is to add metadata to the sets and store them in the RM format (RapidMiner does not support metadata for ARFF files). After loading sets with *Read ARFF*, the *Set Role* operator is used for setting *MM116_pred* as the label attribute (in the survival analysis, a *survival_time* role has to be additionally assigned to some other attribute). Then, the sets are saved in RapidMiner repository under locations *Local Repository/methane-train-minimal* and *Local Repository/methane-test-minimal* with *Store* operators. As the next step, please load [./examples/regression.rmp](./examples/regression.rmp) process. After executing it, datasets are loaded from the RM repository with *Retrieve* operators. Then, the training set is provided as an input for *RuleKit Generator*. The model generated by *RuleKit Generator* is then applied on unseen data (*Apply Model* operator). The performance of the prediction is assesed using *RuleKit Evaluator* operator. [Performance metrices](./wiki/#43-performance-metrices) as well as generated model are passed as process outputs.
+To perform the analysis under RapidMiner, load and execute [./examples/preparation.rmp](/examples/preparation.rmp) process. Its role is to add metadata to the sets and store them in the RM format (RapidMiner does not support metadata for ARFF files). After loading sets with *Read ARFF*, the *Set Role* operator is used for setting *MM116_pred* as the label attribute (in the survival analysis, a *survival_time* role has to be additionally assigned to some other attribute). Then, the sets are saved in RapidMiner repository under locations *Local Repository/methane-train-minimal* and *Local Repository/methane-test-minimal* with *Store* operators. 
 
-See [this Wiki section][./wiki/2-RapidMiner-plugin] for detailed information how to configure RuleKit RapidMiner plugin. 
+As the next step, please load [./examples/regression.rmp](./examples/regression.rmp) process. After executing it, datasets are loaded from the RM repository with *Retrieve* operators. Then, the training set is provided as an input for *RuleKit Generator*. The model generated by *RuleKit Generator* is then applied on unseen data (*Apply Model* operator). The performance of the prediction is assesed using *RuleKit Evaluator* operator. Performance metrices as well as generated model are passed as process outputs.
+
+See [this Wiki section](../../wiki/2-RapidMiner-plugin) for detailed information how to configure RuleKit RapidMiner plugin. 
 
 ## R package
 
-In this subsection we present a survival analysis of *BMT-Ch* dataset with RuleKit R package. The set concerns the problem of analyzing factors contributing to the patients’ survival following bone marrow transplants. In order to perform the experiment, please run [./experiment/survival.R](./experiment/survival.R) script in R. As a result, a rule model is trained and survival function estimates for the entire dataset and for the rules are plotted.
+In this subsection we present a survival analysis of *BMT-Ch* dataset with RuleKit R package. The set concerns the problem of analyzing factors contributing to the patients’ survival following bone marrow transplants. In order to perform the experiment, please run [./experiments/survival.R](./experiments/survival.R) script in R. As a result, a rule model is trained and survival function estimates for the entire dataset and for the rules are plotted.
  
-[This Wiki section][./wiki/3-R-package] contains detailed information on using RuleKit R package. 
+[This Wiki section](../../wiki/3-R-package) contains detailed information on using RuleKit R package. 
  
 # Citing
 
