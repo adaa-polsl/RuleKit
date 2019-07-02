@@ -7,13 +7,13 @@ control <- list(min_rule_covered = 5)
 results <- learn_rules(formula,control,bone_marrow)
 
 # extract outputs:
-rules = results[["rules"]]        # list of rules
-cov = results[["train-coverage"]] # coverage of training examples by rules
-surv = results[["estimator"]]      # data frame with survival function estimates
-perf = results[["test-performance"]]   # data frame with performance metrices
+rules <- results[["rules"]]        # list of rules
+cov <- results[["train-coverage"]] # coverage of training examples by rules
+surv <- results[["estimator"]]      # data frame with survival function estimates
+perf <- results[["test-performance"]]   # data frame with performance metrices
 
 # melt dataset for automatic plotting of multiple series
-melted_surv = melt(surv, id.var="time")
+melted_surv <- reshape2::melt(surv, id.var="time")
 
 # plot survival functions estimates
 ggplot(melted_surv, aes(x=time, y=value, color=variable)) +

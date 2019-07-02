@@ -5,6 +5,7 @@ Rule-based models are often used for data analysis as they combine interpretabil
 RuleKit provides all the functionalities included in our previous packages:
 * [LR-Rules](https://github.com/adaa-polsl/LR-Rules) (Sikora et al, 2017) for survival rules induction,
 * [GuideR](https://github.com/adaa-polsl/GuideR) (Wróbel et al, 2019) for user-guided induction.
+
 As these packages are no longer updated, please use RuleKit instead. 
 
 In the this file we provide brief introduction on how to use RuleKit. The detailed instructions can be found on our [Wiki pages](../../wiki) which cover the following topics: 
@@ -45,7 +46,7 @@ The example batch analysis concerns the problem of classifying whether a person 
 ```
 java -jar RuleKit.jar minimal-deals.xml
 ```
-The results of the analysis will be located in *./examples/results-minimal/deals/* folder. Note, that the repository already contain reference results - they will be overwritten. See [this Wiki section](../../wiki/1-Batch-interface) for detailed information how to configure batch analyses in RuleKit. 
+The results of the analysis will be located in *./examples/results-minimal/deals/* folder. Note, that the repository already contains reference results - they will be overwritten. See [this Wiki section](../../wiki/1-Batch-interface) for detailed information how to configure batch analyses in RuleKit. 
 
 
 ## RapidMiner plug-in
@@ -60,7 +61,7 @@ See [this Wiki section](../../wiki/2-RapidMiner-plugin) for detailed information
 
 ## R package
 
-In this subsection we present a survival analysis of *BMT-Ch* dataset with RuleKit R package. The set concerns the problem of analyzing factors contributing to the patients’ survival following bone marrow transplants. In order to perform the experiment, please run [./experiments/survival.R](./experiments/survival.R) script in R. As a result, a rule model is trained and survival function estimates for the entire dataset and for the rules are plotted.
+In this subsection we present a survival analysis of *BMT-Ch* dataset with RuleKit R package. The set concerns the problem of analyzing factors contributing to the patients’ survival following bone marrow transplants. In order to perform the experiment, please run [./examples/survival.R](./examples/survival.R) script in R. As a result, a rule model is trained and survival function estimates for the entire dataset and for the rules are plotted.
  
 [This Wiki section](../../wiki/3-R-package) contains detailed information on using RuleKit R package. 
  
