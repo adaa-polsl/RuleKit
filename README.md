@@ -3,8 +3,8 @@
 Rule-based models are often used for data analysis as they combine interpretability with predictive power. We present RuleKit, a versatile tool for rule learning. Based on a sequential covering induction algorithm, it is suitable for classification, regression, and survival problems. The presence of user-guided induction mode facilitates verifying hypotheses concerning data dependencies which are expected or of interest. The powerful and flexible experimental environment allows straightforward investigation of different induction schemes. The analysis can be performed in batch mode, through RapidMiner plug-in, or R package. A documented Java API is also provided for convenience. The software is publicly available under GNU AGPL-3.0 license.
 
 RuleKit provides all the functionalities included in our previous packages:
-* [LR-Rules](https://github.com/adaa-polsl/LR-Rules) (Sikora et al, 2017) for survival rules induction,
-* [GuideR](https://github.com/adaa-polsl/GuideR) (Wróbel et al, 2019) for user-guided induction.
+* [LR-Rules](https://github.com/adaa-polsl/LR-Rules) (Wróbel et al, 2017) for survival rules induction,
+* [GuideR](https://github.com/adaa-polsl/GuideR) (Sikora et al, 2019) for user-guided induction.
 
 As these packages are no longer updated, please use RuleKit instead. 
 

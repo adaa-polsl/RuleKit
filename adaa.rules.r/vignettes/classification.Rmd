@@ -1,5 +1,5 @@
 ---
-title: "Adaa.rules classification example"
+title: "RuleKit classification example"
 author: "Wojciech Sikora"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -10,7 +10,7 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
-library(adaa.rules)
+library(rulekit)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -19,14 +19,9 @@ knitr::opts_chunk$set(
 
 # Classification example
 
-```{r, include=TRUE}
-devtools::load_data() 
-```
-
 ## Data
 
-In this case data will be used in 10-fold corss-validation. Note that in this case, arguments train_data and test_data are lists of data frame instead of being single data frames. 
-Here you can see a sapmle of original data used in this example.
+In this case data will be used in 10-fold cross-validation. Note that in this case, arguments train_data and test_data are lists of data frames instead of single data frames. Here you can see a sample of original data used in this example.
 
 ```{r, include=TRUE, results='asis', message=FALSE, warning=FALSE}
 knitr::kable(head(seismic_bumps, 10))
@@ -44,11 +39,11 @@ control <- list(min_rule_covered = 6,
                 pruning_measure = 'GMeasure',
                 max_growing = 5)
 results <- learn_rules(formula,control,train_data,test_data)
-csv <- results[1]
-rules <- results[[2]]
+perf <- results[["test-performance"]]
+rules <- results[["rules"]]
 ```
 ## Results
 ```{r}
-knitr::kable(csv)
+knitr::kable(perf)
 cat(head(rules,30),sep = "\n")
 ```
