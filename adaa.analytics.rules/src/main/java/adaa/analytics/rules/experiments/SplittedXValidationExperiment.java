@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (C) 2019 RuleKit Development Team
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  Affero General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see http://www.gnu.org/licenses/.
+ ******************************************************************************/
 package adaa.analytics.rules.experiments;
 
 import java.io.File;
@@ -12,10 +26,12 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.utils.RapidMiner5;
+
 import org.apache.commons.lang.StringUtils;
 
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
+
 import com.rapidminer.example.Attributes;
 import com.rapidminer.operator.IOContainer;
 import com.rapidminer.operator.IOObject;
@@ -25,6 +41,7 @@ import com.rapidminer5.operator.io.ArffExampleSource;
 import com.rapidminer.operator.performance.PerformanceVector;
 import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
 import com.rapidminer.tools.OperatorService;
+import com.sun.tools.javac.util.Pair;
 
 public class SplittedXValidationExperiment extends ExperimentBase {
 
@@ -34,21 +51,22 @@ public class SplittedXValidationExperiment extends ExperimentBase {
 	
 	protected ArffExampleSource testArff;
 	
+	Pair<String,Map<String,Object>> paramSet;
+	
 	public SplittedXValidationExperiment(
 		File arffDir,
 		SynchronizedReport qualityReport,
 		SynchronizedReport modelReport,
 		String labelAttribute,
 		Map<String, String> options,
-		Map<String, Object> params) {
+		Pair<String,Map<String, Object>> paramSet) {
 		
-		super(qualityReport, modelReport, params); 
+		super(qualityReport, modelReport); 
 		
 		try {
 			this.arffDir = arffDir;
-		
-			this.paramsSets = new ArrayList<Map<String, Object>>();
-			paramsSets.add(params);
+			this.paramSet = paramSet;
+			
 			
 			trainArff = RapidMiner5.createOperator(ArffExampleSource.class);
 	    	testArff = RapidMiner5.createOperator(ArffExampleSource.class);
@@ -121,7 +139,7 @@ public class SplittedXValidationExperiment extends ExperimentBase {
 	public void run() {
 		try {
 			
-			Map<String, Object> params = paramsSets.get(0);
+			Map<String, Object> params = paramSet.snd;
 			
 			for (String key: params.keySet()) {
 				Object o = params.get(key);

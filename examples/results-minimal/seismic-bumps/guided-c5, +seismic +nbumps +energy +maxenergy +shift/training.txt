@@ -1,0 +1,101 @@
+================================================================================
+seismic-bumps-train-minimal.arff
+
+Params:
+min_rule_covered=8.0
+induction_measure=BinaryEntropy
+pruning_measure=BinaryEntropy
+voting_measure=C2
+
+Knowledge:
+extendUsingPreferred=false
+extendUsingAutomatic=false
+induceUsingPreferred=false
+induceUsingAutomatic=true
+considerOtherClasses=false
+preferredConditionsPerRule=2147483647
+preferredAttributesPerRule=2147483647
+
+Expert rules:
+	Class 0
+	Class 1
+Preferred conditions:
+	Class 0
+	Class 1
+Preferred attributes:
+	Class 0
+	Class 1
+Forbidden conditions:
+	Class 0
+	Class 1
+Forbidden attributes:
+	Class 0
+		goimpuls
+		gimpuls
+		ghazard
+		seismoacoustic
+	Class 1
+		seismoacoustic
+		goimpuls
+		gimpuls
+		ghazard
+
+Rules:
+r1: IF genergy = (-inf, 18890.0) THEN class = {0} (p=81.0, n=0.0, P=187.0, N=13.0, weight=0.7165775401069518, pval=8.841981707217416E-4)
+r2: IF genergy = (-inf, 25125.0) AND nbumps = (-inf, 1.5) THEN class = {0} (p=90.0, n=0.0, P=187.0, N=13.0, weight=0.7406417112299465, pval=3.00194824098278E-4)
+r3: IF goenergy = <-19.5, inf) AND genergy = (-inf, 35165.0) THEN class = {0} (p=63.0, n=0.0, P=187.0, N=13.0, weight=0.6684491978609626, pval=0.006051320579349857)
+r4: IF genergy = (-inf, 35165.0) AND nbumps = (-inf, 1.5) THEN class = {0} (p=115.0, n=2.0, P=187.0, N=13.0, weight=0.5951298575732973, pval=0.0013744331014793492)
+r5: IF goenergy = <-73.5, inf) AND seismic = {a} AND nbumps3 = (-inf, 0.5) THEN class = {0} (p=86.0, n=0.0, P=187.0, N=13.0, weight=0.7299465240641712, pval=4.906195526612966E-4)
+r6: IF goenergy = <-19.0, inf) AND seismic = {a} THEN class = {0} (p=65.0, n=0.0, P=187.0, N=13.0, weight=0.6737967914438503, pval=0.004953560620236374)
+r7: IF goenergy = <-73.5, inf) AND nbumps = (-inf, 1.5) THEN class = {0} (p=151.0, n=5.0, P=187.0, N=13.0, weight=0.45811051693404653, pval=0.001657101688425465)
+r8: IF genergy = <25295.0, 117615.0) AND nbumps = <0.5, 5.5) THEN class = {0} (p=38.0, n=0.0, P=187.0, N=13.0, weight=0.6016042780748663, pval=0.0586979479622067)
+r9: IF goenergy = (-inf, 9.0) AND maxenergy = (-inf, 6500.0) AND genergy = <18890.0, 314675.0) AND shift = {W} AND nbumps3 = <0.5, inf) THEN class = {1} (p=8.0, n=7.0, P=13.0, N=187.0, weight=0.40456602221308113, pval=1.2729746216684097E-7)
+
+Coverage of training examples by rules (1-based):
+5*,6,7;7*;5*,7;-;-;9*;8*,9;8*,9;1,2*,4,5,7;5*,6,7;1,2*,3,4,6,7;1,2*,4,5,7;1,2*,4,5,7;3,4,5*,6,7,8;1,2*,3,4,5,6,7;4*,7,9;7*;8*;7*;7*;7,8*;5*,6,7;2*,4,7;5*,6;6*,7;9*;1,2*,4,5,7;5*,6;9*;1,2*,3,4,5,6,7;1,2*,3,4,5,6,7;1,2*,4,5,7;1,2*,3,4,5,6,7;7,8*;7*;4,5*,7,8;1,2*,4,7;1,2*,4,5,7;1,2*,3,4,5,6,7;6*,8;7*;8*;2*,4,7;1,2*,4,7;1,2*,3,4,7;1,2*,4;7*,9;6*,7,8;5*,6,7;7*;-;9*;7,8*,9;8*,9;5*,7,8;-;1,2*,4,5,7;2*,3,4,7;7,8*;1,2*,3,4,7;1*,3;5*,6,7;3,4,6*,7,8;6*,7,8;1,2*,4,5,7;1,2*,4,5,7;1,2*,4,7;1,2*,4,7;1,2*,4,5,7;1,2*,4;1*;1,2*,3,4,7;4,7,8*;5*,8;6*,8;9*;1,5*;1,2*,3,4,5,6,7;1,2*,4,5,7;1,2*,4,5,7;7*;3*,4,7;1,2*,4,7;2*,3,4,7;3*,4,7;3*,4,7;3*,4,7;1,2*,4;3,4,6*,7,8;2*,4,7;1,2*,4;1,2*,4,5,7;7,8*;6*,7;5*,6,7;-;5*,6,7;3*,8;9*;1,2*,4,5,7;4,5*,7;2*,3,4,5,6,7;1,2*,3,4,5,6,7;1,2*,3,4,5,6,7;3*,4,7;1,2*,3,4,5,6,7;2*,3,4,5,6,7;1,2*,3,4,5,6,7;1,2*,4,5,7;3,4,5*,6,7;3*,4,7;1,2*,4,7;1,2*,3,4,7;2*,3,4,7;7*;1,2*,3,4,5,6,7;6*,7,8;5*,6;4*,7;3,4,5*,6,7;1,2*,3,4,7;3,4,5*,6,7,8;4,7,8*;5*,6,7;7,8*;6*,8;5*,6,7;1,2*,3,4,5,6,7;1,2*,4,7;1,2*,3,4,5,6,7;1,2*,3,4,5,6,7;4*,7;1,2*,3,4,7;2*,3,4,7;1,2*,3,4,5,6,7;3,4,5*,6,7;3,6*;4,7,8*;1,2*,4,5,7;1,2*,4,7;7,8*;-;5*,6;7*,9;1,2*,3,4,5,6,7;2*,3,4,7;1,2*,4,5,7;2*,4,5,7;1,2*,3,4,5,6,7;5*,6,7;2*,3,4,5,6,7;5*,7;5*,6,7;9*;-;8*;1*;1*;1,2*,4,5,7;1,2*,4,5,7;1,2*,3,4,5,6,7;1,2*,4,7;1,2*,4,5,7;7,8*;7*;8*;1,2*,4,5,7;1,2*,4,5,7;3*,4,7,8;4,5*,7;4*,7;1,2*,4,5,7;1,2*,4,7;6*;6*,7;1,2*,4;8*;1,2*,4,5,7;5*,7;1,2*,4,5,7;1,2*,3,4,5,6,7;1,2*,4,5,7;1,2*,4,5,7;1,2*,3,4,5,6,7;1,2*,3,4,5,6,7;1,2*,3,4,5,6,7;1,2*,3,4,5,6,7;3,5*,6;1,2*,4,5,7;2*,3,4,7;4*,7;3*,4,7,8,9;2*,3,4,6,7;3*,4,7,8;6*,7,8;1,2*,3,4,7;7*;6*,7,8;1,2*,3,4,7;1,2*,3,4,5,6,7
+
+Model characteristics:
+time_total_s: 0.129345962
+time_growing_s: 0.11464584500000001
+time_pruning_s: 0.012815023
+#rules: 9.0
+#conditions_per_rule: 2.6666666666666665
+#induced_conditions_per_rule: 21.22222222222222
+avg_rule_coverage: 0.395
+avg_rule_precision: 0.9426875593542261
+avg_rule_quality: 0.620980271055686
+avg_pvalue: 0.008267722644071248
+avg_FDR_pvalue: 0.009071945145730611
+avg_FWER_pvalue: 0.012256008156179934
+fraction_0.05_significant: 0.8888888888888888
+fraction_0.05_FDR_significant: 0.8888888888888888
+fraction_0.05_FWER_significant: 0.8888888888888888
+
+Training set performance:
+accuracy: 0.96
+classification_error: 0.040000000000000036
+kappa: 0.5809324253535876
+balanced_accuracy: 0.728095433977787
+#rules_per_example: 3.555
+#voting_conflicts: 8.0
+#negative_voting_conflicts: 2.0
+cross-entropy: Infinity
+margin: 0.0
+soft_margin_loss: 1.0
+logistic_loss: 0.6931471805599465
+precision: 0.8571428571428571
+sensitivity: 0.46153846153846156
+specificity: 0.9946524064171123
+negative_predictive_value: 0.9637305699481865
+fallout: 0.0053475935828877
+youden: 0.45619086795557384
+geometric_mean: 0.6775472982923647
+psep: 0.8208734270910437
+lift: 13.186813186813186
+f_measure: 0.6
+false_positive: 1.0
+false_negative: 7.0
+true_positive: 6.0
+true_negative: 186.0
+
+

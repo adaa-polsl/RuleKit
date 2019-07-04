@@ -1,0 +1,91 @@
+================================================================================
+seismic-bumps-train-minimal.arff
+
+Params:
+min_rule_covered=8.0
+induction_measure=BinaryEntropy
+pruning_measure=BinaryEntropy
+voting_measure=C2
+
+Knowledge:
+extendUsingPreferred=false
+extendUsingAutomatic=true
+induceUsingPreferred=true
+induceUsingAutomatic=true
+considerOtherClasses=false
+preferredConditionsPerRule=2147483647
+preferredAttributesPerRule=2147483647
+
+Expert rules:
+	Class 0
+	Class 1
+Preferred conditions:
+	Class 0
+	Class 1
+Preferred attributes:
+	Class 0
+		1: gimpuls
+	Class 1
+		1: gimpuls
+Forbidden conditions:
+	Class 0
+	Class 1
+Forbidden attributes:
+	Class 0
+	Class 1
+
+Rules:
+r1: IF [gimpuls = (-inf, 1350.5)] AND goimpuls = <-35.5, inf) AND seismic = {a} THEN class = {0} (p=78.0, n=0.0, P=187.0, N=13.0, weight=0.7085561497326203, pval=0.0012434892295859008)
+r2: IF genergy = (-inf, 18890.0) THEN class = {0} (p=81.0, n=0.0, P=187.0, N=13.0, weight=0.7165775401069518, pval=8.841981707217416E-4)
+r3: IF goenergy = <-73.5, inf) AND gimpuls = (-inf, 1350.5) AND nbumps = (-inf, 2.5) THEN class = {0} (p=162.0, n=4.0, P=187.0, N=13.0, weight=0.5872217789297871, pval=1.9273434759179554E-5)
+r4: IF goenergy = <-73.5, inf) AND goimpuls = (-inf, 111.0) AND nbumps2 = (-inf, 0.5) THEN class = {0} (p=141.0, n=4.0, P=187.0, N=13.0, weight=0.5048014865459081, pval=0.0014514133844343849)
+r5: IF [gimpuls = <177.5, inf)] AND goenergy = (-inf, 9.0) AND maxenergy = (-inf, 6500.0) AND genergy = <18890.0, 314675.0) AND goimpuls = (-inf, 10.5) AND shift = {W} AND nbumps3 = <0.5, inf) THEN class = {1} (p=8.0, n=5.0, P=13.0, N=187.0, weight=0.47544536911052754, pval=2.6711614320565747E-8)
+
+Coverage of training examples by rules (1-based):
+1*,3;1*,3,4;3*,4;-;-;5*;1*,3;5*;2*,3,4;1*,3,4;1,2*,3,4;1,2*,3,4;1,2*,3,4;1*,3;1,2*,3,4;3*,4,5;3*,4;3*,4;3*,4;3*,4;3*,4;1*,3,4;3*,4;1*,3;1*,3,4;5*;2*,3;1*,3;5*;1,2*,3,4;1,2*,3,4;2*,3,4;2*,3,4;3*;-;1*,3,4;2*,3,4;2*,3,4;1,2*,3,4;1*;3*,4;3*;3*,4;2*,3,4;2*,3,4;2*;1*,3,4,5;1*,3,4;4*;4*;4*;5*;3*,4,5;1*,3,4,5;1*,3;1*;2*,3,4;3*,4;-;2*,3,4;2*,3,4;1*,3,4;1*,3,4;1*,3;1,2*,3,4;2*,3,4;2*,3,4;2*,3,4;2*,3,4;2*;2*,3;2*,3,4;3*,4;1*;1*;3*,5;2*,3;2*,3,4;2*,3,4;1,2*,3,4;3*;3*;2*,3,4;3*,4;3*,4;3*,4;3*,4;2*;1*,3,4;3*;2*;2*,3,4;1*,3,4;1*,3,4;4*;1*;4*;-;5*;2*,3,4;1*,3,4;1*,3,4;1,2*,3,4;1,2*,3,4;3*,4;1,2*,3,4;1*,3,4;1,2*,3,4;2*,3,4;1*,3,4;3*,4;2*,3,4;2*,3,4;3*,4;3*,4;1,2*,3,4;1*,3,4;1*,3;3*,4;1*,3,4;2*,3,4;1*,3;1*,3,4;1*,3;3*,4;1*;1*,3,4;2*,3,4;2*,3,4;1,2*,3,4;1,2*,3,4;3*,4;2*,3,4;3*,4;1,2*,3,4;1*,3,4;1*,3;3*;2*,3,4;2*,3,4;3*,4;4*;1*,3;4*,5;1,2*,3,4;3*;1,2*,3,4;1*,3,4;1,2*,3,4;1*,3,4;1*,3,4;1*,3;1*,3;5*;-;-;2*,3;1,2*,3;2*,3,4;2*,3,4;2*,3,4;2*,3,4;2*,3,4;3*,4;3*,4;3*,4;2*,3,4;1,2*,3,4;3*,4;1*,3,4;3*,4;2*,3,4;2*,3,4;4*;4*;2*;3*,4;2*,3,4;1*,3,4;2*,3,4;1,2*,3,4;2*,3,4;2*,3,4;1,2*,3,4;2*,3,4;1,2*,3,4;1,2*,3,4;1*,3;2*,3,4;3*;3*,4;3*,4;1*,3,4;3*;1*,3,4;2*,3,4;3*,4;1*,3,4;2*,3,4;1,2*,3,4
+
+Model characteristics:
+time_total_s: 0.152246307
+time_growing_s: 0.123299815
+time_pruning_s: 0.027368027
+#rules: 5.0
+#conditions_per_rule: 3.6
+#induced_conditions_per_rule: 26.2
+avg_rule_coverage: 0.483
+avg_rule_precision: 0.912740404589179
+avg_rule_quality: 0.598520464885159
+avg_pvalue: 7.196801862231055E-4
+avg_FDR_pvalue: 9.055511368511765E-4
+avg_FWER_pvalue: 0.0013336427305759466
+fraction_0.05_significant: 1.0
+fraction_0.05_FDR_significant: 1.0
+fraction_0.05_FWER_significant: 1.0
+
+Training set performance:
+accuracy: 0.95
+classification_error: 0.050000000000000044
+kappa: 0.47616553169198444
+balanced_accuracy: 0.6869600987248046
+#rules_per_example: 2.415
+#voting_conflicts: 6.0
+#negative_voting_conflicts: 3.0
+cross-entropy: Infinity
+margin: 0.0
+soft_margin_loss: 1.0
+logistic_loss: 0.6931471805599465
+precision: 0.7142857142857143
+sensitivity: 0.38461538461538464
+specificity: 0.9893048128342246
+negative_predictive_value: 0.9585492227979274
+fallout: 0.0106951871657754
+youden: 0.3739201974496092
+geometric_mean: 0.6168483209753322
+psep: 0.6728349370836417
+lift: 10.989010989010989
+f_measure: 0.5
+false_positive: 2.0
+false_negative: 8.0
+true_positive: 5.0
+true_negative: 185.0
+
+

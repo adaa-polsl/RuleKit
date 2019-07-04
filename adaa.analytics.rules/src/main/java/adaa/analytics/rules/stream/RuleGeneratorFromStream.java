@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (C) 2019 RuleKit Development Team
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  Affero General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see http://www.gnu.org/licenses/.
+ ******************************************************************************/
 package adaa.analytics.rules.stream;
 
 import adaa.analytics.rules.logic.induction.*;
@@ -26,9 +40,9 @@ public class RuleGeneratorFromStream extends ExpertRuleGenerator {
 		
 		try{
 			InductionParameters params = new InductionParameters();
-			params.setInductionMeasure(createMeasure(MeasureType.INDUCTION, new ClassificationMeasure(ClassificationMeasure.Correlation)));
-			params.setPruningMeasure(createMeasure(MeasureType.PRUNING, params.getInductionMeasure() )); 
-			params.setVotingMeasure(createMeasure(MeasureType.VOTING, params.getInductionMeasure()));
+			params.setInductionMeasure(createMeasure(MeasureDestination.INDUCTION, new ClassificationMeasure(ClassificationMeasure.Correlation)));
+			params.setPruningMeasure(createMeasure(MeasureDestination.PRUNING, params.getInductionMeasure() )); 
+			params.setVotingMeasure(createMeasure(MeasureDestination.VOTING, params.getInductionMeasure()));
 
 			params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
 			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MIN_RULE_COVERED));
@@ -39,16 +53,16 @@ public class RuleGeneratorFromStream extends ExpertRuleGenerator {
 			
 			if (exampleSet.getAttributes().findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
 				// survival problem
-				if (getParameterAsBoolean(PARAMETER_LOGRANK_SURVIVAL)) {
+			//	if (getParameterAsBoolean(PARAMETER_LOGRANK_SURVIVAL)) {
 					params.setInductionMeasure(new LogRank());
 					params.setPruningMeasure(new LogRank());
 					params.setVotingMeasure(new LogRank());
 					SurvivalLogRankFinder finder = new SurvivalLogRankFinder(params);
 					snc = new SurvivalLogRankSnC(finder, params);
-				} else {
-					ClassificationFinder finder = new ClassificationFinder(params);
-					snc = new SurvivalClassificationSnC(finder, params);
-				}
+			//	} else {
+			//		ClassificationFinder finder = new ClassificationFinder(params);
+			//		snc = new SurvivalClassificationSnC(finder, params);
+			//	}
 			} else if (exampleSet.getAttributes().getLabel().isNumerical()) {
 				// regression problem
 				RegressionFinder finder = new RegressionFinder(params);

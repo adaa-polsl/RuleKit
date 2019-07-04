@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (C) 2019 RuleKit Development Team
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  Affero General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see http://www.gnu.org/licenses/.
+ ******************************************************************************/
 package adaa.analytics.rules.operator;
 
 import adaa.analytics.rules.logic.quality.ClassificationRulesPerformance;
@@ -19,24 +33,41 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Operator performing evaluation of rule models produced by the RuleGenerator class. 
+ * It may be used for assessment of classification, regression, and survival rule sets 
+ * (type of problem is established on the basis of the input set metadata). 
+ * 
+ * @author Adam Gudys
+ *
+ */
 public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 	
 	/**
 	 * Wrapper for performance criteria classes. Allows uniform handling of different criteria classes -
 	 * a class may represent a single criterion, or several of them (this requires specifying additional integer parameter).
 	 * 
-	 * @author Adam
+	 * @author Adam Gudys
 	 *
 	 */
 	protected static class CriterionClassWrapper {
 		private Class className;
 		private Integer param;
 		
+		/**
+		 * Creates wrapper for a class representing single performance metric. 
+		 * @param className Name of the class to wrap.
+		 */
 		public CriterionClassWrapper(Class className) {
 			this.className = className;
 			this.param = null;
 		}
 		
+		/**
+		 * Creates wrapper for a class representing multiple performance metrics.
+		 * @param className Name of the class to wrap.
+		 * @param param Integer parameter representing 
+		 */
 		public CriterionClassWrapper(Class className, Integer param) {
 			this.className = className;
 			this.param = param;
@@ -115,15 +146,25 @@ public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 	};
 	
 	
-	protected ClassificationMetaCondition classificationMetaCondition = new ClassificationMetaCondition(this, false, this);
-	protected RegressionMetaCondition regressionMetaCondition = new RegressionMetaCondition(this, false, this);
-	protected SurvivalMetaCondition survivalMetaCondition = new SurvivalMetaCondition(this, true, this);
+	protected ClassificationMetaCondition classificationMetaCondition = new ClassificationMetaCondition(this);
+	protected RegressionMetaCondition regressionMetaCondition = new RegressionMetaCondition(this);
+	protected SurvivalMetaCondition survivalMetaCondition = new SurvivalMetaCondition(this);
 	
 	protected ArrayList<ArrayList<String>> criteriaNames;
 			
 	protected ExampleSet testSet;
 	
-
+	/**
+	 * Configures all performance metrices.
+	 * @param description REquired by the base class constructor.
+	 * @throws OperatorCreationException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	public RulePerformanceEvaluator(OperatorDescription description) 
 			throws OperatorCreationException, InstantiationException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {	
 		super(description);
@@ -199,7 +240,12 @@ public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 		return performanceCriteria;
 	}
 	
-	
+	/**
+	 * Establishes experiment type on the basis of example set.
+	 * @param set Example set to be investigated.
+	 * @return Integer representing one of the possible types (TYPE_CLASSIFICATION, TYPE_BINARY_CLASSIFICATION,
+	 *  	TYPE_REGRESSION, TYPE_SURVIVAL).
+	 */
 	public static int determineExperimentType(ExampleSet set) {
 		Attribute label = set.getAttributes().getLabel();
 		if (set.getAttributes().findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {

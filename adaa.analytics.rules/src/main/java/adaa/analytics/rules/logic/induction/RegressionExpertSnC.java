@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (C) 2019 RuleKit Development Team
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  Affero General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see http://www.gnu.org/licenses/.
+ ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
 import java.util.HashSet;
@@ -5,6 +19,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang.StringUtils;
 
 import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
@@ -47,7 +62,6 @@ public class RegressionExpertSnC extends RegressionSnC {
 		SortedExampleSet ses = new SortedExampleSet(dataset, label, SortedExampleSet.INCREASING);
 		ses.recalculateAttributeStatistics(ses.getAttributes().getLabel());
 		
-			
 		if (factory.getType() == RuleFactory.REGRESSION) {
 			double median = ses.getExample(ses.size() / 2).getLabel();
 			RegressionRuleSet tmp = (RegressionRuleSet)ruleset;
@@ -64,9 +78,11 @@ public class RegressionExpertSnC extends RegressionSnC {
 			weighted_PN += w;
 		}
 		
+		int totalExpertRules = 0;
+		int totalAutoRules = 0;
 		boolean carryOn = true; 
 		double uncovered_pn = weighted_PN;
-		Logger.log("Processing expert rules...\n", Level.INFO);
+		Logger.log("Processing expert rules...\n", Level.FINE);
 		
 		// add expert rules to the ruleset and try to refine them
 		for (Rule r : knowledge.getRules()) {
@@ -95,8 +111,10 @@ public class RegressionExpertSnC extends RegressionSnC {
 				finder.prune(rule, ses);
 				ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 			}
-			Logger.log("Candidate rule: " + rule.toString() + "\n", Level.INFO);
-			
+			Logger.log("Candidate rule: " + rule.toString() + "\n", Level.FINE);
+
+			Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
+			Logger.log("\t" + totalExpertRules + " expert rules, " + (++totalAutoRules) + " auto rules" , Level.INFO);
 			
 			ruleset.addRule(rule);
 			cov = rule.covers(ses);
@@ -113,7 +131,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 		}
 		
 		// try to generate new rules
-		Logger.log("Processing other rules...\n", Level.INFO);
+		Logger.log("Processing other rules...\n", Level.FINE);
 		carryOn = uncovered.size() > 0; 
 		while (carryOn) {
 			Logger.log("Uncovered positive weight: " + uncovered_pn +  "/" + weighted_PN + "\n", Level.FINE);
@@ -133,7 +151,8 @@ public class RegressionExpertSnC extends RegressionSnC {
 					finder.prune(rule, ses);
 					ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 				}
-				Logger.log("Candidate rule: " + rule.toString() + "\n", Level.INFO);
+				Logger.log("Candidate rule: " + rule.toString() + "\n", Level.FINE);
+				Logger.log(".", Level.INFO);
 				
 				Covering covered = rule.covers(ses);
 				
@@ -158,6 +177,8 @@ public class RegressionExpertSnC extends RegressionSnC {
 					carryOn = false; 
 				} else {
 					ruleset.addRule(rule);
+					Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
+					Logger.log("\t" + totalExpertRules + " expert rules, " + (++totalAutoRules) + " auto rules" , Level.INFO);
 				}
 			}
 		}

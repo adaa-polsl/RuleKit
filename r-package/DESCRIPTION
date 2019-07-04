@@ -1,0 +1,21 @@
+Package: rulekit
+Type: Package
+Title: RuleKit
+Version: 0.1.0
+Author: Wojciech Sikora
+Maintainer: The package maintainer <yourself@somewhere.net>
+Description: A comprehensive suite for rule-based learning 
+License: CC0
+Encoding: UTF-8
+LazyData: true
+Imports:
+    RWeka,
+    XML,
+    survival,
+    caret,
+    rprojroot,
+    devtools
+RoxygenNote: 6.1.0
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr

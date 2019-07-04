@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (C) 2019 RuleKit Development Team
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  Affero General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see http://www.gnu.org/licenses/.
+ ******************************************************************************/
 package adaa.analytics.rules.experiments;
 
 import adaa.analytics.rules.logic.representation.Logger;
@@ -5,6 +19,7 @@ import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.RuleGenerator;
 import adaa.analytics.rules.utils.RapidMiner5;
+
 import com.rapidminer.example.Attributes;
 import com.rapidminer.example.set.SplittedExampleSet;
 import com.rapidminer.operator.*;
@@ -33,22 +48,9 @@ public class InternalXValidationExperiment extends ExperimentBase {
 	protected String modelFile; 
 	
 	protected File arffFile;
-
-	public InternalXValidationExperiment(
-			File arffFile, 
-			SynchronizedReport qualityReport,
-			SynchronizedReport modelReport,
-			String labelParameter,
-			int foldCount,
-			Type experimentType,
-			Map<String,Object> params) {
-		this(arffFile, qualityReport, modelReport, labelParameter, foldCount, experimentType, (List<Map<String,Object>>)null);
-		
-		this.paramsSets = new ArrayList<Map<String, Object>>();
-		this.modelFile = modelFile;
-		paramsSets.add(params);
-	}
 	
+	protected List<Map<String,Object>> paramsSets;
+
 	
 	public InternalXValidationExperiment(
 			File arffFile, 
@@ -59,10 +61,11 @@ public class InternalXValidationExperiment extends ExperimentBase {
 			Type experimentType,
 			List<Map<String,Object>> paramsSets) {
 		
-		super(qualityReport, modelReport, paramsSets);
+		super(qualityReport, modelReport);
 		
 		try {
 			this.arffFile = arffFile;
+			this.paramsSets = paramsSets = paramsSets;
 			
 			ArffExampleSource arffSource = RapidMiner5.createOperator(ArffExampleSource.class);
 	    	ChangeAttributeRole roleSetter = (ChangeAttributeRole)OperatorService.createOperator(ChangeAttributeRole.class);
@@ -114,10 +117,6 @@ public class InternalXValidationExperiment extends ExperimentBase {
 	    	
 	    	ModelApplier applier = (ModelApplier)OperatorService.createOperator(ModelApplier.class);
 	    	
-	    	if (experimentType == Type.SURVIVAL_BY_REGRESSION) {
-	    		ruleGenerator.setParameter(ruleGenerator.PARAMETER_LOGRANK_SURVIVAL, "" + true);
-	    	}
-	    
 	    	tester.addOperator(applier);
 	    	tester.addOperator(validationEvaluator);
 	    	

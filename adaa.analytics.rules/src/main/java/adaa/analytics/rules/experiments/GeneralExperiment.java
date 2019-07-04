@@ -1,15 +1,31 @@
+/*******************************************************************************
+ * Copyright (C) 2019 RuleKit Development Team
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  Affero General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see http://www.gnu.org/licenses/.
+ ******************************************************************************/
 package adaa.analytics.rules.experiments;
 
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.RDataExampleSource;
 import adaa.analytics.rules.utils.RapidMiner5;
+
 import com.rapidminer.example.Attributes;
 import com.rapidminer.operator.*;
 import com.rapidminer.operator.performance.PerformanceVector;
 import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
 import com.rapidminer.tools.OperatorService;
 import com.rapidminer5.operator.io.ArffExampleSource;
+
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -32,6 +48,9 @@ public class GeneralExperiment extends ExperimentBase {
     protected Operator testOperator;
 
     protected Extension ext;
+    
+	protected List<Map<String,Object>> paramsSets;
+
 
     public GeneralExperiment(
             File file,
@@ -41,13 +60,12 @@ public class GeneralExperiment extends ExperimentBase {
             Map<String, String> options,
             Map<String, Object> params) {
 
-        super(qualityReport, modelReport, params);
+        super(qualityReport, modelReport);
         try {
             this.file = file;
 
-            this.paramsSets = new ArrayList<Map<String, Object>>();
-            paramsSets.add(params);
-
+            this.paramsSets = paramsSets;
+           
             //Creating Operators
             //Different operator for different data file formats
             ext = getExtension(file);

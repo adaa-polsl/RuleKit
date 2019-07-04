@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (C) 2019 RuleKit Development Team
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  Affero General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see http://www.gnu.org/licenses/.
+ ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
 import java.util.ArrayList;
@@ -8,7 +22,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
+
+import org.apache.commons.lang.StringUtils;
 
 import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
@@ -57,6 +75,8 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 		
 		int threadCount = Runtime.getRuntime().availableProcessors();
 		ExecutorService pool = Executors.newFixedThreadPool(threadCount);
+		Semaphore mutex = new Semaphore(1);
+		AtomicInteger totalRules = new AtomicInteger(0);
 		
 		// array of futures, each consisting of ruleset and P value
 		List<Future<Pair<ClassificationRuleSet, Double>>> futures = new ArrayList<Future<Pair<ClassificationRuleSet, Double>>>();
@@ -122,7 +142,9 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 							finder.prune(rule, dataset);
 							ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 						}
-						Logger.log("Class " + classId + ", candidate rule " + ruleset.getRules().size() +  ":" + rule.toString() + "\n", Level.INFO);
+						
+						
+						Logger.log("Class " + classId + ", candidate rule " + ruleset.getRules().size() +  ":" + rule.toString() + "\n", Level.FINE);
 						Covering covered = rule.covers(dataset, uncovered);
 						
 						// remove covered examples
@@ -147,6 +169,10 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 							carryOn = false; 
 						} else {
 							ruleset.addRule(rule);
+							mutex.acquire(1);
+							Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
+							Logger.log("\t" + totalRules.incrementAndGet() + " rules" , Level.INFO);
+							mutex.release(1);
 						}
 					}
 				}

@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (C) 2019 RuleKit Development Team
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  Affero General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see http://www.gnu.org/licenses/.
+ ******************************************************************************/
 package adaa.analytics.rules.operator;
 
 import adaa.analytics.rules.logic.induction.*;
@@ -25,50 +39,108 @@ import com.rapidminer.parameter.conditions.ParameterCondition;
 import java.util.ArrayList;
 import java.util.List;
 
-;
-
-
+/**
+ * The basic RuleKit learner operator. It enables inducing classification, regression,
+ * and survival rules - the problem type is established automatically using metadata of 
+ * the training set.
+ * 
+ * @author Adam Gudys
+ *
+ */
 public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 
-	protected enum MeasureType {
+	/**
+	 * Auxiliary enumeration type describing possible destinations of quality measures.
+	 */
+	protected enum MeasureDestination {
 		INDUCTION,
 		PRUNING,
 		VOTING
 	};
 	
-	protected ClassificationMetaCondition classificationMetaCondition = new ClassificationMetaCondition(this, false, this);
-	protected RegressionMetaCondition regressionMetaCondition = new RegressionMetaCondition(this, false, this);
-	protected SurvivalMetaCondition survivalMetaCondition = new SurvivalMetaCondition(this, true, this);
+	/**
+	 * Parameter condition fulfilled for classification problems.
+	 */
+	protected ClassificationMetaCondition classificationMetaCondition = new ClassificationMetaCondition(this);
 	
-	public static final String PARAMETER_MIN_RULE_COVERED = "min_rule_covered";
-	public static final String PARAMETER_MAX_UNCOVERED_FRACTION = "max_uncovered_fraction";
-	public static final String PARAMETER_INDUCTION_MEASURE = "induction_measure";
-	public static final String PARAMETER_PRUNING_ENABLED = "pruning_enabled";
-	public static final String PARAMETER_PRUNING_MEASURE = "pruning_measure";
-	public static final String PARAMETER_VOTING_MEASURE = "voting_measure";
-	public static final String PARAMETER_USE_VOTING = "use_voting";
-	public static final String PARAMETER_IGNORE_MISSING = "ignore_missing";
-	public static final String PARAMETER_LOGRANK_SURVIVAL = "use_logrank";
-	public static final String PARAMETER_MAX_GROWING = "max_growing";
-	public static final String PARAMETER_USER_INDUCTION_EQUATION = "user_induction_equation";
-	public static final String PARAMETER_USER_PRUNING_EQUATION = "user_pruning_equation";
-	public static final String PARAMETER_USER_VOTING_EQUATION = "user_voting_equation"; 
-
-	public static String[] QUALITY_MEASURE_NAMES;
-	public static final int[] QUALITY_MEASURE_CLASSES;
+	/**
+	 * Parameter condition fulfilled for regression problems.
+	 */
+	protected RegressionMetaCondition regressionMetaCondition = new RegressionMetaCondition(this);
 	
-	static {
-		QUALITY_MEASURE_CLASSES = new int[ClassificationMeasure.COUNT];
-		QUALITY_MEASURE_NAMES = new String[ClassificationMeasure.COUNT];
-		
-		for (int i = 0; i < QUALITY_MEASURE_CLASSES.length; ++i) {
-			QUALITY_MEASURE_CLASSES[i] = i;
-			QUALITY_MEASURE_NAMES[i] = ClassificationMeasure.getName(QUALITY_MEASURE_CLASSES[i]);
-		}
-	}
+	/**
+	 * Parameter condition fulfilled for survival problems.
+	 */
+	protected SurvivalMetaCondition survivalMetaCondition = new SurvivalMetaCondition(this);
 	
+	/**
+	 * Performance vector for storing model characteristics. Updated every time the operator is run.
+	 */
 	protected PerformanceVector performances; 
 	
+	/**
+	 * Positive integer representing minimum number of previously uncovered examples to be covered by a new rule 
+	 * (positive examples for classification problems).
+	 */
+	public static final String PARAMETER_MIN_RULE_COVERED = "min_rule_covered";
+	
+	/**
+	 * Floating-point number from [0,1] interval representing maximum fraction of examples that may remain uncovered by the rule set.
+	 */
+	public static final String PARAMETER_MAX_UNCOVERED_FRACTION = "max_uncovered_fraction";
+	
+	/**
+	 * Non-negative integer representing maximum number of conditions which can be added to the rule in the growing phase 
+	 * (use this parameter for large datasets if execution time is prohibitive); 0 indicates no limit.
+	 */
+	public static final String PARAMETER_MAX_GROWING = "max_growing";
+	
+	/**
+	 * Name of the rule quality measure used during growing (ignored in the survival analysis where log-rank statistics is used).
+	 */
+	public static final String PARAMETER_INDUCTION_MEASURE = "induction_measure";
+	
+	/**
+	 * Binary parameter indicating whether pruning should be enabled.
+	 */
+	public static final String PARAMETER_PRUNING_ENABLED = "pruning_enabled";
+	
+	/**
+	 * Name of the rule quality measure used during pruning.
+	 */
+	public static final String PARAMETER_PRUNING_MEASURE = "pruning_measure";
+	/**
+	 * Name of the rule quality measure used during growing.
+	 */
+	public static final String PARAMETER_VOTING_MEASURE = "voting_measure";
+	
+	/**
+	 * Equation of user-defined induction measure; applies only when the corresponding measure parameter has value UserDefined; 
+	 * the equation must be a mathematical expression with p, n, P, N literals (elements of confusion matrix), operators, 
+	 * numbers, and library functions (sin, log, etc.).
+	 */
+	public static final String PARAMETER_USER_INDUCTION_EQUATION = "user_induction_equation";
+	
+	/**
+	 * Equation of user-defined pruning measure.
+	 */
+	public static final String PARAMETER_USER_PRUNING_EQUATION = "user_pruning_equation";
+	
+	/**
+	 * Equation of user-defined voting measure.
+	 */
+	public static final String PARAMETER_USER_VOTING_EQUATION = "user_voting_equation"; 
+	
+	/**
+	 * Boolean telling whether missing values should be ignored (by default, a missing value of given attribute is always
+	 *  considered as not fulfilling the condition build upon that attribute)
+	 */
+	public static final String PARAMETER_IGNORE_MISSING = "ignore_missing";
+	
+	/**
+	 * Invokes base class constructor.
+	 * @param description Operator description.
+	 */
 	public RuleGenerator(OperatorDescription description) {
 		super(description);	
 	}
@@ -94,9 +166,9 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		
 		try {
 			InductionParameters params = new InductionParameters();
-			params.setInductionMeasure(createMeasure(MeasureType.INDUCTION, new ClassificationMeasure(ClassificationMeasure.Correlation)));
-			params.setPruningMeasure(createMeasure(MeasureType.PRUNING, params.getInductionMeasure())); 
-			params.setVotingMeasure(createMeasure(MeasureType.VOTING, params.getInductionMeasure()));
+			params.setInductionMeasure(createMeasure(MeasureDestination.INDUCTION, new ClassificationMeasure(ClassificationMeasure.Correlation)));
+			params.setPruningMeasure(createMeasure(MeasureDestination.PRUNING, params.getInductionMeasure())); 
+			params.setVotingMeasure(createMeasure(MeasureDestination.VOTING, params.getInductionMeasure()));
 			
 			params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
 			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MIN_RULE_COVERED));
@@ -189,7 +261,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		
 		tmp = new ParameterTypeStringCategory(
 				PARAMETER_INDUCTION_MEASURE, getParameterDescription(PARAMETER_INDUCTION_MEASURE),
-				QUALITY_MEASURE_NAMES, QUALITY_MEASURE_NAMES[ClassificationMeasure.Correlation], false);
+				ClassificationMeasure.NAMES, ClassificationMeasure.getName(ClassificationMeasure.Correlation), false);
 		tmp.registerDependencyCondition(measuresCondition);
 		types.add(tmp);
 
@@ -207,7 +279,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		
 		tmp = new ParameterTypeStringCategory(
 				PARAMETER_PRUNING_MEASURE, getParameterDescription(PARAMETER_PRUNING_MEASURE),
-				QUALITY_MEASURE_NAMES, QUALITY_MEASURE_NAMES[ClassificationMeasure.Correlation], false);
+				ClassificationMeasure.NAMES, ClassificationMeasure.getName(ClassificationMeasure.Correlation), false);
 		tmp.registerDependencyCondition(new BooleanParameterCondition(this, PARAMETER_PRUNING_ENABLED, true, true));
 		types.add(tmp);
 		tmp = new ParameterTypeString(PARAMETER_USER_PRUNING_EQUATION, getParameterDescription(PARAMETER_USER_PRUNING_EQUATION),true);
@@ -216,7 +288,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 
 		tmp = new ParameterTypeStringCategory(
 				PARAMETER_VOTING_MEASURE, getParameterDescription(PARAMETER_VOTING_MEASURE),
-				QUALITY_MEASURE_NAMES, QUALITY_MEASURE_NAMES[ClassificationMeasure.Correlation], false);
+				ClassificationMeasure.NAMES, ClassificationMeasure.getName(ClassificationMeasure.Correlation), false);
 		tmp.registerDependencyCondition(measuresCondition);
 		types.add(tmp);
 		tmp = new ParameterTypeString(PARAMETER_USER_VOTING_EQUATION, getParameterDescription(PARAMETER_USER_VOTING_EQUATION),true);
@@ -229,16 +301,23 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		return types;
     }
 	 
-	 
-	 protected IQualityMeasure createMeasure(MeasureType type, IQualityMeasure defaultMeasure) throws OperatorException, IllegalAccessException {
+	 /**
+	  * Creates instance of a quality measure object.
+	  * @param destination Destination of measure (growing/pruning/voting).
+	  * @param defaultMeasure Default measure.
+	  * @return New quality measure.
+	  * @throws OperatorException
+	  * @throws IllegalAccessException
+	  */
+	 protected IQualityMeasure createMeasure(MeasureDestination destination, IQualityMeasure defaultMeasure) throws OperatorException, IllegalAccessException {
 		
 		 String measureName;
 		 String equation;
 		 
-		 if (type == MeasureType.INDUCTION) {
+		 if (destination == MeasureDestination.INDUCTION) {
 			 measureName = getParameterAsString(PARAMETER_INDUCTION_MEASURE);
 			 equation = getParameter(PARAMETER_USER_INDUCTION_EQUATION);
-		 } else if (type == MeasureType.PRUNING) {
+		 } else if (destination == MeasureDestination.PRUNING) {
 			 measureName = getParameterAsString(PARAMETER_PRUNING_MEASURE);
 			 equation = getParameter(PARAMETER_USER_PRUNING_EQUATION);
 		 } else {
@@ -247,9 +326,9 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		 }
 		 
 		int variant = -1;
-		for (int i = 0; i < QUALITY_MEASURE_NAMES.length; i++) {
-			if (QUALITY_MEASURE_NAMES[i].equals(measureName)) {
-				variant = QUALITY_MEASURE_CLASSES[i];
+		for (int i = 0; i < ClassificationMeasure.NAMES.length; i++) {
+			if (ClassificationMeasure.getName(i).equals(measureName)) {
+				variant = i;
 			}
 		}
 		if (variant != -1) {
@@ -264,7 +343,12 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 			return defaultMeasure;
 		}
 	}
-	  
+	 
+	 /**
+	  * Calculates rule model characteristics.
+	  * @param rs Rule set to be investigated.
+	  * @return Performance vector with model characteristics.
+	  */
 	 public static PerformanceVector recalculatePerformance(RuleSetBase rs) {
 		PerformanceVector pv = new PerformanceVector();
 		

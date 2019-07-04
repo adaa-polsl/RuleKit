@@ -99,9 +99,9 @@
 
 		<dataset>
 			<label>MM116_pred</label>
-			<out_directory>./results-methane</out_directory>		
+			<out_directory>./results-guider/methane</out_directory>		
 			<training>  
-				<report_file>training-log.txt</report_file>      
+				<report_file>training.txt</report_file>      
 				 
 				<train>
 					 <in_file>../data/methane/methane-train.arff</in_file>               		

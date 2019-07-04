@@ -3,7 +3,6 @@
 	<parameter_sets>
 	
 	
-	<!--
 		<parameter_set name="auto">
 			<param name="min_rule_covered">8</param>
 			<param name="induction_measure">BinaryEntropy</param>
@@ -12,7 +11,6 @@
 			<param name="max_growing">0</param>
 		</parameter_set>
 		
-		-->
 		
 		<!--=======================================================================================================================-->
 		
@@ -227,7 +225,7 @@
 	<datasets>
 		<dataset>
 			<label>class</label>
-			<out_directory>./results-seismic-bumps</out_directory>		
+			<out_directory>./results-guider/seismic-bumps</out_directory>		
     
 			<training>  
 				 <report_file>training.txt</report_file>    

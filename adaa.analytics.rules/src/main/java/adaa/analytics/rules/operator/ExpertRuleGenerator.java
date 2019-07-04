@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (C) 2019 RuleKit Development Team
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  Affero General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see http://www.gnu.org/licenses/.
+ ******************************************************************************/
 package adaa.analytics.rules.operator;
 
 import adaa.analytics.rules.logic.induction.*;
@@ -21,36 +35,88 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * An ExpertRuleGenerator is an operator that extends RuleGenerator by providing user 
+ * with the possibility to introduce expert's knowledge to the rule induction process.
+ * 
+ * @author Adam Gudys
+ *
+ */
 public class ExpertRuleGenerator extends RuleGenerator {
-	// Wizard parameter
+	
+	/**
+	 * Boolean indicating whether user's knowledge should be used.
+	 */
 	public static final String PARAMETER_USE_EXPERT = "use_expert";
+	
 	
 	public static final String PARAMETER_EXPERT_CONFIG = "expert_config";
 	
+	/**
+	 * Set of initial (expert's) rules.
+	 */
 	public static final String PARAMETER_EXPERT_RULES = "expert_rules";
 	
+	/**
+	 * Multiset of preferred conditions (used also for specifying preferred attributes by using special value "Any").
+	 */
 	public static final String PARAMETER_EXPERT_PREFERRED_CONDITIONS = "expert_preferred_conditions";
 	
+	/**
+	 * Set of forbidden conditions (used also for specifying forbidden attributes by using special value Any).
+	 */
 	public static final String PARAMETER_EXPERT_FORBIDDEN_CONDITIONS = "expert_forbidden_conditions";
 	
+	/**
+	 * Auxiliary parameter for specifying sets/multisets of expert rules and preferred/forbidden conditions/attributes.
+	 */
 	public static final String PARAMETER_EXPORT_KEY = "export_key";
 
+	/**
+	 * Auxiliary parameter for specifying sets/multisets of expert rules and preferred/forbidden conditions/attributes.
+	 */
 	public static final String PARAMETER_EXPORT_VALUE = "export_value";
 	
+	/**
+	 * Boolean indicating whether initial rules should be extended with a use of preferred conditions and attributes.
+	 */
 	public static final String PARAMETER_EXTEND_USING_PREFERRED = "extend_using_preferred";
 	
+	/**
+	 * Boolean indicating whether initial rules should be extended with a use of automatic conditions.
+	 */
 	public static final String PARAMETER_EXTEND_USING_AUTOMATIC = "extend_using_automatic";
 	
+	/**
+	 * Boolean indicating whether new rules should be induced with a use of preferred conditions and attributes.
+	 */
 	public static final String PARAMETER_INDUCE_USING_PREFERRED = "induce_using_preferred";
 	
+	/**
+	 * Boolean indicating whether new rules should be induced with a use of automatic conditions.
+	 */
 	public static final String PARAMETER_INDUCE_USING_AUTOMATIC = "induce_using_automatic";
 	
+	/**
+	 * Boolean indicating whether automatic induction should be performed for classes for which 
+	 * no user's knowledge has been defined (classification only).
+	 */
 	public static final String PARAMETER_CONSIDER_OTHER_CLASSES = "consider_other_classes";
 	
+	/**
+	 * Maximum number of preferred conditions per rule.
+	 */
 	public static final String PARAMETER_PREFERRED_CONDITIONS_PER_RULE = "preferred_conditions_per_rule";
 	
+	/**
+	 * Maximum number of preferred attributes per rule.
+	 */
 	public static final String PARAMETER_PREFERRED_ATTRIBUTES_PER_RULE = "preferred_attributes_per_rule";
 	
+	/**
+	 * Invokes base class constructor.
+	 * @param description Operator description.
+	 */
 	public ExpertRuleGenerator(OperatorDescription description) {
 		super(description);	
 	}
@@ -199,9 +265,9 @@ public class ExpertRuleGenerator extends RuleGenerator {
 			knowledge.setPreferredAttributesPerRule(getParameterAsInt(PARAMETER_PREFERRED_ATTRIBUTES_PER_RULE));
 			
 			InductionParameters params = new InductionParameters();
-			params.setInductionMeasure(createMeasure(MeasureType.INDUCTION, new ClassificationMeasure(ClassificationMeasure.Correlation)));
-			params.setPruningMeasure(createMeasure(MeasureType.PRUNING, params.getInductionMeasure())); 
-			params.setVotingMeasure(createMeasure(MeasureType.VOTING, params.getInductionMeasure()));
+			params.setInductionMeasure(createMeasure(MeasureDestination.INDUCTION, new ClassificationMeasure(ClassificationMeasure.Correlation)));
+			params.setPruningMeasure(createMeasure(MeasureDestination.PRUNING, params.getInductionMeasure())); 
+			params.setVotingMeasure(createMeasure(MeasureDestination.VOTING, params.getInductionMeasure()));
 				
 			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MIN_RULE_COVERED));
 			params.setEnablePruning(getParameterAsBoolean(PARAMETER_PRUNING_ENABLED));
@@ -241,6 +307,13 @@ public class ExpertRuleGenerator extends RuleGenerator {
 		return model;
 	}
 	
+	/**
+	 * Auxiliary function that fixes mappings of nominal attributes in given rules so they
+	 * agree with an example set. 
+	 * 
+	 * @param rules Rules to be fixed.
+	 * @param set Reference example set.
+	 */
 	protected void fixMappings(Iterable<Rule> rules, ExampleSet set) {
 		for (Rule r : rules) {
 			for (ConditionBase c: r.getPremise().getSubconditions()) {

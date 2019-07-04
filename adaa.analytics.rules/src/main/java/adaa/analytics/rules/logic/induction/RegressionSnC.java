@@ -1,8 +1,25 @@
+/*******************************************************************************
+ * Copyright (C) 2019 RuleKit Development Team
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  Affero General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see http://www.gnu.org/licenses/.
+ ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
+
+import org.apache.commons.lang.StringUtils;
 
 import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
@@ -60,6 +77,7 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 			weighted_PN += w;
 		}
 		
+		int totalRules = 0;
 		boolean carryOn = true; 
 		double uncovered_pn = weighted_PN;
 		
@@ -81,7 +99,8 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 					finder.prune(rule, ses);
 					ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 				}
-				Logger.log("Candidate rule: " + rule.toString() + "\n", Level.INFO);
+				Logger.log("Candidate rule: " + rule.toString() + "\n", Level.FINE);
+				Logger.log(".", Level.INFO);
 				
 				Covering covered = rule.covers(ses, uncovered);
 				
@@ -106,6 +125,8 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 					carryOn = false; 
 				} else {
 					ruleset.addRule(rule);
+					Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
+					Logger.log("\t" + (++totalRules) + " rules" , Level.INFO);
 				}
 			}
 		}
