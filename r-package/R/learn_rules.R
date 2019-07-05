@@ -108,10 +108,10 @@ learn_rules <- function(formula, control, train_data, test_data = train_data) {
     control <- list(min_rule_covered = 5, max_uncovered_fraction = 0, max_growing = 0, induction_measure = 'Correlation',
                     pruning_measure = 'Correlation', voting_measure = 'Correlation', ignore_missing = FALSE)
   }
-  jar_dir <- system.file('java',package = "adaa.rules")
+  jar_dir <- system.file('java',package = "rulekit")
   jar_file <- list.files(jar_dir,pattern = '.jar')
   if (length(jar_file)>1){
-    stop("Expected single .jar file in inst/java fodler but found ", length(jar_file))
+    stop("Expected single .jar file in inst/java folder but found ", length(jar_file))
   }
   jar <- file.path(jar_dir,jar_file[1])
   .checkTypes(formula,train_data, test_data = train_data, control)
