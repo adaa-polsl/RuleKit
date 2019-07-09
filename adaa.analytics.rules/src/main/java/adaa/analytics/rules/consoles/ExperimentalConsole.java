@@ -16,6 +16,7 @@ package adaa.analytics.rules.consoles;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,6 +47,7 @@ import adaa.analytics.rules.operator.ExpertRuleGenerator;
 import com.rapidminer.RapidMiner;
 import com.rapidminer.example.Attributes;
 import com.rapidminer.tools.LogService;
+import com.rapidminer.tools.PlatformUtilities;
 import com.sun.tools.javac.util.Pair;
 
 public class ExperimentalConsole {
@@ -112,8 +114,10 @@ public class ExperimentalConsole {
 	    	Logger.getInstance().addStream(System.out, isVerbose ? Level.FINE : Level.INFO);	
 	    
             if (argList.size() == 1) {
+            	System.setProperty(PlatformUtilities.PROPERTY_RAPIDMINER_HOME, Paths.get("").toAbsolutePath().toString());
             	LogService.getRoot().setLevel(Level.OFF);
-            	
+            	RapidMiner.setExecutionMode(RapidMiner.ExecutionMode.COMMAND_LINE);
+           
             	RapidMiner.init();
             	execute(argList.get(0));
 

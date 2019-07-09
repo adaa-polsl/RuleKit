@@ -85,11 +85,6 @@ task rjar(type: Jar) {
     from { 
       configurations.compile.filter( {! (it.name =~ /.*\.pom/ )}).collect { it.isDirectory() ? it : zipTree(it) }       
     }{    
-      exclude ('**/*.png')
-      exclude ('**/*.jpg')
-      exclude ('**/*.ttf')
-      exclude ('**/*.gif')
-      exclude ('**/*.css')
       exclude ('**/*.SF')      
       exclude ('**/*.DSA')
       exclude ('**/*.RSA')
