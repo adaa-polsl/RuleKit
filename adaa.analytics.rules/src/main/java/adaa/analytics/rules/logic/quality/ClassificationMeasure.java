@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (C) 2019 RuleKit Development Team
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU Affero General Public License as published by the Free Software Foundation, either version 3
+ * of the License, or (at your option) any later version.
+ *  
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *  Affero General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Affero General Public License along with this program.
+ * If not, see http://www.gnu.org/licenses/.
+ ******************************************************************************/
 package adaa.analytics.rules.logic.quality;
 
 import adaa.analytics.rules.logic.induction.ContingencyTable;
@@ -53,8 +67,49 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
     public static final int WeightedRelativeAccuracy = 37;
     public static final int YAILS = 38;
     public static final int UserDefined = 39;
-
-    public static final int COUNT = 40;
+ 
+    public static final String[] NAMES = {
+    	 "Accuracy",
+         "BinaryEntropy", 
+         "C1",
+         "C2",
+         "CFoil",
+         "CN2Significance",
+         "Correlation",
+         "Coverage",
+         "FBayesianConfirmation",
+         "FMeasure",
+         "FullCoverage",
+         "GeoRSS",
+         "GMeasure",
+         "InformationGain",
+         "JMeasure",
+         "Kappa",
+         "Klosgen",
+         "Laplace",
+         "Lift",
+         "LogicalSufficiency",
+         "MEstimate",
+         "MutualSupport",
+         "Novelty", 
+         "OddsRatio", 
+         "OneWaySupport",
+         "PawlakDependencyFactor",
+         "Q2",
+         "Precision",
+         "RelativeRisk",
+         "Ripper",
+         "RuleInterest",
+         "RSS",
+         "SBayesian",
+         "Sensitivity",
+         "Specificity",
+         "TwoWaySupport",
+         "WeightedLaplace",
+         "WeightedRelativeAccuracy",
+         "Yails",
+         "UserDefined"
+    };
 
     private  IUserMeasure userMeasure;
     protected int criterion = Correlation;
@@ -68,89 +123,11 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
     }
 
     public static String getName(int criterion) {
-        switch (criterion) {
-            case Accuracy:
-                return "Accuracy";
-            case BinaryEntropy:
-                return "BinaryEntropy";
-            case C1:
-                return "C1";
-            case C2:
-                return "C2";
-            case CFoil:
-                return "CFoil";
-            case CN2Significnce:
-                return "CN2Significance";
-            case Correlation:
-                return "Correlation";
-            case Coverage:
-                return "Coverage";
-            case FBayesianConfirmation:
-                return "FBayesianConfirmation";
-            case FMeasure:
-                return "FMeasure";
-            case FullCoverage:
-                return "FullCoverage";
-            case GeoRSS:
-                return "GeoRSS";
-            case GMeasure:
-                return "GMeasure";
-            case InformationGain:
-                return "InformationGain";
-            case JMeasure:
-                return "JMeasure";
-            case Kappa:
-                return "Kappa";
-            case Klosgen:
-                return "Klosgen";
-            case Laplace:
-                return "Laplace";
-            case Lift:
-                return "Lift";
-            case LogicalSufficiency:
-                return "LogicalSufficiency";
-            case MEstimate:
-                return "MEstimate";
-            case MutualSupport:
-                return "MutualSupport";
-            case Novelty:
-                return "Novelty";
-            case OddsRatio:
-                return "OddsRatio";
-            case OneWaySupport:
-                return "OneWaySupport";
-            case PawlakDependencyFactor:
-                return "PawlakDependencyFactor";
-            case Q2:
-                return "Q2";
-            case Precision:
-                return "Precision";
-            case RelativeRisk:
-                return "RelativeRisk";
-            case Ripper:
-                return "Ripper";
-            case RuleInterest:
-                return "RuleInterest";
-            case RSS:
-                return "RSS";
-            case SBayesian:
-                return "SBayesian";
-            case Sensitivity:
-                return "Sensitivity";
-            case Specificity:
-                return "Specificity";
-            case TwoWaySupport:
-                return "TwoWaySupport";
-            case WeightedLaplace:
-                return "WeightedLaplace";
-            case WeightedRelativeAccuracy:
-                return "WeightedRelativeAccuracy";
-            case YAILS:
-                return "Yails";
-            case UserDefined:
-                return "UserDefined";
-            default:
-                throw new IllegalArgumentException("ClassificationMeasure: unknown measure type");
+        if (criterion >= 0 && criterion < NAMES.length) {
+          return NAMES[criterion];
+        }
+        else {
+           throw new IllegalArgumentException("ClassificationMeasure: unknown measure type");
         }
     }
 
