@@ -76,7 +76,10 @@ The detailed RuleKit documentation can be found on [Wiki pages](../../wiki) whic
 
 # Authors and licensing
 
-
+RuleKit Development Team:
+* [Adam Gudyś](https://github.com/agudys)
+* [Łukasz Wróbel](https://github.com/l-wrobel)
+* Marek Sikora
 
 The software is publicly available under [GNU AGPL-3.0 license](LICENSE).
  
