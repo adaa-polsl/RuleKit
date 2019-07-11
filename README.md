@@ -14,7 +14,7 @@ In the following subsections we provide brief introduction on how to install and
 
 ## Batch interface
 
-In order to use batch mode, please download *rulekit-<version>-all.jar* file from the [releases](releases) folder. Alternatively, one can build the package from the sources. For this purpose run
+In order to use batch mode, please download *rulekit-\<version\>-all.jar* file from the [releases](releases) folder. Alternatively, one can build the package from the sources. For this purpose run
 ```
 gradlew -b build-new.gradle rjar
 ```
@@ -26,7 +26,7 @@ The results of the analysis will be located in *./examples/results-minimal/deals
 
 ## RapidMiner plugin
 
-In order to use RuleKit RapidMiner plugin, download *rulekit-<version>-rmbundle.zip* file from the [releases](releases) folder. The archive contains RapidMiner 9.3 bundled with the plugin. The bundle can be also built from the sources by running
+In order to use RuleKit RapidMiner plugin, download *rulekit-\<version\>-rmbundle.zip* file from the [releases](releases) folder. The archive contains RapidMiner 9.3 bundled with the plugin. The bundle can be also built from the sources by running
 ```
 gradlew -b build-new.gradle rmbundle
 ```
@@ -73,7 +73,10 @@ The detailed RuleKit documentation can be found on [Wiki pages](../../wiki) whic
 6. [User-guided induction](../../wiki/6-User-guided-induction)
 7. [Library API](../../wiki/7-Library-API)
 
-# Licence
+
+# Authors and licensing
+
+
 
 The software is publicly available under [GNU AGPL-3.0 license](LICENSE).
  
