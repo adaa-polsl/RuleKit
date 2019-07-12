@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (C) 2019 RuleKit Development Team
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- *  
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *  Affero General Public License for more details.
- *  
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
@@ -25,9 +25,9 @@ import java.security.AccessControlException;
 public class
 ClassificationMeasure implements IQualityMeasure, Serializable {
 
-	private static final long serialVersionUID = -2509268153427193088L;
-	
-	public static final int Accuracy = 0;
+    private static final long serialVersionUID = -2509268153427193088L;
+
+    public static final int Accuracy = 0;
     public static final int BinaryEntropy = 1;
     public static final int C1 = 2;
     public static final int C2 = 3;
@@ -67,48 +67,48 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
     public static final int WeightedRelativeAccuracy = 37;
     public static final int YAILS = 38;
     public static final int UserDefined = 39;
- 
+
     public static final String[] NAMES = {
-    	 "Accuracy",
-         "BinaryEntropy", 
-         "C1",
-         "C2",
-         "CFoil",
-         "CN2Significance",
-         "Correlation",
-         "Coverage",
-         "FBayesianConfirmation",
-         "FMeasure",
-         "FullCoverage",
-         "GeoRSS",
-         "GMeasure",
-         "InformationGain",
-         "JMeasure",
-         "Kappa",
-         "Klosgen",
-         "Laplace",
-         "Lift",
-         "LogicalSufficiency",
-         "MEstimate",
-         "MutualSupport",
-         "Novelty", 
-         "OddsRatio", 
-         "OneWaySupport",
-         "PawlakDependencyFactor",
-         "Q2",
-         "Precision",
-         "RelativeRisk",
-         "Ripper",
-         "RuleInterest",
-         "RSS",
-         "SBayesian",
-         "Sensitivity",
-         "Specificity",
-         "TwoWaySupport",
-         "WeightedLaplace",
-         "WeightedRelativeAccuracy",
-         "Yails",
-         "UserDefined"
+            "Accuracy",
+            "BinaryEntropy",
+            "C1",
+            "C2",
+            "CFoil",
+            "CN2Significance",
+            "Correlation",
+            "Coverage",
+            "FBayesianConfirmation",
+            "FMeasure",
+            "FullCoverage",
+            "GeoRSS",
+            "GMeasure",
+            "InformationGain",
+            "JMeasure",
+            "Kappa",
+            "Klosgen",
+            "Laplace",
+            "Lift",
+            "LogicalSufficiency",
+            "MEstimate",
+            "MutualSupport",
+            "Novelty",
+            "OddsRatio",
+            "OneWaySupport",
+            "PawlakDependencyFactor",
+            "Q2",
+            "Precision",
+            "RelativeRisk",
+            "Ripper",
+            "RuleInterest",
+            "RSS",
+            "SBayesian",
+            "Sensitivity",
+            "Specificity",
+            "TwoWaySupport",
+            "WeightedLaplace",
+            "WeightedRelativeAccuracy",
+            "Yails",
+            "UserDefined"
     };
 
     private  IUserMeasure userMeasure;
@@ -124,10 +124,10 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
 
     public static String getName(int criterion) {
         if (criterion >= 0 && criterion < NAMES.length) {
-          return NAMES[criterion];
+            return NAMES[criterion];
         }
         else {
-           throw new IllegalArgumentException("ClassificationMeasure: unknown measure type");
+            throw new IllegalArgumentException("ClassificationMeasure: unknown measure type");
         }
     }
 
@@ -205,7 +205,7 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
                 return p / (p + n + g);
 
             case InformationGain:
-                return info(P, N) - (p + n) / (P + N) * info(p, n) - (P + N - p - n) / (P + N) * info(P - p, N - n);
+                return internalInfoGain(p, n, P, N);
 
             case JMeasure:
                 return (1.0 / (P + N)) * (
@@ -303,18 +303,72 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
 
     public double calculate(ContingencyTable ct) {
         return this.calculate(ct.weighted_p, ct.weighted_n,
-        		ct.weighted_P, ct.weighted_N);
+                ct.weighted_P, ct.weighted_N);
     }
 
     private double log2(double x) {
         return Math.log(x) / Math.log(2.0);
     }
 
-    private double info(double x, double y) {
-        double prob_x = x / (x + y);
-        double prob_y = 1.0 - prob_x;
-        return -(prob_x * log2(prob_x) + prob_y * log2(prob_y));
+    private double internalInfoGain(double p, double n, double P, double N) {
+        double Consequent = p + n;
+        double NotConsequent = N;
+        double AntecedentAndConsequent = p;
+        double AntecedentButNotConsequent = P - p;
+        double Antecedent = P;
+        double NotAntecedentButConsequent = n;
+        double NotAntecedentAndNotConsequent = N - n;
+        double NotAntecedent = P + N - p - n;
+
+
+        double v = Consequent + NotConsequent;
+
+        double a = Consequent / v;
+        double b = NotConsequent / v;
+
+        double infoAllExamples;
+        if (b > 0)
+        {
+            infoAllExamples = -(a * log2(a) + b * log2(b));
+        }
+        else
+        {
+            infoAllExamples = -(a * log2(a));
+        }
+
+        double infoMatchedExamples = 0.0;
+        if (AntecedentAndConsequent != 0 && AntecedentButNotConsequent != 0) // if rule is not accurate
+        {
+            a = AntecedentAndConsequent / Antecedent;
+            b = AntecedentButNotConsequent / Antecedent;
+            infoMatchedExamples = -(a * log2(a) + b * log2(b));
+        }
+
+        double infoNotMatchedExamples = 0.0;
+        if (NotAntecedentButConsequent != 0 && NotAntecedentAndNotConsequent != 0)
+        {
+            a = NotAntecedentButConsequent / NotAntecedent;
+            b = NotAntecedentAndNotConsequent / NotAntecedent;
+            infoNotMatchedExamples = -(a * log2(a) + b * log2(b));
+        }
+
+        double c = Antecedent / v;
+        double infoRule = c * infoMatchedExamples + (1 - c) * infoNotMatchedExamples;
+
+        double info = infoAllExamples - infoRule;
+
+        if (AntecedentButNotConsequent > 0
+                && AntecedentAndConsequent / AntecedentButNotConsequent < Consequent / NotConsequent)
+        {
+            // this makes measure monotone
+            info = -info;
+        }
+
+        assert Double.isNaN(info) == false;
+        assert info <= 1.0;
+        return info;
     }
+
 
     public void createUserMeasure(String userMeasure) throws OperatorException {
 
