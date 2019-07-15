@@ -311,20 +311,22 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
     }
 
     private double internalInfoGain(double p, double n, double P, double N) {
-        double Consequent = p + n;
-        double NotConsequent = N;
-        double AntecedentAndConsequent = p;
-        double AntecedentButNotConsequent = P - p;
-        double Antecedent = P;
-        double NotAntecedentButConsequent = n;
-        double NotAntecedentAndNotConsequent = N - n;
-        double NotAntecedent = P + N - p - n;
+        double consequent = P;
+        double notConsequent = N;
 
+        double antecedent = p + n;
+        double notAntecedent = P + N - p - n;
 
-        double v = Consequent + NotConsequent;
+        double antecedentAndConsequent = p;
+        double antecedentButNotConsequent = antecedent - antecedentAndConsequent;
 
-        double a = Consequent / v;
-        double b = NotConsequent / v;
+        double notAntecedentAndNotConsequent = notConsequent - antecedentButNotConsequent;
+        double notAntecedentButConsequent = notAntecedent - notAntecedentAndNotConsequent;
+
+        double v = consequent + notConsequent;
+
+        double a = consequent / v;
+        double b = notConsequent / v;
 
         double infoAllExamples;
         if (b > 0)
@@ -337,28 +339,28 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
         }
 
         double infoMatchedExamples = 0.0;
-        if (AntecedentAndConsequent != 0 && AntecedentButNotConsequent != 0) // if rule is not accurate
+        if (antecedentAndConsequent != 0 && antecedentButNotConsequent != 0) // if rule is not accurate
         {
-            a = AntecedentAndConsequent / Antecedent;
-            b = AntecedentButNotConsequent / Antecedent;
+            a = antecedentAndConsequent / antecedent;
+            b = antecedentButNotConsequent / antecedent;
             infoMatchedExamples = -(a * log2(a) + b * log2(b));
         }
 
         double infoNotMatchedExamples = 0.0;
-        if (NotAntecedentButConsequent != 0 && NotAntecedentAndNotConsequent != 0)
+        if (notAntecedentButConsequent != 0 && notAntecedentAndNotConsequent != 0)
         {
-            a = NotAntecedentButConsequent / NotAntecedent;
-            b = NotAntecedentAndNotConsequent / NotAntecedent;
+            a = notAntecedentButConsequent / notAntecedent;
+            b = notAntecedentAndNotConsequent / notAntecedent;
             infoNotMatchedExamples = -(a * log2(a) + b * log2(b));
         }
 
-        double c = Antecedent / v;
+        double c = antecedent / v;
         double infoRule = c * infoMatchedExamples + (1 - c) * infoNotMatchedExamples;
 
         double info = infoAllExamples - infoRule;
 
-        if (AntecedentButNotConsequent > 0
-                && AntecedentAndConsequent / AntecedentButNotConsequent < Consequent / NotConsequent)
+        if (antecedentButNotConsequent > 0
+                && antecedentAndConsequent / antecedentButNotConsequent < consequent / notConsequent)
         {
             // this makes measure monotone
             info = -info;
