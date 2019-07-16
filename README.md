@@ -16,7 +16,7 @@ In the following subsections we provide brief introduction on how to install and
 
 In order to use batch mode, please download *rulekit-\<version\>-all.jar* file from the [releases](releases) folder. Alternatively, one can build the package from the sources. For this purpose run
 ```
-gradlew -b build-new.gradle rjar
+gradlew -b build.gradle rjar
 ```
 in *adaa.analytics.rules* directory of this repository. The JAR file will be placed in *adaa.analytics.rules/build/libs* subdirectory. Once the package has been downloaded/built, the analysis can be performed. The example batch experiment concerns the problem of classifying whether a person making a purchase will be a future customer. The corresponding dataset is named *deals* and is split into train and test parts ([download](data/deals)). To run the experiment, copy RuleKit JAR file into *./examples* folder of the repository and execute:
 ```
@@ -28,7 +28,7 @@ The results of the analysis will be located in *./examples/results-minimal/deals
 
 In order to use RuleKit RapidMiner plugin, download *rulekit-\<version\>-rmbundle.zip* file from the [releases](releases) folder. The archive contains RapidMiner 9.3 bundled with the plugin. The bundle can be also built from the sources by running
 ```
-gradlew -b build-new.gradle rmbundle
+gradlew -b build.gradle rmbundle
 ```
 in *adaa.analytics.rules* directory. The output archive will be stored in *adaa.analytics.rules/build/distributions*. After unpacking ZIP file, please execute *RapidMiner-Studio.bat* (Windows) or *RapidMiner-Studio.sh* (Linux) script. 
 
@@ -80,6 +80,12 @@ RuleKit Development Team:
 * [Adam Gudyś](https://github.com/agudys)
 * [Łukasz Wróbel](https://github.com/l-wrobel)
 * Marek Sikora
+
+Contributors:
+* Wojciech Górka
+* [Joanna Henzel](https://github.com/AsiaHenzel)
+* [Paweł Matyszok](https://github.com/pmatyszok)
+* [Wojciech Sikora](https://github.com/Denominatee)
 
 The software is publicly available under [GNU AGPL-3.0 license](LICENSE).
  
