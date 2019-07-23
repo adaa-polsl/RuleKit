@@ -1,7 +1,7 @@
-apply plugin: 'java'
 buildscript {
     repositories {
         jcenter()
+        maven { url 'https://maven.rapidminer.com/content/groups/public/' }
     }
 
     dependencies {
@@ -9,13 +9,19 @@ buildscript {
     }
 }
 
+
+plugins { id 'com.rapidminer.extension' version '0.9.3' }
+
+
+
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
 
 
 sourceCompatibility = 1.8
-version = '1.0'
-
+version = '1.0.0'
 jar {
+	baseName = 'rulekit'
     manifest {
         attributes 'Implementation-Version': version
         attributes 'Main-Class': 'adaa.analytics.rules.consoles.ExperimentalConsole'
@@ -26,6 +32,18 @@ repositories {
     jcenter()
     maven { url 'https://maven.rapidminer.com/content/groups/public/' }
     maven { url "https://nexus.bedatadriven.com/content/groups/public" }
+}
+
+
+extensionConfig {
+    name 'ADAA Rules'
+    groupId = 'adaa.analytics.rules'
+    vendor = 'Silesian University of Technology'
+    homepage = 'https://github.com/adaa-polsl'
+
+    dependencies {
+        rapidminer '9.3.1'
+    }
 }
 
 sourceSets {
@@ -42,7 +60,7 @@ sourceSets {
 }
 
 dependencies {
-    compile group: 'com.rapidminer.studio', name: 'rapidminer-studio-core', version: '8.2.1'
+    compile group: 'com.rapidminer.studio', name: 'rapidminer-studio-core', version: '9.3.1'
     compile group: 'com.miglayout', name: 'miglayout-swing', version: '5.1'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
     compile group: 'net.openhft', name: 'compiler', version: '2.3.1'
@@ -52,10 +70,44 @@ dependencies {
     compile group: 'org.renjin', name: 'renjin-core', version:'0.9.2691'
     compile group: 'org.renjin', name: 'tools', version: '0.9.2691'
     testCompile group: 'junit', name: 'junit', version: '4.+'
-    testRuntime 'junit:junit:4.12'
 }
 
 shadowJar {
+    zip64 true
+}
+
+
+task rmbundle(type: Zip) {
+	baseName = 'rulekit'
+	classifier = 'rmbundle'
+    from (configurations.runtime.allArtifacts.files){
+    into ('lib/plugins/')
+    }
+    from (configurations.runtime) {
+    into ('lib/')
+    }
+    from('bundle'){
+    into ('/')
+    }
+}
+
+task rjar(type: Jar) {
+	baseName = 'rulekit'
+    classifier = 'all'
+    manifest {
+        attributes 'Implementation-Version': version
+        attributes 'Main-Class': 'adaa.analytics.rules.consoles.ExperimentalConsole'
+    }
+    
+    from { 
+      configurations.compile.filter( {! (it.name =~ /.*\.pom/ )}).collect { it.isDirectory() ? it : zipTree(it) }       
+    }{    
+      exclude ('**/*.SF')      
+      exclude ('**/*.DSA')
+      exclude ('**/*.RSA')
+    }
+    
+    with jar
     zip64 true
 }
 

@@ -1,6 +1,6 @@
 # RuleKit
 
-Rule-based models are often used for data analysis as they combine interpretability with predictive power. We present RuleKit, a versatile tool for rule learning. Based on a sequential covering induction algorithm, it is suitable for classification, regression, and survival problems. The presence of user-guided induction mode facilitates verifying hypotheses concerning data dependencies which are expected or of interest. The powerful and flexible experimental environment allows straightforward investigation of different induction schemes. The analysis can be performed in batch mode, through RapidMiner plug-in, or R package. A documented Java API is also provided for convenience. The software is publicly available under GNU AGPL-3.0 license.
+Rule-based models are often used for data analysis as they combine interpretability with predictive power. We present RuleKit, a versatile tool for rule learning. Based on a sequential covering induction algorithm, it is suitable for classification, regression, and survival problems. The presence of user-guided induction mode facilitates verifying hypotheses concerning data dependencies which are expected or of interest. The powerful and flexible experimental environment allows straightforward investigation of different induction schemes. The analysis can be performed in batch mode, through RapidMiner plugin, or R package. A documented Java API is also provided for convenience. 
 
 RuleKit provides all the functionalities included in our previous packages:
 * [LR-Rules](https://github.com/adaa-polsl/LR-Rules) (Wróbel et al, 2017) for survival rules induction,
@@ -8,7 +8,54 @@ RuleKit provides all the functionalities included in our previous packages:
 
 As these packages are no longer updated, please use RuleKit instead. 
 
-In the this file we provide brief introduction on how to use RuleKit. The detailed instructions can be found on our [Wiki pages](../../wiki) which cover the following topics: 
+# Getting started
+
+In the following subsections we provide brief introduction on how to install and use RuleKit batch interface, RapidMiner plugin, and R package. 
+
+## Batch interface
+
+In order to use batch mode, please download *rulekit-\<version\>-all.jar* file from the [releases](releases) folder. Alternatively, one can build the package from the sources. For this purpose run
+```
+gradlew -b build.gradle rjar
+```
+in *adaa.analytics.rules* directory of this repository. The JAR file will be placed in *adaa.analytics.rules/build/libs* subdirectory. Once the package has been downloaded/built, the analysis can be performed. The example batch experiment concerns the problem of classifying whether a person making a purchase will be a future customer. The corresponding dataset is named *deals* and is split into train and test parts ([download](data/deals)). To run the experiment, copy RuleKit JAR file into *./examples* folder of the repository and execute:
+```
+java -jar rulekit-<version>-all.jar minimal-deals.xml
+```
+The results of the analysis will be located in *./examples/results-minimal/deals/* folder. Note, that the repository already contains reference results - they will be overwritten. See [this Wiki section](../../wiki/1-Batch-interface) for detailed information on how to configure batch analyses in RuleKit. 
+
+## RapidMiner plugin
+
+In order to use RuleKit RapidMiner plugin, download *rulekit-\<version\>-rmbundle.zip* file from the [releases](releases) folder. The archive contains RapidMiner 9.3 bundled with the plugin. The bundle can be also built from the sources by running
+```
+gradlew -b build.gradle rmbundle
+```
+in *adaa.analytics.rules* directory. The output archive will be stored in *adaa.analytics.rules/build/distributions*. After unpacking ZIP file, please execute *RapidMiner-Studio.bat* (Windows) or *RapidMiner-Studio.sh* (Linux) script. 
+
+In the following subsection we show an example regression analysis with a use of the plugin. The investigated dataset is named *methane* and concerns the problem of predicting methane concentration in a coal mine. The set is split into separate testing and training parts distributed in ARFF format ([download](data/methane)). For demonstration needs, a smaller version of these datasets suffixed with *-minimal* have been provided. 
+
+To perform the analysis under RapidMiner, import and execute [./examples/preparation.rmp](/examples/preparation.rmp) process. Its role is to add metadata to the sets and store them in the RM format (RapidMiner does not support metadata for ARFF files). After loading sets with *Read ARFF*, the *Set Role* operator is used for setting *MM116_pred* as the label attribute (in the survival analysis, a *survival_time* role has to be additionally assigned to some other attribute). Then, the sets are saved in RapidMiner repository under locations *Local Repository/methane-train-minimal* and *Local Repository/methane-test-minimal* with *Store* operators. 
+
+As the next step, please import [./examples/regression.rmp](./examples/regression.rmp) process. After executing it, datasets are loaded from the RM repository with *Retrieve* operators. Then, the training set is provided as an input for *RuleKit Generator*. The model generated by *RuleKit Generator* is then applied on unseen data (*Apply Model* operator). The performance of the prediction is assesed using *RuleKit Evaluator* operator. Performance metrices as well as generated model are passed as process outputs.
+
+See [this Wiki section](../../wiki/2-RapidMiner-plugin) for detailed information how to configure RuleKit RapidMiner plugin. 
+
+## R package
+
+
+RuleKit is compatible with R 3.3.x or later. To build the package, please download the *rulekit-\<version\>-all.jar* file from the [releases](releases) folder and copy it to the *./r-package/inst/java/* directory of the repository. Then, open *./r-package/rulekit.Rproj* project under RStudio environment. Install all required dependencies:
+```
+install.packages(c('RWeka','XML','caret','rprojroot','devtools'))
+``` 
+and build the package. The appropiate version of RTools will be downloaded automatically, if it is not present at the target platform. RuleKit will be installed under default R package directory.
+
+Below we present a survival analysis of *BMT-Ch* dataset with RuleKit R package. The set concerns the problem of analyzing factors contributing to the patients’ survival following bone marrow transplants. In order to perform the experiment, please run [./examples/survival.R](./examples/survival.R) script in R. As a result, a rule model is trained and survival function estimates for the entire dataset and for the rules are plotted.
+ 
+[This Wiki section](../../wiki/3-R-package) contains detailed information on using RuleKit R package. 
+
+# Wiki documentation
+
+The detailed RuleKit documentation can be found on [Wiki pages](../../wiki) which cover the following topics: 
 
 1. [Batch interface](../../wiki/1-Batch-interface)
     1. [General information](../../wiki/1-Batch-interface#11-general-information)
@@ -34,36 +81,20 @@ In the this file we provide brief introduction on how to use RuleKit. The detail
 7. [Library API](../../wiki/7-Library-API)
 
 
-# Installation
+# Authors and licensing
 
-...
+RuleKit Development Team:
+* [Adam Gudyś](https://github.com/agudys)
+* [Łukasz Wróbel](https://github.com/l-wrobel)
+* Marek Sikora
 
-# Usage
+Contributors:
+* Wojciech Górka
+* [Joanna Henzel](https://github.com/AsiaHenzel)
+* [Paweł Matyszok](https://github.com/pmatyszok)
+* [Wojciech Sikora](https://github.com/Denominatee)
 
-## Batch interface
-
-The example batch analysis concerns the problem of classifying whether a person making a purchase will be a future customer. The corresponding dataset is named *deals* and is split into train and test parts ([download](data/deals)). To run the experiment, copy RuleKit JAR file into *./examples* folder of the repository and execute:
-```
-java -jar RuleKit.jar minimal-deals.xml
-```
-The results of the analysis will be located in *./examples/results-minimal/deals/* folder. Note, that the repository already contains reference results - they will be overwritten. See [this Wiki section](../../wiki/1-Batch-interface) for detailed information how to configure batch analyses in RuleKit. 
-
-
-## RapidMiner plug-in
-
-In the following subsection we show an example regression analysis with a use of RuleKit RapidMiner plugin. The investigated dataset is named *methane* and concerns the problem of predicting methane concentration in a coal mine. The set is split into separate testing and training parts distributed in ARFF format ([download](data/methane)). For demonstration needs, a smaller version of these datasets suffixed with *-minimal* have been provided. 
-
-To perform the analysis under RapidMiner, load and execute [./examples/preparation.rmp](/examples/preparation.rmp) process. Its role is to add metadata to the sets and store them in the RM format (RapidMiner does not support metadata for ARFF files). After loading sets with *Read ARFF*, the *Set Role* operator is used for setting *MM116_pred* as the label attribute (in the survival analysis, a *survival_time* role has to be additionally assigned to some other attribute). Then, the sets are saved in RapidMiner repository under locations *Local Repository/methane-train-minimal* and *Local Repository/methane-test-minimal* with *Store* operators. 
-
-As the next step, please load [./examples/regression.rmp](./examples/regression.rmp) process. After executing it, datasets are loaded from the RM repository with *Retrieve* operators. Then, the training set is provided as an input for *RuleKit Generator*. The model generated by *RuleKit Generator* is then applied on unseen data (*Apply Model* operator). The performance of the prediction is assesed using *RuleKit Evaluator* operator. Performance metrices as well as generated model are passed as process outputs.
-
-See [this Wiki section](../../wiki/2-RapidMiner-plugin) for detailed information how to configure RuleKit RapidMiner plugin. 
-
-## R package
-
-In this subsection we present a survival analysis of *BMT-Ch* dataset with RuleKit R package. The set concerns the problem of analyzing factors contributing to the patients’ survival following bone marrow transplants. In order to perform the experiment, please run [./examples/survival.R](./examples/survival.R) script in R. As a result, a rule model is trained and survival function estimates for the entire dataset and for the rules are plotted.
- 
-[This Wiki section](../../wiki/3-R-package) contains detailed information on using RuleKit R package. 
+The software is publicly available under [GNU AGPL-3.0 license](LICENSE).
  
 # Citing
 
