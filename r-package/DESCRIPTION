@@ -1,9 +1,9 @@
 Package: rulekit
 Type: Package
 Title: RuleKit
-Version: 0.1.0
-Author: Wojciech Sikora
-Maintainer: The package maintainer <yourself@somewhere.net>
+Version: 1.0.0
+Author: RuleKit Development Team
+Maintainer: Adam Gudyś <adam.gudys@gmail.com>
 Description: A comprehensive suite for rule-based learning 
 License: CC0
 Encoding: UTF-8
