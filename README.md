@@ -66,7 +66,7 @@ In other distributions, package names may differ slightly. To build RuleKit, ple
 ```
 install.packages(c('RWeka','XML','caret','rprojroot','devtools'))
 ``` 
-Then, build the package with *Install and Restart* (the appropiate version of RTools will be downloaded automatically, if it is not present at the target platform). RuleKit will be installed under default R package directory.
+Then, build the package with *Install and Restart* button (the appropiate version of RTools will be downloaded automatically, if it is not present at the target platform). RuleKit will be installed under default R package directory.
 
 Below we present a survival analysis of *BMT-Ch* dataset with RuleKit R package. The set concerns the problem of analyzing factors contributing to the patients’ survival following bone marrow transplants. In order to perform the experiment, please run [./examples/survival.R](./examples/survival.R) script in R. As a result, a rule model is trained and survival function estimates for the entire dataset and for the rules are plotted.
  
