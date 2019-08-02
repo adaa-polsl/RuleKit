@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><process version="8.0.001">
+<?xml version="1.0" encoding="UTF-8"?><process version="9.3.001">
   <context>
     <input/>
     <output/>
     <macros/>
   </context>
-  <operator activated="true" class="process" compatibility="8.0.001" expanded="true" name="Process">
+  <operator activated="true" class="process" compatibility="9.3.001" expanded="true" name="Process">
     <parameter key="logverbosity" value="init"/>
     <parameter key="random_seed" value="2001"/>
     <parameter key="send_mail" value="never"/>
@@ -13,7 +13,7 @@
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
       <operator activated="true" class="adaa_rules:read_arff_rm5" compatibility="1.0.000" expanded="true" height="68" name="Read ARFF - train" width="90" x="112" y="34">
-        <parameter key="data_file" value="..\data\methane\methane-train-minimal.arff"/>
+        <parameter key="data_file" value="../data/methane/methane-train-minimal.arff"/>
         <parameter key="encoding" value="SYSTEM"/>
         <parameter key="read_not_matching_values_as_missings" value="true"/>
         <list key="data_set_meta_data_information"/>
@@ -21,17 +21,18 @@
         <parameter key="decimal_character" value="."/>
         <parameter key="grouped_digits" value="false"/>
         <parameter key="grouping_character" value=","/>
+        <parameter key="infinity_representation" value=""/>
       </operator>
-      <operator activated="true" class="set_role" compatibility="8.0.001" expanded="true" height="82" name="Set Role -train" width="90" x="246" y="34">
+      <operator activated="true" class="set_role" compatibility="9.3.001" expanded="true" height="82" name="Set Role -train" width="90" x="246" y="34">
         <parameter key="attribute_name" value="MM116_pred"/>
         <parameter key="target_role" value="label"/>
         <list key="set_additional_roles"/>
       </operator>
-      <operator activated="true" class="store" compatibility="8.0.001" expanded="true" height="68" name="Store - train" width="90" x="380" y="34">
+      <operator activated="true" class="store" compatibility="9.3.001" expanded="true" height="68" name="Store - train" width="90" x="380" y="34">
         <parameter key="repository_entry" value="//Local Repository/methane-train-minimal"/>
       </operator>
       <operator activated="true" class="adaa_rules:read_arff_rm5" compatibility="1.0.000" expanded="true" height="68" name="Read ARFF -test" width="90" x="112" y="136">
-        <parameter key="data_file" value="..\data\methane\methane-test-minimal.arff"/>
+        <parameter key="data_file" value="../data/methane/methane-test-minimal.arff"/>
         <parameter key="encoding" value="SYSTEM"/>
         <parameter key="read_not_matching_values_as_missings" value="true"/>
         <list key="data_set_meta_data_information"/>
@@ -39,13 +40,14 @@
         <parameter key="decimal_character" value="."/>
         <parameter key="grouped_digits" value="false"/>
         <parameter key="grouping_character" value=","/>
+        <parameter key="infinity_representation" value=""/>
       </operator>
-      <operator activated="true" class="set_role" compatibility="8.0.001" expanded="true" height="82" name="Set Role - test" width="90" x="246" y="136">
+      <operator activated="true" class="set_role" compatibility="9.3.001" expanded="true" height="82" name="Set Role - test" width="90" x="246" y="136">
         <parameter key="attribute_name" value="MM116_pred"/>
         <parameter key="target_role" value="label"/>
         <list key="set_additional_roles"/>
       </operator>
-      <operator activated="true" class="store" compatibility="8.0.001" expanded="true" height="68" name="Store - test" width="90" x="380" y="136">
+      <operator activated="true" class="store" compatibility="9.3.001" expanded="true" height="68" name="Store - test" width="90" x="380" y="136">
         <parameter key="repository_entry" value="//Local Repository/methane-test-minimal"/>
       </operator>
       <connect from_op="Read ARFF - train" from_port="output" to_op="Set Role -train" to_port="example set input"/>
