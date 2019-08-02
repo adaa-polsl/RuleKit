@@ -10,7 +10,10 @@ As these packages are no longer updated, please use RuleKit instead.
 
 # Getting started
 
-In the following subsections we provide brief introduction on how to install and use RuleKit batch interface, RapidMiner plugin, and R package. 
+In the following subsections we provide a brief introduction on how to install and use RuleKit batch interface, RapidMiner plugin, and R package. The software requires Java Development Kit in version 11 to work properly. In Windows one can download the installer from Oracle webpage. In Linux, a system package manager should be used instead. For instance, in Ubuntu 18.04 execute the following command:
+```
+sudo apt-get install default-jdk
+``` 
 
 ## Batch interface
 
@@ -53,11 +56,17 @@ See [this Wiki section](../../wiki/2-RapidMiner-plugin) for detailed information
 ## R package
 
 
-RuleKit is compatible with R 3.3.x or later. To build the package, please download the *rulekit-\<version\>-all.jar* file from the [releases](../../releases) folder and copy it to the *./r-package/inst/java/* directory of the repository. Then, open *./r-package/rulekit.Rproj* project under RStudio environment. Install all required dependencies:
+RuleKit is compatible with R 3.4.x or later. In Linux, *curl*, *ssl*, and *xml* system packages are additionally required for RuleKit building. For instance, under Ubuntu 18.04, execute in terminal:
+```
+sudo apt-get install libcurl4-gnutls-dev
+sudo apt-get install libssl-dev
+sudo apt-get install libxml2-dev
+```
+In other distributions, package names may differ slightly. To build RuleKit, please download the *rulekit-\<version\>-all.jar* file from the [releases](../../releases) folder and copy it to the *./r-package/inst/java/* directory of the repository. Then, open *./r-package/rulekit.Rproj* project under RStudio environment and install all required dependencies:
 ```
 install.packages(c('RWeka','XML','caret','rprojroot','devtools'))
 ``` 
-and build the package. The appropiate version of RTools will be downloaded automatically, if it is not present at the target platform. RuleKit will be installed under default R package directory.
+Then, build the package with *Install and Restart* (the appropiate version of RTools will be downloaded automatically, if it is not present at the target platform). RuleKit will be installed under default R package directory.
 
 Below we present a survival analysis of *BMT-Ch* dataset with RuleKit R package. The set concerns the problem of analyzing factors contributing to the patients’ survival following bone marrow transplants. In order to perform the experiment, please run [./examples/survival.R](./examples/survival.R) script in R. As a result, a rule model is trained and survival function estimates for the entire dataset and for the rules are plotted.
  
