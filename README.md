@@ -40,7 +40,7 @@ Linux:
 ```
 ./gradlew -b build.gradle rmbundle
 ```
-The output archive will be stored in *adaa.analytics.rules/build/distributions*. After unpacking ZIP file, please execute *RapidMiner-Studio.bat* (Windows) or *RapidMiner-Studio.sh* (Linux) script. 
+The output archive will be stored in *adaa.analytics.rules/build/distributions*. After unpacking ZIP file, please execute *RapidMiner-Studio.bat* (Windows) or *RapidMiner-Studio.sh* (Linux) script. Note, that the archive built under Windows may not work on Linux due to different new line characters in the shell script. The opposite situation is not the problem, though. In the releases we provide the archive that works under both systems. 
 
 In the following subsection we show an example regression analysis with a use of the plugin. The investigated dataset is named *methane* and concerns the problem of predicting methane concentration in a coal mine. The set is split into separate testing and training parts distributed in ARFF format ([download](data/methane)). For demonstration needs, a smaller version of these datasets suffixed with *-minimal* have been provided. 
 
