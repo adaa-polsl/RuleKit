@@ -14,23 +14,33 @@ In the following subsections we provide brief introduction on how to install and
 
 ## Batch interface
 
-In order to use batch mode, please download *rulekit-\<version\>-all.jar* file from the [releases](../../releases) folder. Alternatively, one can build the package from the sources. For this purpose run
+In order to use batch mode, please download *rulekit-\<version\>-all.jar* file from the [releases](../../releases) folder. Alternatively, one can build the package from the sources by running the following commands in the *adaa.analytics.rules* directory of this repository. 
+Windows:
 ```
 gradlew -b build.gradle rjar
 ```
-in *adaa.analytics.rules* directory of this repository. The JAR file will be placed in *adaa.analytics.rules/build/libs* subdirectory. Once the package has been downloaded/built, the analysis can be performed. The example batch experiment concerns the problem of classifying whether a person making a purchase will be a future customer. The corresponding dataset is named *deals* and is split into train and test parts ([download](data/deals)). To run the experiment, copy RuleKit JAR file into *./examples* folder of the repository and execute:
+Linux:
+```
+./gradlew -b build.gradle rjar
+```
+The JAR file will be placed in *adaa.analytics.rules/build/libs* subdirectory. Once the package has been downloaded/built, the analysis can be performed. The example batch experiment concerns the problem of classifying whether a person making a purchase will be a future customer. The corresponding dataset is named *deals* and is split into train and test parts ([download](data/deals)). To run the experiment, copy RuleKit JAR file into *./examples* folder of the repository and execute:
 ```
 java -jar rulekit-<version>-all.jar minimal-deals.xml
 ```
-The results of the analysis will be located in *./examples/results-minimal/deals/* folder. Note, that the repository already contains reference results - they will be overwritten. See [this Wiki section](../../wiki/1-Batch-interface) for detailed information on how to configure batch analyses in RuleKit. 
+Ignore the SLF4J warning reported on the console - it does not affect the procedure. The results of the analysis will be located in *./examples/results-minimal/deals/* folder. Note, that the repository already contains reference results - they will be overwritten. See [this Wiki section](../../wiki/1-Batch-interface) for detailed information on how to configure batch analyses in RuleKit. 
 
 ## RapidMiner plugin
 
-In order to use RuleKit RapidMiner plugin, download *rulekit-\<version\>-rmbundle.zip* file from the [releases](../../releases) folder. The archive contains RapidMiner 9.3 bundled with the plugin. The bundle can be also built from the sources by running
+In order to use RuleKit RapidMiner plugin, download *rulekit-\<version\>-rmbundle.zip* file from the [releases](../../releases) folder. The archive contains RapidMiner 9.3 bundled with the plugin. The bundle can be also built from the sources by running the following commands in the *adaa.analytics.rules* directory.
+Windows:
 ```
 gradlew -b build.gradle rmbundle
 ```
-in *adaa.analytics.rules* directory. The output archive will be stored in *adaa.analytics.rules/build/distributions*. After unpacking ZIP file, please execute *RapidMiner-Studio.bat* (Windows) or *RapidMiner-Studio.sh* (Linux) script. 
+Linux:
+```
+./gradlew -b build.gradle rmbundle
+```
+The output archive will be stored in *adaa.analytics.rules/build/distributions*. After unpacking ZIP file, please execute *RapidMiner-Studio.bat* (Windows) or *RapidMiner-Studio.sh* (Linux) script. 
 
 In the following subsection we show an example regression analysis with a use of the plugin. The investigated dataset is named *methane* and concerns the problem of predicting methane concentration in a coal mine. The set is split into separate testing and training parts distributed in ARFF format ([download](data/methane)). For demonstration needs, a smaller version of these datasets suffixed with *-minimal* have been provided. 
 
