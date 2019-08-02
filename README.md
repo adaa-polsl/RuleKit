@@ -14,7 +14,7 @@ In the following subsections we provide brief introduction on how to install and
 
 ## Batch interface
 
-In order to use batch mode, please download *rulekit-\<version\>-all.jar* file from the [releases](releases) folder. Alternatively, one can build the package from the sources. For this purpose run
+In order to use batch mode, please download *rulekit-\<version\>-all.jar* file from the [releases](../../releases) folder. Alternatively, one can build the package from the sources. For this purpose run
 ```
 gradlew -b build.gradle rjar
 ```
@@ -26,7 +26,7 @@ The results of the analysis will be located in *./examples/results-minimal/deals
 
 ## RapidMiner plugin
 
-In order to use RuleKit RapidMiner plugin, download *rulekit-\<version\>-rmbundle.zip* file from the [releases](releases) folder. The archive contains RapidMiner 9.3 bundled with the plugin. The bundle can be also built from the sources by running
+In order to use RuleKit RapidMiner plugin, download *rulekit-\<version\>-rmbundle.zip* file from the [releases](../../releases) folder. The archive contains RapidMiner 9.3 bundled with the plugin. The bundle can be also built from the sources by running
 ```
 gradlew -b build.gradle rmbundle
 ```
@@ -43,7 +43,7 @@ See [this Wiki section](../../wiki/2-RapidMiner-plugin) for detailed information
 ## R package
 
 
-RuleKit is compatible with R 3.3.x or later. To build the package, please download the *rulekit-\<version\>-all.jar* file from the [releases](releases) folder and copy it to the *./r-package/inst/java/* directory of the repository. Then, open *./r-package/rulekit.Rproj* project under RStudio environment. Install all required dependencies:
+RuleKit is compatible with R 3.3.x or later. To build the package, please download the *rulekit-\<version\>-all.jar* file from the [releases](../../releases) folder and copy it to the *./r-package/inst/java/* directory of the repository. Then, open *./r-package/rulekit.Rproj* project under RStudio environment. Install all required dependencies:
 ```
 install.packages(c('RWeka','XML','caret','rprojroot','devtools'))
 ``` 
