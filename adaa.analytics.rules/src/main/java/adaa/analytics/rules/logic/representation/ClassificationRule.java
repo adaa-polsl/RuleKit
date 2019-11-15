@@ -32,9 +32,7 @@ import java.util.Set;
  *
  */
 public class ClassificationRule extends Rule {
-	/**
-	 * 
-	 */
+	/** Serialization identifier. */
 	private static final long serialVersionUID = -809625670611500594L;
 
 	/**
@@ -45,7 +43,7 @@ public class ClassificationRule extends Rule {
 	}
 	
 	/**
-	 * Creates classification rule with given premise and consequences.
+	 * Creates classification rule with a given premise and a consequence.
 	 * @param premise Rule premise.
 	 * @param consequence Rule consequence.
 	 */
@@ -54,15 +52,15 @@ public class ClassificationRule extends Rule {
 	}
 
 	/**
-	 * Gets identifiers of examples covered by the rule. 
+	 * Applies the rule on a part of a specified example set.
 	 * @param set Example set.
-	 * @param ids Collection of input identifiers to be checked.
-	 * @return Collection of output identifiers.
+	 * @param filterIds Set of identifiers to be examined.
+	 * @return Information about covering.
 	 */
-	public Covering covers(ExampleSet set, Set<Integer> ids) {
+	public Covering covers(ExampleSet set, Set<Integer> filterIds) {
 		Covering covered = new Covering();
 		
-		for (int id : ids) {
+		for (int id : filterIds) {
 			Example ex = set.getExample(id);
 			double w = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
 			
@@ -86,13 +84,24 @@ public class ClassificationRule extends Rule {
 		return covered;
 	}
 	
-	
+	/**
+	 * Applies the rule on a specified example set.
+	 * @param set Example set.
+	 * @return Information about covering.
+	 */
 	public Covering covers(ExampleSet set) {
 		Covering covered = new Covering();
 		covers(set, covered, covered.positives, covered.negatives);
 		return covered;
 	}
 	
+	/**
+	 * Applies the rule on a specified example set.
+	 * @param set Example set.
+	 * @param ct Output contingency table.
+	 * @param positives Output collection of covered positive ids.
+	 * @param negatives Output collection of covered negative ids.
+	 */
 	public void covers(ExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
 
 		int id = 0;

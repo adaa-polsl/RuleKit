@@ -25,50 +25,89 @@ import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.learner.SimplePredictionModel;
 
-
+/**
+ * Abstract class representing all rule-based models (classification/regression/survival).
+ * @author Adam Gudys
+ *
+ */
 public abstract class RuleSetBase extends SimplePredictionModel {
 	
+	/**
+	 * Auxiliary class storing result of rule set significance test.
+	 * @author Adam Gudys
+	 *
+	 */
 	public class Significance {
+		/** Average p-value of all rules. */
 		public double p = 0;
+		
+		/** Fraction of rules significant at assumed level. */
 		public double fraction = 0;
 	};
 	
-	
+	/** Serialization identifier. */
 	private static final long serialVersionUID = -7112032011785315168L;
 
+	/** Training set. */
 	protected ExampleSet trainingSet;
 	
+	/** Collection of rules. */
 	protected List<Rule> rules = new ArrayList<Rule>();
 
+	/** Value indicating whether rules are voting. */
 	protected boolean isVoting;
 	
+	/** Induction paramters. */
 	protected InductionParameters params = null;
 	
+	/** User's knowledge. */
 	protected Knowledge knowledge = null;
-		
+	
+	/** Time of constructing the rule set. */
 	protected double totalTime;
 	
+	/** Time of growing. */
 	protected double growingTime;
 	
+	/** Time of pruning. */
 	protected double pruningTime;
 	
+	/** Gets {@link #totalTime} */
 	public double getTotalTime() { return totalTime; }
+	/** Sets {@link #totalTime} */
 	public void setTotalTime(double v) { totalTime = v; }
 	
+	/** Gets {@link #growingTime} */
 	public double getGrowingTime() { return growingTime; }
+	/** Sets {@link #growingTime} */
 	public void setGrowingTime(double v) { growingTime = v; }
 	
+	/** Gets {@link #pruningTime} */
 	public double getPruningTime() { return pruningTime; }
+	/** Sets {@link #pruningTime} */
 	public void setPruningTime(double v) { pruningTime = v; }
-	
-	public List<Rule> getRules() { return rules; }
-	public void addRule(Rule v) { rules.add(v); }
-	
+
+	/** Gets {@link #isVoting} */
 	public boolean getIsVoting() { return isVoting; }
+	/** Sets {@link #isVoting} */
 	public void setIsVoting(boolean v) { isVoting = v; }
 	
+	/** Gets {@link #params} */
 	public InductionParameters getParams() { return params; }
 	
+	/** Gets {@link #rules} */
+	public List<Rule> getRules() { return rules; }
+	
+	/**
+	 * Adds rule to the collection.
+	 * @param v Rule to be added.
+	 */
+	public void addRule(Rule v) { rules.add(v); }
+	
+	/**
+	 * Calculates number of conditions.
+	 * @return Number of conditions.
+	 */
 	public double calculateConditionsCount() {
 		double cnt = 0;
 		for (Rule r : rules) {
@@ -77,6 +116,10 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 		return cnt / rules.size();
 	}
 	
+	/**
+	 * Calculates number of induced conditions.
+	 * @return Number of induced conditions.
+	 */
 	public double calculateInducedCondtionsCount() {
 		double cnt = 0;
 		for (Rule r : rules) {
@@ -85,6 +128,10 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 		return cnt / rules.size();
 	}
 	
+	/**
+	 * Calculates average rule coverage.
+	 * @return Average rule coverage.
+	 */
 	public double calculateAvgRuleCoverage() {
 		double cov = 0;
 		for (Rule r : rules) {
@@ -93,6 +140,10 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 		return cov / rules.size();
 	}
 	
+	/**
+	 * Calculates average rule precision.
+	 * @return Average rule precision.
+	 */
 	public double calculateAvgRulePrecision() {
 		double prec = 0;
 		for (Rule r : rules) {
@@ -101,6 +152,10 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 		return prec / rules.size();
 	}
 	
+	/**
+	 * Calculates average rule quality.
+	 * @return Average rule quality. 
+	 */
 	public double calculateAvgRuleQuality() {
 		double q = 0.0;
 		for (Rule rule : rules) {
@@ -109,6 +164,11 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 		return q / rules.size();
 	}
 	
+	/**
+	 * Evaluates significance of the rule set. 
+	 * @param alpha Significance level.
+	 * @return Average rules p-value and fraction of rules significant at assumed level.
+	 */
 	public Significance calculateSignificance(double alpha) {
 		Significance out = new Significance();
 		
@@ -126,6 +186,11 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 		return out;
 	}
 	
+	/**
+	 * Evaluates significance of the rule set with false discovery rate correction. 
+	 * @param alpha Significance level.
+	 * @return Average rules p-value and fraction of rules significant at assumed level.
+	 */
 	public Significance calculateSignificanceFDR(double alpha) {
 		Significance out = new Significance();
 		
@@ -156,6 +221,11 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 		return out;
 	}
 	
+	/**
+	 * Evaluates significance of the rule set with familiy-wise error rate correction. 
+	 * @param alpha Significance level.
+	 * @return Average rules p-value and fraction of rules significant at assumed level.
+	 */
 	public Significance calculateSignificanceFWER(double alpha) {
 		Significance out = new Significance();
 		
@@ -186,7 +256,13 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 		return out;
 	}
 	
-	
+	/**
+	 * Initializes members.
+	 * @param exampleSet Training set.
+	 * @param isVoting Voting flag.
+	 * @param params Induction parameters.
+	 * @param knowledge User's knowledge.
+	 */
 	public RuleSetBase(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
 		super(exampleSet);
 		this.trainingSet = exampleSet;
@@ -195,6 +271,16 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 		this.knowledge = knowledge;
 	}
 
+	/**
+	 * Generates text representation of the rule set which contains:
+	 * <p><ul>
+	 * <li>induction parameters,
+	 * <li>user's knowledge (if defined),
+	 * <li>list of rules, 
+	 * <li>information about coverage of the training set examples.
+	 * </ul>
+	 * @return Rule set in the text form.
+	 */
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		

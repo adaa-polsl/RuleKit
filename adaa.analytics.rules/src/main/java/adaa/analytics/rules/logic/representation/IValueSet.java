@@ -18,28 +18,57 @@ import java.util.List;
 
 /**
  * Inteface to be implemented by all classes representing set of values (discrete set, interval, sum of sets, etc.).
- * @author Adam
+ * @author Adam Gudys
  *
  */
 public interface IValueSet {
 	
 	/**
-	 * Checks whether set contains given value.
-	 * @param value value to be checked.
-	 * @return flag indicating whether value is contained in a set.
+	 * Checks whether the set contains a given value. If the value is missing (NaN), the behaviour depends on the missing value policy
+	 * (see {@link #adaa.analytics.rules.logic.representation.MissingValuesHandler}).
+	 * @param value Value to be checked.
+	 * @return Test result.
 	 */
 	public boolean contains(double value);
 	
+	/**
+	 * Checks if the value set intersects with another one.
+	 * @param set Other value set.
+	 * @return Test result.
+	 */
 	public boolean intersects(IValueSet set);
 	
+	/**
+	 * Gets intersection of the value set with another one.
+	 * @param set Other value set.
+	 * @return Intersection of sets.
+	 */
 	public IValueSet getIntersection(IValueSet set);
 	
+	/**
+	 * Get difference between current value set and another one.
+	 * @param set Other value set.
+	 * @return Difference of sets.
+	 */
 	public List<IValueSet> getDifference(IValueSet set);
 	
-	
+	/**
+	 * Checks if the value set equals to other one.
+	 * @param obj Object co cmopare with.
+	 * @return Test result.
+	 */
 	public boolean equals(Object obj);
+	
+	/**
+	 * Calculates hashcode of the value set.
+	 * @return Hashcode.
+	 */
 	public int hashCode();
 	
+	/**
+	 * Converts the value set to string.
+	 * @return Text representation of the value set. 
+	 */
 	public String toString();
 	
 	

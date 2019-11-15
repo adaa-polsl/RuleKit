@@ -20,23 +20,52 @@ import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.OperatorException;
 
+/**
+ * Class representing a set of regression rules.
+ * @author Adam Gudys
+ *
+ */
 public class RegressionRuleSet extends RuleSetBase {
 
 	/**
-	 * 
+	 * Serialization identifier.
 	 */
 	private static final long serialVersionUID = -676053943659766492L;
 	
+	/**
+	 * Default prediction value.
+	 */
 	protected double defaultValue = -1;
 	
+	/**
+	 * Gets default prediction value. 
+	 * @return Member value.
+	 */
 	public double getDefaultValue() { return defaultValue; }
+	
+	/**
+	 * Sets default prediction value.
+	 * @param defaultValue Reference value.
+	 */
 	public void setDefaultValue(double defaultValue) { this.defaultValue = defaultValue; }
 	
-
+	/**
+	 * Invokes base class constructor.
+	 * @param exampleSet Training set.
+	 * @param isVoting Voting flag.
+	 * @param params Induction parameters.
+	 * @param knowledge User's knowledge.
+	 */
 	public RegressionRuleSet(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
 		super(exampleSet, isVoting, params, knowledge);
 	}
 
+	/**
+	 * Calculate prediction for a given example.
+	 * @param example Example to be examined.
+	 * @return Output prediction.
+	 * @throws OperatorException
+	 */
 	@Override
 	public double predict(Example example) throws OperatorException {
 		double result = 0.0;

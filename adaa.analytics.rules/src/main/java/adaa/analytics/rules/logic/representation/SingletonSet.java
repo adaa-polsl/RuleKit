@@ -20,31 +20,59 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Value set containing one element. 
+ * @author Adam Gudys
+ *
+ */
 public class SingletonSet implements IValueSet, Serializable {
 
-	/**
-	 * 
-	 */
+	/** Serialization identifier */
 	private static final long serialVersionUID = -1567922506451323157L;
+	
+	/** Value stored in a set */
 	protected double value;
+	
+	/** Mapping from value to label (null if no label exist). */
 	protected List<String> mapping;
 	
+	
+	/** Gets {@link #value} */
 	public double getValue() { return value; }
+	/** Sets {@link #value} */
 	public void setValue(double v) { value = v; }
 	
+	/** Gets {@link #mapping} */
 	public List<String> getMapping() { return mapping; }
+	/** Sets {@link #mapping} */
 	public void setMapping(List<String> v) { mapping = v; }
 	
+	/**
+	 * Initializes members with arguments.
+	 * @param v Singleton value.
+	 * @param mapping Mapping from value to label (can be null).
+	 */
 	public SingletonSet(double v, List<String> mapping) {
 		this.value = v;
 		this.mapping = mapping;
 	}
 	
+	/**
+	 * Checks whether the set contains a given value. If the value is missing (NaN), the behaviour depends on the missing value policy
+	 * (see {@link #adaa.analytics.rules.logic.representation.MissingValuesHandler}).
+	 * @param value Value to be checked.
+	 * @return Test result.
+	 */
 	@Override
 	public boolean contains(double value) {
 		return (value == this.value) || (Double.isNaN(value) && MissingValuesHandler.ignore);
 	}
 
+	/**
+	 * Checks if the value set intersects with another one.
+	 * @param set Other value set.
+	 * @return Test result.
+	 */
 	@Override
 	public boolean intersects(IValueSet set) {
 		SingletonSet ss = (set instanceof SingletonSet) ? (SingletonSet)set : null;
@@ -54,6 +82,11 @@ public class SingletonSet implements IValueSet, Serializable {
 		return false;
 	}
 	
+	/**
+	 * Checks if the value set equals to other one.
+	 * @param obj Object co cmopare with.
+	 * @return Test result.
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		SingletonSet ref = (obj instanceof SingletonSet) ? (SingletonSet)obj : null;
@@ -68,24 +101,43 @@ public class SingletonSet implements IValueSet, Serializable {
 		}
 	}
 
+	/**
+	 * Converts the value set to string.
+	 * @return Text representation of the value set. 
+	 */
 	@Override
 	public String toString() {
 		String s = "{" + ((mapping == null) ? value : mapping.get((int)value)) + "}";
 		return s;
 	}
 	
+	/**
+	 * Gets intersection of the value set with another one.
+	 * @param set Other value set.
+	 * @return Intersection of sets.
+	 */
 	@Override
 	public IValueSet getIntersection(IValueSet set) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
+	/**
+	 * Calculates hashcode of the value set.
+	 * @return Hashcode.
+	 */
 	@Override
 	public int hashCode() {
 		HashCodeBuilder builder = new HashCodeBuilder(19,27);
 		builder.append(value).append(mapping);
 		return builder.toHashCode();
 	}
+	
+	/**
+	 * Get difference between current value set and another one.
+	 * @param set Other value set.
+	 * @return Difference of sets.
+	 */
 	@Override
 	public List<IValueSet> getDifference(IValueSet set) {
 		// TODO Auto-generated method stub

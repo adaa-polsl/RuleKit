@@ -19,24 +19,61 @@ import com.rapidminer.example.ExampleSet;
 
 import java.util.*;
 
+/**
+ * Class representing a compound condition.
+ * @author Adam Gudys
+ *
+ */
 public class CompoundCondition extends ConditionBase {
 
+	/**
+	 * Serialization indentifier.
+	 */
 	private static final long serialVersionUID = -2110506055974272967L;
 
+	/**
+	 * Collection of subconditions.
+	 */
 	protected List<ConditionBase> subconditions = new ArrayList<ConditionBase>();
 	
+	/**
+	 * Logical operator which joins subconditions.
+	 */
 	protected LogicalOperator operator;
 	
+	/**
+	 * Sets logical operator.
+	 * @param operator Logical operator.
+	 */
 	public void setLogicalOperator(LogicalOperator operator) { this.operator = operator; }
+	
+	/**
+	 * Adds a subcondition.
+	 * @param cnd A subcondition to be added.
+	 */
 	public void addSubcondition(ConditionBase cnd) { subconditions.add(cnd); }
+	
+	/**
+	 * Removes a subcondition.
+	 * @param cnd Subcondition to be removed.
+	 */
 	public void removeSubcondition(ConditionBase cnd) { subconditions.remove(cnd); }
 	
+	/**
+	 * Gets subconditions.
+	 * @return Subconditions.
+	 */
 	public List<ConditionBase> getSubconditions() { return subconditions; }
 	
 	public CompoundCondition() {
 		this.operator = LogicalOperator.CONJUNCTION;
 	}
 	
+	/**
+	 * Evaluates the condition on a given example.
+	 * @param ex Example to be examined.
+	 * @return Logical value indicating whether the example fulfills the condition.
+	 */
 	@Override
 	protected boolean internalEvaluate(Example ex) {
 		for (ConditionBase cond : subconditions) {
@@ -50,7 +87,11 @@ public class CompoundCondition extends ConditionBase {
 		return (operator == LogicalOperator.CONJUNCTION) ? true : false;
 	}
 	
-	
+	/**
+	 * Evaluates the condition on a specified dataset.
+	 * @param set Input dataset.
+	 * @param outIndices Output set of indices covered by the condition.
+	 */
 	@Override
 	protected void internalEvaluate(ExampleSet set, Set<Integer> outIndices) {
 		
@@ -71,7 +112,10 @@ public class CompoundCondition extends ConditionBase {
 		
 	}
 	
-	
+	/**
+	 * Generates a text representation of the condition.
+	 * @return Text representation.
+	 */
 	public String toString() {
 		String s = "";
 		String op = operator == LogicalOperator.ALTERNATIVE ? " OR " : " AND "; 
@@ -116,6 +160,11 @@ public class CompoundCondition extends ConditionBase {
 		return s;
 	}
 	
+	/**
+	 * Verifies whether the condition is equal to another one.
+	 * @param obj Reference object.
+	 * @return Logical value indicating whether conditions are equal. 
+	 */
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;
@@ -145,6 +194,10 @@ public class CompoundCondition extends ConditionBase {
 		}
 	}
 	
+	/**
+	 * Calculates object hash code.
+	 * @return Hash code.
+	 */
 	@Override
 	public int hashCode() {
 		int result = 0;
@@ -155,6 +208,10 @@ public class CompoundCondition extends ConditionBase {
 		return result;
 	}
 	
+	/**
+	 * Gets a collection of attributes the condition is built upon.
+	 * @return Set of attributes.
+	 */
 	@Override
 	public Set<String> getAttributes() {
 		Set<String> atts = new HashSet<String>();

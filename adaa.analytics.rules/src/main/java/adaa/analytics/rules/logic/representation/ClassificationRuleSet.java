@@ -25,24 +25,48 @@ import com.rapidminer.example.table.ExampleTable;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.tools.Ontology;
 
+/**
+ * Class representing a set of classification rules.
+ * @author Adam Gudys
+ *
+ */
 public class ClassificationRuleSet extends RuleSetBase {
 
+	/** Serialization identifier. */
 	private static final long serialVersionUID = -767459208536480802L;
 
+	/** Name of the prediction attribute representing results of voting (weights).  */
 	public static final String ATTRIBUTE_VOTING_RESULTS_WEIGHTS = "voting_result_weights";
 	
+	/** Name of the prediction attribute representing results of voting (counts). */
 	public static final String ATTRIBUTE_VOTING_RESULTS_COUNTS = "voting_results_count";
 	
+	/** Identifier of the default class. */
 	private int defaultClass = -1;
 	
+	/** Gets {@link #defaultClass} */
 	public int getDefaultClass() { return defaultClass; }
+	/** Sets {@link #defaultClass} */
 	public void setDefaultClass(int defaultClass) { this.defaultClass = defaultClass; }
 	
+	/**
+	 * Invokes base class constructor.
+	 * @param exampleSet Training set.
+	 * @param isVoting Voting flag.
+	 * @param params Induction parameters.
+	 * @param knowledge User's knowledge.
+	 */
 	public ClassificationRuleSet(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
 		super(exampleSet, isVoting, params, knowledge);
 		// TODO Auto-generated constructor stub
 	}
 	
+	/**
+	 * Predicts class label for a given example. Sets output attributes describing voting results. 
+	 * @param example Example to be examined.
+	 * @return Predicted class label.
+	 * @throws OperatorException
+	 */
 	@Override
 	public double predict(Example example) throws OperatorException {
 		Attribute label = example.getAttributes().getLabel();
@@ -93,6 +117,12 @@ public class ClassificationRuleSet extends RuleSetBase {
 		return (double)result;
 	}
 	
+	/**
+	 * Applies the rule model on a given set (makes predictions for all examples).
+	 * @param exampleSet Example set to be examined.
+	 * @return Example set with filled predictions and voting attributes.
+	 * @throws OperatorException
+	 */
 	@Override
 	public ExampleSet apply(ExampleSet exampleSet) throws OperatorException {
 		ExampleSet mappedExampleSet = new RemappedExampleSet(exampleSet, getTrainingHeader(), false);
@@ -105,6 +135,12 @@ public class ClassificationRuleSet extends RuleSetBase {
         return result;
 	}
 	
+	/**
+	 * Computes prediction attributes (voting results) for a given set.
+	 * @param exampleSet Example set to be examined.
+	 * @param label Input label attribute.
+	 * @return Output label attribute.
+	 */
 	@Override
 	protected Attribute createPredictionAttributes(ExampleSet exampleSet, Attribute label) {
 		Attribute predictedLabel = super.createPredictionAttributes(exampleSet, label);

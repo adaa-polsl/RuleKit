@@ -21,28 +21,47 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Represents discrete set of values.
- * @author Adam
+ * Represents a discrete set of values.
+ * @author Adam Gudys
  *
  */
 class DiscreteSet implements IValueSet, Serializable {
 
+	/** Serialization identifier. */
 	private static final long serialVersionUID = -5679534406109859941L;
 	
+	/** Collection of values contained in a set. */
 	protected Set<Double> values = new HashSet<Double>();
+	
+	/** Mapping from integer representation to label. */
 	protected List<String> mapping;
 	
+	/** Gets {@link #values} */
 	public Set<Double> getValues() { return values; }
 	
+	/**
+	 * Creates empty set.
+	 */
 	public DiscreteSet() {
 		super();
 	}
-		
+	
+	/**
+	 * Checks whether the set contains a given value. If the value is missing (NaN), the behaviour depends on the missing value policy
+	 * (see {@link #adaa.analytics.rules.logic.representation.MissingValuesHandler}).
+	 * @param value Value to be checked.
+	 * @return Test result.
+	 */
 	@Override
 	public boolean contains(double value) {
 		return values.contains(value) || (Double.isNaN(value) && MissingValuesHandler.ignore);
 	}
 	
+	/**
+	 * Checks if the value set intersects with another one.
+	 * @param set Other value set.
+	 * @return Test result.
+	 */
 	@Override
 	public boolean intersects(IValueSet set) {
 		DiscreteSet ds = (set instanceof DiscreteSet) ? (DiscreteSet)set : null;
@@ -54,7 +73,11 @@ class DiscreteSet implements IValueSet, Serializable {
 		return false;
 	}
 	
-	
+	/**
+	 * Checks if the value set equals to other one.
+	 * @param obj Object co cmopare with.
+	 * @return Test result.
+	 */
 	@Override
 	public boolean equals(Object obj)
 	{
@@ -70,6 +93,10 @@ class DiscreteSet implements IValueSet, Serializable {
 		}
 	}
 	
+	/**
+	 * Converts the value set to string.
+	 * @return Text representation of the value set. 
+	 */
 	@Override
 	public String toString() {
 	
@@ -82,6 +109,11 @@ class DiscreteSet implements IValueSet, Serializable {
 		return s;
 	}
 
+	/**
+	 * Gets intersection of the value set with another one.
+	 * @param set Other value set.
+	 * @return Intersection of sets.
+	 */
 	@Override
 	public IValueSet getIntersection(IValueSet set) {
 		if (!(set instanceof DiscreteSet)) {
@@ -94,6 +126,11 @@ class DiscreteSet implements IValueSet, Serializable {
 		return ret;
 	}
 
+	/**
+	 * Get difference between current value set and another one.
+	 * @param set Other value set.
+	 * @return Difference of sets.
+	 */
 	@Override
 	public List<IValueSet> getDifference(IValueSet set) {
 		DiscreteSet ds = (set instanceof DiscreteSet) ? (DiscreteSet)set : null;

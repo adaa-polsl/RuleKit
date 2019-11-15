@@ -28,31 +28,64 @@ import com.rapidminer.tools.Ontology;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class representing a set of survival rules.
+ * @author Adam Gudys
+ *
+ */
 public class SurvivalRuleSet extends RuleSetBase {
 
 	/**
-	 * 
+	 * Serialization identifier.
 	 */
 	private static final long serialVersionUID = -1186396337399240471L;
 	
+	/**
+	 * Name of the prediction attribute representing survival function estimator (in a text form).
+	 */
 	public static final String ATTRIBUTE_ESTIMATOR = "estimator";
 	
+	/**
+	 * Annotation representing survival function estimator of the training set (in a text form).  
+	 */
 	public static final String ANNOTATION_TRAINING_ESTIMATOR = "training_estimator";
+	
+	/**
+	 * Annotation storing reveresed survival estimator of the training set (in a text form).
+	 */
 	public static final String ANNOTATION_TRAINING_ESTIMATOR_REV = "training_estimator_rev";
 
+	/**
+	 * Training set estimator.
+	 */
 	protected KaplanMeierEstimator trainingEstimator;
 	
+	/**
+	 * Gets training set estimator.
+	 * @return
+	 */
 	public KaplanMeierEstimator getTrainingEstimator() { return trainingEstimator; }
 	
 	
-
-	
+	/**
+	 * Invokes base class constructor and calculates survival function estimator for the training set. 
+	 * @param exampleSet Training set.
+	 * @param isVoting Voting flag.
+	 * @param params Induction parameters.
+	 * @param knowledge User's knowledge.
+	 */
 	public SurvivalRuleSet(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
 		super(exampleSet, isVoting, params, knowledge);
 		
 		trainingEstimator = new KaplanMeierEstimator(exampleSet);
 	}
 
+	/**
+	 * Estimates survival function for a given example and stores in a text form in ATTRIBUTE_ESTIMATOR attribute. 
+	 * @param example Example to be examined.
+	 * @return Should be ignored (always 0).
+	 * @throws OperatorException
+	 */
 	@Override 
 	public double predict(Example example) throws OperatorException {
 		
@@ -84,7 +117,12 @@ public class SurvivalRuleSet extends RuleSetBase {
 		return 0;
 	}
 	
-	
+	/**
+	 * Applies the rule model on a given set (estimates survival functions for all examples).
+	 * @param exampleSet Example set to be examined.
+	 * @return Example set with filled estimates and annotations.
+	 * @throws OperatorException
+	 */
 	@Override
 	public ExampleSet apply(ExampleSet exampleSet) throws OperatorException {
 		ExampleSet mappedExampleSet = new RemappedExampleSet(exampleSet, getTrainingHeader(), false);
@@ -103,7 +141,12 @@ public class SurvivalRuleSet extends RuleSetBase {
         return result;
 	}
 	
-	
+	/**
+	 * Computes prediction attributes (survival estimator) for a given set.
+	 * @param exampleSet Example set to be examined.
+	 * @param label Input label attribute.
+	 * @return Output label attribute.
+	 */
 	@Override
 	protected Attribute createPredictionAttributes(ExampleSet exampleSet, Attribute label) {
 		Attribute predictedLabel = super.createPredictionAttributes(exampleSet, label);
@@ -116,6 +159,11 @@ public class SurvivalRuleSet extends RuleSetBase {
 		return predictedLabel;
 	}
 	
+	/**
+	 * Generates text representation of the survival rule set. Beside elements returned by the base class, 
+	 * it contains survival function estimates of the entire training set and particular rules.
+	 * @return Rule set in the text form.
+	 */
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
