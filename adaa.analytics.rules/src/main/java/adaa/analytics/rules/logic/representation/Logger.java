@@ -19,8 +19,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+/**
+ * Auxiliary singleton class for logging. 
+ * @author Adam Gudys
+ *
+ */
 public class Logger {
 	
+	/**
+	 * Wrapper for PrintStream Java class which encapsulates logging level.
+	 * @author Adam Gudys
+	 *
+	 */
 	private class LogStream {
 		public PrintStream stream;
 		public Level level;
@@ -31,20 +41,41 @@ public class Logger {
 		}
 	}
 	
+	/** Singleton instance */
 	private static Logger instance = new Logger();
 	
+	/** Collection of logging streams */
 	private List<LogStream> streams = new ArrayList<LogStream>();
 	
+	/** Gets {@link #instance}. */ 
 	public static Logger getInstance() { return instance; }
 	
+	/**
+	 * Adds a new print stream.
+	 * @param ps Print stream.
+	 * @param lvl Logging level.
+	 */
 	public void addStream(PrintStream ps, Level lvl) { streams.add(new LogStream(ps, lvl)); }
 	
+	/**
+	 * Private singleton constructor.
+	 */
 	private Logger() {}
 	
+	/**
+	 * Singleton method which calls {@link #run(String, Level)} on the singleton instance.
+	 * @param msg Message.
+	 * @param lvl Importance level of a message.
+	 */
 	public static void log(String msg, Level lvl) {
 		instance.run(msg, lvl);
 	}
 	
+	/**
+	 * Logs a message on all streams with logging level smaller than the message level.
+	 * @param msg Message.
+	 * @param lvl Importance level of message.
+	 */
 	public void run(String msg, Level lvl) {
 			for (LogStream s : streams) {
 				if (lvl.intValue() >= s.level.intValue()) {

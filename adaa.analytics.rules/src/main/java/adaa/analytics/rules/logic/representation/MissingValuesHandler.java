@@ -14,6 +14,12 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
+/**
+ * Class defining missing value handling method.
+ * @author Adam Gudys
+ *
+ */
 public class MissingValuesHandler {
+	/** Flag determining whether missing values should be considered as fulfilling any condition (ignored) or not fulfilling (default). */
 	public static boolean ignore = false;
 }

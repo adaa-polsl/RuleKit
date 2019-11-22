@@ -45,13 +45,17 @@ import com.rapidminer.tools.container.Pair;
 
 /**
  * Separate'n'conquer algorithm for generating classification rule sets.
- * @author Adam
+ * @author Adam Gudys
  *
  */
 public class ClassificationSnC extends AbstractSeparateAndConquer {
 	
+	/**
+	 * Module for finding single classification rules.
+	 */
 	protected ClassificationFinder finder;
 
+	
 	public ClassificationSnC(ClassificationFinder finder, InductionParameters params) {
 		super(params);
 		this.finder = finder;
@@ -59,7 +63,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 	}
 	
 	/**
-	 * Generates classification rule set on the basis of training set.
+	 * Generates a classification rule set on the basis of a training set.
 	 * @param dataset Training data set.
 	 * @return Rule set.
 	 */

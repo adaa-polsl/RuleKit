@@ -110,7 +110,7 @@ public abstract class Rule implements Serializable {
 	public Rule() {}
 	
 	/**
-	 * Creates classification rule with a given premise and a consequence.
+	 * Creates a rule with a given premise and a consequence.
 	 * @param premise Rule premise.
 	 * @param consequence Rule consequence.
 	 */
@@ -186,8 +186,8 @@ public abstract class Rule implements Serializable {
 	}
 	
 	/**
-	 * Generates text representation of the rule.
-	 * @return Rule text representation.
+	 * Generates a text representation of the rule.
+	 * @return Text representation.
 	 */
 	public String toString() {
 		String s = "IF " + premise.toString() + " THEN " + consequence.toString();	

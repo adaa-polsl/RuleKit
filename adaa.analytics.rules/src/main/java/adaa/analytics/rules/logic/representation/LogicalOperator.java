@@ -14,6 +14,11 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
+/**
+ * Enum representing possible logical operators in a rule premise - conjuction and alternative.
+ * @author Adam Gudys
+ *
+ */
 public enum LogicalOperator {
 	CONJUNCTION,
 	ALTERNATIVE

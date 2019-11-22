@@ -22,8 +22,18 @@ import com.rapidminer.example.set.SortedExampleSet;
 import java.util.Set;
 import java.util.logging.Level;
 
+/**
+ *  Separate'n'conquer algorithm for generating log rank-based survival rule sets.
+ * @author Adam Gudys
+ *
+ */
 public class SurvivalLogRankSnC extends RegressionSnC {
 
+	/**
+	 * Invokes base class constructor and overwrites factory so it creates survival rules.
+	 * @param finder Object for growing and pruning survival rules.
+	 * @param params 
+	 */
 	public SurvivalLogRankSnC(RegressionFinder finder, InductionParameters params) {
 		super(finder, params);
 		this.factory = new RuleFactory(RuleFactory.SURVIVAL, true, params, null);

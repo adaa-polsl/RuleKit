@@ -46,15 +46,15 @@ public interface IValueSet {
 	public IValueSet getIntersection(IValueSet set);
 	
 	/**
-	 * Get difference between current value set and another one.
+	 * Get difference between the value set and another one.
 	 * @param set Other value set.
 	 * @return Difference of sets.
 	 */
 	public List<IValueSet> getDifference(IValueSet set);
 	
 	/**
-	 * Checks if the value set equals to other one.
-	 * @param obj Object co cmopare with.
+	 * Checks if the value set equals to another one.
+	 * @param obj Reference object.
 	 * @return Test result.
 	 */
 	public boolean equals(Object obj);
@@ -66,7 +66,7 @@ public interface IValueSet {
 	public int hashCode();
 	
 	/**
-	 * Converts the value set to string.
+	 * Converts the value set to a string.
 	 * @return Text representation of the value set. 
 	 */
 	public String toString();

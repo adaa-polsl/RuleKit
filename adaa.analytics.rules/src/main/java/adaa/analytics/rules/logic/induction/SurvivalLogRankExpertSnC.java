@@ -22,6 +22,11 @@ import com.rapidminer.example.set.SortedExampleSet;
 import java.util.Set;
 import java.util.logging.Level;
 
+/**
+ *  Separate'n'conquer algorithm for generating log rank-based survival rule sets with user's knowledge.
+ * @author Adam Gudys
+ *
+ */
 public class SurvivalLogRankExpertSnC extends RegressionExpertSnC {
 
 	public SurvivalLogRankExpertSnC(RegressionFinder finder,

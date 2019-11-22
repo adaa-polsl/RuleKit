@@ -26,26 +26,20 @@ import java.util.*;
  */
 public class CompoundCondition extends ConditionBase {
 
-	/**
-	 * Serialization indentifier.
-	 */
+	/** Serialization indentifier. */
 	private static final long serialVersionUID = -2110506055974272967L;
 
-	/**
-	 * Collection of subconditions.
-	 */
+	/** Collection of subconditions. */
 	protected List<ConditionBase> subconditions = new ArrayList<ConditionBase>();
 	
-	/**
-	 * Logical operator which joins subconditions.
-	 */
+	/** Logical operator which joins subconditions. */
 	protected LogicalOperator operator;
 	
-	/**
-	 * Sets logical operator.
-	 * @param operator Logical operator.
-	 */
+	/** Sets {@link #operator}.	*/
 	public void setLogicalOperator(LogicalOperator operator) { this.operator = operator; }
+	
+	/** Gets {@link #subconditions}. */
+	public List<ConditionBase> getSubconditions() { return subconditions; }
 	
 	/**
 	 * Adds a subcondition.
@@ -59,11 +53,6 @@ public class CompoundCondition extends ConditionBase {
 	 */
 	public void removeSubcondition(ConditionBase cnd) { subconditions.remove(cnd); }
 	
-	/**
-	 * Gets subconditions.
-	 * @return Subconditions.
-	 */
-	public List<ConditionBase> getSubconditions() { return subconditions; }
 	
 	public CompoundCondition() {
 		this.operator = LogicalOperator.CONJUNCTION;

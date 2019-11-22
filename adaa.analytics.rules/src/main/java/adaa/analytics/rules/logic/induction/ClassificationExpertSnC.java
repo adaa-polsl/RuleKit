@@ -38,10 +38,26 @@ import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.NominalMapping;
 import com.rapidminer.tools.container.Pair;
 
+/**
+ * User-guided separate'n'conquer algorithm for generating classification rule sets.
+ * 
+ * @author Adam Gudys
+ *
+ */
 public class ClassificationExpertSnC extends ClassificationSnC {
 
+	/**
+	 * User's knowledge.
+	 */
 	protected Knowledge knowledge;
 	
+	/**
+	 * Invokes base class constructor, creates factory for generating 
+	 * 
+	 * @param finder
+	 * @param params
+	 * @param knowledge
+	 */
 	public ClassificationExpertSnC(ClassificationFinder finder, InductionParameters params, Knowledge knowledge) {
 		super(finder, params);
 		factory = new RuleFactory(RuleFactory.CLASSIFICATION, true, params, knowledge);

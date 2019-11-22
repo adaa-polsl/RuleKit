@@ -26,6 +26,12 @@ import org.apache.commons.lang.SerializationUtils;
 import java.util.*;
 import java.util.logging.Level;
 
+/**
+ * Class for growing and pruning regression rules with user's knowledge.
+ * 
+ * @author Adam Gudys
+ *
+ */
 public class RegressionExpertFinder extends RegressionFinder implements IExpertFinder {
 
 	protected Knowledge knowledge;

@@ -27,26 +27,15 @@ import com.rapidminer.operator.OperatorException;
  */
 public class RegressionRuleSet extends RuleSetBase {
 
-	/**
-	 * Serialization identifier.
-	 */
+	/** Serialization identifier. */
 	private static final long serialVersionUID = -676053943659766492L;
 	
-	/**
-	 * Default prediction value.
-	 */
+	/** Default prediction value. */
 	protected double defaultValue = -1;
 	
-	/**
-	 * Gets default prediction value. 
-	 * @return Member value.
-	 */
+	/** Gets {@link #defaultValue}. */
 	public double getDefaultValue() { return defaultValue; }
-	
-	/**
-	 * Sets default prediction value.
-	 * @param defaultValue Reference value.
-	 */
+	/** Sets {@link #defaultValue}. */
 	public void setDefaultValue(double defaultValue) { this.defaultValue = defaultValue; }
 	
 	/**

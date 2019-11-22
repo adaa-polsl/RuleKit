@@ -35,37 +35,23 @@ import java.util.List;
  */
 public class SurvivalRuleSet extends RuleSetBase {
 
-	/**
-	 * Serialization identifier.
-	 */
+	/** Serialization identifier. */
 	private static final long serialVersionUID = -1186396337399240471L;
 	
-	/**
-	 * Name of the prediction attribute representing survival function estimator (in a text form).
-	 */
+	/** Name of the prediction attribute representing survival function estimator (in a text form). */
 	public static final String ATTRIBUTE_ESTIMATOR = "estimator";
 	
-	/**
-	 * Annotation representing survival function estimator of the training set (in a text form).  
-	 */
+	/** Annotation representing survival function estimator of the training set (in a text form).  */
 	public static final String ANNOTATION_TRAINING_ESTIMATOR = "training_estimator";
 	
-	/**
-	 * Annotation storing reveresed survival estimator of the training set (in a text form).
-	 */
+	/** Annotation storing reveresed survival estimator of the training set (in a text form). */
 	public static final String ANNOTATION_TRAINING_ESTIMATOR_REV = "training_estimator_rev";
 
-	/**
-	 * Training set estimator.
-	 */
+	/** Training set estimator. */
 	protected KaplanMeierEstimator trainingEstimator;
 	
-	/**
-	 * Gets training set estimator.
-	 * @return
-	 */
+	/** Gets {@link #trainingEstimator}}. */
 	public KaplanMeierEstimator getTrainingEstimator() { return trainingEstimator; }
-	
 	
 	/**
 	 * Invokes base class constructor and calculates survival function estimator for the training set. 

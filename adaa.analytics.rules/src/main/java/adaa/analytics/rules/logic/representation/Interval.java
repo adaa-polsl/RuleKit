@@ -22,30 +22,61 @@ import java.util.List;
 
 /**
  * Represents continuous interval.
- * @author Adam
+ * @author Adam Gudys
  *
  */
 public class Interval implements IValueSet, Serializable {
 
+	/** Serialization id */
 	private static final long serialVersionUID = -5118225436243640157L;
 	
+	/** Constant representing negative infinity. */
 	public static double MINUS_INF = -Double.MAX_VALUE;
+	
+	/** Constant representing positive infinity. */
 	public static double INF = Double.MAX_VALUE;
 	
+	/** Left bound of the interval. */
 	protected double left;
+	
+	/** Right bound of the interval. */
 	protected double right;
 	
+	/** Flag indicating if the interval is closed from the left side. */
 	protected boolean leftClosed;
+	
+	/** Flag indicating if the interval is closed from the right side. */
 	protected boolean rightClosed;
 	
+	
+	/** Gets {@link #left} */
+	public double getLeft() { return left; }
+	
+	/** Gets {@link #right} */
+	public double getRight() { return right; }
+	
+	
+	/**
+	 * Factory method which creates a right-bounded interval in the form (-inf, v).
+	 * @param v Right interval side.
+	 * @return Created interval.
+	 */
 	public static Interval create_le(double v) {
 		return new Interval(MINUS_INF, v, false, false);
 	}
 	
+	/**
+	 * Factory method which creates a left-bounded interval in the form [v, +inf).
+	 * @param v Left interval side.
+	 * @return Created interval.
+	 */
 	public static Interval create_geq(double v) {
 		return new Interval(v, INF, true, false);
 	}
 	
+	/**
+	 * Creates an unbounded interval (-inf,+inf).
+	 */
 	public Interval() {
 		this.left = MINUS_INF;
 		this.right = INF;
@@ -53,6 +84,13 @@ public class Interval implements IValueSet, Serializable {
 		this.rightClosed = false;
 	}
 	
+	/**
+	 * Initializes all members.
+	 * @param left Left side.
+	 * @param right Right side.
+	 * @param leftClosed Flag indicating if interval is left-closed.  
+	 * @param rightClosed Flag indicating if interval is right-closed.
+	 */
 	public Interval(double left, double right, boolean leftClosed, boolean rightClosed) {
 		this.left = left;
 		this.right = right;
@@ -60,6 +98,11 @@ public class Interval implements IValueSet, Serializable {
 		this.rightClosed = rightClosed;
 	}
 	
+	/**
+	 * Creates a half-bounded interval using value and relation in a text form.
+	 * @param value Interval bound.
+	 * @param relation One of the following: "<", ">", "<=", ">=".
+	 */
 	public Interval(double value, String relation) {
 		this();
 		if (relation.equals("<")) {
@@ -75,6 +118,11 @@ public class Interval implements IValueSet, Serializable {
 		}
 	}
 	
+	/**
+	 * Checks if the value set equals to another one.
+	 * @param obj Reference object.
+	 * @return Test result.
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -89,12 +137,24 @@ public class Interval implements IValueSet, Serializable {
 		return left == ival.left && right == ival.right && leftClosed == ival.leftClosed && rightClosed == ival.rightClosed;
 	}
 	
+
+	/**
+	 * Checks whether the interval contains a given value. If the value is missing (NaN), the behaviour depends on the missing value policy
+	 * (see {@link #adaa.analytics.rules.logic.representation.MissingValuesHandler}).
+	 * @param value Value to be checked.
+	 * @return Test result.
+	 */
 	@Override
 	public boolean contains(double value) {		
 		return ((value >= left && leftClosed) || value > left) && ((value <= right && rightClosed) || value < right) ||
 				(Double.isNaN(value) && MissingValuesHandler.ignore);
 	}
 	
+	/**
+	 * Checks if the interval intersects with another one.
+	 * @param set Other value set.
+	 * @return Test result.
+	 */
 	@Override
 	public boolean intersects(IValueSet set) {
 		if (set instanceof AnyValueSet) {
@@ -112,6 +172,11 @@ public class Interval implements IValueSet, Serializable {
 		return false;
 	}
 	
+	/**
+	 * Gets intersection of the interval with another one.
+	 * @param set Other value set.
+	 * @return Intersection of sets.
+	 */
 	@Override
 	public IValueSet getIntersection(IValueSet set) {
 		if (set instanceof AnyValueSet) {
@@ -132,6 +197,10 @@ public class Interval implements IValueSet, Serializable {
 		}
 	}
 	
+	/**
+	 * Converts the value set to a string.
+	 * @return Text representation of the value set. 
+	 */
 	@Override
 	public String toString() {
 		String s =
@@ -143,6 +212,11 @@ public class Interval implements IValueSet, Serializable {
 		return s;	
 	}
 
+	/**
+	 * Get difference between the value set and another one.
+	 * @param set Other value set.
+	 * @return Difference of sets.
+	 */
 	@Override
 	public List<IValueSet> getDifference(IValueSet set) {
 		if (set instanceof AnyValueSet) {
@@ -169,6 +243,10 @@ public class Interval implements IValueSet, Serializable {
 		return ret;
 	}
 
+	/**
+	 * Calculates hashcode of the value set.
+	 * @return Hashcode.
+	 */
 	@Override
 	public int hashCode() {
 		HashCodeBuilder builder = new HashCodeBuilder(17, 37);
@@ -176,11 +254,5 @@ public class Interval implements IValueSet, Serializable {
 		return builder.toHashCode();
 	}
 
-	public double getLeft() {
-		return left;
-	}
 	
-	public double getRight() {
-		return right;
-	}
 }

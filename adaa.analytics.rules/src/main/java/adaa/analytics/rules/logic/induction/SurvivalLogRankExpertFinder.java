@@ -24,6 +24,12 @@ import com.rapidminer.tools.container.Pair;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Class for growing and pruning log rank-based survival rules with user's knowledge.
+ * 
+ * @author Adam Gudys
+ *
+ */
 public class SurvivalLogRankExpertFinder extends RegressionExpertFinder {
 
 	public SurvivalLogRankExpertFinder(InductionParameters params) {

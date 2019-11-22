@@ -20,29 +20,52 @@ import com.rapidminer.example.ExampleSet;
 
 import java.util.Set;
 
+/**
+ * Class representing a survival rule.
+ * @author Adam Gudys
+ *
+ */
 public class SurvivalRule extends Rule {
 
-	/**
-	 * 
-	 */
+	/** Serialization id. */
 	private static final long serialVersionUID = -2143653515226214179L;
 	
+	/** Name of the attribute role representing survival time. */
 	public static final String SURVIVAL_TIME_ROLE = "survival_time";
 	
+	/** Kaplan-Meier estimator in a rule consequence. */
 	protected KaplanMeierEstimator estimator;
 	
+	/** Gets {@link #estimator}. */ 
 	public KaplanMeierEstimator getEstimator() { return estimator; }
+	/** Sets {@link #estimator}. */
 	public void setEstimator(KaplanMeierEstimator v) { estimator = v; }
 	
+	/**
+	 * Creates a survival rule with a given premise (consequence is ignored).
+	 * @param premise Rule premise.
+	 * @param consequence Ignored.
+	 */
 	public SurvivalRule(CompoundCondition premise, ElementaryCondition consequence) {
 		super(premise, consequence);
 	}
 	
+	/**
+	 * Creates a survival rule with a given premise and a survival function estimates as a consequence.
+	 * @param premise Rule premise.
+	 * @param consequence Rule consequence.
+	 */
 	public SurvivalRule(Rule r, KaplanMeierEstimator estimator) {
 		super(r);
 		this.estimator = estimator;
 	}
 	
+	/**
+	 * Applies the rule on a part of a specified example set.
+	 * @param set Example set.
+	 * @param filterIds Set of identifiers to be examined.
+	 * @return Information about covering.
+	 */
 	@Override
 	public Covering covers(ExampleSet set, Set<Integer> ids) {
 		Covering covered = new Covering();
@@ -59,6 +82,11 @@ public class SurvivalRule extends Rule {
 		return covered;
 	}
 	
+	/**
+	 * Applies the rule on a specified example set.
+	 * @param set Example set.
+	 * @return Information about covering.
+	 */
 	@Override
 	public Covering covers(ExampleSet set) {
 		Covering covered = new Covering();

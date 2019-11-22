@@ -22,7 +22,19 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Class for parsing rules from text.
+ * @author Adam Gudys
+ *
+ */
 public class RuleParser {
+	
+	/**
+	 * Parses a rule.
+	 * @param s String to be parsed.
+	 * @param meta Example set meta data.
+	 * @return Rule instance.
+	 */
 	public static Rule parseRule(String s, ExampleSetMetaData meta) {
 		Rule rule = null; 
 		
@@ -55,6 +67,12 @@ public class RuleParser {
     	return rule;
 	}
 	
+	/**
+	 * Parses a compound condition.
+	 * @param s String to be parsed.
+	 * @param meta Example set meta data.
+	 * @return Compound condition instance.
+	 */
 	public static CompoundCondition parseCompoundCondition(String s, ExampleSetMetaData meta) {
 		CompoundCondition out = new CompoundCondition();
 		
@@ -70,6 +88,12 @@ public class RuleParser {
 		return out;
 	}
 	
+	/**
+	 * Parses an elementary condition.
+	 * @param s String to be parsed.
+	 * @param meta Example set meta data.
+	 * @return Elementary condition instance.
+	 */
 	public static ElementaryCondition parseElementaryCondition(String s, ExampleSetMetaData meta) {
 		ElementaryCondition out = null;
 

@@ -23,29 +23,50 @@ import java.security.InvalidParameterException;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ * Class representing regression rule.
+ * @author Adam Gudys
+ *
+ */
 public class RegressionRule extends Rule {
 	
-	/**
-	 * 
-	 */
+	/** Serialization id. */
 	private static final long serialVersionUID = -6597003506869205514L;
 	
+	/** Standard deviation of examples covered by the rule w.r.t. value in a consequence */
 	private double stddev = 0.0;
 	
+	/** Gets value in the consequence. */
 	public double getConsequenceValue() { return ((SingletonSet)getConsequence().getValueSet()).getValue(); }
+	/** Gets value in the consequence. */ 
 	public void setConsequenceValue(double v) {
 		((SingletonSet)getConsequence().getValueSet()).setValue(v);
 	}
 	
+	/**
+	 * Creates a regression rule with a given premise and a consequence.
+	 * @param premise Rule premise.
+	 * @param consequence Rule consequence.
+	 */
 	public RegressionRule(CompoundCondition premise, ElementaryCondition consequence) {
 		super(premise, consequence);
 	}
 	
+	/**
+	 * Applies the rule on a specified example set.
+	 * @param set Example set.
+	 * @param filterIds Ignored.
+	 * @return Information about covering.
+	 */
 	@Override
-	public Covering covers(ExampleSet set, Set<Integer> ids) {
+	public Covering covers(ExampleSet set, Set<Integer> filterIds) {
 		return covers(set);
 	}
 	
+	/**
+	 * Sets p,n,P,N as well as consequence value and standard deviation on the basis of covering information.
+	 * @param cov Covering information.
+	 */
 	@Override
 	public void setCoveringInformation(Covering cov) {
 		super.setCoveringInformation(cov);
@@ -53,6 +74,11 @@ public class RegressionRule extends Rule {
 		this.stddev = cov.stddev_y;
 	}
 
+	/**
+	 * Applies the regression rule on a specified example set.
+	 * @param set Example set.
+	 * @return Information about covering.
+	 */
 	@Override
 	public Covering covers(ExampleSet set) {
 		SortedExampleSet ses = (set instanceof SortedExampleSet) ? (SortedExampleSet)set : null;
@@ -121,6 +147,10 @@ public class RegressionRule extends Rule {
 		return cov;
 	}	
 	
+	/**
+	 * Generates a text representation of the rule.
+	 * @return Text representation.
+	 */
 	@Override
 	public String toString() {
 		double lo = getConsequenceValue() - stddev;

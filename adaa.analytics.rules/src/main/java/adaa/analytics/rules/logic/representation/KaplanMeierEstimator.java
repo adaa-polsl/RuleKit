@@ -22,21 +22,37 @@ import com.rapidminer.example.ExampleSet;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * Represents a Kaplan-Meier estimator of survival function.
+ * @author Adam Gudys
+ *
+ */
 public class KaplanMeierEstimator implements Serializable {
 	
-	/**
-	 * 
-	 */
+	/** Serialization id. */
 	private static final long serialVersionUID = -6949465091584014494L;
 	
+	/** Array of survival estimator points */
 	protected ArrayList<SurvInfo> survInfo = new ArrayList<SurvInfo>();
 	
+	/**
+	 * Adds a new time point to the estimator.
+	 * @param time Survival time.
+	 * @param probability Survival probability.
+	 */
 	public void addSurvInfo(double time, double probability) {
 		survInfo.add(new SurvInfo(time, probability));
 	}
-		
+	
+	/**
+	 * Creates empty instance.
+	 */
 	public KaplanMeierEstimator() {}
 	
+	/**
+	 * Generates survival estimator function from survival data.
+	 * @param data Example set with attribute of {@link #adaa.analytics.rules.logic.representation.SurvivalRule.SURVIVAL_TIME_ROLE}. 
+	 */
     public KaplanMeierEstimator(ExampleSet data) {
     	Attribute survTime = data.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE); 
 		Attribute survStat = data.getAttributes().getLabel();
@@ -90,6 +106,10 @@ public class KaplanMeierEstimator implements Serializable {
         this.calculateProbability();
     }
     
+    /**
+     * Converts estimator to the text.
+     * @return Estimator in the text form.
+     */
     public String save() {
     	StringBuilder sb = new StringBuilder();
     	sb.append(survInfo.size() + ":");
@@ -99,6 +119,10 @@ public class KaplanMeierEstimator implements Serializable {
     	return sb.toString();
     }
     
+    /**
+     * Loads estimator from the text.
+     * @param s Estimator in the text form.
+     */
     public void load(String s) {
     	int idx = s.indexOf(':');
     	int count = Integer.parseInt(s.substring(0, idx));
@@ -117,7 +141,12 @@ public class KaplanMeierEstimator implements Serializable {
 			));
     	}
     }
-     
+    
+    /**
+	 * Generates survival estimator function from survival data.
+	 * @param data Example set with attribute of {@link #adaa.analytics.rules.logic.representation.SurvivalRule.SURVIVAL_TIME_ROLE}. 
+	 * @param indices Indices of the examples to be taken into account when building the estimator. 
+	 */
     public KaplanMeierEstimator(ExampleSet data, Set<Integer> indices) {
 		Attribute survTime = data.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE); 
 		Attribute survStat = data.getAttributes().getLabel();
@@ -172,6 +201,11 @@ public class KaplanMeierEstimator implements Serializable {
         this.calculateProbability();
     }
     
+    /**
+     * Average several estimators.
+     * @param estimators Array of estimators to be averaged.
+     * @return Average estimator.
+     */
     public static KaplanMeierEstimator average(KaplanMeierEstimator[] estimators) {
         //get unique times from all estimators
     	SortedSet<Double> uniqueTime = new TreeSet<Double>();
@@ -203,6 +237,10 @@ public class KaplanMeierEstimator implements Serializable {
         return avgKm;
     }
 
+    /**
+     * Extracts time points from estimator.
+     * @return Array of time points.
+     */
     public ArrayList<Double> getTimes() {            
     	ArrayList<Double> times = new ArrayList<Double>(survInfo.size());
     	for (SurvInfo si : survInfo) {
@@ -211,6 +249,11 @@ public class KaplanMeierEstimator implements Serializable {
     	return times;
     }
     
+    /**
+     * Calculates survival probability at given time.
+     * @param time Time.
+     * @return Survival probability.
+     */
     public double getProbabilityAt(double time) {
         int idx = Collections.binarySearch(survInfo, new SurvInfo(time), new SurvInfoComparer(SurvInfoComparer.By.TimeAsc));
     	
@@ -236,6 +279,11 @@ public class KaplanMeierEstimator implements Serializable {
         return p;
     }
     
+    /**
+     * Gets number of events at given time point.
+     * @param time Time.
+     * @return Number of events.
+     */
     public int getEventsCountAt(double time) {
     	 int idx = Collections.binarySearch(survInfo, new SurvInfo(time), new SurvInfoComparer(SurvInfoComparer.By.TimeAsc));
      	
@@ -246,6 +294,11 @@ public class KaplanMeierEstimator implements Serializable {
          return 0;
     }
     	
+    /**
+     * Gets risk at given time.
+     * @param time Time.
+     * @return Risk.
+     */
     public int getRiskSetCountAt(double time) {
     	 int idx = Collections.binarySearch(survInfo, new SurvInfo(time), new SurvInfoComparer(SurvInfoComparer.By.TimeAsc));
       	
@@ -265,7 +318,10 @@ public class KaplanMeierEstimator implements Serializable {
         return this.survInfo.get(idx).getAtRiskCount();
     }
     
-    
+    /**
+     * Creates reveresed K-M estimator.
+     * @return Reversed estimator.
+     */
     public KaplanMeierEstimator reverse() {
     	KaplanMeierEstimator revKm = new KaplanMeierEstimator();
     	for (int i = 0; i < this.survInfo.size(); i++) {
@@ -279,6 +335,9 @@ public class KaplanMeierEstimator implements Serializable {
          return revKm;
     }
     
+    /**
+     * Fills the probabilities in K-M estimator.
+     */
     protected void calculateProbability() {
         
     	//Debug.Assert(new HashSet<double>(this.survInfo.Select(s => s.Time)).Count == this.survInfo.Count);
@@ -299,13 +358,11 @@ public class KaplanMeierEstimator implements Serializable {
     
     /**
      * Class wrapping some survival information.
-     * @author Adam
+     * @author Adam Gudys
      *
      */
     class SurvInfo  implements Serializable {
-        /**
-		 * 
-		 */
+        
 		private static final long serialVersionUID = 8276994296125818327L;
 
 		public static final int NotAssigned = Integer.MIN_VALUE;
@@ -349,7 +406,7 @@ public class KaplanMeierEstimator implements Serializable {
     
     /**
      * Class for comparing two survival information objects either by time or by probability.
-     * @author Adam
+     * @author Adam Gudys
      *
      */
     static class SurvInfoComparer implements Comparator<SurvInfo> {

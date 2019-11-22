@@ -39,33 +39,23 @@ public abstract class ConditionBase implements Cloneable, Serializable {
 	 */
 	public enum Type {FORCED, PREFERRED, NORMAL};
 	
-	/**
-	 * Serialization identifier.
-	 */
+	/** Serialization identifier. */
 	private static final long serialVersionUID = 6510660043726970892L;
-
-	/**
-	 * Checks if condition is disabled.
-	 * @return Value indicating if condition is disabled.
-	 */
-	public boolean isDisabled() { return disabled; }
 	
-	/**
-	 * Sets condition disable flag.
-	 * @param b Reference value.
-	 */
+	/** Flag indicating if condition is disabled. */
+	protected boolean disabled = false;
+	
+	/** Condition type. */
+	protected Type type = Type.NORMAL;
+
+	/** Gets {@link #disabled} */
+	public boolean isDisabled() { return disabled; }
+	/** Sets {@link #disabled} */
 	public void setDisabled(boolean b) { disabled = b; }
 	
-	/**
-	 * Gets the condition type.
-	 * @return Condition type.
-	 */
+	/** Gets {@link #type} */
 	public Type getType() { return type; }
-	
-	/**
-	 * Sets condition type.
-	 * @param t Reference value.
-	 */
+	/** Sets {@link #type} */
 	public void setType(Type t) { type = t; }
 	
 	/**
@@ -120,15 +110,5 @@ public abstract class ConditionBase implements Cloneable, Serializable {
 	 * @param set Input dataset.
 	 * @param outIndices Output set of indices covered by the condition.
 	 */
-	protected abstract void internalEvaluate(ExampleSet set,  Set<Integer> outIndices);
-	
-	/**
-	 * Flag indicating if condition is disabled.
-	 */
-	protected boolean disabled = false;
-	
-	/**
-	 * Condition type.
-	 */
-	protected Type type = Type.NORMAL;
+	protected abstract void internalEvaluate(ExampleSet set,  Set<Integer> outIndices);	
 }
