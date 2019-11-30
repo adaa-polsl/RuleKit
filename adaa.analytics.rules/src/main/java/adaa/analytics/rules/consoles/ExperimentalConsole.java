@@ -90,10 +90,12 @@ public class ExperimentalConsole {
     }
     
     
-    static final String VERSION = "1.0.0"; 
-    static final String BUILD_DATE = "09.07.2019";
+    static final String VERSION = "1.1.0"; 
+    static final String BUILD_DATE = "11.30.2019";
     
-    protected boolean isVerbose = false; 
+    protected boolean isVerbose = false;
+
+    protected int experimentalThreads = 1;
    
     public static void main(String[] args) {
         
@@ -111,6 +113,8 @@ public class ExperimentalConsole {
 	    	argList.addAll(Arrays.asList(args));
 	    
 	    	isVerbose = findSwitch(argList, "-v");
+	    	experimentalThreads = findOption(argList, "-exp-threads", 1);
+
 	    	Logger.getInstance().addStream(System.out, isVerbose ? Level.FINE : Level.INFO);	
 	    
             if (argList.size() == 1) {
@@ -122,9 +126,10 @@ public class ExperimentalConsole {
             	execute(argList.get(0));
 
             } else {
-                Logger.log("Usage:\njava -jar RuleKit.jar [-v] <experiment_xml>\n"
-                		+ "    <experiment_xml> - XML file with experimentel setting description\n"
-                		+ "    -v - verbose mode\n", Level.INFO);
+                Logger.log("Usage:\njava -jar RuleKit.jar [-v] [-exp-threads <value>] <experiment_xml>\n"
+                		+ "    <experiment_xml>         XML file with experimental setting description\n"
+                		+ "    -v                       verbose mode\n"
+                        + "    -exp-threads <value>     number of experimental threads (default 1)\n", Level.INFO);
             	
             }
     	
@@ -141,9 +146,7 @@ public class ExperimentalConsole {
       
         String lineSeparator = System.getProperty("line.separator");
 
-        int threadCount = 1; //Runtime.getRuntime().availableProcessors();
-
-        ExecutorService pool = Executors.newFixedThreadPool(threadCount);
+        ExecutorService pool = Executors.newFixedThreadPool(experimentalThreads);
         List<Future> futures = new ArrayList<>();
 
         List<ParamSetWrapper> paramSets = new ArrayList<>();
@@ -331,11 +334,28 @@ public class ExperimentalConsole {
     
     
     private boolean findSwitch(List<String> params, String name) {
-    	if (params.contains(name)) {
-    		params.remove(name);
-    		return true;
-    	}
-    	
-    	return false;
+        if (params.contains(name)) {
+            params.remove(name);
+            return true;
+        }
+
+        return false;
+    }
+
+
+    private int findOption(List<String> params, String name, int def) {
+        int out = def;
+        int id = params.indexOf(name);
+        if (id > -1 && id + 1 < params.size()) {
+            try {
+                out = Integer.parseInt(params.get(id + 1));
+                params.remove(id);
+                params.remove(id);
+            } catch (NumberFormatException e) {
+                out = def;
+            }
+        }
+
+        return out;
     }
 }

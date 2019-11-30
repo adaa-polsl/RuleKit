@@ -85,7 +85,9 @@ public class ClassificationRulesPerformance extends MeasuredPerformance {
 		 
 		 double bacc = 0;
 		 for (int i = 0; i < numClasses; ++i) {
-			 bacc += (double)good[i] / (good[i] + bad[i]);
+			 if (good[i] + bad[i] > 0) {
+				 bacc += (double)good[i] / (good[i] + bad[i]);
+			 }
 		 }
 		 bacc /= numClasses;
 		 

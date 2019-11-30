@@ -44,7 +44,7 @@ public class Knowledge implements Serializable {
 	protected boolean induceUsingAutomatic;
 	
 	/** Flag indicating whether automatic induction should be performed for classes for which no 
-	* 	user‘s requirements have been defined (classification problems only) . 
+	* 	user's requirements have been defined (classification problems only) .
 	*/
 	protected boolean considerOtherClasses;
 	
