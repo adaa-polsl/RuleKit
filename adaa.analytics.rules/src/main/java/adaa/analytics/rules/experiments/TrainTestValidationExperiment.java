@@ -18,6 +18,7 @@ import adaa.analytics.rules.consoles.ExperimentalConsole;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
+import adaa.analytics.rules.operator.ExpertRuleGenerator;
 import adaa.analytics.rules.operator.RuleGenerator;
 import adaa.analytics.rules.operator.RulePerformanceEvaluator;
 import adaa.analytics.rules.utils.RapidMiner5;
@@ -33,6 +34,7 @@ import com.rapidminer5.operator.io.ArffExampleSetWriter;
 import com.rapidminer5.operator.io.ArffExampleSource;
 import com.rapidminer5.operator.io.ModelWriter;
 import com.rapidminer5.operator.io.ModelLoader;
+import com.rapidminer.operator.performance.AbstractPerformanceEvaluator;
 import com.sun.tools.javac.util.Pair;
 
 import org.apache.commons.lang.StringUtils;
@@ -50,31 +52,118 @@ import java.util.logging.Level;
 
 import javax.swing.JTable.PrintMode;
 
-public class TrainTestValidationExperiment extends ExperimentBase {
+public class TrainTestValidationExperiment implements Runnable{
+
+    // Train proces operators
+    private class TrainProcessWrapper {
+        public ArffExampleSource arff;
+        public ArffExampleSource arff2;
+        public ModelWriter modelWriter = null;
+        public ChangeAttributeRole roleSetter = null;
+        public ChangeAttributeRole roleSetter2 = null;
+        public RuleGenerator ruleGenerator = null;
+
+        public com.rapidminer.Process process;
+
+
+        public TrainProcessWrapper() throws OperatorCreationException {
+            arff = RapidMiner5.createOperator(ArffExampleSource.class);
+            arff2 = RapidMiner5.createOperator(ArffExampleSource.class);
+            ModelApplier trainApplier = OperatorService.createOperator(ModelApplier.class);
+            roleSetter2 = OperatorService.createOperator(ChangeAttributeRole.class);
+            roleSetter = OperatorService.createOperator(ChangeAttributeRole.class);
+            RulePerformanceEvaluator trainValidationEvaluator2 = RapidMiner5.createOperator(RulePerformanceEvaluator.class);
+            modelWriter = RapidMiner5.createOperator(ModelWriter.class);
+            ruleGenerator = RapidMiner5.createOperator(ExpertRuleGenerator.class);
+
+            // configure train process
+            process = new com.rapidminer.Process();
+            process.getRootOperator().getSubprocess(0).addOperator(arff);
+            process.getRootOperator().getSubprocess(0).addOperator(arff2);
+            process.getRootOperator().getSubprocess(0).addOperator(roleSetter);
+            process.getRootOperator().getSubprocess(0).addOperator(roleSetter2);
+            process.getRootOperator().getSubprocess(0).addOperator(trainValidationEvaluator2);
+            process.getRootOperator().getSubprocess(0).addOperator(ruleGenerator);
+            process.getRootOperator().getSubprocess(0).addOperator(trainApplier);
+            process.getRootOperator().getSubprocess(0).addOperator(modelWriter);
+
+            process.getRootOperator().setParameter(ProcessRootOperator.PARAMETER_LOGVERBOSITY, "" + LogService.OFF);
+
+            arff.getOutputPorts().getPortByName("output").connectTo(roleSetter.getInputPorts().getPortByName("example set input"));
+            roleSetter.getOutputPorts().getPortByName("example set output").connectTo(ruleGenerator.getInputPorts().getPortByName("training set"));
+            ruleGenerator.getOutputPorts().getPortByName("model").connectTo(modelWriter.getInputPorts().getPortByName("input"));
+            arff2.getOutputPorts().getPortByName("output").connectTo(roleSetter2.getInputPorts().getPortByName("example set input"));
+            roleSetter2.getOutputPorts().getPortByName("example set output").connectTo(trainApplier.getInputPorts().getPortByName("unlabelled data"));
+            modelWriter.getOutputPorts().getPortByName("through").connectTo(trainApplier.getInputPorts().getPortByName("model"));
+            trainApplier.getOutputPorts().getPortByName("labelled data").connectTo(trainValidationEvaluator2.getInputPorts().getPortByName("labelled data"));
+            trainValidationEvaluator2.getOutputPorts().getPortByName("performance").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(0));
+            trainApplier.getOutputPorts().getPortByName("model").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(1));
+
+            // configure role setter
+            roleSetter.setParameter(ChangeAttributeRole.PARAMETER_NAME, labelAttribute);
+            roleSetter.setParameter(ChangeAttributeRole.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
+            roleSetter2.setParameter(ChangeAttributeRole.PARAMETER_NAME, labelAttribute);
+            roleSetter2.setParameter(ChangeAttributeRole.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
+
+            modelWriter.setParameter(ModelWriter.PARAMETER_OUTPUT_TYPE, "2");
+        }
+
+    }
+
+    private class TestProcessWrapper {
+        public ArffExampleSource arff;
+        public ModelLoader modelLoader = null;
+        public ChangeAttributeRole roleSetter = null;
+        public ArffExampleSetWriter writeArff = null;
+
+        public com.rapidminer.Process process;
+
+        public TestProcessWrapper() throws OperatorCreationException {
+
+            arff = RapidMiner5.createOperator(ArffExampleSource.class);
+            roleSetter = OperatorService.createOperator(ChangeAttributeRole.class);
+            ModelApplier applier = OperatorService.createOperator(ModelApplier.class);
+            modelLoader = RapidMiner5.createOperator(ModelLoader.class);
+            writeArff = RapidMiner5.createOperator(ArffExampleSetWriter.class);
+            AbstractPerformanceEvaluator validationEvaluator = RapidMiner5.createOperator(RulePerformanceEvaluator.class);
+
+            process = new com.rapidminer.Process();
+            process.getRootOperator().getSubprocess(0).addOperator(arff);
+            process.getRootOperator().getSubprocess(0).addOperator(roleSetter);
+            process.getRootOperator().getSubprocess(0).addOperator(applier);
+            process.getRootOperator().getSubprocess(0).addOperator(validationEvaluator);
+            process.getRootOperator().getSubprocess(0).addOperator(writeArff);
+            process.getRootOperator().getSubprocess(0).addOperator(modelLoader);
+
+            process.getRootOperator().setParameter(ProcessRootOperator.PARAMETER_LOGVERBOSITY, "" + LogService.OFF);
+
+
+            arff.getOutputPorts().getPortByName("output").connectTo(roleSetter.getInputPorts().getPortByName("example set input"));
+            roleSetter.getOutputPorts().getPortByName("example set output").connectTo(applier.getInputPorts().getPortByName("unlabelled data"));
+            modelLoader.getOutputPorts().getPortByName("output").connectTo(applier.getInputPorts().getPortByName("model"));
+            applier.getOutputPorts().getPortByName("labelled data").connectTo(validationEvaluator.getInputPorts().getPortByName("labelled data"));
+            validationEvaluator.getOutputPorts().getPortByName("performance").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(0));
+            validationEvaluator.getOutputPorts().getPortByName("example set").connectTo(writeArff.getInputPorts().getPortByName("input"));
+            applier.getOutputPorts().getPortByName("model").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(1));
+
+            roleSetter.setParameter(ChangeAttributeRole.PARAMETER_NAME, labelAttribute);
+            roleSetter.setParameter(ChangeAttributeRole.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
+
+        }
+    }
 
     // General parameters
+    protected SynchronizedReport qualityReport;
+
+    protected SynchronizedReport modelReport;
+
     private final String outDirPath;
     private final String labelAttribute;
     private final List<ExperimentalConsole.TrainElement> trainElements;
     private final List<ExperimentalConsole.PredictElement> predictElements;
 
-    // Train proces operators
-    private ArffExampleSource trainArff;
-    private ArffExampleSource trainArff2;
-    private ArffExampleSource testArff;
-    private ModelWriter trainModelWriter = null;
-    private ChangeAttributeRole trainRoleSetter = null;
-    private ChangeAttributeRole trainRoleSetter2 = null;
-
-    // Train process
-    private com.rapidminer.Process processTest;
-
-    // Test process operators
-    private ModelLoader modelLoader = null;
-    private ChangeAttributeRole testRoleSetter = null;
-    private ArffExampleSetWriter testWriteArff = null;
-
     private Pair<String,Map<String,Object>> paramSet;
+    private Map<String, String> options;
     
     private boolean isVerbose = false;
     
@@ -85,19 +174,27 @@ public class TrainTestValidationExperiment extends ExperimentBase {
                                          String labelAttribute, Map<String, String> options, Pair<String,Map<String, Object>> paramSet,
                                          String outDirPath, List<ExperimentalConsole.TrainElement> trainElements,
                                          List<ExperimentalConsole.PredictElement> predictElements){
-        super(predictionPerformance, trainingReport);
 
         File f = new File(outDirPath);
         this.outDirPath = f.isAbsolute() ? outDirPath : (System.getProperty("user.dir") + "/" + outDirPath);
         this.labelAttribute = labelAttribute;
         this.trainElements = trainElements;
         this.predictElements = predictElements;
+        this.options = options;
+        this.paramSet = paramSet;
+
+        this.qualityReport = predictionPerformance;
+        this.modelReport = trainingReport;
+
+    }
+
+    @Override
+    public void run() {
 
         try {
-            this.paramSet = paramSet;
-         
-            prepareTrainProcess();
-            prepareTestProcess();
+
+            TrainProcessWrapper train =  new TrainProcessWrapper();
+            TestProcessWrapper test = new TestProcessWrapper();
 
             // survival dataset - set proper role
             List<String[]> roles = new ArrayList<>();
@@ -111,109 +208,25 @@ public class TrainTestValidationExperiment extends ExperimentBase {
             }
 
             if (roles.size() > 0) {
-                trainRoleSetter.setListParameter(ChangeAttributeRole.PARAMETER_CHANGE_ATTRIBUTES, roles);
-                trainRoleSetter2.setListParameter(ChangeAttributeRole.PARAMETER_CHANGE_ATTRIBUTES, roles);
-                testRoleSetter.setListParameter(ChangeAttributeRole.PARAMETER_CHANGE_ATTRIBUTES, roles);
+                train.roleSetter.setListParameter(ChangeAttributeRole.PARAMETER_CHANGE_ATTRIBUTES, roles);
+                train.roleSetter2.setListParameter(ChangeAttributeRole.PARAMETER_CHANGE_ATTRIBUTES, roles);
+                test.roleSetter.setListParameter(ChangeAttributeRole.PARAMETER_CHANGE_ATTRIBUTES, roles);
             }
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    private void prepareTrainProcess() throws OperatorCreationException {
-
-        // Training process
-        trainArff = RapidMiner5.createOperator(ArffExampleSource.class);
-        trainArff2 = RapidMiner5.createOperator(ArffExampleSource.class);
-        ModelApplier trainApplier = OperatorService.createOperator(ModelApplier.class);
-        trainRoleSetter2 = OperatorService.createOperator(ChangeAttributeRole.class);
-        trainRoleSetter = OperatorService.createOperator(ChangeAttributeRole.class);
-        RulePerformanceEvaluator trainValidationEvaluator2 = RapidMiner5.createOperator(RulePerformanceEvaluator.class);
-        trainModelWriter = RapidMiner5.createOperator(ModelWriter.class);
-
-        // configure train process
-        process = new com.rapidminer.Process();
-        process.getRootOperator().getSubprocess(0).addOperator(trainArff);
-        process.getRootOperator().getSubprocess(0).addOperator(trainArff2);
-        process.getRootOperator().getSubprocess(0).addOperator(trainRoleSetter);
-        process.getRootOperator().getSubprocess(0).addOperator(trainRoleSetter2);
-        process.getRootOperator().getSubprocess(0).addOperator(trainValidationEvaluator2);
-        process.getRootOperator().getSubprocess(0).addOperator(ruleGenerator);
-        process.getRootOperator().getSubprocess(0).addOperator(trainApplier);
-        process.getRootOperator().getSubprocess(0).addOperator(trainModelWriter);
-        
-        process.getRootOperator().setParameter(ProcessRootOperator.PARAMETER_LOGVERBOSITY, "" + LogService.OFF);
-
-        trainArff.getOutputPorts().getPortByName("output").connectTo(trainRoleSetter.getInputPorts().getPortByName("example set input"));
-        trainRoleSetter.getOutputPorts().getPortByName("example set output").connectTo(ruleGenerator.getInputPorts().getPortByName("training set"));
-        ruleGenerator.getOutputPorts().getPortByName("model").connectTo(trainModelWriter.getInputPorts().getPortByName("input"));
-        trainArff2.getOutputPorts().getPortByName("output").connectTo(trainRoleSetter2.getInputPorts().getPortByName("example set input"));
-        trainRoleSetter2.getOutputPorts().getPortByName("example set output").connectTo(trainApplier.getInputPorts().getPortByName("unlabelled data"));
-        trainModelWriter.getOutputPorts().getPortByName("through").connectTo(trainApplier.getInputPorts().getPortByName("model"));
-        trainApplier.getOutputPorts().getPortByName("labelled data").connectTo(trainValidationEvaluator2.getInputPorts().getPortByName("labelled data"));
-        trainValidationEvaluator2.getOutputPorts().getPortByName("performance").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(0));
-        trainApplier.getOutputPorts().getPortByName("model").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(1));
-
-        // configure role setter
-        trainRoleSetter.setParameter(ChangeAttributeRole.PARAMETER_NAME, labelAttribute);
-        trainRoleSetter.setParameter(ChangeAttributeRole.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
-        trainRoleSetter2.setParameter(ChangeAttributeRole.PARAMETER_NAME, labelAttribute);
-        trainRoleSetter2.setParameter(ChangeAttributeRole.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
-
-        trainModelWriter.setParameter(ModelWriter.PARAMETER_OUTPUT_TYPE, "2");
-    }
-
-    private void prepareTestProcess() throws OperatorCreationException {
-
-        // Testing process
-        testArff = RapidMiner5.createOperator(ArffExampleSource.class);
-        testRoleSetter = OperatorService.createOperator(ChangeAttributeRole.class);
-        ModelApplier applier = OperatorService.createOperator(ModelApplier.class);
-        modelLoader = RapidMiner5.createOperator(ModelLoader.class);
-        testWriteArff = RapidMiner5.createOperator(ArffExampleSetWriter.class);
-
-        processTest = new com.rapidminer.Process();
-        processTest.getRootOperator().getSubprocess(0).addOperator(testArff);
-        processTest.getRootOperator().getSubprocess(0).addOperator(testRoleSetter);
-        processTest.getRootOperator().getSubprocess(0).addOperator(applier);
-        processTest.getRootOperator().getSubprocess(0).addOperator(validationEvaluator);
-        processTest.getRootOperator().getSubprocess(0).addOperator(testWriteArff);
-        processTest.getRootOperator().getSubprocess(0).addOperator(modelLoader);
-        
-        processTest.getRootOperator().setParameter(ProcessRootOperator.PARAMETER_LOGVERBOSITY, "" + LogService.OFF);
-
-
-        testArff.getOutputPorts().getPortByName("output").connectTo(testRoleSetter.getInputPorts().getPortByName("example set input"));
-        testRoleSetter.getOutputPorts().getPortByName("example set output").connectTo(applier.getInputPorts().getPortByName("unlabelled data"));
-        modelLoader.getOutputPorts().getPortByName("output").connectTo(applier.getInputPorts().getPortByName("model"));
-        applier.getOutputPorts().getPortByName("labelled data").connectTo(validationEvaluator.getInputPorts().getPortByName("labelled data"));
-        validationEvaluator.getOutputPorts().getPortByName("performance").connectTo(processTest.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(0));
-        validationEvaluator.getOutputPorts().getPortByName("example set").connectTo(testWriteArff.getInputPorts().getPortByName("input"));
-        applier.getOutputPorts().getPortByName("model").connectTo(processTest.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(1));
-
-        testRoleSetter.setParameter(ChangeAttributeRole.PARAMETER_NAME, labelAttribute);
-        testRoleSetter.setParameter(ChangeAttributeRole.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
-    }
-
-    @Override
-    public void run() {
-
-        try {
-
+            // set rule generator parameters
         	Logger.log("\nPARAMETER SET: " + paramSet.fst + "\n", Level.INFO);
             Map<String, Object> params = paramSet.snd;
 
             for (String key: params.keySet()) {
                 Object o = params.get(key);
 
-                boolean paramOk = ruleGenerator.getParameters().getKeys().contains(key);
+                boolean paramOk = train.ruleGenerator.getParameters().getKeys().contains(key);
                 
                 if (paramOk)   
 	                if (o instanceof String) {
-	                    ruleGenerator.setParameter(key, (String)o);
+	                    train.ruleGenerator.setParameter(key, (String)o);
 	                } else if (o instanceof List) {
-	                    ruleGenerator.setListParameter(key, (List<String[]>)o);
+	                    train.ruleGenerator.setListParameter(key, (List<String[]>)o);
 	                } else {
                     throw new InvalidParameterException("Invalid paramter type: " + key);
                 } else {
@@ -240,10 +253,10 @@ public class TrainTestValidationExperiment extends ExperimentBase {
                 Logger.log("Train params: \n   Model file path: " + modelFilePath + "\n" +
                         "   Input file path: " + inFilePath + "\n", Level.FINE);
 
-                trainModelWriter.setParameter(ModelWriter.PARAMETER_MODEL_FILE, modelFilePath);
-                trainArff.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, inFilePath);
-                trainArff2.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, inFilePath);
-                IOContainer out = process.run();
+                train.modelWriter.setParameter(ModelWriter.PARAMETER_MODEL_FILE, modelFilePath);
+                train.arff.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, inFilePath);
+                train.arff2.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, inFilePath);
+                IOContainer out = train.process.run();
                 IOObject[] objs = out.getIOObjects();
 
                 PerformanceVector performance;
@@ -307,12 +320,12 @@ public class TrainTestValidationExperiment extends ExperimentBase {
                         "   Predictions file path: " + predictionsFilePath + "\n" +
                         "   Test file path:        " + testFilePath + "\n", Level.FINE);
 
-                modelLoader.setParameter(ModelLoader.PARAMETER_MODEL_FILE, modelFilePath);
-                testArff.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, testFilePath);
-                testWriteArff.setParameter(ArffExampleSetWriter.PARAMETER_EXAMPLE_SET_FILE, predictionsFilePath);
+                test.modelLoader.setParameter(ModelLoader.PARAMETER_MODEL_FILE, modelFilePath);
+                test.arff.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, testFilePath);
+                test.writeArff.setParameter(ArffExampleSetWriter.PARAMETER_EXAMPLE_SET_FILE, predictionsFilePath);
 
                 long t1 = System.nanoTime();
-                IOContainer out = processTest.run();
+                IOContainer out = test.process.run();
                 IOObject[] objs = out.getIOObjects();
                 long t2 = System.nanoTime();
                 double elapsedSec = (double)(t2 - t1) / 1e9;
