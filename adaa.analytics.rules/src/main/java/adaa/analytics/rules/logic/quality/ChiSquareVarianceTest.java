@@ -18,6 +18,11 @@ import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
 import com.rapidminer.tools.container.Pair;
 
+/**
+ * Class representing Chi-square test for variance.
+ *
+ * @author Adam Gudys
+ */
 public class ChiSquareVarianceTest extends StatisticalTest {
 	
 	public Pair<Double,Double> calculateLower(double expectedDev, double sampleDev, int samplesize) {

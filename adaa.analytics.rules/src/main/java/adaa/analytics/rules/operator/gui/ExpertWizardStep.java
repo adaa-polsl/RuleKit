@@ -30,7 +30,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+/**
+ * This class is an element of RapidMiner plugin user interface. It represents a wizard step for defining user's knowledge.
+ *
+ * @author Adam Gudys
+ */
 public class ExpertWizardStep extends WizardStep implements IExpertPanelObserver, IRulePanelObserver {
 
 	protected ExpertPanel panel = new ExpertPanel();

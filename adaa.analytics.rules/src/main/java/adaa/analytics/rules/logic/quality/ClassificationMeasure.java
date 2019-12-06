@@ -22,6 +22,11 @@ import com.rapidminer.operator.OperatorException;
 import java.io.*;
 import java.security.AccessControlException;
 
+/**
+ * Class gathering all quality measures for classification problems.
+ *
+ * @author Adam Gudys
+ */
 public class
 ClassificationMeasure implements IQualityMeasure, Serializable {
 

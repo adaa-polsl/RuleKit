@@ -25,7 +25,7 @@ public interface IValueSet {
 	
 	/**
 	 * Checks whether the set contains a given value. If the value is missing (NaN), the behaviour depends on the missing value policy
-	 * (see {@link #adaa.analytics.rules.logic.representation.MissingValuesHandler}).
+	 * (see {@link adaa.analytics.rules.logic.representation.MissingValuesHandler}).
 	 * @param value Value to be checked.
 	 * @return Test result.
 	 */

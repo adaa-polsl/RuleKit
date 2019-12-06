@@ -25,6 +25,11 @@ import com.rapidminer.tools.Ontology;
 
 import java.util.*;
 
+/**
+ *  Separate'n'conquer algorithm for generating survival rule sets using transformation to classification problem.
+ * 	@author Adam Gudys
+ *
+ */
 public class SurvivalClassificationSnC extends ClassificationSnC {
 	
 	protected DataRowFactory factory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY);

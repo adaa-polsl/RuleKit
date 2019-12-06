@@ -51,9 +51,9 @@ public class SurvivalRule extends Rule {
 	}
 	
 	/**
-	 * Creates a survival rule with a given premise and a survival function estimates as a consequence.
-	 * @param premise Rule premise.
-	 * @param consequence Rule consequence.
+	 * Creates a survival rule from rule with empty consequence and survival function estimate.
+	 * @param r Reference rule.
+	 * @param estimator Survival function estimate.
 	 */
 	public SurvivalRule(Rule r, KaplanMeierEstimator estimator) {
 		super(r);
@@ -63,7 +63,7 @@ public class SurvivalRule extends Rule {
 	/**
 	 * Applies the rule on a part of a specified example set.
 	 * @param set Example set.
-	 * @param filterIds Set of identifiers to be examined.
+	 * @param ids Set of identifiers to be examined.
 	 * @return Information about covering.
 	 */
 	@Override

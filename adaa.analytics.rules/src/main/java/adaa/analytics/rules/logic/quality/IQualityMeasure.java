@@ -14,6 +14,9 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.quality;
 
+/**
+ * Interface to be implemented by all classes representing quality measures.
+ */
 public interface IQualityMeasure {
 	public String getName();
 }

@@ -34,6 +34,11 @@ import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
 import com.rapidminer.tools.OperatorService;
 import com.rapidminer5.operator.io.ArffExampleSource;
 
+/**
+ * This console was created for testing purposes only.
+ *
+ * @author Adam Gudys
+ */
 public class APITestConsole {
 
 	public static void main(String[] args) {
@@ -89,8 +94,8 @@ public class APITestConsole {
 			
 	    	// configure all operators
 	    	// set names of the input files
-	    	trainArff.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, "E:/Projekty/expert-rules/github-sources/data/deals/deals-train.arff");
-			testArff.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, "E:/Projekty/expert-rules/github-sources/data/deals/deals-test.arff");
+	    	trainArff.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, "../data/deals/deals-train.arff");
+			testArff.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, "../data/deals/deals-test.arff");
 	    	
 			// use "Future Customer" as the label attribute
 	    	trainRoleSetter.setParameter(trainRoleSetter.PARAMETER_NAME, "Future Customer");

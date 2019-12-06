@@ -14,6 +14,12 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
+/**
+ *  Class representing contingency table. For regression rules it also stores mean, median and standard deviation of
+ *  conditional attribute value of covered examples.
+ *
+ * @author Adam Gudys
+ */
 public class ContingencyTable {
 	public double weighted_p = 0;
 	public double weighted_n = 0; 

@@ -25,6 +25,11 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is an element of RapidMiner plugin user interface. It represents a main panel displayed by {@link ExpertWizardStep}.
+ *
+ * @author Adam Gudys
+ */
 public class ExpertPanel extends JPanel {
 
 	public enum Category {

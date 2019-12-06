@@ -118,7 +118,7 @@ public class IntegerBitSet implements Set<Integer> {
 	/**
 	 * Adds all elements from a collection of integers to the set (sets appropriate bits). 
 	 * If given collection is another bit set, an optimized path is executed (logical operations on bit vectors).
-	 * @param v Collection of integers to be added.
+	 * @param arg0 Collection of integers to be added.
 	 * @return Always true.
 	 */
 	@Override
@@ -238,7 +238,7 @@ public class IntegerBitSet implements Set<Integer> {
 
 	/**
 	 * Removes an integer from the set (resets an appropriate bit).
-	 * @param v Integer to be removed.
+	 * @param arg0 Integer to be removed.
 	 * @return Always true.
 	 */
 	@Override
@@ -255,7 +255,7 @@ public class IntegerBitSet implements Set<Integer> {
 	/**
 	 * Removes all elements from a collection of integers to the set (resets appropriate bits). 
 	 * If given collection is another bit set, an optimized path is executed (logical operations on bit vectors).
-	 * @param v Collection of integers to be removed.
+	 * @param arg0 Collection of integers to be removed.
 	 * @return Always true.
 	 */
 	@Override

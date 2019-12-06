@@ -14,6 +14,11 @@
  ******************************************************************************/
 package adaa.analytics.rules.operator.gui;
 
+/**
+ * Interface to be implemented by all {@link RulePanel} observers.
+ *
+ * @author Adam Gudys
+ */
 public interface IRulePanelObserver {
 	public void newConditionClicked();
 	public void removeConditionClicked(int row);

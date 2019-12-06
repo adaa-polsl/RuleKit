@@ -17,6 +17,12 @@ package adaa.analytics.rules.logic.induction;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Represents covering of a rule. Stores a contingency table together with the indices of positive and negative examples
+ * covered by the rule.
+ *
+ * @author Adam Gudys
+ */
 public class Covering extends ContingencyTable{
 	
 	public Set<Integer> positives = new HashSet<Integer>();

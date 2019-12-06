@@ -29,6 +29,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * This class is an element of RapidMiner plugin user interface. It represents a subpanel of {@link ExpertPanel} for defining user's knowledge.
+ *
+ * @author Adam Gudys
+ */
 public class RulePanel extends JPanel {
 	
 	public class ConditionRow {

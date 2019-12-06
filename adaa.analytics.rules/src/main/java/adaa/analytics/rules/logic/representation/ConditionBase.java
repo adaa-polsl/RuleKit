@@ -66,7 +66,7 @@ public abstract class ConditionBase implements Cloneable, Serializable {
 
 	/**
 	 * Evaluates the condition on a given example. 
-	 * It verifies {@link #disabled} flag and calls {@link #internalEvaluate(Example)} abstract method.
+	 * It verifies {@link #disabled} flag and calls {@link #internalEvaluate} abstract method.
 	 * @param ex Example to be examined.
 	 * @return Logical value indicating whether the example fulfills the condition.
 	 */
@@ -76,7 +76,7 @@ public abstract class ConditionBase implements Cloneable, Serializable {
 	
 	/**
 	 * Evaluates the condition on a specified dataset. 
-	 * It verifies {@link #disabled} flag and calls {@link #internalEvaluate(ExampleSet,Set<Integer>)} abstract method.
+	 * It verifies {@link #disabled} flag and calls {@link #internalEvaluate} abstract method.
 	 * @param set Input dataset.
 	 * @param outIndices Output set of indices covered by the condition.
 	 */
@@ -87,7 +87,7 @@ public abstract class ConditionBase implements Cloneable, Serializable {
 	
 	/**
 	 * Verifies whether the condition is equal to another one.
-	 * @param obj Reference object.
+	 * @param ref Reference object.
 	 * @return Logical value indicating whether conditions are equal. 
 	 */
 	public abstract boolean equals(Object ref);

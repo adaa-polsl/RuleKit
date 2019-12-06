@@ -20,7 +20,11 @@ import org.apache.commons.math3.util.CombinatoricsUtils;
 
 import com.rapidminer.tools.container.Pair;
 
-
+/**
+ * Class representing a hypergeometric statistical test.
+ *
+ * @author Adam Gudys
+ */
 public class Hypergeometric implements IQualityMeasure {
 	
 	/**

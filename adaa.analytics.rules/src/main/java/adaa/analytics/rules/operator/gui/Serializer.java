@@ -17,6 +17,11 @@ package adaa.analytics.rules.operator.gui;
 import java.io.*;
 import java.util.Base64;
 
+/**
+ * Auxiliary class for serializing and desarializing objects.
+ *
+ * @author Adam Gudys
+ */
 public class Serializer {
 	/***
 	 * Deserializes object from Base64 string.
@@ -38,7 +43,7 @@ public class Serializer {
     /***
      * Serializes object to Base64 string. 
      * 
-     * @param Object to be serialized.
+     * @param o Object to be serialized.
      * @return String representation.
      * @throws IOException
      */

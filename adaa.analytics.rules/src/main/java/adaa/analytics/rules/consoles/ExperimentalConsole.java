@@ -50,6 +50,10 @@ import com.rapidminer.tools.LogService;
 import com.rapidminer.tools.PlatformUtilities;
 import com.sun.tools.javac.util.Pair;
 
+/**
+ * Console used in batch mode.
+ * @author Adam Gudys
+ */
 public class ExperimentalConsole {
 
     /**
@@ -84,8 +88,14 @@ public class ExperimentalConsole {
         }
     }
 
+    /**
+     * Wrapper class for induction parameters.
+     */
     private class ParamSetWrapper {
+        /** Name of the parameter set */
         String name;
+
+        /** Mapping between parameter names and their values. */
         final Map<String, Object> map = new TreeMap<>();
     }
     
@@ -102,7 +112,7 @@ public class ExperimentalConsole {
     	ExperimentalConsole console = new ExperimentalConsole();
     	console.parse(args);
     }
-    
+
     private void parse(String[] args) {
     	try {
     		

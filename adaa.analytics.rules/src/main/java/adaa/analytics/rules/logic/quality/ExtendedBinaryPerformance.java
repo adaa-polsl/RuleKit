@@ -16,6 +16,12 @@ package adaa.analytics.rules.logic.quality;
 
 import com.rapidminer.operator.performance.BinaryClassificationPerformance;
 
+/**
+ * Class gathering additional performance measures for binary classification models (e.g., geometric mean of sensitivity
+ * and specificity).
+ *
+ * @author Adam Gudys
+ */
 public class ExtendedBinaryPerformance extends BinaryClassificationPerformance{
 
 	private static final long serialVersionUID = 791171007065379124L;

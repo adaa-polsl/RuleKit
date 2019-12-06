@@ -28,6 +28,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Class representing integrated Brioer score - a performance measures for survival models.
+ *
+ * @author Adam Gudys
+ */
 public class IntegratedBrierScore extends MeasuredPerformance {
 
 	private static final long serialVersionUID = 8509874136756469476L;

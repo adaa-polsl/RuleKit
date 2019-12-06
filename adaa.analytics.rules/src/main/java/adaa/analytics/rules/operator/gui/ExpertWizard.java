@@ -23,7 +23,11 @@ import com.rapidminer.parameter.ParameterType;
 
 import java.util.Map;
 
-
+/**
+ * This class is an element of RapidMiner plugin user interface. It represents a wizard for defining user's knowledge.
+ *
+ * @author Adam Gudys
+ */
 public class ExpertWizard extends AbstractWizard {
 
 	public ExpertWizard(String key, Object[] arguments) {

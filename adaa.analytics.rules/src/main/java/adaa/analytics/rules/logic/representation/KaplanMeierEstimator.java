@@ -51,7 +51,7 @@ public class KaplanMeierEstimator implements Serializable {
 	
 	/**
 	 * Generates survival estimator function from survival data.
-	 * @param data Example set with attribute of {@link #adaa.analytics.rules.logic.representation.SurvivalRule.SURVIVAL_TIME_ROLE}. 
+	 * @param data Example set with attribute of {@link adaa.analytics.rules.logic.representation.SurvivalRule#SURVIVAL_TIME_ROLE}.
 	 */
     public KaplanMeierEstimator(ExampleSet data) {
     	Attribute survTime = data.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE); 
@@ -144,7 +144,7 @@ public class KaplanMeierEstimator implements Serializable {
     
     /**
 	 * Generates survival estimator function from survival data.
-	 * @param data Example set with attribute of {@link #adaa.analytics.rules.logic.representation.SurvivalRule.SURVIVAL_TIME_ROLE}. 
+	 * @param data Example set with attribute of {@link adaa.analytics.rules.logic.representation.SurvivalRule#SURVIVAL_TIME_ROLE}.
 	 * @param indices Indices of the examples to be taken into account when building the estimator. 
 	 */
     public KaplanMeierEstimator(ExampleSet data, Set<Integer> indices) {

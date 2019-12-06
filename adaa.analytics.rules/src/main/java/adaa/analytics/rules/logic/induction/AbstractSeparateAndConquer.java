@@ -18,7 +18,7 @@ import adaa.analytics.rules.logic.representation.RuleSetBase;
 import com.rapidminer.example.ExampleSet;
 
 /***
- * Abstract base class for all separate and conquer rule-based models induction algorithms 
+ * Abstract base class for all separate and conquer algorithms for induction of rule-based models
  * (classification, regression, survival).
  * 
  * @author Adam Gudys

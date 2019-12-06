@@ -76,8 +76,8 @@ import java.util.logging.Level;
  * <li><code>date [date-format]</code> (currently not supported by RapidMiner)</li>
  * </ul>
  * 
- * <p>Valid examples for attribute definitions are <br/>
- * <code>@ATTRIBUTE petalwidth REAL</code> <br/>
+ * <p>Valid examples for attribute definitions are <br>
+ * <code>@ATTRIBUTE petalwidth REAL</code> <br>
  * <code>@ATTRIBUTE class {Iris-setosa,Iris-versicolor,Iris-virginica}</code>
  * </p>
  * 
@@ -87,7 +87,7 @@ import java.util.logging.Level;
  * are delimited by commas. They must appear in the order that they were declared in the 
  * header section (i.e. the data corresponding to the n-th @ATTRIBUTE declaration is 
  * always the n-th field of the example line). Missing values are represented by a single 
- * question mark, as in:<br/>
+ * question mark, as in:<br>
  * <code>4.4,?,1.5,?,Iris-setosa</code></p>
  * 
  * <p>A percent sign (%) introduces a comment and will be ignored during reading. Attribute
@@ -98,8 +98,7 @@ import java.util.logging.Level;
  * 
  * <p>Please have a look at the Iris example ARFF file provided in the data subdirectory 
  * of the sample directory of RapidMiner to get an idea of the described data format.</p>
- *  
- * @rapidminer.index arff
+ *
  * @author Ingo Mierswa, Tobias Malbrecht
  */
 //public class ArffExampleSource extends AbstractExampleSource {

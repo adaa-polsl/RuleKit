@@ -16,6 +16,9 @@ package adaa.analytics.rules.logic.quality;
 
 import java.io.Serializable;
 
+/**
+ * Interface to be implemented by user-defined measures.
+ */
 public interface IUserMeasure extends Serializable{
 
     void setValues(double p, double n, double P, double N);

@@ -14,5 +14,8 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.quality;
 
-public class StatisticalTest {
+/**
+ * Abstract base class for all statistical tests.
+ */
+public abstract class StatisticalTest {
 }

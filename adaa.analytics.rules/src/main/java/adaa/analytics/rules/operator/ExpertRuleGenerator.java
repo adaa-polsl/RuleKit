@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 
 /**
  * An ExpertRuleGenerator is an operator that extends RuleGenerator by providing user 
- * with the possibility to introduce expert's knowledge to the rule induction process.
+ * with the possibility to introduce users's knowledge to the rule induction process.
  * 
  * @author Adam Gudys
  *

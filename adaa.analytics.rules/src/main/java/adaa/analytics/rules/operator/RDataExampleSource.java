@@ -38,6 +38,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
+/**
+ * Class representing example source to be utilized by R engine.
+ */
 public class RDataExampleSource extends AbstractExampleSource {
 
     public static final String PARAMETER_DATA_FILE = "data_file";

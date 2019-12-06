@@ -40,6 +40,7 @@ import java.util.ArrayList;
  *  source of the Action will be the table. The action command will contain
  *  the model row number of the button that was clicked.
  *
+ * @author  Rob Camick
  */
 public class ColumnButton extends AbstractCellEditor
 	implements TableCellRenderer, TableCellEditor, ActionListener, MouseListener

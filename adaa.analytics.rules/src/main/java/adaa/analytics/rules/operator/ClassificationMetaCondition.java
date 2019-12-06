@@ -39,7 +39,11 @@ public class ClassificationMetaCondition extends ParameterCondition {
 	public ClassificationMetaCondition(ParameterHandler parameterHandler) {
 		super(parameterHandler, false);
 	}
-	
+
+	/**
+	 * Verifies if conditon is fulfilled.
+	 * @return Test result.
+	 */
 	@Override
 	public boolean isConditionFullfilled() {
 		Operator operator = (Operator)parameterHandler;

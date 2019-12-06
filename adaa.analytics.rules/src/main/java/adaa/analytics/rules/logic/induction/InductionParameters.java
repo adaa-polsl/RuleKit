@@ -19,14 +19,26 @@ import java.io.Serializable;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 
+/**
+ * Class representing all parameters of rule induction algorithm.
+ *
+ * @author Adam Gudys
+ */
 public class InductionParameters implements Serializable {
-	
+
+	/** Serialization identifier. */
 	private static final long serialVersionUID = -7902085678266232822L;
-	
+
+	/** Quality measure used for induction. */
 	private IQualityMeasure inductionMeasure = new ClassificationMeasure(ClassificationMeasure.Correlation);
+
+	/** Quality measure used for pruning. */
 	private IQualityMeasure pruningMeasure = new ClassificationMeasure(ClassificationMeasure.Correlation);
+
+	/** Quality measure used for voting. */
 	private IQualityMeasure votingMeasure = new ClassificationMeasure(ClassificationMeasure.Correlation);
-	
+
+	/** Minimum number of previously uncovered examples that a new rule has to cover. */
 	private double minimumCovered = 5.0;
 	private double maximumUncoveredFraction = 0.01;
 	private boolean ignoreMissing = false;

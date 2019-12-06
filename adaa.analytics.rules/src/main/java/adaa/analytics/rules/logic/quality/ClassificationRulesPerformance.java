@@ -23,6 +23,12 @@ import com.rapidminer.tools.math.Averagable;
 
 import java.util.BitSet;
 
+/**
+ * Class gathering additional performance measures for classification models (avg. number of rules covering an
+ * example, number of voting conflicts, balanced accuracy).
+ *
+ * @author Adam Gudys
+ */
 public class ClassificationRulesPerformance extends MeasuredPerformance {
 
 	public static final int RULES_PER_EXAMPLE = 1;

@@ -19,14 +19,15 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import java.util.ArrayList;
 
+/**
+ * A class representing table with custom editor objects. Allows other GUI elements to be contained in a table.
+ *
+ * @author Adam Gudys
+ */
 public class FlexibleTable extends JTable {
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -4153947883789813784L;
-	
-	
+
 	protected ArrayList<TableCellEditor[]> editors = new ArrayList<TableCellEditor[]>();
 	
 	public void setCell(Object aObject, int row, int column) {

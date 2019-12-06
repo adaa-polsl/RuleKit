@@ -16,6 +16,11 @@ package adaa.analytics.rules.logic.induction;
 
 import java.util.Set;
 
+/**
+ * Auxiliary class for handling sets.
+ *
+ * @author Adam Gudys
+ */
 public class SetHelper {
 	/**
 	 * Calculates size of intersection of two sets.

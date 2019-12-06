@@ -17,7 +17,7 @@ import adaa.analytics.rules.logic.representation.ConditionBase;
 
 /**
  * Helper class for storing information about evaluated condition. 
- * @author Adam
+ * @author Adam Gudys
  *
  */
 public class ConditionEvaluation {

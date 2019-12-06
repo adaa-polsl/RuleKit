@@ -441,7 +441,7 @@ public class ClassificationFinder extends AbstractFinder {
 	 * 
 	 * @param rule Current rule.
 	 * @param trainSet Training set.
-	 * @param uncoveredByRuleset Set of examples uncovered by the model.
+	 * @param uncoveredPositives Set of positive examples uncovered by the model.
 	 * @param coveredByRule Set of examples covered by the rule being grown.
 	 * @param allowedAttributes Set of attributes that may be used during induction.
 	 * @param extraParams Additional parameters.
@@ -673,7 +673,7 @@ public class ClassificationFinder extends AbstractFinder {
 	 * 
 	 * @param rule Current rule.
 	 * @param trainSet Training set.
-	 * @param uncoveredByRuleset Set of examples uncovered by the model.
+	 * @param uncoveredPositives Set of positive examples uncovered by the model.
 	 * @param coveredByRule Set of examples covered by the rule being grown.
 	 * @param allowedAttributes Set of attributes that may be used during induction.
 	 * @param extraParams Additional parameters.

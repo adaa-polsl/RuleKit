@@ -19,6 +19,11 @@ import com.rapidminer.example.ExampleSet;
 
 import java.util.Set;
 
+/**
+ * Interface to be implemented by all classes representing user-guided rule induction procedures.
+ *
+ * @author Adam Gudys
+ */
 public interface IExpertFinder {
 	public void adjust(
 			Rule rule,

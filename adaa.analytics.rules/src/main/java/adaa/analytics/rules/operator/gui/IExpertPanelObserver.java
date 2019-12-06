@@ -14,9 +14,13 @@
  ******************************************************************************/
 package adaa.analytics.rules.operator.gui;
 
+/**
+ * Interface to be implemented by all {@link ExpertPanel} observers.
+ *
+ * @author Adam Gudys
+ */
 public interface IExpertPanelObserver {
-	
-	
+
 	public void ruleAddClicked();
 	public void ruleRemoveClicked(int id);
 	

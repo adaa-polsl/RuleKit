@@ -36,6 +36,12 @@ import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.set.SortedExampleSet;
 import com.rapidminer.tools.container.Pair;
 
+/**
+ * User-guided separate'n'conquer algorithm for generating regression rule sets.
+ *
+ * @author Adam Gudys
+ *
+ */
 public class RegressionExpertSnC extends RegressionSnC {
 
 	protected Knowledge knowledge;

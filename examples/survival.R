@@ -1,6 +1,4 @@
-library(ggplot2)
-library(reshape2)
-library(rulekit)
+library(ggplot2); library(reshape2); library(rulekit)
 
 formula <- survival::Surv(survival_time,survival_status) ~ .
 control <- list(min_rule_covered = 5)
@@ -22,6 +20,6 @@ ggplot(melted_surv, aes(x=time, y=value, color=variable)) +
   theme_bw() + theme(text = element_text(size=8),legend.title=element_blank())
 
 
-ggsave("survival.pdf", plot = last_plot(), device = "pdf", path = NULL,
-       scale = 1, width = 8, height = 6, units = "cm",
+ggsave("survival.png", plot = last_plot(), device = "png", path = NULL,
+       scale = 1, width = 8, height = 4, units = "cm",
        dpi = 600, limitsize = TRUE)
