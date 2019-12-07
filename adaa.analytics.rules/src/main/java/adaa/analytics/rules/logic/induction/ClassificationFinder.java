@@ -561,7 +561,7 @@ public class ClassificationFinder extends AbstractFinder {
 									
 							if ((quality > best.quality || (quality == best.quality && left_p > best.covered)) && (toCover_left_p > 0)) {	
 								ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_le(midpoint)); 
-								if (checkCandidate(candidate, classId, toCover_left_p)) {
+								if (checkCandidate(candidate, classId, rule.getWeighted_P(), toCover_left_p)) {
 									Logger.log("\tCurrent best: " + candidate + " (p=" + left_p + ", n=" + left_n + ", new_p=" + (double)toCover_left_p +", quality="  + quality + "\n", Level.FINEST);
 									best.quality = quality;
 									best.covered = left_p;
@@ -576,7 +576,7 @@ public class ClassificationFinder extends AbstractFinder {
 									right_p, right_n, rule.getWeighted_P(), rule.getWeighted_N());
 							if ((quality > best.quality || (quality == best.quality && right_p > best.covered)) && (toCover_right_p > 0)) {
 								ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_geq(midpoint));
-								if (checkCandidate(candidate, classId, toCover_right_p)) {
+								if (checkCandidate(candidate, classId, rule.getWeighted_P(), toCover_right_p)) {
 									Logger.log("\tCurrent best: " + candidate + " (p=" + right_p + ", n=" + right_n + ", new_p=" + (double)toCover_right_p + ", quality="  + quality + "\n", Level.FINEST);
 									best.quality = quality;
 									best.covered = right_p;
@@ -624,7 +624,7 @@ public class ClassificationFinder extends AbstractFinder {
 						if ((quality > best.quality || (quality == best.quality && p[i] > best.covered)) && (toCover_p[i] > 0)) {
 							ElementaryCondition candidate = 
 									new ElementaryCondition(attr.getName(), new SingletonSet((double)i, attr.getMapping().getValues())); 
-							if (checkCandidate(candidate, classId, toCover_p[i])) {
+							if (checkCandidate(candidate, classId, rule.getWeighted_P(), toCover_p[i])) {
 								Logger.log("\tCurrent best: " + candidate + " (p=" + p[i] + ", n=" + n[i] + ", new_p=" + (double)toCover_p[i] + ", quality="  + quality + "\n", Level.FINEST);
 								best.quality = quality;
 								best.covered = p[i];
@@ -751,7 +751,7 @@ public class ClassificationFinder extends AbstractFinder {
 						
 						if ((quality > bestQuality || (quality == bestQuality && left_p > mostCovered)) && (toCover_left_p > 0)) {	
 							ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_le(value)); 
-							if (checkCandidate(candidate, classId, toCover_left_p)) {
+							if (checkCandidate(candidate, classId, rule.getWeighted_P(), toCover_left_p)) {
 								Logger.log("\tCurrent best: " + candidate + " (p=" + left_p + ", n=" + left_n + ", new_p=" + toCover_left_p + ", quality="  + quality + ", filtered=" + filtered + "\n", Level.FINEST);
 								bestQuality = quality;
 								mostCovered = left_p;
@@ -767,7 +767,7 @@ public class ClassificationFinder extends AbstractFinder {
 								right_p, right_n, rule.getWeighted_P(), rule.getWeighted_N());
 						if ((quality > bestQuality || (quality == bestQuality && right_p > mostCovered)) && (toCover_right_p > 0)) {
 							ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_geq(value));
-							if (checkCandidate(candidate, classId, toCover_right_p)) {
+							if (checkCandidate(candidate, classId, rule.getWeighted_P(), toCover_right_p)) {
 								Logger.log("\tCurrent best: " + candidate + " (p=" + right_p + ", n=" + right_n + ", new_p=" + toCover_right_p + ", quality="  + quality + ", filtered=" + filtered +"\n", Level.FINEST);
 								bestQuality = quality;
 								mostCovered = right_p;
@@ -790,7 +790,7 @@ public class ClassificationFinder extends AbstractFinder {
 					if ((quality > bestQuality || (quality == bestQuality && p > mostCovered)) && (toCover_p > 0) && (p + n != coveredByRule.size())) {
 						ElementaryCondition candidate = 
 								new ElementaryCondition(attr.getName(), new SingletonSet(value, attr.getMapping().getValues())); 
-						if (checkCandidate(candidate, classId, toCover_p)) {
+						if (checkCandidate(candidate, classId, rule.getWeighted_P(), toCover_p)) {
 							Logger.log("\tCurrent best: " + candidate + " (p=" + p + ", n=" + n + ", new_p=" + toCover_p + ", quality="  + quality + ", filtered=" + filtered + "\n", Level.FINEST);
 							bestQuality = quality;
 							mostCovered = p;
@@ -852,7 +852,11 @@ public class ClassificationFinder extends AbstractFinder {
 			}
 			
 			// analyse stopping criteria
-			if (ct.weighted_p < params.getMinimumCovered()) {
+			double adjustedMinCov = Math.min(
+					params.getMinimumCovered(),
+					Math.max(1.0, 0.2 * ct.weighted_P));
+
+			if (ct.weighted_p < adjustedMinCov) {
 				if (rule.getPremise().getSubconditions().size() == 0) {
 					// special case of empty rule - add condition anyway
 			//		add = true;
@@ -900,8 +904,12 @@ public class ClassificationFinder extends AbstractFinder {
 	 * @param newlyCoveredPositives Number of newly covered positive examples after addition of the condition.
 	 * @return
 	 */
-	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double newlyCoveredPositives) {
-		if (newlyCoveredPositives >= params.getMinimumCovered()) {
+	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double totalPositives, double newlyCoveredPositives) {
+		double adjustedMinCov = Math.min(
+				params.getMinimumCovered(),
+				Math.max(1.0, 0.2 * totalPositives));
+
+		if (newlyCoveredPositives >= adjustedMinCov) {
 			return true;
 		} else {
 			return false;

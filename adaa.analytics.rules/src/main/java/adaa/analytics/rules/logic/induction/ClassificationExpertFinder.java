@@ -375,8 +375,8 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 	 * @return
 	 */
 	@Override
-	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double newlyCoveredPositives) {
-		return super.checkCandidate(cnd, classId, newlyCoveredPositives) &&
+	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double totalPositives, double newlyCoveredPositives) {
+		return super.checkCandidate(cnd, classId, totalPositives, newlyCoveredPositives) &&
 			!knowledge.isForbidden(cnd.getAttribute(), cnd.getValueSet(), (int)classId);
 	}
 	
