@@ -117,7 +117,7 @@ The software is publicly available under [GNU AGPL-3.0 license](LICENSE).
  
 # Citing
 
-[Gudyś, A, Sikora, M, Wróbel, Ł (2019) RuleKit: A Comprehensive Suite for Rule-Based Learning, arXiv](xyz)
+[Gudyś, A, Sikora, M, Wróbel, Ł (2019) RuleKit: A Comprehensive Suite for Rule-Based Learning, arXiv](https://arxiv.org/abs/1908.01031)
 
 [Sikora, M, Wróbel, Ł, Gudyś, A (2019) GuideR: a guided separate-and-conquer rule learning in classification, regression, and survival settings, Knowledge-Based Systems, 173:1-14.](https://www.sciencedirect.com/science/article/abs/pii/S0950705119300802?dgcid=coauthor)
 
