@@ -90,12 +90,14 @@ public class ClassificationRulesPerformance extends MeasuredPerformance {
 		 }
 		 
 		 double bacc = 0;
+		 double denominator = 0;
 		 for (int i = 0; i < numClasses; ++i) {
 			 if (good[i] + bad[i] > 0) {
 				 bacc += (double)good[i] / (good[i] + bad[i]);
+				 denominator += 1.0;
 			 }
 		 }
-		 bacc /= numClasses;
+		 bacc /= denominator;
 		 
 		 if (type == VOTING_CONFLICTS) {
 			 value = (double)conflictCount;			 
