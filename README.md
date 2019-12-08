@@ -72,7 +72,7 @@ Below we present a survival analysis of *BMT-Ch* dataset with RuleKit R package.
  
 [This Wiki section](../../wiki/3-R-package) contains detailed information on using RuleKit R package. 
 
-# Wiki documentation
+# Documentation
 
 The detailed RuleKit documentation can be found on [Wiki pages](../../wiki) which cover the following topics: 
 
@@ -97,8 +97,14 @@ The detailed RuleKit documentation can be found on [Wiki pages](../../wiki) whic
     1. [Training report](../../wiki/5-Output-files#51-training-report)
     2. [Prediction performance report](../../wiki/5-Output-files#52-prediction-performance-report)    	
 6. [User-guided induction](../../wiki/6-User-guided-induction)
+	1. [Defining user's knowledge](../../wiki/6-User-guided-induction#61-defining-users-knowledge)
+	2. [Examples from GuideR paper](../../wiki/6-User-guided-induction#62-examples-from-guider-paper)
 7. [Library API](../../wiki/7-Library-API)
+	1.	[Running an experiment](../../wiki/7-Library-API#71-running-an-experiment)
+	2.	[Developing a new algorithm](../../wiki/7-Library-API#72-developing-a-new-algorithm)
+8. [Empirical results](../../wiki/8-Empirical-results)
 
+JavaDoc for the project is available [here](https://adaa-polsl.github.io/RuleKit/).  
 
 # Authors and licensing
 
