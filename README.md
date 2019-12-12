@@ -6,7 +6,6 @@ RuleKit provides all the functionalities included in our previous packages:
 * [LR-Rules](https://github.com/adaa-polsl/LR-Rules) (Wróbel et al, 2017) for survival rules induction,
 * [GuideR](https://github.com/adaa-polsl/GuideR) (Sikora et al, 2019) for user-guided induction.
 
-As these packages are no longer updated, please use RuleKit instead. 
 
 # Getting started
 
