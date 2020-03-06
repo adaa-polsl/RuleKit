@@ -9,7 +9,7 @@ RuleKit provides all the functionalities included in our previous packages:
 
 # Getting started
 
-In the following subsections we provide a brief introduction on how to install and use RuleKit batch interface, RapidMiner plugin, and R package. The software requires Java Development Kit in version 8 (version 1.8.0 tested) to work properly. In Windows one can download the installer from Oracle webpage. In Linux, a system package manager should be used instead. For instance, in Ubuntu 18.04 execute the following command:
+In the following subsections we provide a brief introduction on how to install and use RuleKit batch interface, RapidMiner plugin, and R package. The software requires Java Development Kit in version 8 (version 1.8.0 tested) to work properly. In Windows one can download the installer from Oracle webpage. In Linux, a system package manager should be used instead. For instance, in Ubuntu 16.04 execute the following command:
 ```
 sudo apt-get install default-jdk
 ``` 
