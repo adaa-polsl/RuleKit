@@ -27,12 +27,16 @@ import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.learner.AbstractLearner;
 import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
+import com.rapidminer.tools.LogService;
 import com.rapidminer.tools.OperatorService;
+import com.rapidminer.tools.PlatformUtilities;
 import com.rapidminer5.operator.io.ArffExampleSource;
 import org.junit.Test;
 import utils.TestResourcePathFactory;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.logging.Level;
 
 import static org.junit.Assert.assertEquals;
 
@@ -43,8 +47,16 @@ public class ExpertRuleGeneratorTest {
 
     private final static String LABEL_ATTRIBUTE = "Future Customer";
 
-    private ExampleSet getExampleSet(String filePath) throws OperatorCreationException, OperatorException {
+    private void initRapidMiner() {
+        System.setProperty(PlatformUtilities.PROPERTY_RAPIDMINER_HOME, Paths.get("").toAbsolutePath().toString());
+        LogService.getRoot().setLevel(Level.OFF);
+        RapidMiner.setExecutionMode(RapidMiner.ExecutionMode.COMMAND_LINE);
+
         RapidMiner.init();
+    }
+
+    private ExampleSet getExampleSet(String filePath) throws OperatorCreationException, OperatorException {
+
 
         ArffExampleSource trainArff = RapidMiner5.createOperator(ArffExampleSource.class);
 
@@ -63,7 +75,6 @@ public class ExpertRuleGeneratorTest {
     }
 
     private ClassificationRuleSet trainModel(ExampleSet exampleSet) throws OperatorCreationException, OperatorException {
-        RapidMiner.init();
 
         ChangeAttributeRole trainRoleSetter = OperatorService.createOperator(ChangeAttributeRole.class);
         AbstractLearner ruleGenerator = RapidMiner5.createOperator(ExpertRuleGenerator.class);
@@ -108,6 +119,7 @@ public class ExpertRuleGeneratorTest {
 
     @Test
     public void testRuleInductionOnSplittedExampleSet() throws OperatorException, OperatorCreationException {
+        this.initRapidMiner();
         Path trainFilePath = TestResourcePathFactory.getResourcePath(TRAIN_DEALS_FILE);
         Path doubledFilePath = TestResourcePathFactory.getResourcePath(TRAIN_DEALS_DOUBLED_FILE);
         ExampleSet exampleSet = getExampleSet(trainFilePath.toString());
