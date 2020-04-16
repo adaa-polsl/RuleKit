@@ -114,11 +114,11 @@ public class RuleParser {
 	    	s = matcher.group("internal");
     	}
 		
-		regex = Pattern.compile("(?<attribute>[\\w\\-]+)\\s*(?<equality>(=|@=))\\s*(?<value>.+)");
+		regex = Pattern.compile("(?<attribute>[\\w\\-\\s]+)\\s*(?<equality>(=|@=))\\s*(?<value>.+)");
     	matcher = regex.matcher(s);
     	
     	if (matcher.find()) {
-	    	String attribute = matcher.group("attribute");
+	    	String attribute = matcher.group("attribute").trim();
 	    	String valueString = matcher.group("value");
 	    	String equality = matcher.group("equality");
 	    	
