@@ -2,3 +2,8 @@
 .Rproj.user
 *.mdl
 /.recommenders
+/.idea
+/out
+/gradle
+results-minimal
+tests_out/
