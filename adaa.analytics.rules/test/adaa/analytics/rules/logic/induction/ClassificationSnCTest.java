@@ -1,48 +1,52 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.RuleSetBase;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
-import org.junit.Before;
-import org.junit.Test;
-import utils.ArffFileLoader;
+import com.rapidminer.operator.OperatorCreationException;
+import com.rapidminer.operator.OperatorException;
+import org.junit.experimental.theories.DataPoints;
+import org.junit.experimental.theories.FromDataPoints;
+import org.junit.experimental.theories.Theories;
+import org.junit.experimental.theories.Theory;
+import org.junit.runner.RunWith;
 import utils.RuleSetComparator;
 import utils.TestResourcePathFactory;
+import utils.config.TestConfig;
+import utils.config.TestConfigParser;
 import utils.reports.Const;
-import utils.reports.TestReport;
-import utils.reports.TestReportReader;
 import utils.reports.TestReportWriter;
+import utils.testcases.TestCase;
+import utils.testcases.TestCaseFactory;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.HashMap;
+import java.util.List;
 
+@RunWith(Theories.class)
 public class ClassificationSnCTest {
 
-    private static final double MAX_UNCOVERED_FRACTION = 0.0;
-    private static final double MIN_RULE_COVERED = 8.0;
-    private static final double MAX_GROWING = 0.0;
-    private static final boolean PRUNING_ENABLED = true;
-    private static final boolean IGNORE_MISSING = false;
+    private static final String REPORTS_DIRECTORY = Const.REPORTS_IN_DIRECTORY_PATH + ClassificationSnCTest.class.getSimpleName() + '/';
 
-    private static final String TRAIN_DATA_FILE = TestResourcePathFactory.getResourcePath("deals-train.arff").toString();
-    private static final String LABEL_ATTRIBUTE = "Future Customer";
-    private static final String REPORT_FILE_NAME = ClassificationSnCTest.class.getSimpleName() + ".txt";
-
-    private ExampleSet exampleSet;
-    private TestReport referenceReport;
-
-    @Before
-    public void setUp() throws Exception {
-        this.exampleSet = ArffFileLoader.load(TRAIN_DATA_FILE, LABEL_ATTRIBUTE);
-        String reportFilePath = TestResourcePathFactory
-                .getResourcePath(Const.REPORTS_IN_DIRECTORY_PATH + REPORT_FILE_NAME).toString();
-        TestReportReader reportReader = new TestReportReader(reportFilePath, new ExampleSetMetaData(exampleSet));
-        referenceReport = reportReader.read();
-        reportReader.close();
+    @DataPoints("Test cases")
+    public static TestCase[] getTestCases() throws ParseException {
+        String configFilePath = Const.CONFIG_DIRECTORY + ClassificationSnCTest.class.getSimpleName() + ".xml";
+        configFilePath = TestResourcePathFactory.get(configFilePath).toString();
+        HashMap<String, TestConfig> configs = new TestConfigParser().parse(configFilePath);
+        List<TestCase> testCases = TestCaseFactory.make(configs, REPORTS_DIRECTORY);
+        return testCases.toArray(new TestCase[0]);
     }
 
-    private void writeReport(RuleSetBase ruleSet) {
+    public ClassificationSnCTest() {
+        File directory = new File(Const.REPORTS_OUT_DIRECTORY_PATH + ClassificationSnCTest.class.getSimpleName());
+        if (! directory.exists()){
+            directory.mkdir();
+        }
+    }
+
+    private void writeReport(String reportName, RuleSetBase ruleSet) {
         try {
-            TestReportWriter reportWriter = new TestReportWriter(REPORT_FILE_NAME);
+            TestReportWriter reportWriter = new TestReportWriter(ClassificationSnCTest.class.getSimpleName() + '/' + reportName);
             reportWriter.write(ruleSet);
             reportWriter.close();
         } catch (IOException e) {
@@ -50,21 +54,13 @@ public class ClassificationSnCTest {
         }
     }
 
-    @Test
-    public void testRun() {
-        InductionParameters params = new InductionParameters();
-        params.setMaximumUncoveredFraction(MAX_UNCOVERED_FRACTION);
-        params.setMinimumCovered(MIN_RULE_COVERED);
-        params.setEnablePruning(PRUNING_ENABLED);
-        params.setIgnoreMissing(IGNORE_MISSING);
-        params.setMaxGrowingConditions(MAX_GROWING);
+    @Theory
+    public void runTestCase(@FromDataPoints("Test cases") TestCase testCase) throws OperatorException, OperatorCreationException, IOException {
+        ClassificationFinder finder = new ClassificationFinder(testCase.getParameters());
+        ClassificationSnC snc = new ClassificationSnC(finder, testCase.getParameters());
+        RuleSetBase ruleSet = snc.run(testCase.getExampleSet());
 
-        ClassificationFinder finder = new ClassificationFinder(params);
-        ClassificationSnC snc = new ClassificationSnC(finder, params);
-
-        RuleSetBase ruleSet = snc.run(exampleSet);
-        this.writeReport(ruleSet);
-
-        RuleSetComparator.assertRulesAreEqual(referenceReport.getRules(), ruleSet.getRules());
+        RuleSetComparator.assertRulesAreEqual(testCase.getReferenceReport().getRules(), ruleSet.getRules());
+        this.writeReport(testCase.getName(), ruleSet);
     }
 }

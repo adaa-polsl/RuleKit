@@ -14,3 +14,5 @@ config/pmd/ruleset.xml
 *.iml
 .checkstyle
 .pmd
+results-minimal/
+test_out/
