@@ -5,7 +5,7 @@ import java.nio.file.Paths;
 
 public class TestResourcePathFactory {
 
-    public static Path getResourcePath(String fileName) {
+    public static Path get(String fileName) {
         String resourceFolderPath = TestResourcePathFactory.class.getClassLoader().getResource("").getFile();
         String pathString = resourceFolderPath + "../../../test/resources/" + fileName;
         if (pathString.startsWith("/")) {

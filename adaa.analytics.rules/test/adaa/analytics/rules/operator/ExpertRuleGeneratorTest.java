@@ -42,8 +42,8 @@ import static org.junit.Assert.assertEquals;
 
 public class ExpertRuleGeneratorTest {
 
-    private final static String TRAIN_DEALS_FILE = "deals-train.arff";
-    private final static String TRAIN_DEALS_DOUBLED_FILE = "deals-train-x2.arff";
+    private final static String TRAIN_DEALS_FILE = "/data/deals-train.arff";
+    private final static String TRAIN_DEALS_DOUBLED_FILE = "/data/deals-train-x2.arff";
 
     private final static String LABEL_ATTRIBUTE = "Future Customer";
 
@@ -119,9 +119,8 @@ public class ExpertRuleGeneratorTest {
 
     @Test
     public void testRuleInductionOnSplittedExampleSet() throws OperatorException, OperatorCreationException {
-        this.initRapidMiner();
-        Path trainFilePath = TestResourcePathFactory.getResourcePath(TRAIN_DEALS_FILE);
-        Path doubledFilePath = TestResourcePathFactory.getResourcePath(TRAIN_DEALS_DOUBLED_FILE);
+        Path trainFilePath = TestResourcePathFactory.get(TRAIN_DEALS_FILE);
+        Path doubledFilePath = TestResourcePathFactory.get(TRAIN_DEALS_DOUBLED_FILE);
         ExampleSet exampleSet = getExampleSet(trainFilePath.toString());
         ExampleSet doubledExampleSet = getExampleSet(doubledFilePath.toString());
         SplittedExampleSet splittedExampleSet = new SplittedExampleSet(doubledExampleSet, 0.5, SplittedExampleSet.LINEAR_SAMPLING, false, 0);
