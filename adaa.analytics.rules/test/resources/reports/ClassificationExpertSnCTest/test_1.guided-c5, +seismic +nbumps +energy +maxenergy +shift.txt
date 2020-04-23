@@ -1,0 +1,11 @@
+
+
+Rules
+	IF goenergy = <-73.5, inf) AND nbumps3 = (-inf, 0.5) AND seismic = {a} THEN class = {0}
+	IF genergy = (-inf, 25125.0) AND nbumps3 = (-inf, 0.5) THEN class = {0}
+	IF genergy = (-inf, 33940.0) THEN class = {0}
+	IF nbumps = (-inf, 5.5) THEN class = {0}
+	IF senergy = <2650.0, 3850.0) AND nbumps = <1.5, inf) THEN class = {1}
+	IF goenergy = (-inf, 11.0) AND genergy = <17495.0, 401025.0) AND senergy = <2650.0, 8250.0) AND nbumps2 = <0.5, inf) THEN class = {1}
+	IF goenergy = <-21.0, 9.0) AND genergy = <24830.0, 36280.0) AND senergy = (-inf, 1500.0) AND nbumps2 = (-inf, 0.5) THEN class = {1}
+	IF goenergy = (-inf, 50.0) AND maxenergy = (-inf, 45000.0) AND genergy = <62050.0, 1158410.0) AND nbumps = (-inf, 3.5) THEN class = {1}

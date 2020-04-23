@@ -10,6 +10,17 @@ import java.util.List;
 
 public class TestCaseFactory {
 
+    private static TestCase makeTestCase(String testCaseName, HashMap<String, Object> params, TestDataSetConfig dataSetConfig) {
+        TestCase testCase = new TestCase();
+        testCase.setParameters(InductionParametersFactory.make(params));
+        String dataSetFilePath = TestResourcePathFactory.get(dataSetConfig.trainFileName).toString();
+        testCase.setDataSetFilePath(dataSetFilePath);
+        testCase.setLabelAttribute(dataSetConfig.labelAttribute);
+        testCase.setName(testCaseName);
+        testCase.setParametersConfigs(params);
+        return testCase;
+    }
+
     public static List<TestCase> make(HashMap<String, TestConfig> testsConfig, String reportDirectoryPath) {
         List<TestCase> testCases = new ArrayList<>();
         TestConfig testConfig;
@@ -17,14 +28,9 @@ public class TestCaseFactory {
         for (String key : testsConfig.keySet()) {
             testConfig = testsConfig.get(key);
             for (String configName : testConfig.parametersConfigs.keySet()) {
-                testCase = new TestCase();
                 for (TestDataSetConfig dataSetConfig : testConfig.datasets) {
-                    testCase.setParameters(InductionParametersFactory.make(testConfig.parametersConfigs.get(configName)));
-                    String dataSetFilePath = TestResourcePathFactory.get(dataSetConfig.trainFileName).toString();
-                    testCase.setDataSetFilePath(dataSetFilePath);
-                    testCase.setLabelAttribute(dataSetConfig.labelAttribute);
                     String testCaseName = String.format("%s.%s.txt", key, configName);
-                    testCase.setName(testCaseName);
+                    testCase = makeTestCase(testCaseName, testConfig.parametersConfigs.get(configName), dataSetConfig);
                     String reportPath = TestResourcePathFactory.get(reportDirectoryPath + testCaseName).toString();
                     testCase.setReportFilePath(reportPath);
                     testCases.add(testCase);

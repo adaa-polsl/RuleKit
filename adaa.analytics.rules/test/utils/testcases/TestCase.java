@@ -1,20 +1,25 @@
 package utils.testcases;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
+import adaa.analytics.rules.logic.representation.Knowledge;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 import utils.ArffFileLoader;
+import utils.config.KnowledgeFactory;
 import utils.reports.TestReport;
 import utils.reports.TestReportReader;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class TestCase {
+    private HashMap<String, Object> parametersConfigs;
     private TestReport referenceReport;
     private ExampleSet exampleSet;
     private InductionParameters parameters;
+    private Knowledge knowledge;
 
     private String name;
     private String dataSetFilePath;
@@ -63,6 +68,19 @@ public class TestCase {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setParametersConfigs(HashMap<String, Object> parametersConfigs) {
+        this.parametersConfigs = parametersConfigs;
+    }
+
+    public Knowledge getKnowledge() throws OperatorException, OperatorCreationException {
+        if (knowledge == null) {
+            ExampleSet exampleSet = getExampleSet();
+            KnowledgeFactory knowledgeFactory = new KnowledgeFactory(exampleSet);
+            knowledge = knowledgeFactory.make(parametersConfigs);
+        }
+        return knowledge;
     }
 
     @Override

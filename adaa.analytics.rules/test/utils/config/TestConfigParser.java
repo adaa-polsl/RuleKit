@@ -1,5 +1,6 @@
 package utils.config;
 
+import adaa.analytics.rules.operator.ExpertRuleGenerator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -12,6 +13,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,6 +30,12 @@ public class TestConfigParser {
     private static final String PARAM_KEY = "param";
     private static final String PARAMETERS_SET_KEY = "parameter_sets";
     private static final String PARAMETERS_KEY = "parameter_set";
+    private static final String ENTRY_KEY = "entry";
+
+    private static final List<String> EXPERTS_PARAMETERS_NAMES = Arrays.asList(
+            ExpertRuleGenerator.PARAMETER_EXPERT_RULES,
+            ExpertRuleGenerator.PARAMETER_EXPERT_PREFERRED_CONDITIONS,
+            ExpertRuleGenerator.PARAMETER_EXPERT_FORBIDDEN_CONDITIONS);
 
     private Document document;
 
@@ -43,6 +51,17 @@ public class TestConfigParser {
 
     private String getNodeName(Node node) {
         return getNodeAttributeValue(node, NAME_KEY);
+    }
+
+    private List<String[]> parseExpertParameter(NodeList children) {
+        List<String[]> expertRules = new ArrayList<>();
+        for (int i = 0; i < children.getLength(); i++) {
+            Element entryElement = (Element) children.item(i);
+            String ruleName = getNodeName(entryElement);
+            String ruleContent = entryElement.getTextContent();
+            expertRules.add(new String[]{ruleName, ruleContent});
+        }
+        return expertRules;
     }
 
     private TestDataSetConfig parseDataSet(Element datasetElement) {
@@ -71,7 +90,14 @@ public class TestConfigParser {
         NodeList parametersNodes = parametersSetElement.getElementsByTagName(PARAM_KEY);
         for (int i = 0; i < parametersNodes.getLength(); i++) {
             Node paramNode = parametersNodes.item(i);
-            parameters.put(getNodeName(paramNode), paramNode.getTextContent());
+            String paramName = getNodeName(paramNode);
+            Object value;
+            if (EXPERTS_PARAMETERS_NAMES.contains(paramName)) {
+                value = parseExpertParameter(((Element) paramNode).getElementsByTagName(ENTRY_KEY));
+            } else {
+                value = paramNode.getTextContent();
+            }
+            parameters.put(paramName, value);
         }
         return parameters;
     }

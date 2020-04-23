@@ -24,9 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 
 @RunWith(Theories.class)
-public class ClassificationSnCTest {
+public class ClassificationExpertSnCTest {
 
-    private static final String CLASS_NAME = ClassificationSnCTest.class.getSimpleName();
+    private static final String CLASS_NAME = ClassificationExpertSnCTest.class.getSimpleName();
     private static final String REPORTS_DIRECTORY = Const.REPORTS_IN_DIRECTORY_PATH + CLASS_NAME + '/';
 
     @DataPoints("Test cases")
@@ -38,7 +38,7 @@ public class ClassificationSnCTest {
         return testCases.toArray(new TestCase[0]);
     }
 
-    public ClassificationSnCTest() {
+    public ClassificationExpertSnCTest() {
         File directory = new File(Const.REPORTS_OUT_DIRECTORY_PATH + CLASS_NAME);
         if (! directory.exists()){
             directory.mkdir();
@@ -57,8 +57,8 @@ public class ClassificationSnCTest {
 
     @Theory
     public void runTestCase(@FromDataPoints("Test cases") TestCase testCase) throws OperatorException, OperatorCreationException, IOException {
-        ClassificationFinder finder = new ClassificationFinder(testCase.getParameters());
-        ClassificationSnC snc = new ClassificationSnC(finder, testCase.getParameters());
+        ClassificationExpertFinder finder = new ClassificationExpertFinder(testCase.getParameters(), testCase.getKnowledge());
+        ClassificationExpertSnC snc = new ClassificationExpertSnC(finder, testCase.getParameters(), testCase.getKnowledge());
         RuleSetBase ruleSet = snc.run(testCase.getExampleSet());
 
         RuleSetComparator.assertRulesAreEqual(testCase.getReferenceReport().getRules(), ruleSet.getRules());

@@ -9,22 +9,21 @@ public class InductionParametersFactory {
     public static InductionParameters make(HashMap<String, Object> paramMap) {
         InductionParameters parameters = new InductionParameters();
         for (String key : paramMap.keySet()) {
-            String value = (String) paramMap.get(key);
             switch (key) {
                 case "min_rule_covered":
-                    parameters.setMinimumCovered(Double.parseDouble(value));
+                    parameters.setMinimumCovered(Double.parseDouble((String) paramMap.get(key)));
                     break;
                 case "max_rule_covered":
-                    parameters.setMaximumUncoveredFraction(Double.parseDouble(value));
+                    parameters.setMaximumUncoveredFraction(Double.parseDouble((String) paramMap.get(key)));
                     break;
                 case "max_growing":
-                    parameters.setMaxGrowingConditions(Double.parseDouble(value));
+                    parameters.setMaxGrowingConditions(Double.parseDouble((String) paramMap.get(key)));
                     break;
                 case "ignore_missing":
-                    parameters.setIgnoreMissing(value.equals("true"));
+                    parameters.setIgnoreMissing(paramMap.get(key).equals("true"));
                     break;
                 case "pruning_enabled":
-                    parameters.setEnablePruning(value.equals("true"));
+                    parameters.setEnablePruning(paramMap.get(key).equals("true"));
                     break;
             }
         }

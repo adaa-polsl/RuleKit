@@ -1,0 +1,9 @@
+
+
+Rules
+	IF gimpuls = (-inf, 1350.5) THEN class = {0}
+	IF goenergy = <-19.5, inf) AND gimpuls = <909.5, 2784.0) AND genergy = <52595.0, inf) THEN class = {0}
+	IF gimpuls = <1350.5, 1507.5) AND genergy = (-inf, 792375.0) THEN class = {1}
+	IF genergy = <18890.0, 27830.0) AND goimpuls = (-inf, -35.5) THEN class = {1}
+	IF goenergy = <5.0, 9.0) AND genergy = <18890.0, inf) AND goimpuls = <1.5, inf) THEN class = {1}
+	IF goenergy = (-inf, -15.0) AND gimpuls = <387.0, inf) AND genergy = <24830.0, inf) AND goimpuls = (-inf, -5.5) AND seismoacoustic = {a} THEN class = {1}
