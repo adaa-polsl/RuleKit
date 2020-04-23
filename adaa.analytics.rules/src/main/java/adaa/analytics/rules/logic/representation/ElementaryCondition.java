@@ -88,11 +88,13 @@ public class ElementaryCondition extends ConditionBase {
 	 */
 	@Override
 	protected void internalEvaluate(ExampleSet set,  Set<Integer> outIndices) {
+
+		Attribute a = set.getAttributes().get(attribute);
+
+		/* The following code does not work for SplittedExampleSet
 		ExampleTable tab = set.getExampleTable();
 		DataRowReader drr = tab.getDataRowReader();
-		
-		Attribute a = set.getAttributes().get(attribute);
-		
+
 		int id = 0; 
 		while (drr.hasNext()) {
 			DataRow dr = drr.next();
@@ -102,6 +104,15 @@ public class ElementaryCondition extends ConditionBase {
 				outIndices.add(id);
 			}
 			++id;
+		}*/
+
+		for (int id = 0; id < set.size(); ++id) {
+			Example e = set.getExample(id);
+			double v = e.getValue(a);
+
+			if (valueSet.contains(v)) {
+				outIndices.add(id);
+			}
 		}
 	}
 	
