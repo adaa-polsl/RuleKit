@@ -57,8 +57,13 @@ public abstract class Rule implements Serializable {
 	
 	/** Number of induced conditions. */
 	protected int inducedConditionsCount = 0;
-	
-	
+
+	/** Set of covered positives. */
+	protected IntegerBitSet coveredPositives;
+
+	/** Set of covered negatives. */
+	protected IntegerBitSet coveredNegatives;
+
 	/** Gets {@link #premise} */
 	public CompoundCondition getPremise() { return premise; }
 	/** Sets {@link #premise} */
@@ -103,6 +108,16 @@ public abstract class Rule implements Serializable {
 	public double getPValue() { return pvalue; }
 	/** Sets {@link #pvalue} */
 	public void setPValue(double v) { pvalue = v; }
+
+	/** Gets {@link #coveredPositives} */
+	public IntegerBitSet getCoveredPositives() { return coveredPositives; }
+	/** Sets {@link #coveredPositives} */
+	public void setCoveredPositives(IntegerBitSet v) { coveredPositives = v; }
+
+	/** Gets {@link #coveredNegatives} */
+	public IntegerBitSet getCoveredNegatives() { return coveredNegatives; }
+	/** Sets {@link #coveredNegatives} */
+	public void setCoveredNegatives(IntegerBitSet v) { coveredNegatives = v; }
 	
 	/**
 	 * Creates empty rule.
