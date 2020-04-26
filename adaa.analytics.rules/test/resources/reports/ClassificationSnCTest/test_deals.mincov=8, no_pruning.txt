@@ -1,0 +1,27 @@
+Rules
+    IF Payment Method = {credit card} AND Age = (-inf, 30.5) THEN Future Customer = {yes}
+    IF Gender = {male} AND Payment Method = {credit card} AND Age = <28.5, 32.5) THEN Future Customer = {yes}
+    IF Gender = {male} AND Age = <18.5, 21.5) THEN Future Customer = {yes}
+    IF Gender = {male} AND Age = <17.5, 22.5) THEN Future Customer = {yes}
+    IF Gender = {male} AND Age = (-inf, 25.5) THEN Future Customer = {yes}
+    IF Gender = {male} AND Age = <18.5, 27.5) THEN Future Customer = {yes}
+    IF Gender = {male} AND Age = <20.5, 30.5) THEN Future Customer = {yes}
+    IF Gender = {male} AND Payment Method = {credit card} AND Age = <23.5, 34.5) THEN Future Customer = {yes}
+    IF Gender = {male} AND Age = (-inf, 34.5) THEN Future Customer = {yes}
+    IF Gender = {male} AND Age = (-inf, 35.5) THEN Future Customer = {yes}
+    IF Gender = {male} AND Payment Method = {credit card} AND Age = <33.5, 36.5) THEN Future Customer = {yes}
+    IF Gender = {male} AND Payment Method = {credit card} AND Age = (-inf, 72.5) THEN Future Customer = {yes}
+    IF Gender = {female} AND Age = <34.5, inf) THEN Future Customer = {no}
+    IF Payment Method = {cash} AND Age = <37.5, 90.5) THEN Future Customer = {no}
+    IF Age = <72.5, 76.5) THEN Future Customer = {no}
+    IF Payment Method = {cheque} AND Age = <54.5, 71.5) THEN Future Customer = {no}
+    IF Gender = {male} AND Age = <47.5, 78.5) THEN Future Customer = {no}
+    IF Age = <72.5, 81.5) THEN Future Customer = {no}
+    IF Gender = {male} AND Age = <41.5, 84.5) THEN Future Customer = {no}
+    IF Age = <72.5, 90.5) THEN Future Customer = {no}
+    IF Gender = {male} AND Age = <36.5, inf) THEN Future Customer = {no}
+    IF Gender = {female} AND Age = <32.5, inf) THEN Future Customer = {no}
+    IF Age = <30.5, 43.5) THEN Future Customer = {no}
+    IF Gender = {female} AND Age = <26.5, 35.5) THEN Future Customer = {no}
+    IF Gender = {female} AND Age = <22.5, 36.5) THEN Future Customer = {no}
+    IF Gender = {female} AND Age = <17.5, 40.5) THEN Future Customer = {no}
