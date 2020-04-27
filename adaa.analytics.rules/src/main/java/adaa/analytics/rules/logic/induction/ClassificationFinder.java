@@ -370,6 +370,7 @@ public class ClassificationFinder extends AbstractFinder {
 		double classId = ((SingletonSet)rule.getConsequence().getValueSet()).getValue();
 		Attribute weightAttr = trainSet.getAttributes().getWeight();
 		Set<Integer> positives = rule.getCoveredPositives();
+		double apriori_prec = rule.getWeighted_P() / (rule.getWeighted_P() + rule.getWeighted_N());
 
 		List<Future<ConditionEvaluation>> futures = new ArrayList<Future<ConditionEvaluation>>();
 		
@@ -383,8 +384,6 @@ public class ClassificationFinder extends AbstractFinder {
 				
 				// check if attribute is numerical or nominal
 				if (attr.isNumerical()) {
-					Map<Double, List<Integer>> values2ids = new TreeMap<Double, List<Integer>>();
-					
 					// statistics from all points
 					double left_p = 0;
 					double left_n = 0;
@@ -394,64 +393,62 @@ public class ClassificationFinder extends AbstractFinder {
 					// statistics from points yet to cover
 					int toCover_right_p = 0;
 					int toCover_left_p = 0;
-					
+
+					class TotalPosNeg {
+						double p = 0;
+						double n = 0;
+						int toCover_p = 0;
+					}
+
+					Map<Double, TotalPosNeg> totals = new TreeMap<Double, TotalPosNeg>();
+
 					// get all distinctive values of attribute
 					for (int id : coveredByRule) {
 						DataRow dr = trainSet.getExample(id).getDataRow();
 						double val = dr.get(attr);
-						
+
 						// exclude missing values from keypoints
 						if (!Double.isNaN(val)) {
-							if (!values2ids.containsKey(val)) {
-								values2ids.put(val, new ArrayList<Integer>());
-							} 
-							values2ids.get(val).add(id);
+							if (!totals.containsKey(val)) {
+								totals.put(val, new TotalPosNeg());
+							}
+							TotalPosNeg tot = totals.get(val);
 							double w = (weightAttr != null) ? dr.get(weightAttr) : 1.0;
-							
-							// put to proper bin depending of class label 
+
+							// put to proper bin depending of class label
 							if (positives.contains(id)) {
 								right_p += w;
-								if (uncoveredPositives.contains(id)) { 
-									++toCover_right_p; 
+								tot.p += w;
+								if (uncoveredPositives.contains(id)) {
+									++toCover_right_p;
+									++tot.toCover_p;
 								}
 							} else {
 								right_n += w;
-							}	
+								tot.n += w;
+							}
 						}
 					}
-					
-					Double [] keys = values2ids.keySet().toArray(new Double[values2ids.size()]);
-		
+
+					Double [] keys = totals.keySet().toArray(new Double[totals.size()]);
+
 					// check all possible midpoints (number of distinctive attribute values - 1)
 					// if only one attribute value - ignore it
 					for (int keyId = 0; keyId < keys.length - 1; ++keyId) {
 						double key = keys[keyId];
-						
+
 						double next = keys[keyId + 1];
 						double midpoint = (key + next) / 2;
-						
-						List<Integer> ids = values2ids.get(key);
-						for (int id : ids) {
-							DataRow dr = trainSet.getExample(id).getDataRow();
-							double w = (weightAttr != null) ? dr.get(weightAttr) : 1.0;
-							
-							// update p and n statistics 
-							if (positives.contains(id)) {
-						//	if (rule.getConsequence().evaluate(ex)) {
-								left_p += w;
-								right_p -= w;
-								if (uncoveredPositives.contains(id)) { 
-									++toCover_left_p; 
-									--toCover_right_p;
-								}
-							} else {
-								left_n += w;
-								right_n -= w;
-							}
-						}
-				
+
+						TotalPosNeg tot = totals.get(key);
+						left_p += tot.p;
+						right_p -= tot.p;
+						left_n += tot.n;
+						right_n -= tot.n;
+						toCover_left_p += tot.toCover_p;
+						toCover_right_p -= tot.toCover_p;
+
 						// calculate precisions
-						double apriori_prec = rule.getWeighted_P() / (rule.getWeighted_P() + rule.getWeighted_N());
 						double left_prec = left_p / (left_p + left_n);
 						double right_prec = right_p / (right_p + right_n);
 						

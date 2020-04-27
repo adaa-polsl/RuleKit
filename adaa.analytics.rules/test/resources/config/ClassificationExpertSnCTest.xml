@@ -145,7 +145,7 @@
 				<entry name="forb-attribute-110">1: IF [[nbumps3 = Any]] THEN class = {1}</entry>
 			</param>
 		</parameter_set>
-
+<!--
 		<parameter_set name="guided-c7, adjustment">
 			<param name="min_rule_covered">8</param>
 			<param name="induction_measure">BinaryEntropy</param>
@@ -166,6 +166,7 @@
 			<param name ="expert_forbidden_conditions">
 			</param>
 		</parameter_set>
+		-->
 	</parameter_sets>
 
 	<datasets>
