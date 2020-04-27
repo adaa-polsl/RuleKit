@@ -20,17 +20,9 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
+import adaa.analytics.rules.logic.representation.*;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
-
-import adaa.analytics.rules.logic.representation.ClassificationRule;
-import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
-import adaa.analytics.rules.logic.representation.CompoundCondition;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.Knowledge;
-import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.SingletonSet;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
@@ -82,25 +74,30 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 		
 		// iterate over all classes
 		for (int classId = 0; classId < mapping.size(); ++classId) {
-			
+
+			Set<Integer> positives = new IntegerBitSet(dataset.size());
+			Set<Integer> negatives = new IntegerBitSet(dataset.size());
 			Set<Integer> uncoveredPositives = new HashSet<Integer>();
 			Set<Integer> uncovered = new HashSet<Integer>();
 			double weighted_P = 0;
 			double weighted_N = 0;
-			
+
 			// at the beginning rule set does not cover any examples
 			for (int id = 0; id < dataset.size(); ++id) {
 				Example e = dataset.getExample(id);
 				double w = dataset.getAttributes().getWeight() == null ? 1.0 : e.getWeight();
-				
+
 				if ((double)e.getLabel() == classId) {
 					weighted_P += w;
-					uncoveredPositives.add(id);
+					positives.add(id);
 				} else {
 					weighted_N += w;
+					negatives.add(id);
 				}
-				uncovered.add(id);
 			}
+			uncoveredPositives.addAll(positives);
+			uncovered.addAll(positives);
+			uncovered.addAll(negatives);
 			
 			// change default class if necessary
 			if (weighted_P > defaultClassWeight) {
@@ -136,16 +133,17 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 				Rule rule = (Rule) SerializationUtils.clone(r);
 				rule.setWeighted_P(weighted_P);
 				rule.setWeighted_N(weighted_N);
+
+				// rule covers everything at the beginning (adjustment phase corrects covering)
+				rule.setCoveredPositives(new IntegerBitSet(dataset.size()));
+				rule.setCoveredNegatives(new IntegerBitSet(dataset.size()));
+				rule.getCoveredPositives().addAll(positives);
+				rule.getCoveredNegatives().addAll(negatives);
 				
 				ClassificationExpertFinder erf = (ClassificationExpertFinder)finder;
 				
 				erf.adjust(rule, dataset, uncoveredPositives);
-				
-				Covering cov = rule.covers(dataset, uncovered);
-				rule.setCoveringInformation(cov);
-				Pair<Double,Double> qp = finder.calculateQualityAndPValue(dataset, cov, params.getVotingMeasure());
-				rule.setWeight(qp.getFirst());
-				rule.setPValue(qp.getSecond());
+
 				Logger.log("Expert rule: " + rule.toString() + "\n", Level.FINE);
 				
 				erf.setKnowledge(classKnowledge);
@@ -165,13 +163,11 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 				ruleset.addRule(rule);
 				Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
 				Logger.log("\t" + (++totalExpertRules) + " expert rules, " + totalAutoRules + " auto rules" , Level.INFO);
-				
-				cov = rule.covers(dataset, uncovered);
-				
+
 				// remove covered examples
-				uncoveredPositives.removeAll(cov.positives);
-				uncovered.removeAll(cov.positives);
-				uncovered.removeAll(cov.negatives);
+				uncoveredPositives.removeAll(rule.getCoveredPositives());
+				uncovered.removeAll(rule.getCoveredPositives());
+				uncovered.removeAll(rule.getCoveredNegatives());
 			}
 			
 			// try to generate new rules
@@ -184,6 +180,11 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 				
 				rule.setWeighted_P(weighted_P);
 				rule.setWeighted_N(weighted_N);
+
+				rule.setCoveredPositives(new IntegerBitSet(dataset.size()));
+				rule.setCoveredNegatives(new IntegerBitSet(dataset.size()));
+				rule.getCoveredPositives().addAll(positives);
+				rule.getCoveredNegatives().addAll(negatives);
 				
 				ClassificationExpertFinder erf = (ClassificationExpertFinder)finder;
 				erf.setKnowledge(classKnowledge);
@@ -201,13 +202,11 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 					Logger.log("Candidate rule:" + rule.toString() + "\n", Level.FINE);
 					Logger.log(".", Level.INFO);
 					
-					Covering covered = rule.covers(dataset, uncovered);
-					
 					// remove covered examples
 					int previouslyUncovered = uncoveredPositives.size();
-					uncoveredPositives.removeAll(covered.positives);
-					uncovered.removeAll(covered.positives);
-					uncovered.removeAll(covered.negatives);
+					uncoveredPositives.removeAll(rule.getCoveredPositives());
+					uncovered.removeAll(rule.getCoveredPositives());
+					uncovered.removeAll(rule.getCoveredNegatives());
 					
 					// stop if no positive examples remaining
 					if (uncoveredPositives.size() == 0) {

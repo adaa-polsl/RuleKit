@@ -59,10 +59,10 @@ public abstract class Rule implements Serializable {
 	protected int inducedConditionsCount = 0;
 
 	/** Set of covered positives. */
-	protected IntegerBitSet coveredPositives;
+	transient protected IntegerBitSet coveredPositives;
 
 	/** Set of covered negatives. */
-	protected IntegerBitSet coveredNegatives;
+	transient protected IntegerBitSet coveredNegatives;
 
 	/** Gets {@link #premise} */
 	public CompoundCondition getPremise() { return premise; }
