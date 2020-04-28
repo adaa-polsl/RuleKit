@@ -66,7 +66,7 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 		ClassificationRuleSet ruleset = (ClassificationRuleSet)factory.create(dataset);
 		Attribute label = dataset.getAttributes().getLabel();
 		NominalMapping mapping = label.getMapping();
-		
+
 		int totalExpertRules = 0;
 		int totalAutoRules = 0;
 		
@@ -77,7 +77,7 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 
 			Set<Integer> positives = new IntegerBitSet(dataset.size());
 			Set<Integer> negatives = new IntegerBitSet(dataset.size());
-			Set<Integer> uncoveredPositives = new HashSet<Integer>();
+			Set<Integer> uncoveredPositives = new IntegerBitSet(dataset.size());
 			Set<Integer> uncovered = new HashSet<Integer>();
 			double weighted_P = 0;
 			double weighted_N = 0;
@@ -98,7 +98,10 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 			uncoveredPositives.addAll(positives);
 			uncovered.addAll(positives);
 			uncovered.addAll(negatives);
-			
+
+			// perform prepreprocessing
+			finder.preprocess(dataset);
+
 			// change default class if necessary
 			if (weighted_P > defaultClassWeight) {
 				defaultClassWeight = weighted_P;

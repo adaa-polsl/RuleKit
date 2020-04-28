@@ -4,11 +4,14 @@ import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.*;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Attributes;
+import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.DataRow;
 import com.rapidminer.example.table.ExampleTable;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 
 public class ClassificationFinderPrecalculated extends ClassificationFinder {
@@ -35,11 +38,10 @@ public class ClassificationFinderPrecalculated extends ClassificationFinder {
 
     /**
      * Precalculates conditions coverings and stores them as bit vectors in @see precalculatedCoverings field.
-     * @param classId Class identifier.
      * @param trainSet Training set.
-     * @param positives Set of positives examples yet uncovered by the model.
      */
-    public void precalculateConditions(int classId, ExampleSet trainSet, Set<Integer> positives) {
+    @Override
+    public void preprocess(ExampleSet trainSet) {
 
         precalculatedCoverings = new HashMap<Attribute, Map<Double, IntegerBitSet>>();
         precalculatedFilter = new HashMap<Attribute, Set<Double>>();
@@ -54,8 +56,29 @@ public class ClassificationFinderPrecalculated extends ClassificationFinder {
             precalculatedCoverings.put(attr, attributeCovering);
             precalculatedFilter.put(attr, new TreeSet<Double>());
 
+            // check if attribute is nominal
+            if (attr.isNominal()) {
+                // prepare bit vectors
+                for (int val = 0; val != attr.getMapping().size(); ++val) {
+                    attributeCovering.put((double)val, new IntegerBitSet(trainSet.size()));
+                }
+
+                // get all distinctive values of attribute
+                int id = 0;
+                for (Example e : trainSet) {
+                    DataRow dr = e.getDataRow() ;
+                    double value = dr.get(attr);
+
+                    // omit missing values
+                    if (!Double.isNaN(value)) {
+                        attributeCovering.get(value).add(id);
+                    }
+                    ++id;
+                }
+            }
+
             // check if attribute is numerical or nominal
-            if (attr.isNumerical()) {
+        /*    if (attr.isNumerical()) {
                 Map<Double, List<Integer>> values2ids = new TreeMap<Double, List<Integer>>();
 
                 // get all distinctive values of attribute
@@ -92,32 +115,13 @@ public class ClassificationFinderPrecalculated extends ClassificationFinder {
 
                     attributeCovering.put(midpoint, covered.clone());
                 }
-            } else { // nominal attributes
-
-                // prepare bit vectors
-                for (int val = 0; val != attr.getMapping().size(); ++val) {
-                    attributeCovering.put((double)val, new IntegerBitSet(table.size()));
-                }
-
-                // get all distinctive values of attribute
-                for (int id = 0; id < table.size(); ++id) {
-                    DataRow dr = table.getDataRow(id);
-                    double value = dr.get(attr);
-
-                    // omit missing values
-                    if (!Double.isNaN(value)) {
-                        attributeCovering.get(value).add(id);
-                    }
-                }
-            }
+            } */
         }
-
     }
 
 
-
     /**
-     * Induces an elementary condition using precalculated coverings.
+     * Induces an elementary condition.
      *
      * @param rule Current rule.
      * @param trainSet Training set.
@@ -127,6 +131,194 @@ public class ClassificationFinderPrecalculated extends ClassificationFinder {
      * @param extraParams Additional parameters.
      * @return Induced elementary condition.
      */
+    @Override
+    protected ElementaryCondition induceCondition(
+            Rule rule,
+            ExampleSet trainSet,
+            Set<Integer> uncoveredPositives,
+            Set<Integer> coveredByRule,
+            Set<Attribute> allowedAttributes,
+            Object... extraParams) {
+
+        if (allowedAttributes.size() == 0) {
+            return null;
+        }
+
+        double classId = ((SingletonSet)rule.getConsequence().getValueSet()).getValue();
+        Set<Integer> positives = rule.getCoveredPositives();
+        double apriori_prec = rule.getWeighted_P() / (rule.getWeighted_P() + rule.getWeighted_N());
+
+        List<Future<ConditionEvaluation>> futures = new ArrayList<Future<ConditionEvaluation>>();
+
+        // iterate over all allowed decision attributes
+        for (Attribute attr : allowedAttributes) {
+
+            // consider attributes in parallel
+            Future<ConditionEvaluation> future = (Future<ConditionEvaluation>) pool.submit(() -> {
+
+                ConditionEvaluation best = new ConditionEvaluation();
+
+                // check if attribute is numerical or nominal
+                if (attr.isNumerical()) {
+                    // statistics from all points
+                    double left_p = 0;
+                    double left_n = 0;
+                    double right_p = 0;
+                    double right_n = 0;
+
+                    // statistics from points yet to cover
+                    int toCover_right_p = 0;
+                    int toCover_left_p = 0;
+
+                    class TotalPosNeg {
+                        double p = 0;
+                        double n = 0;
+                        int toCover_p = 0;
+                    }
+
+                    Map<Double, TotalPosNeg> totals = new TreeMap<Double, TotalPosNeg>();
+
+                    // get all distinctive values of attribute
+                    for (int id : coveredByRule) {
+                        DataRow dr = trainSet.getExample(id).getDataRow();
+                        double val = dr.get(attr);
+
+                        // exclude missing values from keypoints
+                        if (!Double.isNaN(val)) {
+                            if (!totals.containsKey(val)) {
+                                totals.put(val, new TotalPosNeg());
+                            }
+                            TotalPosNeg tot = totals.get(val);
+
+                            // put to proper bin depending of class label
+                            if (positives.contains(id)) {
+                                right_p += 1.0;
+                                tot.p += 1.0;
+                                if (uncoveredPositives.contains(id)) {
+                                    ++toCover_right_p;
+                                    ++tot.toCover_p;
+                                }
+                            } else {
+                                right_n += 1.0;
+                                tot.n += 1.0;
+                            }
+                        }
+                    }
+
+                    Double [] keys = totals.keySet().toArray(new Double[totals.size()]);
+
+                    // check all possible midpoints (number of distinctive attribute values - 1)
+                    // if only one attribute value - ignore it
+                    for (int keyId = 0; keyId < keys.length - 1; ++keyId) {
+                        double key = keys[keyId];
+
+                        double next = keys[keyId + 1];
+                        double midpoint = (key + next) / 2;
+
+                        TotalPosNeg tot = totals.get(key);
+                        left_p += tot.p;
+                        right_p -= tot.p;
+                        left_n += tot.n;
+                        right_n -= tot.n;
+                        toCover_left_p += tot.toCover_p;
+                        toCover_right_p -= tot.toCover_p;
+
+                        // calculate precisions
+                        double left_prec = left_p / (left_p + left_n);
+                        double right_prec = right_p / (right_p + right_n);
+
+                        // evaluate left-side condition: a in (-inf, v)
+                        if (left_prec > apriori_prec) {
+                            double quality = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
+                                    left_p, left_n, rule.getWeighted_P(), rule.getWeighted_N());
+
+                            if ((quality > best.quality || (quality == best.quality && left_p > best.covered)) && (toCover_left_p > 0)) {
+                                ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_le(midpoint));
+                                if (checkCandidate(candidate, classId, rule.getWeighted_P(), toCover_left_p)) {
+                                    Logger.log("\tCurrent best: " + candidate + " (p=" + left_p + ", n=" + left_n + ", new_p=" + (double)toCover_left_p +", quality="  + quality + "\n", Level.FINEST);
+                                    best.quality = quality;
+                                    best.covered = left_p;
+                                    best.condition = candidate;
+                                }
+                            }
+                        }
+
+                        // evaluate right-side condition: a in <v, inf)
+                        if (right_prec > apriori_prec) {
+                            double quality = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
+                                    right_p, right_n, rule.getWeighted_P(), rule.getWeighted_N());
+                            if ((quality > best.quality || (quality == best.quality && right_p > best.covered)) && (toCover_right_p > 0)) {
+                                ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_geq(midpoint));
+                                if (checkCandidate(candidate, classId, rule.getWeighted_P(), toCover_right_p)) {
+                                    Logger.log("\tCurrent best: " + candidate + " (p=" + right_p + ", n=" + right_n + ", new_p=" + (double)toCover_right_p + ", quality="  + quality + "\n", Level.FINEST);
+                                    best.quality = quality;
+                                    best.covered = right_p;
+                                    best.condition = candidate;
+                                }
+                            }
+                        }
+                    }
+                } else {
+
+                    // try all possible conditions for an attribute
+                    for (int i = 0; i < attr.getMapping().size(); ++i) {
+
+                        IntegerBitSet conditionCovered = precalculatedCoverings.get(attr).get((double)i);
+                        double p = conditionCovered.calculateIntersectionSize(rule.getCoveredPositives());
+                        int toCover_p = conditionCovered.calculateIntersectionSize((IntegerBitSet)coveredByRule, (IntegerBitSet)uncoveredPositives);
+                        double n = conditionCovered.calculateIntersectionSize((IntegerBitSet)coveredByRule) - p;
+
+                        // evaluate equality condition a = v
+                        double quality = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
+                                p, n, rule.getWeighted_P(), rule.getWeighted_N());
+                        if ((quality > best.quality || (quality == best.quality && p > best.covered)) && (toCover_p > 0)) {
+                            ElementaryCondition candidate =
+                                    new ElementaryCondition(attr.getName(), new SingletonSet((double)i, attr.getMapping().getValues()));
+                            if (checkCandidate(candidate, classId, rule.getWeighted_P(), toCover_p)) {
+                                Logger.log("\tCurrent best: " + candidate + " (p=" + p + ", n=" + n + ", new_p=" + (double)toCover_p + ", quality="  + quality + "\n", Level.FINEST);
+                                best.quality = quality;
+                                best.covered = p;
+                                best.condition = candidate;
+                            }
+                        }
+                    }
+                }
+
+                return best;
+
+            });
+
+            futures.add(future);
+        }
+
+        ConditionEvaluation best = null;
+
+        try {
+            for (Future f : futures) {
+                ConditionEvaluation eval;
+
+                eval = (ConditionEvaluation)f.get();
+                if (best == null || eval.quality > best.quality || (eval.quality == best.quality && eval.covered > best.covered)) {
+                    best = eval;
+                }
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        if (best.condition != null) {
+            Attribute bestAttr = trainSet.getAttributes().get(((ElementaryCondition)best.condition).getAttribute());
+            if (bestAttr.isNominal()) {
+                allowedAttributes.remove(bestAttr);
+            }
+        }
+
+        return (ElementaryCondition)best.condition;
+    }
+
+
+    /*
     @Override
     protected ElementaryCondition induceCondition(
             Rule rule,
@@ -258,5 +450,6 @@ public class ClassificationFinderPrecalculated extends ClassificationFinder {
 
         return bestCondition;
     }
+    */
 
 }

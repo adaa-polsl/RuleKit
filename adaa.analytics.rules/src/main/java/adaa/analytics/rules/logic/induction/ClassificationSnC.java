@@ -71,12 +71,12 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 		Logger.log("ClassificationSnC.run()\n", Level.FINE);
 		double beginTime;
 		beginTime = System.nanoTime();
-	
+
 		ClassificationRuleSet finalRuleset = (ClassificationRuleSet) factory.create(dataset);
 		Attribute label = dataset.getAttributes().getLabel();
 		NominalMapping mapping = label.getMapping();
 		boolean weighted = (dataset.getAttributes().getWeight() != null);
-		
+
 		int threadCount = Runtime.getRuntime().availableProcessors();
 		ExecutorService pool = Executors.newFixedThreadPool(threadCount);
 		Semaphore mutex = new Semaphore(1);
@@ -90,7 +90,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 			final int classId = cid;
 			Future<Pair<ClassificationRuleSet, Double>> future = pool.submit( () -> {
 				Logger.log("Class " + classId + " started\n" , Level.FINE);
-		
+
 				ClassificationRuleSet ruleset = (ClassificationRuleSet) factory.create(dataset);
 
 				Set<Integer> positives = new IntegerBitSet(dataset.size());
@@ -118,14 +118,9 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 				uncovered.addAll(positives);
 				uncovered.addAll(negatives);
 
-				/*
-				if (!weighted) {
-					IntegerBitSet positives = new IntegerBitSet(dataset.size());
-					positives.addAll(uncoveredPositives);
-				//	finder.precalculateConditions(classId, dataset, positives);
-				}
-				 */
-				
+				// perform prepreprocessing
+				finder.preprocess(dataset);
+
 				boolean carryOn = uncoveredPositives.size() > 0; 
 				double uncovered_p = weighted_P;
 				
@@ -197,9 +192,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 			
 			futures.add(future);
 		}
-			
-		
-		
+
 		// add rulesets from all classes
 		double defaultClassP = 0;
 		
