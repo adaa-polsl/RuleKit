@@ -32,7 +32,7 @@ public class TestConfigParser {
     private static final String PARAMETERS_KEY = "parameter_set";
     private static final String ENTRY_KEY = "entry";
 
-    private static final List<String> EXPERTS_PARAMETERS_NAMES = Arrays.asList(
+    private static final List<String> EXPERTS_RULES_PARAMETERS_NAMES = Arrays.asList(
             ExpertRuleGenerator.PARAMETER_EXPERT_RULES,
             ExpertRuleGenerator.PARAMETER_EXPERT_PREFERRED_CONDITIONS,
             ExpertRuleGenerator.PARAMETER_EXPERT_FORBIDDEN_CONDITIONS);
@@ -53,7 +53,7 @@ public class TestConfigParser {
         return getNodeAttributeValue(node, NAME_KEY);
     }
 
-    private List<String[]> parseExpertParameter(NodeList children) {
+    private List<String[]> parseExpertRulesParameter(NodeList children) {
         List<String[]> expertRules = new ArrayList<>();
         for (int i = 0; i < children.getLength(); i++) {
             Element entryElement = (Element) children.item(i);
@@ -92,8 +92,8 @@ public class TestConfigParser {
             Node paramNode = parametersNodes.item(i);
             String paramName = getNodeName(paramNode);
             Object value;
-            if (EXPERTS_PARAMETERS_NAMES.contains(paramName)) {
-                value = parseExpertParameter(((Element) paramNode).getElementsByTagName(ENTRY_KEY));
+            if (EXPERTS_RULES_PARAMETERS_NAMES.contains(paramName)) {
+                value = parseExpertRulesParameter(((Element) paramNode).getElementsByTagName(ENTRY_KEY));
             } else {
                 value = paramNode.getTextContent();
             }
