@@ -93,9 +93,7 @@ public class ClassificationFinder extends AbstractFinder {
 	 * @param trainSet Training set.
 	 */
 	public void preprocess(ExampleSet trainSet) {
-		if (true)
-			return;
-
+	
 		// do nothing for weighted datasets
 		if (trainSet.getAttributes().getWeight() != null) {
 			return;
@@ -105,35 +103,50 @@ public class ClassificationFinder extends AbstractFinder {
 		precalculatedFilter = new HashMap<Attribute, Set<Double>>();
 		Attributes attributes = trainSet.getAttributes();
 
-		ExampleTable table = trainSet.getExampleTable();
+		List<Future> futures = new ArrayList<Future>();
 
 		// iterate over all allowed decision attributes
 		for (Attribute attr : attributes) {
 
-			Map<Double, IntegerBitSet> attributeCovering = new TreeMap<Double, IntegerBitSet>();
-			precalculatedCoverings.put(attr, attributeCovering);
-			precalculatedFilter.put(attr, new TreeSet<Double>());
+			Future f = pool.submit( () -> {
+				Map<Double, IntegerBitSet> attributeCovering = new TreeMap<Double, IntegerBitSet>();
 
-			// check if attribute is nominal
-			if (attr.isNominal()) {
-				// prepare bit vectors
-				for (int val = 0; val != attr.getMapping().size(); ++val) {
-					attributeCovering.put((double) val, new IntegerBitSet(trainSet.size()));
-				}
-
-				// get all distinctive values of attribute
-				int id = 0;
-				for (Example e : trainSet) {
-					DataRow dr = e.getDataRow();
-					double value = dr.get(attr);
-
-					// omit missing values
-					if (!Double.isNaN(value)) {
-						attributeCovering.get(value).add(id);
+				// check if attribute is nominal
+				if (attr.isNominal()) {
+					// prepare bit vectors
+					for (int val = 0; val != attr.getMapping().size(); ++val) {
+						attributeCovering.put((double) val, new IntegerBitSet(trainSet.size()));
 					}
-					++id;
+
+					// get all distinctive values of attribute
+					int id = 0;
+					for (Example e : trainSet) {
+						DataRow dr = e.getDataRow();
+						double value = dr.get(attr);
+
+						// omit missing values
+						if (!Double.isNaN(value)) {
+							attributeCovering.get(value).add(id);
+						}
+						++id;
+					}
 				}
+
+				synchronized (this) {
+					precalculatedCoverings.put(attr, attributeCovering);
+					precalculatedFilter.put(attr, new TreeSet<Double>());
+				}
+			});
+
+			futures.add(f);
+		}
+
+		try {
+			for (Future f : futures) {
+				f.get();
 			}
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -219,7 +232,7 @@ public class ClassificationFinder extends AbstractFinder {
 			rule.getWeighted_P() == Double.NaN || rule.getWeighted_N() == Double.NaN) {
 			throw new IllegalArgumentException();
 		}
-		
+
 		int examplesCount = trainSet.size();
 		int conditionsCount = rule.getPremise().getSubconditions().size();
 		int maskLength = (trainSet.size() + Long.SIZE - 1) / Long.SIZE; 
@@ -484,6 +497,7 @@ public class ClassificationFinder extends AbstractFinder {
 					}
 
 					Double [] keys = totals.keySet().toArray(new Double[totals.size()]);
+					//Logger.log(", " + keys.length, Level.INFO);
 
 					// check all possible midpoints (number of distinctive attribute values - 1)
 					// if only one attribute value - ignore it
