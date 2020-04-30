@@ -28,7 +28,8 @@ public class TestReportWriter {
         printWriter.println(Const.REPORTS_SECTIONS_HEADERS.RULES);
 
         for (Rule rule : ruleSet.getRules()) {
-            printWriter.println("\t" + rule.toString());
+            String ruleString = RuleStringFactory.make(rule);
+            printWriter.println("\t" + ruleString);
         }
     }
 

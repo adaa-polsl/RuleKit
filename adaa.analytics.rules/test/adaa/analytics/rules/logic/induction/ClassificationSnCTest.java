@@ -61,7 +61,7 @@ public class ClassificationSnCTest {
         ClassificationSnC snc = new ClassificationSnC(finder, testCase.getParameters());
         RuleSetBase ruleSet = snc.run(testCase.getExampleSet());
 
-        RuleSetComparator.assertRulesAreEqual(testCase.getReferenceReport().getRules(), ruleSet.getRules());
         this.writeReport(testCase.getName(), ruleSet);
+        RuleSetComparator.assertRulesAreEqual(testCase.getReferenceReport().getRules(), ruleSet.getRules());
     }
 }

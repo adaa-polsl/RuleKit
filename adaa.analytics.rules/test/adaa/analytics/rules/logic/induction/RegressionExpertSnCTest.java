@@ -24,9 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 
 @RunWith(Theories.class)
-public class ClassificationExpertSnCTest {
+public class RegressionExpertSnCTest {
 
-    private static final String CLASS_NAME = ClassificationExpertSnCTest.class.getSimpleName();
+    private static final String CLASS_NAME = RegressionExpertSnCTest.class.getSimpleName();
     private static final String REPORTS_DIRECTORY = Const.REPORTS_IN_DIRECTORY_PATH + CLASS_NAME + '/';
 
     @DataPoints("Test cases")
@@ -38,7 +38,7 @@ public class ClassificationExpertSnCTest {
         return testCases.toArray(new TestCase[0]);
     }
 
-    public ClassificationExpertSnCTest() {
+    public RegressionExpertSnCTest() {
         File directory = new File(Const.REPORTS_OUT_DIRECTORY_PATH + CLASS_NAME);
         if (! directory.exists()){
             directory.mkdir();
@@ -57,8 +57,8 @@ public class ClassificationExpertSnCTest {
 
     @Theory
     public void runTestCase(@FromDataPoints("Test cases") TestCase testCase) throws OperatorException, OperatorCreationException, IOException {
-        ClassificationExpertFinder finder = new ClassificationExpertFinder(testCase.getParameters(), testCase.getKnowledge());
-        ClassificationExpertSnC snc = new ClassificationExpertSnC(finder, testCase.getParameters(), testCase.getKnowledge());
+        RegressionExpertFinder finder = new RegressionExpertFinder(testCase.getParameters());
+        RegressionExpertSnC snc = new RegressionExpertSnC(finder, testCase.getParameters(), testCase.getKnowledge());
         RuleSetBase ruleSet = snc.run(testCase.getExampleSet());
 
         this.writeReport(testCase.getName(), ruleSet);

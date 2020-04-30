@@ -101,9 +101,9 @@ public class KnowledgeFactory {
     }
 
     public Knowledge make(HashMap<String, Object> parameters) {
-        MultiSet<Rule> rules = null;
-        MultiSet<Rule> preferredConditions = null;
-        MultiSet<Rule> forbiddenConditions = null;
+        MultiSet<Rule> rules = new MultiSet<>();
+        MultiSet<Rule> preferredConditions = new MultiSet<>();
+        MultiSet<Rule> forbiddenConditions = new MultiSet<>();
 
         for (String key : parameters.keySet()) {
             switch (key) {
@@ -118,9 +118,6 @@ public class KnowledgeFactory {
                     break;
             }
         }
-        assert rules != null;
-        assert preferredConditions != null;
-        assert forbiddenConditions != null;
 
         fixMappings(rules, exampleSet);
         fixMappings(preferredConditions, exampleSet);

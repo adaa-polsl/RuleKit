@@ -1,11 +1,16 @@
 package utils;
 
 import adaa.analytics.rules.logic.representation.Rule;
+import utils.reports.RuleStringFactory;
 
 import java.util.HashMap;
 import java.util.List;
 
 public class RuleSetComparator {
+
+    private static String sanitizeRuleString(String ruleString) {
+        return ruleString.replaceAll("(\\[)|(\\])|(\\()|(\\))", "");
+    }
 
     public static boolean assertRulesAreEqual(List<Rule> expected, List<Rule> actual) {
         HashMap<String, Integer> rulesOccurrencesCount = new HashMap<>();
@@ -17,11 +22,13 @@ public class RuleSetComparator {
                             expected.size());
         }
         for (Rule expectedRule : expected) {
-            rulesOccurrencesCount.put(expectedRule.toString(), 0);
+            String ruleString = sanitizeRuleString(RuleStringFactory.make(expectedRule));
+            rulesOccurrencesCount.put(ruleString, 0);
         }
         for (Rule actualRule : actual) {
-            if (rulesOccurrencesCount.containsKey(actualRule.toString())) {
-                rulesOccurrencesCount.replace(actualRule.toString(), rulesOccurrencesCount.get(actualRule.toString()) + 1);
+            String actualRuleString = sanitizeRuleString(RuleStringFactory.make(actualRule));
+            if (rulesOccurrencesCount.containsKey(actualRuleString)) {
+                rulesOccurrencesCount.replace(actualRuleString, rulesOccurrencesCount.get(actualRuleString) + 1);
             }
         }
         for (int wasRulePresent : rulesOccurrencesCount.values()) {
