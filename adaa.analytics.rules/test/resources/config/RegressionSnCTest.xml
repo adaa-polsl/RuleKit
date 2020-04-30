@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<test name="test_methane">
+    <parameter_sets>
+        <parameter_set name="auto">
+            <param name="min_rule_covered">4</param>
+        </parameter_set>
+    </parameter_sets>
+    <datasets>
+        <dataset>
+            <label>MM116_pred</label>
+            <training>
+                <train>
+                    <in_file>data/methane-train-minimal.arff</in_file>
+                </train>
+            </training>
+        </dataset>
+    </datasets>
+</test>

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<test name="test_1">
+<test name="test_seismic-bumps">
 	<parameter_sets>
 		
 		<parameter_set name="guided-c2, gimpuls_750 extended">
@@ -145,28 +145,27 @@
 				<entry name="forb-attribute-110">1: IF [[nbumps3 = Any]] THEN class = {1}</entry>
 			</param>
 		</parameter_set>
-<!--
-		<parameter_set name="guided-c7, adjustment">
-			<param name="min_rule_covered">8</param>
-			<param name="induction_measure">BinaryEntropy</param>
-			<param name="pruning_measure">BinaryEntropy</param>
-			<param name="voting_measure">C2</param>
-			<param name="max_growing">0</param>
-			<param name="use_expert">true</param>
-			<param name="extend_using_preferred">false</param>
-			<param name="extend_using_automatic">false</param>
-			<param name="induce_using_preferred">false</param>
-			<param name="induce_using_automatic">false</param>
-			<param name ="expert_rules">
-				<entry name="rule-0">IF gimpuls @= Any THEN class = {0}</entry>
-				<entry name="rule-1">IF gimpuls @= &lt;750, 900) THEN class = {0}</entry>
-			</param>
-			<param name ="expert_preferred_conditions">
-			</param>
-			<param name ="expert_forbidden_conditions">
-			</param>
-		</parameter_set>
-		-->
+
+<!--		<parameter_set name="guided-c7, adjustment">-->
+<!--			<param name="min_rule_covered">8</param>-->
+<!--			<param name="induction_measure">BinaryEntropy</param>-->
+<!--			<param name="pruning_measure">BinaryEntropy</param>-->
+<!--			<param name="voting_measure">C2</param>-->
+<!--			<param name="max_growing">0</param>-->
+<!--			<param name="use_expert">true</param>-->
+<!--			<param name="extend_using_preferred">false</param>-->
+<!--			<param name="extend_using_automatic">false</param>-->
+<!--			<param name="induce_using_preferred">false</param>-->
+<!--			<param name="induce_using_automatic">false</param>-->
+<!--			<param name ="expert_rules">-->
+<!--				<entry name="rule-0">IF gimpuls @= Any THEN class = {0}</entry>-->
+<!--				<entry name="rule-1">IF gimpuls @= &lt;750, 900) THEN class = {0}</entry>-->
+<!--			</param>-->
+<!--			<param name ="expert_preferred_conditions">-->
+<!--			</param>-->
+<!--			<param name ="expert_forbidden_conditions">-->
+<!--			</param>-->
+<!--		</parameter_set>-->
 	</parameter_sets>
 
 	<datasets>
