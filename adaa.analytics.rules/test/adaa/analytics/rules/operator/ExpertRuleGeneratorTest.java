@@ -119,6 +119,8 @@ public class ExpertRuleGeneratorTest {
 
     @Test
     public void testRuleInductionOnSplittedExampleSet() throws OperatorException, OperatorCreationException {
+        this.initRapidMiner();
+
         Path trainFilePath = TestResourcePathFactory.get(TRAIN_DEALS_FILE);
         Path doubledFilePath = TestResourcePathFactory.get(TRAIN_DEALS_DOUBLED_FILE);
         ExampleSet exampleSet = getExampleSet(trainFilePath.toString());
