@@ -205,8 +205,8 @@ public class Interval implements IValueSet, Serializable {
 	public String toString() {
 		String s =
 				(leftClosed ? "<" : "(")+
-				((left == MINUS_INF) ? "-inf" : Double.toString(left)) + ", " + 
-				((right == INF) ? "inf" : Double.toString(right)) +
+				((left == MINUS_INF) ? "-inf" : DoubleFormatter.format(left)) + ", " +
+				((right == INF) ? "inf" : DoubleFormatter.format(right)) +
 				(rightClosed ? ">" : ")");
 		
 		return s;	
