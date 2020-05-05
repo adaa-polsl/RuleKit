@@ -33,6 +33,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import adaa.analytics.rules.logic.representation.DoubleFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -186,6 +187,12 @@ public class ExperimentalConsole {
                         ExpertRuleGenerator.PARAMETER_EXPERT_PREFERRED_CONDITIONS,
                         ExpertRuleGenerator.PARAMETER_EXPERT_FORBIDDEN_CONDITIONS
                 };
+
+                if(name.equals(TrainTestValidationExperiment.RULES_SIGNIFICANT_FIGURES)) {
+                    String value = paramNode.getTextContent();
+                    wrapper.map.put(name, Integer.parseInt(value));
+                    continue;
+                }
 
                 // parse expert rules/conditions
                 boolean paramProcessed = false;
