@@ -17,6 +17,7 @@ package adaa.analytics.rules.logic.representation;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -30,7 +31,7 @@ public class MultiSet<T> implements Iterable<T>, Serializable {
 	private static final long serialVersionUID = 4349403675429533526L;
 	
 	/** Collection storing elements with their multiplicity */
-	protected Map<T, Integer> map = new HashMap<T, Integer>();
+	protected Map<T, Integer> map = new LinkedHashMap<>();
 	
 	/**
 	 * Verifies the multiset contains a given element.
