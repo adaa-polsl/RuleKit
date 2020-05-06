@@ -71,12 +71,12 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 		Logger.log("ClassificationSnC.run()\n", Level.FINE);
 		double beginTime;
 		beginTime = System.nanoTime();
-	
+
 		ClassificationRuleSet finalRuleset = (ClassificationRuleSet) factory.create(dataset);
 		Attribute label = dataset.getAttributes().getLabel();
 		NominalMapping mapping = label.getMapping();
 		boolean weighted = (dataset.getAttributes().getWeight() != null);
-		
+
 		int threadCount = Runtime.getRuntime().availableProcessors();
 		ExecutorService pool = Executors.newFixedThreadPool(threadCount);
 		Semaphore mutex = new Semaphore(1);
@@ -90,12 +90,12 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 			final int classId = cid;
 			Future<Pair<ClassificationRuleSet, Double>> future = pool.submit( () -> {
 				Logger.log("Class " + classId + " started\n" , Level.FINE);
-		
+
 				ClassificationRuleSet ruleset = (ClassificationRuleSet) factory.create(dataset);
-				
-			//	Set<Integer> uncoveredPositives = new HashSet<Integer>();
+
+				Set<Integer> positives = new IntegerBitSet(dataset.size());
+				Set<Integer> negatives = new IntegerBitSet(dataset.size());
 				Set<Integer> uncoveredPositives = new IntegerBitSet(dataset.size());
-			
 				Set<Integer> uncovered = new HashSet<Integer>();
 				
 				double weighted_P = 0;
@@ -108,19 +108,19 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 					
 					if ((double)e.getLabel() == classId) {
 						weighted_P += w;
-						uncoveredPositives.add(id);
+						positives.add(id);
 					} else {
 						weighted_N += w;
+						negatives.add(id);
 					}
-					uncovered.add(id);
 				}
-				
-				if (!weighted) {
-					IntegerBitSet positives = new IntegerBitSet(dataset.size());
-					positives.addAll(uncoveredPositives);
-				//	finder.precalculateConditions(classId, dataset, positives);
-				}
-				
+				uncoveredPositives.addAll(positives);
+				uncovered.addAll(positives);
+				uncovered.addAll(negatives);
+
+				// perform prepreprocessing
+				finder.preprocess(dataset);
+
 				boolean carryOn = uncoveredPositives.size() > 0; 
 				double uncovered_p = weighted_P;
 				
@@ -131,10 +131,17 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 					Rule rule = factory.create(
 							new CompoundCondition(),
 							new ElementaryCondition(label.getName(), new SingletonSet((double)classId, mapping.getValues())));
-					
+
+					// Initialize some members
 					rule.setWeighted_P(weighted_P);
 					rule.setWeighted_N(weighted_N);
-					
+
+					// rule covers everything at the beginning
+					rule.setCoveredPositives(new IntegerBitSet(dataset.size()));
+					rule.setCoveredNegatives(new IntegerBitSet(dataset.size()));
+					rule.getCoveredPositives().addAll(positives);
+					rule.getCoveredNegatives().addAll(negatives);
+
 					double t = System.nanoTime();
 					carryOn = (finder.grow(rule, dataset, uncoveredPositives) > 0);
 					ruleset.setGrowingTime( ruleset.getGrowingTime() + (System.nanoTime() - t) / 1e9);
@@ -149,14 +156,13 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 						
 						
 						Logger.log("Class " + classId + ", candidate rule " + ruleset.getRules().size() +  ":" + rule.toString() + "\n", Level.FINE);
-						Covering covered = rule.covers(dataset, uncovered);
-						
+
 						// remove covered examples
 						int previouslyUncovered = uncoveredPositives.size();
-						uncoveredPositives.removeAll(covered.positives);
-						uncovered.removeAll(covered.positives);
-						uncovered.removeAll(covered.negatives);
-						
+						uncoveredPositives.removeAll(rule.getCoveredPositives());
+						uncovered.removeAll(rule.getCoveredPositives());
+						uncovered.removeAll(rule.getCoveredNegatives());
+
 						uncovered_p = 0;
 						for (int id : uncoveredPositives) {
 							Example e = dataset.getExample(id);
@@ -186,9 +192,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 			
 			futures.add(future);
 		}
-			
-		
-		
+
 		// add rulesets from all classes
 		double defaultClassP = 0;
 		

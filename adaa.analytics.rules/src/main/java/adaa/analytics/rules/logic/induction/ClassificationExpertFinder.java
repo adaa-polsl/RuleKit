@@ -84,31 +84,14 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 		
 		// bit vectors for faster operations on coverings
 		IntegerBitSet conditionCovered = new IntegerBitSet(dataset.size());
-		IntegerBitSet coveredPositives = new IntegerBitSet(dataset.size());
-		IntegerBitSet coveredNegatives = new IntegerBitSet(dataset.size());
-		
-		// assume empty premise at the beginning (rule covers all examples)
-		int id = 0;
-		for (Example e : dataset) {
-			if (rule.getConsequence().evaluate(e)) {
-				coveredPositives.add(id);
-			} else {
-				coveredNegatives.add(id);
-			}
-			++id;
-		}
-		covered.addAll(coveredPositives);
-		covered.addAll(coveredNegatives);
+		covered.addAll(rule.getCoveredPositives());
+		covered.addAll(rule.getCoveredNegatives());
 		
 		for (ConditionBase cnd : expertPremise.getSubconditions()) {
 			ElementaryCondition ec = (ElementaryCondition)cnd;
 			ElementaryCondition newCondition;
 			
 			if (ec.isAdjustable()) {
-				IntegerBitSet tempPositives = new IntegerBitSet(dataset.size());
-				ec.evaluate(dataset, tempPositives);
-				tempPositives.retainAll(coveredPositives);
-				
 				// determine attribute
 				Set<Attribute> attr = new TreeSet<Attribute>(new AttributeComparator());
 				attr.add(dataset.getAttributes().get(ec.getAttribute()));
@@ -121,43 +104,37 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 					
 				} else {
 					// condition in other form - find the best condition using this attribute with non-empty intersection with specified condition
-					mustBeCovered = new HashSet<Integer>();
-					for (int i : tempPositives) {
-						if (ec.evaluate(dataset.getExample(i))) {
-							mustBeCovered.add(i);
-						}
-					}	
+					mustBeCovered = new IntegerBitSet(dataset.size());
+					ec.evaluate(dataset, mustBeCovered);
+					mustBeCovered.retainAll(rule.getCoveredPositives());
 				}
 				
 				newCondition = induceCondition(
-						rule, dataset, mustBeCovered, covered, attr, coveredPositives);
+						rule, dataset, mustBeCovered, covered, attr);
 				newCondition.setType(Type.FORCED);	
 				
 			} else {
 				newCondition = (ElementaryCondition)SerializationUtils.clone(ec);
 			}
-			
-			tryAddCondition(rule, newCondition, dataset, covered, coveredPositives, coveredNegatives, conditionCovered);
+			newCondition.evaluate(dataset, conditionCovered);
+			tryAddCondition(rule, newCondition, dataset, covered, conditionCovered);
 		}
 		
 		ContingencyTable ct; 
 		
 		if (dataset.getAttributes().getWeight() != null) {
 			ct = rule.covers(dataset);
-			
 		} else {
 			ct = new ContingencyTable(
-				coveredPositives.size(),
-				coveredNegatives.size(),
+				rule.getWeighted_p(),
+				rule.getWeighted_n(),
 				rule.getWeighted_P(),
 				rule.getWeighted_N());
 		}
-		
-		rule.setWeighted_p(ct.weighted_p);
-		rule.setWeighted_n(ct.weighted_n);
+
 		Pair<Double,Double> qp = calculateQualityAndPValue(dataset, ct, params.getVotingMeasure());
 		rule.setWeight(qp.getFirst());
-		rule.setPValue(qp.getSecond());		
+		rule.setPValue(qp.getSecond());
 	}
 	
 	/**
@@ -189,15 +166,10 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 		
 		// create bit vectors for fast covering operations
 		IntegerBitSet conditionCovered = new IntegerBitSet(dataset.size());
-		IntegerBitSet coveredPositives = new IntegerBitSet(dataset.size());
-		IntegerBitSet coveredNegatives = new IntegerBitSet(dataset.size());
 		IntegerBitSet newlyCoveredPositives = new IntegerBitSet(dataset.size());
-		
-		ContingencyTable ct = new ContingencyTable();
-		rule.covers(dataset, ct, coveredPositives, coveredNegatives);
-		
-		covered.addAll(coveredPositives);
-		covered.addAll(coveredNegatives);
+
+		covered.addAll(rule.getCoveredPositives());
+		covered.addAll(rule.getCoveredNegatives());
 		newlyCoveredPositives.addAll(uncoveredPositives);
 		
 		Set<Attribute> allowedAttributes = new TreeSet<Attribute>(new AttributeComparator());
@@ -241,20 +213,20 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 					int newlyCoveredPositivesCount = 0;
 					
 					if (weightAttr != null) {
-						
+						// collect newly covered examples
 						for (int id: conditionCovered) {
-							if (coveredPositives.contains(id)) {
+							if (rule.getCoveredPositives().contains(id)) {
 								p += dataset.getExample(id).getWeight();
-							} else if (coveredNegatives.contains(id)) {
+							} else if (rule.getCoveredNegatives().contains(id)) {
 								n += dataset.getExample(id).getWeight();
 							}
 						}
 						
 					} else {
-						p = coveredPositives.calculateIntersectionSize(conditionCovered);
-						n = coveredNegatives.calculateIntersectionSize(conditionCovered);
+						p = rule.getCoveredPositives().calculateIntersectionSize(conditionCovered);
+						n = rule.getCoveredNegatives().calculateIntersectionSize(conditionCovered);
 						
-						newlyCoveredPositivesCount = coveredPositives.calculateIntersectionSize(conditionCovered, newlyCoveredPositives);
+						newlyCoveredPositivesCount = rule.getCoveredPositives().calculateIntersectionSize(conditionCovered, newlyCoveredPositives);
 					}
 					double prec = p / (p + n);
 					
@@ -279,10 +251,10 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 				}
 				
 				if (bestCondition != null) {
-					carryOn = tryAddCondition(rule, bestCondition, dataset, covered, coveredPositives, coveredNegatives, conditionCovered);
+					carryOn = tryAddCondition(rule, bestCondition, dataset, covered, conditionCovered);
 					knowledge.getPreferredConditions((int)classId).remove(bestCondition);
 					
-					newlyCoveredPositives.retainAll(coveredPositives);
+					newlyCoveredPositives.retainAll(rule.getCoveredPositives());
 					
 					allowedAttributes.removeAll(names2attributes(bestCondition.getAttributes(), dataset));
 					
@@ -311,8 +283,8 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 			int preferredCounter = knowledge.getPreferredAttributesPerRule();
 						
 			do {
-				ElementaryCondition condition = induceCondition(rule, dataset, uncoveredPositives, covered, localAllowed, coveredPositives);	
-				carryOn = tryAddCondition(rule, condition, dataset, covered, coveredPositives, coveredNegatives, conditionCovered);
+				ElementaryCondition condition = induceCondition(rule, dataset, uncoveredPositives, covered, localAllowed, rule.getCoveredPositives());
+				carryOn = tryAddCondition(rule, condition, dataset, covered, conditionCovered);
 				// fixme: we are not sure if condition was added
 				if (carryOn) {
 					knowledge.getPreferredAttributes((int)classId).remove(condition.getAttribute());
@@ -344,24 +316,15 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 			
 			do {
 				ElementaryCondition condition = induceCondition(
-						rule, dataset, uncoveredPositives, covered, allowedAttributes, coveredPositives);
+						rule, dataset, uncoveredPositives, covered, allowedAttributes, rule.getCoveredPositives());
 				
-				carryOn = tryAddCondition(rule, condition, dataset, covered, coveredPositives, coveredNegatives, conditionCovered);
+				carryOn = tryAddCondition(rule, condition, dataset, covered, conditionCovered);
 			} while (carryOn); 
 		}
 		
 		// if rule has been successfully grown
 		int addedConditionsCount = rule.getPremise().getSubconditions().size() - initialConditionsCount;
-	
-		if (addedConditionsCount > 0) {
-			Covering covering = rule.covers(dataset);
-			rule.setCoveringInformation(covering);
-			
-			Pair<Double,Double> qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
-			rule.setWeight(qp.getFirst());
-			rule.setPValue(qp.getSecond());
-		}
-		
+
 		rule.setInducedContitionsCount(addedConditionsCount);
 		return addedConditionsCount;
 	}
