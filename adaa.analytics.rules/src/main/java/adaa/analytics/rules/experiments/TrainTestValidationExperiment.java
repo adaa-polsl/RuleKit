@@ -15,6 +15,7 @@
 package adaa.analytics.rules.experiments;
 
 import adaa.analytics.rules.consoles.ExperimentalConsole;
+import adaa.analytics.rules.logic.representation.DoubleFormatter;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
@@ -53,6 +54,9 @@ import java.util.logging.Level;
 import javax.swing.JTable.PrintMode;
 
 public class TrainTestValidationExperiment implements Runnable{
+
+    public static final String RULES_SIGNIFICANT_FIGURES = "rules_significant_figures";
+
 
     // Train proces operators
     private class TrainProcessWrapper {
@@ -185,7 +189,6 @@ public class TrainTestValidationExperiment implements Runnable{
 
         this.qualityReport = predictionPerformance;
         this.modelReport = trainingReport;
-
     }
 
     @Override
@@ -216,6 +219,14 @@ public class TrainTestValidationExperiment implements Runnable{
             // set rule generator parameters
         	Logger.log("\nPARAMETER SET: " + paramSet.fst + "\n", Level.INFO);
             Map<String, Object> params = paramSet.snd;
+
+            if(params.containsKey(RULES_SIGNIFICANT_FIGURES)) {
+                int numberOfRulesSignificantFigures = (int) params.get(RULES_SIGNIFICANT_FIGURES);
+                params.remove(RULES_SIGNIFICANT_FIGURES);
+                DoubleFormatter.configure(numberOfRulesSignificantFigures);
+            } else {
+                DoubleFormatter.defaultConfigure();
+            }
 
             for (String key: params.keySet()) {
                 Object o = params.get(key);

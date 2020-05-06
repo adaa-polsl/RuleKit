@@ -1,5 +1,6 @@
 package utils.config;
 
+import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.ExpertRuleGenerator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -53,6 +54,15 @@ public class TestConfigParser {
         return getNodeAttributeValue(node, NAME_KEY);
     }
 
+    private String parseSurvivalTime(Element testElement) {
+        NodeList elements =  testElement.getElementsByTagName(SurvivalRule.SURVIVAL_TIME_ROLE);
+
+        if (elements.getLength() > 0) {
+            return elements.item(0).getTextContent();
+        }
+        else return null;
+    }
+
     private List<String[]> parseExpertRulesParameter(NodeList children) {
         List<String[]> expertRules = new ArrayList<>();
         for (int i = 0; i < children.getLength(); i++) {
@@ -88,6 +98,7 @@ public class TestConfigParser {
     private HashMap<String, Object> parseTestParameters(Element parametersSetElement) {
         HashMap<String, Object> parameters = new HashMap<>();
         NodeList parametersNodes = parametersSetElement.getElementsByTagName(PARAM_KEY);
+        List<String[]> roles = new ArrayList<>();
         for (int i = 0; i < parametersNodes.getLength(); i++) {
             Node paramNode = parametersNodes.item(i);
             String paramName = getNodeName(paramNode);
@@ -118,11 +129,13 @@ public class TestConfigParser {
         HashMap<String, HashMap<String, Object>> parametersSets = parseTestParametersSets(testElement);
         List<TestDataSetConfig> dataSetsConfig = parseDataSets(testElement);
         String testName = getNodeName(testElement);
+        String survivalTime = parseSurvivalTime(testElement);
 
         TestConfig testConfig = new TestConfig();
         testConfig.name = testName;
         testConfig.datasets = dataSetsConfig;
         testConfig.parametersConfigs = parametersSets;
+        testConfig.survivalTime = survivalTime;
         return testConfig;
     }
 

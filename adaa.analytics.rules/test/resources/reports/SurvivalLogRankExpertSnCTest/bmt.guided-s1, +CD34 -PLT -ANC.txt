@@ -1,0 +1,17 @@
+
+
+Rules
+	IF [CD34kgx10d6 = (-inf, 11.855)] AND Relapse = {0} AND Donorage35 = {1} AND Recipientage = <17.85, inf) THEN survival_status = {NaN}
+	IF [CD34kgx10d6 = (-inf, 11.855)] AND RecipientRh = {1} AND Recipientage = <17.85, inf) THEN survival_status = {NaN}
+	IF [CD34kgx10d6 = (-inf, 11.855)] AND Txpostrelapse = {0} AND CD3dCD34 = <6.251774, inf) AND Rbodymass = <38.5, inf) THEN survival_status = {NaN}
+	IF [CD34kgx10d6 = (-inf, 11.855)] AND Donorage = <31.953424499999997, inf) AND CD3dCD34 = <4.3435595, 38.675743) THEN survival_status = {NaN}
+	IF [CD34kgx10d6 = (-inf, 11.855)] AND Donorage = <33.1534245, inf) AND CD3dkgx10d8 = (-inf, 4.75) AND CD3dCD34 = <0.9411989999999999, 51.9674315) AND Rbodymass = <33.5, inf) THEN survival_status = {NaN}
+	IF [CD34kgx10d6 = (-inf, 11.855)] AND Diseasegroup = {1} AND Relapse = {0} AND Donorage = <27.0246575, inf) AND Donorage35 = {0} AND CD3dCD34 = (-inf, 14.333859499999999) THEN survival_status = {NaN}
+	IF [CD34kgx10d6 = <11.855, inf)] AND Relapse = {0} THEN survival_status = {NaN}
+	IF [CD34kgx10d6 = (-inf, 11.855)] AND CD3dkgx10d8 = (-inf, 4.654999999999999) AND Recipientage = <12.6, inf) THEN survival_status = {NaN}
+	IF [CD34kgx10d6 = (-inf, 11.855)] AND Donorage35 = {1} AND Rbodymass = <32.75, inf) THEN survival_status = {NaN}
+	IF [CD34kgx10d6 = (-inf, 11.855)] AND Donorage = <35.6972605, inf) AND CD3dCD34 = <1.302051, inf) THEN survival_status = {NaN}
+	IF [CD34kgx10d6 = (-inf, 11.855)] AND Relapse = {0} AND Stemcellsource = {1} AND time_to_aGvHD_III_IV = <27.0, inf) AND Rbodymass = (-inf, 54.5) AND Recipientage = (-inf, 14.95) THEN survival_status = {NaN}
+	IF [CD34kgx10d6 = (-inf, 11.855)] AND Stemcellsource = {0} AND Donorage = <23.219178, inf) AND extcGvHD = {1} AND Donorage35 = {0} AND Recipientage = <3.25, 8.4) THEN survival_status = {NaN}
+	IF [CD34kgx10d6 = (-inf, 11.855)] AND Recipientgender = {1} AND ABOmatch = {1} AND Txpostrelapse = {0} AND Recipientage10 = {0} AND CD3dCD34 = (-inf, 4.302149) THEN survival_status = {NaN}
+	IF [CD34kgx10d6 = <11.855, inf)] THEN survival_status = {NaN}

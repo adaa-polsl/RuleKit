@@ -17,8 +17,12 @@ package utils;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 
+import adaa.analytics.rules.logic.representation.SurvivalRule;
 import com.rapidminer.Process;
 import com.rapidminer.RapidMiner;
 import com.rapidminer.example.Attributes;
@@ -37,7 +41,7 @@ import adaa.analytics.rules.utils.RapidMiner5;
 
 public class ArffFileLoader {
 
-	public static ExampleSet load(String filePath, String labelParameterName) throws OperatorCreationException, OperatorException {
+	private static ExampleSet loadExampleSet(String filePath, String labelParameterName, String survivalTimeParameter) throws OperatorCreationException, OperatorException {
 		System.setProperty(PlatformUtilities.PROPERTY_RAPIDMINER_HOME, Paths.get("").toAbsolutePath().toString());
 		LogService.getRoot().setLevel(Level.OFF);
 		RapidMiner.setExecutionMode(RapidMiner.ExecutionMode.COMMAND_LINE);
@@ -46,13 +50,19 @@ public class ArffFileLoader {
 
 		ArffExampleSource arffSource = RapidMiner5.createOperator(ArffExampleSource.class);
 		//role setter allows for deciding which attribute is class attribute
-		ChangeAttributeRole roleSetter = (ChangeAttributeRole)OperatorService.createOperator(ChangeAttributeRole.class);
+		ChangeAttributeRole roleSetter = (ChangeAttributeRole) OperatorService.createOperator(ChangeAttributeRole.class);
 
 		File arffFile = Paths.get(filePath).toFile();
 
 		arffSource.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, arffFile.getAbsolutePath());
 		roleSetter.setParameter(ChangeAttributeRole.PARAMETER_NAME, labelParameterName);
 		roleSetter.setParameter(ChangeAttributeRole.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
+
+		if (survivalTimeParameter != null) {
+			List<String[]> roles = new ArrayList<>();
+			roles.add(new String[]{survivalTimeParameter, SurvivalRule.SURVIVAL_TIME_ROLE});
+			roleSetter.setListParameter(roleSetter.PARAMETER_CHANGE_ATTRIBUTES, roles);
+		}
 
 		Process process = new com.rapidminer.Process();
 		process.getRootOperator().getSubprocess(0).addOperator(arffSource);
@@ -67,5 +77,14 @@ public class ArffFileLoader {
 		IOContainer c = process.run();
 		//parsed arff file
 		return (ExampleSet)c.getElementAt(0);
+	}
+
+
+	public static ExampleSet load(String filePath, String labelParameterName, String survivalTimeParameter) throws OperatorException, OperatorCreationException {
+		return loadExampleSet(filePath, labelParameterName, survivalTimeParameter);
+	}
+
+	public static ExampleSet load(String filePath, String labelParameterName) throws OperatorCreationException, OperatorException {
+		return loadExampleSet(filePath, labelParameterName, null);
 	}
 }
