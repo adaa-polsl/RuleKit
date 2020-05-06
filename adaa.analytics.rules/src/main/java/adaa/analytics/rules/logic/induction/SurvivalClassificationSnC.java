@@ -81,10 +81,8 @@ public class SurvivalClassificationSnC extends ClassificationSnC {
 	
 		MemoryExampleTable table = new MemoryExampleTable(lst);
 		ExampleSet transformed = table.createExampleSet(label, survivalWeight, null);
-		
-		System.out.println("TRAIN:");
+
 		for (Example example : trainSet) {
-			System.out.println(example);
 			
 			// create positive anyways
 			DataRow positive = factory.create(transformed.getAttributes().allSize());
@@ -125,11 +123,6 @@ public class SurvivalClassificationSnC extends ClassificationSnC {
 			positive.set(label, 1.0);
 			table.addDataRow(positive);
 		//	break;
-		}
-		
-		System.out.println("TRANSFORMED:");
-		for (Example example : transformed) {
-			System.out.println(example);
 		}
 
 		ClassificationRuleSet set = (ClassificationRuleSet) super.run(transformed);
