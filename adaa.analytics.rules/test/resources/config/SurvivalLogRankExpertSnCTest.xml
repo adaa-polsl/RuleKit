@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<test name="bmt">
+	<parameter_sets>
+	
+		<parameter_set name="guided-s1, +CD34 -PLT -ANC">
+			<param name="min_rule_covered">5</param>	
+			<param name="use_expert">true</param>
+			<param name="extend_using_preferred">false</param>
+			<param name="extend_using_automatic">false</param>
+			<param name="induce_using_preferred">true</param>
+			<param name="induce_using_automatic">true</param>
+			<param name="preferred_attributes_per_rule">1</param>
+			<param name ="expert_rules">
+			</param>
+			<param name ="expert_preferred_conditions">
+				<entry name="attr-preferred-0">inf: IF [CD34kgx10d6 = Any] THEN survival_status = {NaN}</entry>
+			</param>
+			<param name ="expert_forbidden_conditions">
+				<entry name="condition-forbidden-0">IF ANCrecovery = Any THEN survival_status = {NaN}</entry>
+				<entry name="condition-forbidden-1">IF PLTrecovery = Any THEN survival_status = {NaN}</entry>
+			</param>
+		</parameter_set>
+		
+		<parameter_set name="guided-s2, expert rules">
+			<param name="min_rule_covered">5</param>	
+			<param name="use_expert">true</param>
+			<param name="extend_using_preferred">false</param>
+			<param name="extend_using_automatic">false</param>
+			<param name="induce_using_preferred">false</param>
+			<param name="induce_using_automatic">false</param>
+			<param name ="expert_rules">
+				<entry name="rule-0">IF [[CD34kgx10d6 = (-inf, 10.0)]] AND [[extcGvHD = {0}]] THEN survival_status = {NaN}</entry>
+				<entry name="rule-1">IF [[extcGvHD = {0}]] AND [[CD34kgx10d6 = &lt;10.0, inf)]] THEN survival_status = {NaN}</entry>
+				<entry name="rule-2">IF [[CD34kgx10d6 = (-inf, 10.0)]] AND [[extcGvHD = {1}]] THEN survival_status = {NaN}</entry>
+				<entry name="rule-3">IF [[CD34kgx10d6 = &lt;10.0, inf)]] AND [[extcGvHD = {1}]] THEN survival_status = {NaN}</entry>
+			</param>
+			<param name ="expert_preferred_conditions">
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>
+		</parameter_set>
+		
+		<parameter_set name="guided-s3, expert rules extended">
+			<param name="min_rule_covered">5</param>	
+			<param name="use_expert">true</param>
+			<param name="extend_using_preferred">true</param>
+			<param name="extend_using_automatic">true</param>
+			<param name="induce_using_preferred">false</param>
+			<param name="induce_using_automatic">false</param>
+			<param name="preferred_attributes_per_rule">1</param>
+			<param name ="expert_rules">
+				<entry name="rule-0">IF [[extcGvHD = {0}]] THEN survival_status = {NaN}</entry>
+				<entry name="rule-1">IF [[extcGvHD = {0}]] THEN survival_status = {NaN}</entry>
+				<entry name="rule-2">IF [[extcGvHD = {1}]] THEN survival_status = {NaN}</entry>
+				<entry name="rule-3">IF [[extcGvHD = {1}]] THEN survival_status = {NaN}</entry>
+			</param>
+			<param name ="expert_preferred_conditions">
+				<entry name="attr-0">4: IF [CD34kgx10d6 = Any]  THEN survival_status = {NaN}</entry>
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>
+		</parameter_set>
+
+		<parameter_set name="guided-s4, expert rules">
+			<param name="min_rule_covered">5</param>	
+			<param name="use_expert">true</param>
+			<param name="extend_using_preferred">false</param>
+			<param name="extend_using_automatic">false</param>
+			<param name="induce_using_preferred">false</param>
+			<param name="induce_using_automatic">false</param>
+			<param name ="expert_rules">
+				<entry name="rule-0">IF [[CD34kgx10d6 = (-inf, 10.0)]] THEN survival_status = {NaN}</entry>
+				<entry name="rule-1">IF [[CD34kgx10d6 = &lt;10.0, inf)]] THEN survival_status = {NaN}</entry>
+			</param>
+			<param name ="expert_preferred_conditions">
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>
+		</parameter_set>
+
+	</parameter_sets>
+
+	<datasets>
+	
+		<dataset>
+			<label>survival_status</label>
+			<survival_time>survival_time</survival_time>
+
+			<training>  
+				 <train>
+					 <in_file>data/bmt-train-0.arff</in_file>               	
+					 <model_file>bmt-0.mdl</model_file> 
+				 </train>		 
+			</training>
+	
+		</dataset>
+
+	</datasets>
+</test>
