@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<test name="bmt">
+	<parameter_sets>
+		
+		<parameter_set name="auto">
+			<param name="min_rule_covered">5</param>
+		</parameter_set>
+		
+	</parameter_sets>
+
+	<datasets>
+	
+		<dataset>
+			<label>survival_status</label>
+			<survival_time>survival_time</survival_time>	
+    
+			<training>  
+				 <train>
+					 <in_file>data/bmt-train-0.arff</in_file>
+					 <model_file>bmt-0.mdl</model_file> 
+				 </train>		 			 
+			</training>
+	
+		</dataset>
+
+	</datasets>
+</test>

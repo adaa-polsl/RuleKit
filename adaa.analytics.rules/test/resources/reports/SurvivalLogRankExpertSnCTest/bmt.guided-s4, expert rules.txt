@@ -1,0 +1,5 @@
+
+
+Rules
+	IF [[CD34kgx10d6 = (-inf, 10.0)]] THEN survival_status = {NaN}
+	IF [[CD34kgx10d6 = <10.0, inf)]] THEN survival_status = {NaN}

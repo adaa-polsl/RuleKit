@@ -110,7 +110,7 @@ public class CompoundCondition extends ConditionBase {
 		String op = operator == LogicalOperator.ALTERNATIVE ? " OR " : " AND "; 
 		
 		Map<String, ElementaryCondition> shortened = new HashMap<String, ElementaryCondition>();
-		Set<ConditionBase> unshortened = new HashSet<ConditionBase>();
+		Set<ConditionBase> unshortened = new LinkedHashSet<>();
 		
 		for (ConditionBase cnd : subconditions) {
 			if (cnd instanceof ElementaryCondition && cnd.isPrunable() == true) {

@@ -24,6 +24,7 @@ public class TestCase {
     private String name;
     private String dataSetFilePath;
     private String labelAttribute;
+    private String survivalTime;
     private String reportFilePath;
 
     public void setDataSetFilePath(String filePath) {
@@ -48,7 +49,11 @@ public class TestCase {
 
     public ExampleSet getExampleSet() throws OperatorException, OperatorCreationException {
         if (exampleSet == null) {
-            this.exampleSet = ArffFileLoader.load(dataSetFilePath, labelAttribute);
+            if (survivalTime != null) {
+                this.exampleSet = ArffFileLoader.load(dataSetFilePath, labelAttribute, survivalTime);
+            } else {
+                this.exampleSet = ArffFileLoader.load(dataSetFilePath, labelAttribute);
+            }
         }
         return exampleSet;
     }
@@ -86,5 +91,9 @@ public class TestCase {
     @Override
     public String toString() {
         return this.name;
+    }
+
+    public void setSurvivalTime(String survivalTime) {
+        this.survivalTime = survivalTime;
     }
 }
