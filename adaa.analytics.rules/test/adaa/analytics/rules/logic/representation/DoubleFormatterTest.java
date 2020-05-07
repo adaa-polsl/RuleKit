@@ -1,6 +1,5 @@
 package adaa.analytics.rules.logic.representation;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -11,12 +10,18 @@ public class DoubleFormatterTest {
             0.2,
             0.340123,
             0.00202,
+            -0.302,
+            -0.00202,
+            3
     };
 
     private String[] numbersStrings = {
             "0.20",
             "0.34",
             "0.00202",
+            "-0.30",
+            "-0.00202",
+            "3"
     };
 
     @Test
