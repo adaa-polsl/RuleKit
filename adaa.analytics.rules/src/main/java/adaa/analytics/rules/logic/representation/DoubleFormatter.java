@@ -22,14 +22,17 @@ public class DoubleFormatter {
     }
 
     public static String format(double value) {
-        if(value < THRESHOLD) {
+        double valueAbs = Math.abs(value);
+        if(valueAbs < THRESHOLD) {
             BigDecimal bigDecimal = new BigDecimal(value);
             bigDecimal = bigDecimal.round(new MathContext(DoubleFormatter.numberOfSignificantFigures));
             double rounded = bigDecimal.doubleValue();
 
             return String.valueOf(rounded);
-        } else {
+        } else if (valueAbs % 1 == 0) {
             // Locale.US zapewnia że użyta zostanie kropka zamiast przecinka
+            return String.format(Locale.US, "%.0f.", value);
+        } else {
             return String.format(Locale.US, "%.2f", value);
         }
     }
