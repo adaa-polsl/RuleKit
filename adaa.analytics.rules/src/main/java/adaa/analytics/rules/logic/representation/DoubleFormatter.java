@@ -31,7 +31,7 @@ public class DoubleFormatter {
             return String.valueOf(rounded);
         } else if (valueAbs % 1 == 0) {
             // Locale.US zapewnia że użyta zostanie kropka zamiast przecinka
-            return String.format(Locale.US, "%.0f.", value);
+            return String.format(Locale.US, "%.0f", value);
         } else {
             return String.format(Locale.US, "%.2f", value);
         }
