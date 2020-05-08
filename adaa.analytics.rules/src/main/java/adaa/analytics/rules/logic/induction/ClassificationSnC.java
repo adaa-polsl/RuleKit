@@ -81,7 +81,10 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 		ExecutorService pool = Executors.newFixedThreadPool(threadCount);
 		Semaphore mutex = new Semaphore(1);
 		AtomicInteger totalRules = new AtomicInteger(0);
-		
+
+		// perform prepreprocessing
+		finder.preprocess(dataset);
+
 		// array of futures, each consisting of ruleset and P value
 		List<Future<Pair<ClassificationRuleSet, Double>>> futures = new ArrayList<Future<Pair<ClassificationRuleSet, Double>>>();
 		
@@ -117,9 +120,6 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 				uncoveredPositives.addAll(positives);
 				uncovered.addAll(positives);
 				uncovered.addAll(negatives);
-
-				// perform prepreprocessing
-				finder.preprocess(dataset);
 
 				boolean carryOn = uncoveredPositives.size() > 0; 
 				double uncovered_p = weighted_P;
