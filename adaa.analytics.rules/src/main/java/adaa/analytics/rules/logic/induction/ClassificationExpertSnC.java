@@ -71,6 +71,9 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 		int totalAutoRules = 0;
 		
 		double defaultClassWeight = 0;
+
+		// perform prepreprocessing
+		finder.preprocess(dataset);
 		
 		// iterate over all classes
 		for (int classId = 0; classId < mapping.size(); ++classId) {
@@ -98,9 +101,6 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 			uncoveredPositives.addAll(positives);
 			uncovered.addAll(positives);
 			uncovered.addAll(negatives);
-
-			// perform prepreprocessing
-			finder.preprocess(dataset);
 
 			// change default class if necessary
 			if (weighted_P > defaultClassWeight) {
