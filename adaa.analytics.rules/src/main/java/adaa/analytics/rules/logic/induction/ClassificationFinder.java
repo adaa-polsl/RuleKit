@@ -515,6 +515,12 @@ public class ClassificationFinder extends AbstractFinder {
 						toCover_left_p += tot.toCover_p;
 						toCover_right_p -= tot.toCover_p;
 
+						TotalPosNeg totNext = totals.get(next);
+						if ((tot.n == 0 && totNext.n == 0) || (tot.p == 0 && totNext.p == 0)) {
+							continue;
+						}
+
+
 						// calculate precisions
 						double left_prec = left_p / (left_p + left_n);
 						double right_prec = right_p / (right_p + right_n);
