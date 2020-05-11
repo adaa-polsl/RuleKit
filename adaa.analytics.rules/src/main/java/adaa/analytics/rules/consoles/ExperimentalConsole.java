@@ -101,8 +101,8 @@ public class ExperimentalConsole {
     }
     
     
-    static final String VERSION = "1.1.0"; 
-    static final String BUILD_DATE = "11.30.2019";
+    static final String VERSION = "1.2.0";
+    static final String BUILD_DATE = "11.05.2020";
     
     protected boolean isVerbose = false;
 
