@@ -27,6 +27,8 @@ public class TestCase {
     private String survivalTime;
     private String reportFilePath;
 
+    private boolean usingExistingReportFile;
+
     public void setDataSetFilePath(String filePath) {
         this.dataSetFilePath = filePath;
     }
@@ -95,5 +97,13 @@ public class TestCase {
 
     public void setSurvivalTime(String survivalTime) {
         this.survivalTime = survivalTime;
+    }
+
+    public boolean isUsingExistingReportFile() {
+        return usingExistingReportFile;
+    }
+
+    public void setUsingExistingReportFile(boolean usingExistingReportFile) {
+        this.usingExistingReportFile = usingExistingReportFile;
     }
 }

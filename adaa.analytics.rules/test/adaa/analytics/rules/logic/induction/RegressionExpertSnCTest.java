@@ -45,13 +45,15 @@ public class RegressionExpertSnCTest {
         }
     }
 
-    private void writeReport(String reportName, RuleSetBase ruleSet) {
-        try {
-            TestReportWriter reportWriter = new TestReportWriter(CLASS_NAME + '/' + reportName);
-            reportWriter.write(ruleSet);
-            reportWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void writeReport(TestCase testCase, RuleSetBase ruleSet) {
+        if (!testCase.isUsingExistingReportFile()) {
+            try {
+                TestReportWriter reportWriter = new TestReportWriter(CLASS_NAME + '/' + testCase.getName());
+                reportWriter.write(ruleSet);
+                reportWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -61,7 +63,7 @@ public class RegressionExpertSnCTest {
         RegressionExpertSnC snc = new RegressionExpertSnC(finder, testCase.getParameters(), testCase.getKnowledge());
         RuleSetBase ruleSet = snc.run(testCase.getExampleSet());
 
-        this.writeReport(testCase.getName(), ruleSet);
+        this.writeReport(testCase, ruleSet);
         RuleSetComparator.assertRulesAreEqual(testCase.getReferenceReport().getRules(), ruleSet.getRules());
     }
 }

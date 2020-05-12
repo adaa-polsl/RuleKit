@@ -20,7 +20,7 @@ public class TestReportWriter {
 
     public TestReportWriter(String fileName) throws IOException {
        createReportsDirectoryIfNotExist();
-        printWriter = new PrintWriter(Const.REPORTS_OUT_DIRECTORY_PATH + fileName);
+       printWriter = new PrintWriter(Const.REPORTS_OUT_DIRECTORY_PATH + fileName);
     }
 
     public void write(RuleSetBase ruleSet) {
