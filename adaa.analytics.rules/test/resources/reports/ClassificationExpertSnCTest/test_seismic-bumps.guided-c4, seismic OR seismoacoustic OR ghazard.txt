@@ -1,14 +1,15 @@
 
 
 Rules
-	IF [seismic = {a}] AND goenergy = <-73.5, inf) AND nbumps3 = (-inf, 0.5) THEN class = {0}
-	IF [seismic = {a}] AND goenergy = <-73.5, inf) AND nbumps = (-inf, 1.5) THEN class = {0}
-	IF [seismic = {a}] AND goenergy = <-37.5, inf) AND goimpuls = <-39.0, inf) THEN class = {0}
+	IF [seismic = {a}] AND goenergy = <-73.50, inf) AND nbumps3 = (-inf, 0.50) THEN class = {0}
+	IF [seismic = {a}] AND goenergy = <-73.50, inf) AND nbumps = (-inf, 1.50) THEN class = {0}
+	IF [seismic = {a}] AND goenergy = <-37.50, inf) AND goimpuls = <-39, inf) THEN class = {0}
 	IF [ghazard = {b}] THEN class = {0}
-	IF [seismoacoustic = {a}] AND genergy = (-inf, 18890.0) THEN class = {0}
-	IF [seismoacoustic = {a}] AND gimpuls = (-inf, 1350.5) AND goimpuls = <-39.5, inf) THEN class = {0}
-	IF gimpuls = (-inf, 1350.5) AND nbumps = (-inf, 5.5) THEN class = {0}
-	IF [seismic = {b}] AND gimpuls = (-inf, 1878.0) AND genergy = <117615.0, 225545.0) THEN class = {1}
-	IF goenergy = <-41.0, inf) AND gimpuls = <1350.5, inf) AND maxenergy = (-inf, 45000.0) AND genergy = (-inf, 1158410.0) AND nbumps = (-inf, 3.5) THEN class = {1}
-	IF ghazard = {a} AND gimpuls = (-inf, 1758.5) AND goimpuls = (-inf, 10.5) AND genergy = <17495.0, inf) AND senergy = <2650.0, 8250.0) AND nbumps2 = <0.5, inf) THEN class = {1}
-	IF ghazard = {a} AND goenergy = <-21.0, 9.0) AND gimpuls = (-inf, 688.5) AND goimpuls = (-inf, 17.5) AND genergy = <24830.0, 36505.0) THEN class = {1}
+	IF [seismoacoustic = {a}] AND genergy = (-inf, 18890) THEN class = {0}
+	IF [seismoacoustic = {a}] AND gimpuls = (-inf, 1350.50) AND goimpuls = <-39.50, inf) THEN class = {0}
+	IF genergy = (-inf, 25125) AND nbumps = (-inf, 1.50) THEN class = {0}
+	IF goenergy = <-73.50, inf) AND gimpuls = (-inf, 1350.50) AND nbumps = (-inf, 2.50) THEN class = {0}
+	IF [seismic = {b}] AND gimpuls = (-inf, 1878) AND genergy = <117615, 225545) THEN class = {1}
+	IF goenergy = <-41, inf) AND gimpuls = <1350.50, inf) AND maxenergy = (-inf, 45000) AND genergy = (-inf, 1158410) AND nbumps = (-inf, 3.50) THEN class = {1}
+	IF ghazard = {a} AND gimpuls = (-inf, 1758.50) AND goimpuls = (-inf, 10.50) AND genergy = <17495, inf) AND senergy = <2650, 8250) AND nbumps2 = <0.50, inf) THEN class = {1}
+	IF ghazard = {a} AND goenergy = <-21, 9) AND gimpuls = (-inf, 688.50) AND goimpuls = (-inf, 17.50) AND genergy = <24830, 36505) THEN class = {1}
