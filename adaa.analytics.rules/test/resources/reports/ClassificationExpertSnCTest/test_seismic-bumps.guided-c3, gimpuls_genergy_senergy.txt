@@ -1,8 +1,10 @@
 
 
 Rules
-	IF [gimpuls = (-inf, 1350.5)] AND [genergy = <910.0, inf)] AND goenergy = <-73.5, inf) THEN class = {0}
-	IF [gimpuls = (-inf, 2784.0)] AND [senergy = (-inf, 950.0)] AND goimpuls = (-inf, 107.5) THEN class = {0}
-	IF [gimpuls = <1350.5, inf)] AND [genergy = (-inf, 344875.0)] AND senergy = (-inf, 4650.0) THEN class = {1}
-	IF [genergy = <18890.0, inf)] AND [senergy = <950.0, inf)] AND ghazard = {a} AND goenergy = (-inf, 52.5) AND maxenergy = <1450.0, 45000.0) AND nbumps3 = (-inf, 2.5) AND nbumps2 = <0.5, inf) THEN class = {1}
-	IF [genergy = <18890.0, inf)] AND [gimpuls = <174.5, inf)] AND ghazard = {a} AND goenergy = (-inf, 9.0) AND maxenergy = (-inf, 6500.0) AND goimpuls = <-72.0, 17.5) THEN class = {1}
+	IF [gimpuls = (-inf, 1350.50)] AND [senergy = (-inf, 5750.00)] AND nbumps = (-inf, 1.50) THEN class = {0}
+	IF [gimpuls = (-inf, 1350.50)] AND [senergy = (-inf, 5750.00)] AND goenergy = <-74.0, inf) AND nbumps = (-inf, 2.50) THEN class = {0}
+	IF [gimpuls = (-inf, 1350.50)] AND [genergy = (-inf, 122140.00)] AND goenergy = <-74.0, inf) AND nbumps = (-inf, 5.50) THEN class = {0}
+	IF [gimpuls = (-inf, 2784.00)] AND [senergy = (-inf, 5750.00)] AND goenergy = <-74.0, inf) AND goimpuls = (-inf, 107.50) THEN class = {0}
+	IF [gimpuls = <1350.50, inf)] AND [genergy = (-inf, 344875.00)] AND senergy = (-inf, 4650.00) THEN class = {1}
+	IF [genergy = <18890.00, inf)] AND [senergy = <950.00, inf)] AND ghazard = {a} AND goenergy = (-inf, 52.50) AND maxenergy = <1450.00, 45000.00) AND nbumps3 = (-inf, 2.50) AND nbumps2 = <0.50, inf) THEN class = {1}
+	IF [genergy = <18890.00, inf)] AND [gimpuls = <174.50, inf)] AND ghazard = {a} AND goenergy = (-inf, 9.00) AND maxenergy = (-inf, 6500.00) AND goimpuls = <-72.0, 17.50) THEN class = {1}
