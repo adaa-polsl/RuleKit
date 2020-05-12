@@ -38,7 +38,7 @@ public class TestCaseFactory {
             testConfig = testsConfig.get(key);
             for (String configName : testConfig.parametersConfigs.keySet()) {
                 for (TestDataSetConfig dataSetConfig : testConfig.datasets) {
-                    String testCaseName = String.format("%s.%s.txt", key, configName);
+                    String testCaseName = String.format("%s.%s.%s.txt", key, configName, dataSetConfig.name);
                     testCase = makeTestCase(testConfig, testCaseName, testConfig.parametersConfigs.get(configName), dataSetConfig);
                     String reportPath = TestResourcePathFactory.get(reportDirectoryPath + testCaseName).toString();
                     testCase.setReportFilePath(reportPath);

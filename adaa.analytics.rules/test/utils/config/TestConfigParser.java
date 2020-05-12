@@ -2,21 +2,18 @@ package utils.config;
 
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.operator.ExpertRuleGenerator;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class TestConfigParser {
 
@@ -47,7 +44,8 @@ public class TestConfigParser {
     }
 
     private String getNodeAttributeValue(Node node, String attributeName) {
-        return node.getAttributes().getNamedItem(attributeName).getNodeValue();
+        Node attribute = node.getAttributes().getNamedItem(attributeName);
+        return attribute != null ? attribute.getNodeValue() : null;
     }
 
     private String getNodeName(Node node) {
@@ -74,12 +72,29 @@ public class TestConfigParser {
         return expertRules;
     }
 
+    private void checkAmbigousDatasetsNames(List<TestDataSetConfig> datasetsConfigs) {
+        List<String> dataSetsNames = datasetsConfigs.stream()
+                .map((TestDataSetConfig element) -> element.name)
+                .collect(Collectors.toList());
+        Set<String> set = new HashSet<>(dataSetsNames);
+        if(set.size() < dataSetsNames.size()){
+            throw new IllegalArgumentException("Datasets are ambigous. Provide a unique 'name' attribute for each dataset" +
+                    " or make sure train files have different filenames.");
+        }
+    }
+
     private TestDataSetConfig parseDataSet(Element datasetElement) {
         TestDataSetConfig dataSetConfig = new TestDataSetConfig();
         dataSetConfig.labelAttribute = datasetElement.getElementsByTagName(LABEL_KEY).item(0).getTextContent();
         Element trainElement = (Element) datasetElement.getElementsByTagName(TRAINING_KEY).item(0);
         trainElement = (Element) trainElement.getElementsByTagName(TRAIN_KEY).item(0);
         dataSetConfig.trainFileName = trainElement.getElementsByTagName(IN_FILE_KEY).item(0).getTextContent();
+        dataSetConfig.name = getNodeName(datasetElement);
+        if (dataSetConfig.name == null) {
+            Path path = Paths.get(dataSetConfig.trainFileName);
+            dataSetConfig.name = path.getFileName().toString();
+            dataSetConfig.name = dataSetConfig.name.substring(0, dataSetConfig.name.lastIndexOf('.'));
+        }
         return dataSetConfig;
     }
 
@@ -92,6 +107,7 @@ public class TestConfigParser {
             datasetElement = (Element) parameterSetNodes.item(i);
             datasets.add(parseDataSet(datasetElement));
         }
+        checkAmbigousDatasetsNames(datasets);
         return datasets;
     }
 

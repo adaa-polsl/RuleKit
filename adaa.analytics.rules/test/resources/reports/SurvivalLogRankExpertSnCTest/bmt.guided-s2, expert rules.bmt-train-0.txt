@@ -1,7 +1,7 @@
 
 
 Rules
-	IF [[extcGvHD = {0}]] AND [[CD34kgx10d6 = <10.0, inf)]] THEN survival_status = {NaN}
 	IF [[CD34kgx10d6 = (-inf, 10.0)]] AND [[extcGvHD = {0}]] THEN survival_status = {NaN}
-	IF [[CD34kgx10d6 = (-inf, 10.0)]] AND [[extcGvHD = {1}]] THEN survival_status = {NaN}
 	IF [[CD34kgx10d6 = <10.0, inf)]] AND [[extcGvHD = {1}]] THEN survival_status = {NaN}
+	IF [[CD34kgx10d6 = (-inf, 10.0)]] AND [[extcGvHD = {1}]] THEN survival_status = {NaN}
+	IF [[extcGvHD = {0}]] AND [[CD34kgx10d6 = <10.0, inf)]] THEN survival_status = {NaN}
