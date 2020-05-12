@@ -2,7 +2,7 @@
 
 Rules
 	IF [gimpuls = (-inf, 1350.50)] THEN class = {0}
-	IF goenergy = <-33.0, inf) AND gimpuls = (-inf, 2784.00) AND goimpuls = <-39.0, 111.00) AND nbumps = (-inf, 5.50) THEN class = {0}
-	IF [gimpuls = <1350.50, inf)] AND genergy = (-inf, 344875.00) AND senergy = (-inf, 4650.00) THEN class = {1}
-	IF ghazard = {a} AND gimpuls = (-inf, 1758.50) AND goimpuls = (-inf, 10.50) AND genergy = <17495.00, inf) AND senergy = <2650.00, 8250.00) AND nbumps2 = <0.50, inf) THEN class = {1}
-	IF ghazard = {a} AND goenergy = <-21.0, 9.00) AND gimpuls = (-inf, 688.50) AND goimpuls = (-inf, 17.50) AND genergy = <24830.00, 36505.00) THEN class = {1}
+	IF goenergy = <-32.50, inf) AND gimpuls = (-inf, 2784) AND goimpuls = <-39, 111) AND nbumps = (-inf, 5.50) THEN class = {0}
+	IF [gimpuls = <1350.50, inf)] AND genergy = (-inf, 344875) AND senergy = (-inf, 4650) THEN class = {1}
+	IF ghazard = {a} AND gimpuls = (-inf, 1758.50) AND goimpuls = (-inf, 10.50) AND genergy = <17495, inf) AND senergy = <2650, 8250) AND nbumps2 = <0.50, inf) THEN class = {1}
+	IF ghazard = {a} AND goenergy = <-21, 9) AND gimpuls = (-inf, 688.50) AND goimpuls = (-inf, 17.50) AND genergy = <24830, 36505) THEN class = {1}

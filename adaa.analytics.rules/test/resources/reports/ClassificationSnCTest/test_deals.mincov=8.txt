@@ -1,13 +1,13 @@
 
 
 Rules
-	IF Payment Method = {credit card} AND Age = (-inf, 32.5) THEN Future Customer = {yes}
-	IF Age = (-inf, 34.5) THEN Future Customer = {yes}
-	IF Gender = {male} AND Age = (-inf, 36.5) THEN Future Customer = {yes}
-	IF Gender = {male} AND Payment Method = {credit card} AND Age = (-inf, 72.5) THEN Future Customer = {yes}
-	IF Gender = {female} AND Age = <34.5, inf) THEN Future Customer = {no}
-	IF Age = <34.5, inf) THEN Future Customer = {no}
-	IF Gender = {female} AND Age = <32.5, inf) THEN Future Customer = {no}
-	IF Gender = {female} AND Age = <28.5, inf) THEN Future Customer = {no}
-	IF Gender = {female} AND Age = <23.5, inf) THEN Future Customer = {no}
-	IF Gender = {female} AND Age = <17.5, inf) THEN Future Customer = {no}
+	IF Payment Method = {credit card} AND Age = (-inf, 32.50) THEN Future Customer = {yes}
+	IF Age = (-inf, 34.50) THEN Future Customer = {yes}
+	IF Gender = {male} AND Age = (-inf, 36.50) THEN Future Customer = {yes}
+	IF Gender = {male} AND Payment Method = {credit card} AND Age = (-inf, 72.50) THEN Future Customer = {yes}
+	IF Gender = {female} AND Age = <34.50, inf) THEN Future Customer = {no}
+	IF Age = <34.50, inf) THEN Future Customer = {no}
+	IF Gender = {female} AND Age = <32.50, inf) THEN Future Customer = {no}
+	IF Gender = {female} AND Age = <28.50, inf) THEN Future Customer = {no}
+	IF Gender = {female} AND Age = <23.50, inf) THEN Future Customer = {no}
+	IF Gender = {female} AND Age = <17.50, inf) THEN Future Customer = {no}
