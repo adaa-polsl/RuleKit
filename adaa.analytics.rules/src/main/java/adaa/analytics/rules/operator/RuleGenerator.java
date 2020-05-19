@@ -103,7 +103,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	/**
 	 * Binary parameter indicating whether pruning should be enabled.
 	 */
-	public static final String PARAMETER_PRUNING_ENABLED = "pruning_enabled";
+	public static final String PARAMETER_ENABLE_PRUNING = "enable_pruning";
 	
 	/**
 	 * Name of the rule quality measure used during pruning.
@@ -172,7 +172,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 			
 			params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
 			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MIN_RULE_COVERED));
-			params.setEnablePruning(getParameterAsBoolean(PARAMETER_PRUNING_ENABLED));
+			params.setEnablePruning(getParameterAsBoolean(PARAMETER_ENABLE_PRUNING));
 			params.setIgnoreMissing(getParameterAsBoolean(PARAMETER_IGNORE_MISSING));
 			params.setMaxGrowingConditions(getParameterAsDouble(PARAMETER_MAX_GROWING));
 			
@@ -273,14 +273,14 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		types.add(tmp);
 
 		tmp = new ParameterTypeBoolean(
-				PARAMETER_PRUNING_ENABLED, getParameterDescription(PARAMETER_PRUNING_ENABLED), true);
+				PARAMETER_ENABLE_PRUNING, getParameterDescription(PARAMETER_ENABLE_PRUNING), true);
 		types.add(tmp);
 		tmp.registerDependencyCondition(measuresCondition);
 		
 		tmp = new ParameterTypeStringCategory(
 				PARAMETER_PRUNING_MEASURE, getParameterDescription(PARAMETER_PRUNING_MEASURE),
 				ClassificationMeasure.NAMES, ClassificationMeasure.getName(ClassificationMeasure.Correlation), false);
-		tmp.registerDependencyCondition(new BooleanParameterCondition(this, PARAMETER_PRUNING_ENABLED, true, true));
+		tmp.registerDependencyCondition(new BooleanParameterCondition(this, PARAMETER_ENABLE_PRUNING, true, true));
 		types.add(tmp);
 		tmp = new ParameterTypeString(PARAMETER_USER_PRUNING_EQUATION, getParameterDescription(PARAMETER_USER_PRUNING_EQUATION),true);
 		tmp.registerDependencyCondition(new EqualStringCondition(this,PARAMETER_PRUNING_MEASURE,true,"UserDefined"));

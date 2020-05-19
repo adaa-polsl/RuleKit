@@ -5,14 +5,14 @@
         <parameter_set name="mincov=8">
             <param name="min_rule_covered">8.0</param>
             <param name="max_growing">0.0</param>
-            <param name="pruning_enabled">true</param>
+            <param name="enable_pruning">true</param>
             <param name="ignore_missing">false</param>
         </parameter_set>
 
         <parameter_set name="mincov=8, no_pruning">
             <param name="min_rule_covered">8.0</param>
             <param name="max_growing">0.0</param>
-            <param name="pruning_enabled">false</param>
+            <param name="enable_pruning">false</param>
             <param name="ignore_missing">false</param>
         </parameter_set>
 

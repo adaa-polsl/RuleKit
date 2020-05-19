@@ -22,7 +22,7 @@ public class InductionParametersFactory {
                 case "ignore_missing":
                     parameters.setIgnoreMissing(paramMap.get(key).equals("true"));
                     break;
-                case "pruning_enabled":
+                case "enable_pruning":
                     parameters.setEnablePruning(paramMap.get(key).equals("true"));
                     break;
             }
