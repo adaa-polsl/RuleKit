@@ -34,6 +34,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import adaa.analytics.rules.logic.representation.DoubleFormatter;
+import adaa.analytics.rules.utils.VersionService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -100,10 +101,6 @@ public class ExperimentalConsole {
         final Map<String, Object> map = new TreeMap<>();
     }
     
-    
-    static final String VERSION = "1.2.0";
-    static final String BUILD_DATE = "11.05.2020";
-    
     protected boolean isVerbose = false;
 
     protected int experimentalThreads = 1;
@@ -116,8 +113,9 @@ public class ExperimentalConsole {
 
     private void parse(String[] args) {
     	try {
-    		
-	    	System.out.print("RuleKit version " + VERSION + " (" + BUILD_DATE + ")\n" 
+    		String version = new VersionService().getVersion();
+            String buildDate = new VersionService().getBuildDate();
+	    	System.out.print("RuleKit version " + version + " (" + buildDate + ")\n"
 			+ "    RuleKit Development Team (c) 2019\n\n");
     	
 	    	ArrayList<String> argList = new ArrayList<String>();

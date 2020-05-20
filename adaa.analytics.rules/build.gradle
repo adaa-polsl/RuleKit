@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat
+
 buildscript {
     repositories {
         jcenter()
@@ -115,4 +117,20 @@ task rjar(type: Jar) {
     
     with jar
     zip64 true
+}
+
+task generateVersionProperties {
+    doLast {
+        def propertiesFile = file "$buildDir/resources/main/version.properties"
+        propertiesFile.parentFile.mkdirs()
+        def properties = new Properties()
+        properties.setProperty("version", rootProject.version.toString())
+        properties.setProperty("date", new SimpleDateFormat("dd.MM.yyyy").format(new java.util.Date()))
+        propertiesFile.withWriter { properties.store(it, null) }
+    }
+}
+processResources.dependsOn generateVersionProperties
+
+classes {
+    dependsOn generateVersionProperties
 }
