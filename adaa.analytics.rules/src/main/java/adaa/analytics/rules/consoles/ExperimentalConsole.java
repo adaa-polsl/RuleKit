@@ -111,13 +111,17 @@ public class ExperimentalConsole {
     	console.parse(args);
     }
 
+    private static String getHeader() {
+        String version = new VersionService().getVersion();
+        String commitHash = new VersionService().getCommitHash();
+        String commitDate = new VersionService().getCommitDate();
+        return "RuleKit " + version + " (build " + commitHash + " " + commitDate + ")\n"
+                + "    RuleKit Development Team (c) 2019\n\n";
+    }
+
     private void parse(String[] args) {
     	try {
-    		String version = new VersionService().getVersion();
-            String commitHash = new VersionService().getCommitHash();
-            String commitDate = new VersionService().getCommitDate();
-	    	System.out.print("RuleKit " + version + " (build " + commitHash + " " + commitDate + ")\n"
-			+ "    RuleKit Development Team (c) 2019\n\n");
+	    	System.out.print(getHeader());
     	
 	    	ArrayList<String> argList = new ArrayList<String>();
 	    	argList.addAll(Arrays.asList(args));
@@ -325,9 +329,9 @@ public class ExperimentalConsole {
                         "predictionReportPathFile = " + predictionPerformanceFilePath + lineSeparator, Level.FINE);
 
                 SynchronizedReport predictionSynchronizedReport = predictionPerformanceFilePath == null || predictionPerformanceFilePath.isEmpty() ?
-                        null : new SynchronizedReport(outDirPath + "/" + predictionPerformanceFilePath);
+                        null : new SynchronizedReport(outDirPath + "/" + predictionPerformanceFilePath, getHeader());
                 SynchronizedReport trainingSynchronizedReport = trainingReportFilePath == null || trainingReportFilePath.isEmpty() ?
-                        null : new SynchronizedReport(outDirPath + "/" + trainingReportFilePath);
+                        null : new SynchronizedReport(outDirPath + "/" + trainingReportFilePath, getHeader());
 
                 ttValidationExp = new TrainTestValidationExperiment(trainingSynchronizedReport, predictionSynchronizedReport,
                         label, options, new Pair<String, Map<String,Object>>(wrapper.name, wrapper.map), 

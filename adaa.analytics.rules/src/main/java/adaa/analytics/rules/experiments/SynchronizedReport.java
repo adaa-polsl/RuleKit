@@ -30,6 +30,12 @@ public class SynchronizedReport {
     	file = name;
 		writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(name), "utf-8"));
 	}
+
+	public SynchronizedReport(String name, String header) throws IOException {
+		file = name;
+		writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(name), "utf-8"));
+		writer.write(header);
+	}
 	
 	
 	public synchronized void append(String text) throws IOException {
