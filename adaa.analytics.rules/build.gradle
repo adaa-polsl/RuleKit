@@ -126,6 +126,8 @@ task generateVersionProperties {
         def properties = new Properties()
         properties.setProperty("version", rootProject.version.toString())
         properties.setProperty("date", new SimpleDateFormat("dd.MM.yyyy").format(new java.util.Date()))
+        properties.setProperty("commitHash", ['git', 'rev-parse', 'HEAD'].execute().text.trim())
+        properties.setProperty("commitDate", ['git', 'log', '-1', '--format=%ct', '--date=local'].execute().text.trim())
         propertiesFile.withWriter { properties.store(it, null) }
     }
 }

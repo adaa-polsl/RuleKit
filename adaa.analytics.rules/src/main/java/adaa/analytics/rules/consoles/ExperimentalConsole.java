@@ -114,8 +114,9 @@ public class ExperimentalConsole {
     private void parse(String[] args) {
     	try {
     		String version = new VersionService().getVersion();
-            String buildDate = new VersionService().getBuildDate();
-	    	System.out.print("RuleKit version " + version + " (" + buildDate + ")\n"
+            String commitHash = new VersionService().getCommitHash();
+            String commitDate = new VersionService().getCommitDate();
+	    	System.out.print("RuleKit " + version + " (build " + commitHash + " " + commitDate + ")\n"
 			+ "    RuleKit Development Team (c) 2019\n\n");
     	
 	    	ArrayList<String> argList = new ArrayList<String>();

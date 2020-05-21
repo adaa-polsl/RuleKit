@@ -19,17 +19,27 @@ public class VersionService {
         }
     }
 
-    public String getVersion() {
+    private String getProperty(String name, String defaultValue) {
         if (versionProperties != null)
-            return versionProperties.getProperty("version");
+            return versionProperties.getProperty(name);
         else
-            return "dev version";
+            return defaultValue;
     }
 
-    public String getBuildDate() {
-        if (versionProperties != null)
-            return versionProperties.getProperty("date");
-        else
-            return "no date" ;//new SimpleDateFormat().format(new java.util.Date());
+    public String getVersion() {
+        return getProperty("version", "dev version");
+    }
+
+    public String getCommitHash() {
+        return getProperty("commitHash", "no hash");
+    }
+
+    public String getCommitDate() {
+        String date =  getProperty("commitDate", null);
+        if (date != null) {
+            return new SimpleDateFormat("dd.MM.yyyy").format(new java.util.Date(Long.parseLong(date) * 1000));
+        } else {
+            return "no commit date";
+        }
     }
 }
