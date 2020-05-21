@@ -6,7 +6,7 @@ import base64
 
 REFERENCE_BRANCH_NAME = 'develop'
 GRADLE_FILE_PATH = './adaa.analytics.rules/build.gradle'
-GET_GRADLE_COMMAND = f'git show {REFERENCE_BRANCH_NAME} HEAD:{GRADLE_FILE_PATH}'
+GET_GRADLE_COMMAND = f'git show {REFERENCE_BRANCH_NAME}:{GRADLE_FILE_PATH}'
 
 class Version:
 
@@ -55,6 +55,10 @@ class Version:
 
 
 def get_build_gradle_from_branch(branch_name: str) -> str:
+  current_branch_name =  os.system('git rev-parse --abbrev-ref HEAD')
+  os.system('git fetch')
+  os.system(f'git checkout {branch_name}')
+  os.system(f'git checkout {current_branch_name}')
   return os.popen(GET_GRADLE_COMMAND).read()
 
 def get_version_from_gradle(build_gradle_content: str) -> Version:
