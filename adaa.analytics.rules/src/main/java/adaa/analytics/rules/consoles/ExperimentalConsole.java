@@ -111,12 +111,15 @@ public class ExperimentalConsole {
     	console.parse(args);
     }
 
-    private static String getHeader() {
+    private static String getSimpleHeader() {
         String version = new VersionService().getVersion();
         String commitHash = new VersionService().getCommitHash();
         String commitDate = new VersionService().getCommitDate();
-        return "RuleKit " + version + " (build " + commitHash + " " + commitDate + ")\n"
-                + "    RuleKit Development Team (c) 2019\n\n";
+        return "RuleKit " + version + " (build " + commitHash + " " + commitDate + ")\n";
+    }
+
+    private static String getHeader() {
+        return getSimpleHeader() + "    RuleKit Development Team (c) 2019\n\n";
     }
 
     private void parse(String[] args) {
@@ -329,7 +332,7 @@ public class ExperimentalConsole {
                         "predictionReportPathFile = " + predictionPerformanceFilePath + lineSeparator, Level.FINE);
 
                 SynchronizedReport predictionSynchronizedReport = predictionPerformanceFilePath == null || predictionPerformanceFilePath.isEmpty() ?
-                        null : new SynchronizedReport(outDirPath + "/" + predictionPerformanceFilePath, getHeader());
+                        null : new SynchronizedReport(outDirPath + "/" + predictionPerformanceFilePath, getSimpleHeader());
                 SynchronizedReport trainingSynchronizedReport = trainingReportFilePath == null || trainingReportFilePath.isEmpty() ?
                         null : new SynchronizedReport(outDirPath + "/" + trainingReportFilePath, getHeader());
 
