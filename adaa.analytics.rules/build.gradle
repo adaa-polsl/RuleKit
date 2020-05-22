@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat
+
 buildscript {
     repositories {
         jcenter()
@@ -25,7 +27,7 @@ codeQuality {
 }
 
 sourceCompatibility = 1.8
-version = '1.2.0'
+version = '1.2.1'
 jar {
 	baseName = 'rulekit'
     manifest {
@@ -115,4 +117,22 @@ task rjar(type: Jar) {
     
     with jar
     zip64 true
+}
+
+task generateVersionProperties {
+    doLast {
+        def propertiesFile = file "$buildDir/resources/main/version.properties"
+        propertiesFile.parentFile.mkdirs()
+        def properties = new Properties()
+        properties.setProperty("version", rootProject.version.toString())
+        properties.setProperty("date", new SimpleDateFormat("dd.MM.yyyy").format(new java.util.Date()))
+        properties.setProperty("commitHash", ['git', 'rev-parse', 'HEAD'].execute().text.trim())
+        properties.setProperty("commitDate", ['git', 'log', '-1', '--format=%ct', '--date=local'].execute().text.trim())
+        propertiesFile.withWriter { properties.store(it, null) }
+    }
+}
+processResources.dependsOn generateVersionProperties
+
+classes {
+    dependsOn generateVersionProperties
 }

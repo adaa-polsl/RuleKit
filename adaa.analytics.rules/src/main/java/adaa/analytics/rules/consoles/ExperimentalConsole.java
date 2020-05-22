@@ -34,6 +34,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import adaa.analytics.rules.logic.representation.DoubleFormatter;
+import adaa.analytics.rules.utils.VersionService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -100,10 +101,6 @@ public class ExperimentalConsole {
         final Map<String, Object> map = new TreeMap<>();
     }
     
-    
-    static final String VERSION = "1.2.0";
-    static final String BUILD_DATE = "11.05.2020";
-    
     protected boolean isVerbose = false;
 
     protected int experimentalThreads = 1;
@@ -114,11 +111,20 @@ public class ExperimentalConsole {
     	console.parse(args);
     }
 
+    private static String getSimpleHeader() {
+        String version = new VersionService().getVersion();
+        String commitHash = new VersionService().getCommitHash();
+        String commitDate = new VersionService().getCommitDate();
+        return "RuleKit " + version + " (build " + commitHash + " " + commitDate + ")\n";
+    }
+
+    private static String getHeader() {
+        return getSimpleHeader() + "    RuleKit Development Team (c) 2019\n\n";
+    }
+
     private void parse(String[] args) {
     	try {
-    		
-	    	System.out.print("RuleKit version " + VERSION + " (" + BUILD_DATE + ")\n" 
-			+ "    RuleKit Development Team (c) 2019\n\n");
+	    	System.out.print(getHeader());
     	
 	    	ArrayList<String> argList = new ArrayList<String>();
 	    	argList.addAll(Arrays.asList(args));
@@ -326,9 +332,9 @@ public class ExperimentalConsole {
                         "predictionReportPathFile = " + predictionPerformanceFilePath + lineSeparator, Level.FINE);
 
                 SynchronizedReport predictionSynchronizedReport = predictionPerformanceFilePath == null || predictionPerformanceFilePath.isEmpty() ?
-                        null : new SynchronizedReport(outDirPath + "/" + predictionPerformanceFilePath);
+                        null : new SynchronizedReport(outDirPath + "/" + predictionPerformanceFilePath, getSimpleHeader());
                 SynchronizedReport trainingSynchronizedReport = trainingReportFilePath == null || trainingReportFilePath.isEmpty() ?
-                        null : new SynchronizedReport(outDirPath + "/" + trainingReportFilePath);
+                        null : new SynchronizedReport(outDirPath + "/" + trainingReportFilePath, getHeader());
 
                 ttValidationExp = new TrainTestValidationExperiment(trainingSynchronizedReport, predictionSynchronizedReport,
                         label, options, new Pair<String, Map<String,Object>>(wrapper.name, wrapper.map), 
