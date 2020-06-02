@@ -74,7 +74,11 @@
   dir <- "/experiment1/"
   csv_dir <- file.path(paste0(reports, dir),"performance.csv")
   res_dir <- file.path(paste0(reports, dir),"training-log.txt")
-  result_frame <-read.csv(csv_dir, header = TRUE, skip = 1)
+  result_frame <- read.csv(csv_dir, header = TRUE, skip = 2)
+  # delete last empty column
+  if (all(is.na(result_frame[, ncol(result_frame)]))) {
+    result_frame <- result_frame[, -ncol(result_frame)]
+  }
   text <- readLines(res_dir)
   return(list(result_frame, text))
 }
