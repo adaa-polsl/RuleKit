@@ -17,5 +17,7 @@ Imports:
     devtools
 RoxygenNote: 6.1.0
 Suggests: knitr,
-    rmarkdown
+    rmarkdown,
+    kableExtra,
+    dplyr
 VignetteBuilder: knitr

@@ -1,5 +1,5 @@
 ---
-title: "Adaa.rules library examples"
+title: "RuleKit library examples"
 author: "Wojciech Sikora"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -10,12 +10,14 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
-library(adaa.rules)
-devtools::load_data()
+library(rulekit)
+library(dplyr)
+library(kableExtra)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+devtools::load_all()
 ```
 
 The purpose of this Vignette is to show how to use adaa.rules library for classification, regression, and survival. Since the only available function in this library is 'learn_rules', this tutorial is simply description of function's arguments and use case examples.
@@ -24,11 +26,13 @@ The purpose of this Vignette is to show how to use adaa.rules library for classi
 
 ## Train_data, test_data
 
-First step is to get your data. Adaa.rules library enables user to perform rule induction for single data.frame or list of data.frames. Specifying test data is optional and this argument can be left empty. In this case training data will be used for testing.
+First step is to get your data. `rulekit` library enables user to perform rule induction for single data.frame or list of data.frames. Specifying test data is optional and this argument can be left empty. In this case training data will be used for testing.
 
 ```{r, include=TRUE, results='asis'}
-devtools::load_data() #data sets: bone_marrow, methane_test, methane_train, seismic_bumps
-knitr::kable(head(bone_marrow, 10))
+devtools::load_all() #data sets: bone_marrow, methane_test, methane_train, seismic_bumps
+knitr::kable(head(bone_marrow, 10)) %>%
+  kable_styling() %>%
+  scroll_box(width = "100%")
 ```
 
 ## Formula
@@ -54,11 +58,15 @@ Control describes experiment  is a list of named parameters describing for algor
 # Survival example
 
 ```{r, include=TRUE}
-devtools::load_data()
+devtools::load_all()
 ```
-##Training data
+
+## Training data
+
 ```{r, include=TRUE, results='asis', message=FALSE, warning=FALSE}
-knitr::kable(head(bone_marrow, 10))
+knitr::kable(head(bone_marrow, 10)) %>%
+  kable_styling() %>%
+  scroll_box(width = "100%")
 formula <- survival::Surv(survival_time,survival_status) ~ .
 working_dir <- knitr::opts_knit$get("root.dir")
 control <- list(min_rule_covered = 5,
@@ -74,27 +82,33 @@ control <- list(min_rule_covered = 5,
                    'condition-forbidden-0' = 'IF ANCrecovery = Any THEN survival_status = {NaN}',
                    'condition-forbidden-0' = 'IF PLTrecovery = Any THEN survival_status = {NaN}'))
 results <- learn_rules(formula,control,bone_marrow)
-csv <- results[1]
-rules <- results[[2]]
+csv <- results$`test-performance`
+rules <- results$rules
 ```
-##Results
+
+## Results
+
 ```{r}
-knitr::kable(csv)
-cat(head(rules,30),sep = "\n")
+knitr::kable(csv) %>%
+  kable_styling() %>%
+  scroll_box(width = "100%")
+paste(head(rules,30),sep = "\n")
 ```
 
 # Regression example
 
 ```{r, include=TRUE}
-devtools::load_data()
+devtools::load_all()
 ```
 
-##Training data
+## Training data
+
 ```{r, include=TRUE, results='asis', message=FALSE}
 knitr::kable(head(methane_train, 10))
 ```
 
-##Test data
+## Test data
+
 ```{r, include=TRUE, results='asis', message=FALSE, warning=FALSE}
 knitr::kable(head(methane_test, 10))
 formula <- MM116_pred ~ MM31+MM116+AS038+PG072+PD+BA13
@@ -103,13 +117,18 @@ control <- list(min_rule_covered = 11,
                 induction_measure = 'UserDefined',
                 pruning_measure = 'UserDefined',
                 max_growing = 0,
-                user_equation = '(((P + N) * p / (p + n) - P) / N) * ((1 + p / P) / 2)')
-results <- learn_rules(formula,control,methane_train,methane_test)
-csv <- results[1]
-rules <- results[[2]]
+                user_induction_equation = '(((P + N) * p / (p + n) - P) / N) * ((1 + p / P) / 2)',
+                user_pruning_equation = '(((P + N) * p / (p + n) - P) / N) * ((1 + p / P) / 2)')
+results <- learn_rules(formula, control, methane_train, methane_test)
+csv <- results$`test-performance`
+rules <- results$rules
 ```
-##Results
+
+## Results
+
 ```{r}
-knitr::kable(csv)
-cat(head(rules,30),sep = "\n")
+knitr::kable(csv) %>%
+  kable_styling() %>%
+  scroll_box(width = "100%")
+paste(head(rules,30),sep = "\n")
 ```
