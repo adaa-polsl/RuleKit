@@ -27,7 +27,7 @@ codeQuality {
 }
 
 sourceCompatibility = 1.8
-version = '1.2.1'
+version = '1.2.2'
 jar {
 	baseName = 'rulekit'
     manifest {
