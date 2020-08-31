@@ -185,7 +185,9 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
                 );
 
             case Correlation:
-                return (p * N - P * n) / Math.sqrt(P * N * (p + n) * (P - p + N - n));
+                return (P - p + N - n == 0)
+                        ? Double.NEGATIVE_INFINITY
+                        : (p * N - P * n) / Math.sqrt(P * N * (p + n) * (P - p + N - n));
 
             case Coverage:
                 return p / P;

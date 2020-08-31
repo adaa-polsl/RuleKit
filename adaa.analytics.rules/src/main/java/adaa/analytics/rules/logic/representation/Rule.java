@@ -50,7 +50,7 @@ public abstract class Rule implements Serializable {
 	protected double weighted_N = Double.NaN;
 	
 	/** Rule weight. */
-	protected double weight = 1.0;
+	protected double weight = Double.NEGATIVE_INFINITY;
 	
 	/** Rule significance. */
 	protected double pvalue = 1.0;
@@ -216,5 +216,19 @@ public abstract class Rule implements Serializable {
 	public String printStats() {
 		String s ="(p=" + weighted_p + ", n=" + weighted_n + ", P=" + weighted_P + ", N=" + weighted_N + ", weight=" + getWeight() + ", pval=" + pvalue + ")";
 		return s;
+	}
+
+	public void copyFrom(final Rule ref) {
+		weighted_p = ref.weighted_p;
+		weighted_n = ref.weighted_n;
+		weighted_P = ref.weighted_P;
+		weighted_N = ref.weighted_N;
+		weight = ref.weight;
+		pvalue = ref.pvalue;
+		premise = ref.premise;
+		consequence = ref.consequence;
+		coveredPositives = ref.coveredPositives;
+		coveredNegatives = ref.coveredNegatives;
+		inducedConditionsCount = ref.inducedConditionsCount;
 	}
 }

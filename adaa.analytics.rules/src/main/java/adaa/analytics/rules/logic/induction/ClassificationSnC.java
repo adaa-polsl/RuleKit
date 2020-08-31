@@ -132,11 +132,12 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 							new CompoundCondition(),
 							new ElementaryCondition(label.getName(), new SingletonSet((double)classId, mapping.getValues())));
 
-					// Initialize some members
+					// rule covers everything at the beginning
 					rule.setWeighted_P(weighted_P);
 					rule.setWeighted_N(weighted_N);
+					rule.setWeighted_p(weighted_P);
+					rule.setWeighted_n(weighted_N);
 
-					// rule covers everything at the beginning
 					rule.setCoveredPositives(new IntegerBitSet(dataset.size()));
 					rule.setCoveredNegatives(new IntegerBitSet(dataset.size()));
 					rule.getCoveredPositives().addAll(positives);
@@ -220,6 +221,9 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 		}
 		
 		finalRuleset.setTotalTime((System.nanoTime() - beginTime) / 1e9);
+
+		pool.shutdown();
+
 		return finalRuleset;
 	}
 	

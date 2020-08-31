@@ -298,6 +298,7 @@ public class ExpertRuleGenerator extends RuleGenerator {
 			model = snc.run(exampleSet);
 			RuleSetBase rs = (RuleSetBase)model;
 			performances = recalculatePerformance(rs);
+			finder.close();
 			
 		} catch (IllegalAccessException e1) {
 			// TODO Auto-generated catch block
