@@ -94,7 +94,12 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	 * (use this parameter for large datasets if execution time is prohibitive); 0 indicates no limit.
 	 */
 	public static final String PARAMETER_MAX_GROWING = "max_growing";
-	
+
+	/**
+	 *  Flag determining if best candidate should be selected from growing phase."
+	 */
+	public static final String PARAMETER_SELECT_BEST_CANDIDATE = "select_best_candidate";
+
 	/**
 	 * Name of the rule quality measure used during growing (ignored in the survival analysis where log-rank statistics is used).
 	 */
@@ -104,7 +109,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	 * Binary parameter indicating whether pruning should be enabled.
 	 */
 	public static final String PARAMETER_ENABLE_PRUNING = "enable_pruning";
-	
+
 	/**
 	 * Name of the rule quality measure used during pruning.
 	 */
@@ -136,7 +141,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	 *  considered as not fulfilling the condition build upon that attribute)
 	 */
 	public static final String PARAMETER_IGNORE_MISSING = "ignore_missing";
-	
+
 	/**
 	 * Invokes base class constructor.
 	 * @param description Operator description.
@@ -175,8 +180,10 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 			params.setEnablePruning(getParameterAsBoolean(PARAMETER_ENABLE_PRUNING));
 			params.setIgnoreMissing(getParameterAsBoolean(PARAMETER_IGNORE_MISSING));
 			params.setMaxGrowingConditions(getParameterAsDouble(PARAMETER_MAX_GROWING));
+			params.setSelectBestCandidate(getParameterAsBoolean(PARAMETER_SELECT_BEST_CANDIDATE));
 			
-			AbstractSeparateAndConquer snc; 
+			AbstractSeparateAndConquer snc;
+			AbstractFinder finder;
 			
 			if (exampleSet.getAttributes().findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
 				// survival problem
@@ -184,25 +191,27 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 					params.setInductionMeasure(new LogRank());
 					params.setPruningMeasure(new LogRank());
 					params.setVotingMeasure(new LogRank());
-					SurvivalLogRankFinder finder = new SurvivalLogRankFinder(params);
-					snc = new SurvivalLogRankSnC(finder, params);
+					finder = new SurvivalLogRankFinder(params);
+					snc = new SurvivalLogRankSnC((SurvivalLogRankFinder)finder, params);
 			//	} else {
 			//		ClassificationFinder finder = new ClassificationFinder(params);
 			//		snc = new SurvivalClassificationSnC(finder, params);
 			//	}
 			} else if (exampleSet.getAttributes().getLabel().isNumerical()) {
 				// regression problem
-				RegressionFinder finder = new RegressionFinder(params);
-				snc = new RegressionSnC(finder, params);
+				finder = new RegressionFinder(params);
+				snc = new RegressionSnC((RegressionFinder) finder, params);
 			} else {
 				// classification problem
-				ClassificationFinder finder = new ClassificationFinder(params);
-				snc = new ClassificationSnC(finder, params);
+				finder = new ClassificationFinder(params);
+				snc = new ClassificationSnC((ClassificationFinder) finder, params);
 			}
 			
 			RuleSetBase rs = snc.run(exampleSet);
 			performances = recalculatePerformance(rs);
 			model = rs;
+
+			finder.close();
 			
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
@@ -245,6 +254,8 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		types.add(new ParameterTypeDouble(
 				PARAMETER_MAX_GROWING, getParameterDescription(PARAMETER_MAX_GROWING), 0, Double.MAX_VALUE, 0));
 
+		types.add(new ParameterTypeBoolean(
+				PARAMETER_SELECT_BEST_CANDIDATE, getParameterDescription(PARAMETER_SELECT_BEST_CANDIDATE), false));
 
 		// get log rank flag only in survival mode
 /*		tmp = new ParameterTypeBoolean(

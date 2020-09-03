@@ -38,7 +38,7 @@ import com.rapidminer.tools.container.Pair;
  * @author Adam Gudys
  * 
  */
-public abstract class AbstractFinder {
+public abstract class AbstractFinder implements AutoCloseable {
 	
 	/**
 	 * Rule induction parameters.
@@ -66,7 +66,12 @@ public abstract class AbstractFinder {
 		threadCount = Runtime.getRuntime().availableProcessors();
 		pool = Executors.newFixedThreadPool(threadCount);
 	}
-	
+
+	@Override
+	public void close() {
+		pool.shutdown();
+	}
+
 	/**
 	 * Adds elementary conditions to the rule premise until termination conditions are fulfilled.
 	 * 

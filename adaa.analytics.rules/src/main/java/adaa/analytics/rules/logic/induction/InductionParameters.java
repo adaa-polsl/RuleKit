@@ -44,6 +44,8 @@ public class InductionParameters implements Serializable {
 	private boolean ignoreMissing = false;
 	private boolean pruningEnabled = true;
 	private double maxGrowingConditions = 0;
+
+	private boolean selectBestCandidate = false;
 	
 	public IQualityMeasure getInductionMeasure() {return inductionMeasure;}
 	public void setInductionMeasure(IQualityMeasure inductionMeasure) {this.inductionMeasure = inductionMeasure;}
@@ -68,7 +70,10 @@ public class InductionParameters implements Serializable {
 	
 	public double getMaxGrowingConditions() { return maxGrowingConditions; }
 	public void setMaxGrowingConditions(double maxGrowingConditions) { this.maxGrowingConditions = maxGrowingConditions; }
-	
+
+	public boolean getSelectBestCandidate() { return selectBestCandidate; }
+	public void setSelectBestCandidate(boolean selectBestCandidate) { this.selectBestCandidate = selectBestCandidate; }
+
 	public String toString() {
 		return	
 			"min_rule_covered=" + minimumCovered + "\n" +

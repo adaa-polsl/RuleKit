@@ -19,7 +19,6 @@ import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.ConditionBase.Type;
 
 import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.tools.container.Pair;
 
@@ -117,7 +116,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 				newCondition = (ElementaryCondition)SerializationUtils.clone(ec);
 			}
 			newCondition.evaluate(dataset, conditionCovered);
-			tryAddCondition(rule, newCondition, dataset, covered, conditionCovered);
+			tryAddCondition(rule, null, newCondition, dataset, covered, conditionCovered);
 		}
 		
 		ContingencyTable ct; 
@@ -251,7 +250,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 				}
 				
 				if (bestCondition != null) {
-					carryOn = tryAddCondition(rule, bestCondition, dataset, covered, conditionCovered);
+					carryOn = tryAddCondition(rule, null, bestCondition, dataset, covered, conditionCovered);
 					knowledge.getPreferredConditions((int)classId).remove(bestCondition);
 					
 					newlyCoveredPositives.retainAll(rule.getCoveredPositives());
@@ -284,7 +283,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 						
 			do {
 				ElementaryCondition condition = induceCondition(rule, dataset, uncoveredPositives, covered, localAllowed, rule.getCoveredPositives());
-				carryOn = tryAddCondition(rule, condition, dataset, covered, conditionCovered);
+				carryOn = tryAddCondition(rule, null, condition, dataset, covered, conditionCovered);
 				// fixme: we are not sure if condition was added
 				if (carryOn) {
 					knowledge.getPreferredAttributes((int)classId).remove(condition.getAttribute());
@@ -313,12 +312,19 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 		if ((isRuleEmpty && knowledge.isInduceUsingAutomatic()) ||
 			(!isRuleEmpty && knowledge.isExtendUsingAutomatic())) {
 			boolean carryOn = true;
-			
+			Rule currentRule = new ClassificationRule();
+			currentRule.copyFrom(rule);
+
 			do {
 				ElementaryCondition condition = induceCondition(
 						rule, dataset, uncoveredPositives, covered, allowedAttributes, rule.getCoveredPositives());
-				
-				carryOn = tryAddCondition(rule, condition, dataset, covered, conditionCovered);
+
+				if (params.getSelectBestCandidate()) {
+					carryOn = tryAddCondition(currentRule, rule, condition, dataset, covered, conditionCovered);
+				} else {
+					carryOn = tryAddCondition(rule, null, condition, dataset, covered, conditionCovered);
+				}
+
 			} while (carryOn); 
 		}
 		

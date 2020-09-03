@@ -134,10 +134,13 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 			Logger.log("Processing expert rules...\n", Level.FINE);
 			for (Rule r : knowledge.getRules(classId)) {
 				Rule rule = (Rule) SerializationUtils.clone(r);
-				rule.setWeighted_P(weighted_P);
-				rule.setWeighted_N(weighted_N);
 
 				// rule covers everything at the beginning (adjustment phase corrects covering)
+				rule.setWeighted_P(weighted_P);
+				rule.setWeighted_N(weighted_N);
+				rule.setWeighted_p(weighted_P);
+				rule.setWeighted_n(weighted_N);
+
 				rule.setCoveredPositives(new IntegerBitSet(dataset.size()));
 				rule.setCoveredNegatives(new IntegerBitSet(dataset.size()));
 				rule.getCoveredPositives().addAll(positives);
@@ -183,6 +186,8 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 				
 				rule.setWeighted_P(weighted_P);
 				rule.setWeighted_N(weighted_N);
+				rule.setWeighted_p(weighted_P);
+				rule.setWeighted_n(weighted_N);
 
 				rule.setCoveredPositives(new IntegerBitSet(dataset.size()));
 				rule.setCoveredNegatives(new IntegerBitSet(dataset.size()));

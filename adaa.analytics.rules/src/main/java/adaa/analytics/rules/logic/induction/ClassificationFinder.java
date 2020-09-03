@@ -22,22 +22,13 @@ import java.util.logging.Level;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.Hypergeometric;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
-import adaa.analytics.rules.logic.representation.CompoundCondition;
-import adaa.analytics.rules.logic.representation.ConditionBase;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.IntegerBitSet;
-import adaa.analytics.rules.logic.representation.Interval;
-import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.MissingValuesHandler;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.SingletonSet;
+import adaa.analytics.rules.logic.representation.*;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Attributes;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.DataRow;
-import com.rapidminer.example.table.ExampleTable;
 import com.rapidminer.tools.container.Pair;
 
 
@@ -182,14 +173,21 @@ public class ClassificationFinder extends AbstractFinder {
 		
 		// add conditions to rule
 		boolean carryOn = true;
-		
+		Rule currentRule = new ClassificationRule();
+		currentRule.copyFrom(rule);
+
 		do {
 			ElementaryCondition condition = induceCondition(
 					rule, dataset, uncovered, covered, allowedAttributes);
 			
 			if (condition != null) {
-				carryOn = tryAddCondition(rule, condition, dataset, covered, conditionCovered);
-				
+
+				if (params.getSelectBestCandidate()) {
+					carryOn = tryAddCondition(currentRule, rule, condition, dataset, covered, conditionCovered);
+				} else {
+					carryOn = tryAddCondition(rule, null, condition, dataset, covered, conditionCovered);
+				}
+
 				if (params.getMaxGrowingConditions() > 0) {
 					if (rule.getPremise().getSubconditions().size() - initialConditionsCount >= 
 						params.getMaxGrowingConditions() * dataset.getAttributes().size()) {
@@ -210,6 +208,8 @@ public class ClassificationFinder extends AbstractFinder {
 			}
 		}
 		*/
+
+
 
 		// if rule has been successfully grown
 		int addedConditionsCount = rule.getPremise().getSubconditions().size() - initialConditionsCount;
@@ -616,6 +616,11 @@ public class ClassificationFinder extends AbstractFinder {
 							int toCover_p = conditionCovered.calculateIntersectionSize((IntegerBitSet) coveredByRule, (IntegerBitSet) uncoveredPositives);
 							double n = conditionCovered.calculateIntersectionSize((IntegerBitSet) coveredByRule) - p;
 
+							// no need to analyze conditions that do not alter covering
+							//if (p == rule.getWeighted_p() && n == rule.getWeighted_n()) {
+								//continue;
+							//}
+
 							// evaluate equality condition a = v
 							double quality = ((ClassificationMeasure) params.getInductionMeasure()).calculate(
 									p, n, P, N);
@@ -666,7 +671,8 @@ public class ClassificationFinder extends AbstractFinder {
 	/***
 	 * Makes an attempt to add the condition to the rule.
 	 * 
-	 * @param rule Rule to be updated.
+	 * @param currentRule Rule to be updated.
+	 * @param bestRule Best rule found up to now. Use null value if not needed.
 	 * @param condition Condition to be added.
 	 * @param trainSet Training set.
 	 * @param covered Set of examples covered by the rules.
@@ -674,7 +680,8 @@ public class ClassificationFinder extends AbstractFinder {
 	 * @return Flag indicating whether condition has been added successfully.
 	 */
 	public boolean tryAddCondition(
-		final Rule rule, 
+		final Rule currentRule,
+		final Rule bestRule,
 		final ConditionBase condition, 
 		final ExampleSet trainSet,
 		final Set<Integer> covered,
@@ -687,16 +694,21 @@ public class ClassificationFinder extends AbstractFinder {
 		if (condition != null) {
 			conditionCovered.clear();
 			condition.evaluate(trainSet, conditionCovered);
-			
-			ct.weighted_P = rule.getWeighted_P();
-			ct.weighted_N = rule.getWeighted_N();
-			
+
+			// calculate  quality before addition
+			ct.weighted_P = currentRule.getWeighted_P();
+			ct.weighted_N = currentRule.getWeighted_N();
+			ct.weighted_p = currentRule.getWeighted_p();
+			ct.weighted_n = currentRule.getWeighted_n();
+
+			double qualityBefore = calculateQuality(trainSet, ct, params.getInductionMeasure());
+
 			if (trainSet.getAttributes().getWeight() != null) {
 				// calculate weights
 				
 			} else {
-				ct.weighted_p = rule.getCoveredPositives().calculateIntersectionSize(conditionCovered);
-				ct.weighted_n = rule.getCoveredNegatives().calculateIntersectionSize(conditionCovered);
+				ct.weighted_p = currentRule.getCoveredPositives().calculateIntersectionSize(conditionCovered);
+				ct.weighted_n = currentRule.getCoveredNegatives().calculateIntersectionSize(conditionCovered);
 			}
 			
 			// analyse stopping criteria
@@ -705,7 +717,7 @@ public class ClassificationFinder extends AbstractFinder {
 					Math.max(1.0, 0.2 * ct.weighted_P));
 
 			if (ct.weighted_p < adjustedMinCov) {
-				if (rule.getPremise().getSubconditions().size() == 0) {
+				if (currentRule.getPremise().getSubconditions().size() == 0) {
 					// special case of empty rule - add condition anyway
 			//		add = true;
 				}
@@ -720,27 +732,68 @@ public class ClassificationFinder extends AbstractFinder {
 			
 			// update coverage if condition was added
 			if (add) {
-				rule.getPremise().getSubconditions().add(condition);
+
+				// recalculate quality
+				double qualityAfter = calculateQuality(trainSet, ct, params.getInductionMeasure());
+
+				if (bestRule != null) {
+					if (qualityAfter > qualityBefore) {
+						// quality increase
+						double bestQuality = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
+								bestRule.getWeighted_p(), bestRule.getWeighted_n(), bestRule.getWeighted_P(), bestRule.getWeighted_N());
+
+						if (bestRule.getPremise() != currentRule.getPremise() && qualityAfter > bestQuality) {
+							// if current is better then previous best and has different premise
+							bestRule.copyFrom(currentRule);
+						}
+					} else {
+						// quality drop - local maximum found
+						if (currentRule.getPremise() == bestRule.getPremise()) {
+							// store current state in best rule
+							bestRule.copyFrom(currentRule);
+
+							// fork rules - make deep copy of selected components
+							currentRule.setPremise(new CompoundCondition());
+							currentRule.getPremise().getSubconditions().addAll(bestRule.getPremise().getSubconditions());
+							currentRule.setCoveredPositives(bestRule.getCoveredPositives().clone());
+							currentRule.setCoveredNegatives(bestRule.getCoveredNegatives().clone());
+						}
+					}
+				}
+
+				currentRule.getPremise().getSubconditions().add(condition);
 
 				covered.retainAll(conditionCovered);
-				rule.getCoveredPositives().retainAll(conditionCovered);
-				rule.getCoveredNegatives().retainAll(conditionCovered);
+				currentRule.getCoveredPositives().retainAll(conditionCovered);
+				currentRule.getCoveredNegatives().retainAll(conditionCovered);
 				
-				rule.setWeighted_p(ct.weighted_p);
-				rule.setWeighted_n(ct.weighted_n);
+				currentRule.setWeighted_p(ct.weighted_p);
+				currentRule.setWeighted_n(ct.weighted_n);
+
+				Pair<Double, Double> qp = calculateQualityAndPValue(trainSet, ct, params.getVotingMeasure());
+				currentRule.setWeight(qp.getFirst());
+				currentRule.setPValue(qp.getSecond());
 				
-				Pair<Double,Double> qp = calculateQualityAndPValue(trainSet, ct, params.getVotingMeasure());
-				rule.setWeight(qp.getFirst());
-				rule.setPValue(qp.getSecond());
-				
-				Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
-						+ rule.toString() + " " + rule.printStats() + "\n", Level.FINER);
+				Logger.log("Condition " + currentRule.getPremise().getSubconditions().size() + " added: "
+						+ currentRule.toString() + " " + currentRule.printStats() + "\n", Level.FINER);
 			}
 		}
 		else {
-			 carryOn = false;
+			carryOn = false;
 		}
-	
+
+		// best is current and has not been updated from the beginning
+		if (carryOn == false && bestRule != null) {
+			double bestQuality = ((ClassificationMeasure) params.getInductionMeasure()).calculate(
+					bestRule.getWeighted_p(), bestRule.getWeighted_n(), bestRule.getWeighted_P(), bestRule.getWeighted_N());
+			double currentQuality = ((ClassificationMeasure) params.getInductionMeasure()).calculate(
+					currentRule.getWeighted_p(), currentRule.getWeighted_n(), currentRule.getWeighted_P(), currentRule.getWeighted_N());
+
+			if (currentQuality > bestQuality) {
+				bestRule.copyFrom(currentRule);
+			}
+		}
+
 		return carryOn;
 	}	
 	
