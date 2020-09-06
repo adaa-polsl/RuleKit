@@ -138,7 +138,9 @@ public class RegressionRule extends Rule {
 				cov.weighted_P += w;
 				// if covered
 				if (this.getPremise().evaluate(ex)) {
+					cov.negatives.remove(id);
 					cov.weighted_n -= w;
+					cov.positives.add(id);
 					cov.weighted_p += w;
 				}
 			}
@@ -155,7 +157,7 @@ public class RegressionRule extends Rule {
 	public String toString() {
 		double lo = getConsequenceValue() - stddev;
 		double hi = getConsequenceValue() + stddev;
-		String s = "IF " + premise.toString() + " THEN " + consequence.toString() + " [" + lo + "," + hi + "]";	
+		String s = "IF " + premise.toString() + " THEN " + consequence.toString() + " [" + DoubleFormatter.format(lo) + "," + DoubleFormatter.format(hi) + "]";
 		return s;
 	}
 }

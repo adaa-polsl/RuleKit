@@ -180,6 +180,7 @@ public abstract class Rule implements Serializable {
 	 * @param filterIds Set of identifiers to be examined.
 	 * @return Information about covering.
 	 */
+	@Deprecated
 	public abstract Covering covers(ExampleSet set, Set<Integer> filterIds);
 	
 	/**
@@ -187,6 +188,7 @@ public abstract class Rule implements Serializable {
 	 * @param set Example set.
 	 * @return Information about covering.
 	 */
+	@Deprecated
 	public abstract Covering covers(ExampleSet set);
 	
 	/**

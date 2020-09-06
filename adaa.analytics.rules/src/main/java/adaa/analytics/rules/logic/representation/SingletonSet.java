@@ -107,7 +107,7 @@ public class SingletonSet implements IValueSet, Serializable {
 	 */
 	@Override
 	public String toString() {
-		String s = "{" + ((mapping == null) ? value : mapping.get((int)value)) + "}";
+		String s = "{" + ((mapping == null) ? DoubleFormatter.format(value) : mapping.get((int)value)) + "}";
 		return s;
 	}
 	
