@@ -121,7 +121,8 @@ public class RegressionExpertSnC extends RegressionSnC {
 
 			Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
 			Logger.log("\t" + totalExpertRules + " expert rules, " + (++totalAutoRules) + " auto rules" , Level.INFO);
-			
+
+			finder.postprocess(rule, ses);
 			ruleset.addRule(rule);
 			cov = rule.covers(ses);
 			rule.setCoveringInformation(cov);
@@ -182,6 +183,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 				if (uncovered.size() == previouslyUncovered) {
 					carryOn = false; 
 				} else {
+					finder.postprocess(rule, ses);
 					ruleset.addRule(rule);
 					Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
 					Logger.log("\t" + totalExpertRules + " expert rules, " + (++totalAutoRules) + " auto rules" , Level.INFO);

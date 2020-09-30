@@ -179,6 +179,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 						if (uncoveredPositives.size() == previouslyUncovered) {
 							carryOn = false; 
 						} else {
+							finder.postprocess(rule, dataset);
 							ruleset.addRule(rule);
 							mutex.acquire(1);
 							Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);

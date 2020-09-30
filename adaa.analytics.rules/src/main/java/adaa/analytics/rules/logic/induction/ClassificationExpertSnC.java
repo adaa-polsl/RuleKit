@@ -165,7 +165,8 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 				}
 				Logger.log(".", Level.INFO);
 				Logger.log("Candidate rule:" + rule.toString() + "\n", Level.FINE);
-				
+
+				finder.postprocess(rule, dataset);
 				ruleset.addRule(rule);
 				Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
 				Logger.log("\t" + (++totalExpertRules) + " expert rules, " + totalAutoRules + " auto rules" , Level.INFO);
@@ -225,6 +226,7 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 					if (uncoveredPositives.size() == previouslyUncovered) {
 						carryOn = false; 
 					} else {
+						finder.postprocess(rule, dataset);
 						ruleset.addRule(rule);
 						Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
 						Logger.log("\t" + totalExpertRules + " expert rules, " + (++totalAutoRules) + " auto rules" , Level.INFO);

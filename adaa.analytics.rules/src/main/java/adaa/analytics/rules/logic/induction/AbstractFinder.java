@@ -205,8 +205,19 @@ public abstract class AbstractFinder implements AutoCloseable {
 		
 		return covering;
 	}
-	
-	
+
+	/**
+	 * Postprocesses a rule.
+	 *
+	 * @param rule Rule to be postprocessed.
+	 * @param dataset Training set.
+	 *
+	 */
+	public void postprocess(
+		final Rule rule,
+		final ExampleSet dataset) {
+	}
+
 	/**
 	 * Calculates quality on a training set.
 	 * 

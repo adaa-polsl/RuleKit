@@ -18,6 +18,8 @@ import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 
+import adaa.analytics.rules.logic.representation.Rule;
+import adaa.analytics.rules.logic.representation.SurvivalRule;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.tools.container.Pair;
 
@@ -35,7 +37,25 @@ public class SurvivalLogRankExpertFinder extends RegressionExpertFinder {
 	public SurvivalLogRankExpertFinder(InductionParameters params) {
 		super(params);
 	}
-	
+
+	/**
+	 * Postprocesses a rule.
+	 *
+	 * @param rule Rule to be postprocessed.
+	 * @param dataset Training set.
+	 *
+	 */
+	@Override
+	public void postprocess(
+			final Rule rule,
+			final ExampleSet dataset) {
+
+		Covering cov = rule.covers(dataset);
+		Set<Integer> covered = cov.positives;
+		KaplanMeierEstimator kme = new KaplanMeierEstimator(dataset, covered);
+		((SurvivalRule)rule).setEstimator(kme);
+	}
+
 	@Override
 	protected double calculateQuality(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
 		Covering cov = (Covering)ct;

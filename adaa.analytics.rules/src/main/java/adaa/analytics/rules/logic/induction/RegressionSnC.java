@@ -124,6 +124,7 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 				if (uncovered.size() == previouslyUncovered) {
 					carryOn = false; 
 				} else {
+					finder.postprocess(rule, ses);
 					ruleset.addRule(rule);
 					Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
 					Logger.log("\t" + (++totalRules) + " rules" , Level.INFO);
