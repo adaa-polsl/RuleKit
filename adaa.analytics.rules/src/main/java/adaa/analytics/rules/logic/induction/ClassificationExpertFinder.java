@@ -110,30 +110,32 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 				
 				newCondition = induceCondition(
 						rule, dataset, mustBeCovered, covered, attr);
-				newCondition.setType(Type.FORCED);	
+				newCondition.setType(Type.FORCED);
+				tryAddCondition(rule, null, newCondition, dataset, covered, conditionCovered);
 				
 			} else {
+				// add condition as it is without verification
+				conditionCovered.clear();
 				newCondition = (ElementaryCondition)SerializationUtils.clone(ec);
-			}
-			newCondition.evaluate(dataset, conditionCovered);
-			tryAddCondition(rule, null, newCondition, dataset, covered, conditionCovered);
-		}
-		
-		ContingencyTable ct; 
-		
-		if (dataset.getAttributes().getWeight() != null) {
-			ct = rule.covers(dataset);
-		} else {
-			ct = new ContingencyTable(
-				rule.getWeighted_p(),
-				rule.getWeighted_n(),
-				rule.getWeighted_P(),
-				rule.getWeighted_N());
-		}
+				newCondition.evaluate(dataset, conditionCovered);
 
-		Pair<Double,Double> qp = calculateQualityAndPValue(dataset, ct, params.getVotingMeasure());
-		rule.setWeight(qp.getFirst());
-		rule.setPValue(qp.getSecond());
+				rule.getPremise().addSubcondition(newCondition);
+
+				covered.retainAll(conditionCovered);
+				rule.getCoveredPositives().retainAll(conditionCovered);
+				rule.getCoveredNegatives().retainAll(conditionCovered);
+
+				rule.setWeighted_p(rule.getCoveredPositives().size());
+				rule.setWeighted_n(rule.getCoveredNegatives().size());
+
+				Pair<Double, Double> qp = calculateQualityAndPValue(dataset, rule.getCoveringInformation(), params.getVotingMeasure());
+				rule.setWeight(qp.getFirst());
+				rule.setPValue(qp.getSecond());
+
+				Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: "
+						+ rule.toString() + " " + rule.printStats() + "\n", Level.FINER);
+			}
+		}
 	}
 	
 	/**
