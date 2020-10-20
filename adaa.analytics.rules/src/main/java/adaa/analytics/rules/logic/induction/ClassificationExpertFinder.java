@@ -136,6 +136,24 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 						+ rule.toString() + " " + rule.printStats() + "\n", Level.FINER);
 			}
 		}
+
+		
+		ContingencyTable ct = new ContingencyTable();
+		
+		if (dataset.getAttributes().getWeight() != null) {
+			rule.covers(dataset, ct, new HashSet<Integer>(), new HashSet<Integer>());
+		} else {
+			ct = new ContingencyTable(
+				rule.getWeighted_p(),
+				rule.getWeighted_n(),
+				rule.getWeighted_P(),
+				rule.getWeighted_N());
+		}
+
+		Pair<Double,Double> qp = calculateQualityAndPValue(dataset, ct, params.getVotingMeasure());
+		rule.setWeight(qp.getFirst());
+		rule.setPValue(qp.getSecond());
+
 	}
 	
 	/**

@@ -14,9 +14,11 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
+import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -81,7 +83,21 @@ public class SurvivalRule extends Rule {
 		}
 		return covered;
 	}
-	
+
+	@Override
+	public void covers(ExampleSet set, @NotNull ContingencyTable ct,  @NotNull Set<Integer> positives, @NotNull Set<Integer> negatives) {
+		for (int i = 0; i < set.size(); i++) {
+			Example ex = set.getExample(i);
+			double weight = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
+
+			ct.weighted_P += weight;
+			if (this.getPremise().evaluate(ex)){
+				positives.add(i);
+				ct.weighted_p += weight;
+			}
+		}
+	}
+
 	/**
 	 * Applies the rule on a specified example set.
 	 * @param set Example set.

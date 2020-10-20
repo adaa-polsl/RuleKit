@@ -14,6 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,6 +33,19 @@ public class Covering extends ContingencyTable{
 	
 	public Covering(double p, double n, double P, double N) {
 		super(p, n, P, N);
+	}
+
+	public Covering(ContingencyTable ct) {
+		super(ct.weighted_p, ct.weighted_n, ct.weighted_P, ct.weighted_N);
+		this.mean_y = ct.mean_y;
+		this.median_y = ct.median_y;
+		this.stddev_y = ct.stddev_y;
+	}
+
+	public Covering(ContingencyTable ct, Set<Integer> posIds, Set<Integer> negIds) {
+		this(ct);
+		positives.addAll(posIds);
+		negatives.addAll(negIds);
 	}
 
 	public int getSize() { return positives.size() + negatives.size(); }

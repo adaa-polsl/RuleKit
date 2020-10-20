@@ -118,6 +118,9 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 		boolean isRuleEmpty = rule.getPremise().getSubconditions().size() == 0;
 		
 		// get current covering
+		ContingencyTable ct = new ContingencyTable();
+
+
 		Covering covering = rule.covers(dataset);
 		Set<Integer> covered = new HashSet<Integer>();
 		covered.addAll(covering.positives);

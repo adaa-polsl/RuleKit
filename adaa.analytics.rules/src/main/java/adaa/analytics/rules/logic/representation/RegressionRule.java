@@ -14,6 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
+import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
@@ -52,17 +53,7 @@ public class RegressionRule extends Rule {
 		super(premise, consequence);
 	}
 	
-	/**
-	 * Applies the rule on a specified example set.
-	 * @param set Example set.
-	 * @param filterIds Ignored.
-	 * @return Information about covering.
-	 */
-	@Override
-	public Covering covers(ExampleSet set, Set<Integer> filterIds) {
-		return covers(set);
-	}
-	
+
 	/**
 	 * Sets p,n,P,N as well as consequence value and standard deviation on the basis of covering information.
 	 * @param cov Covering information.
@@ -75,80 +66,92 @@ public class RegressionRule extends Rule {
 	}
 
 	/**
+	 * Applies the rule on a specified example set.
+	 * @param set Example set.
+	 * @param filterIds Ignored.
+	 * @return Information about covering.
+	 */
+	@Override
+	public Covering covers(ExampleSet set, Set<Integer> filterIds) {
+		return covers(set);
+	}
+
+
+	/**
 	 * Applies the regression rule on a specified example set.
 	 * @param set Example set.
 	 * @return Information about covering.
 	 */
 	@Override
 	public Covering covers(ExampleSet set) {
+		Covering cov = new Covering();
+		this.covers(set, cov, cov.positives, cov.negatives);
+		return cov;
+	}
+
+	@Override
+	public void covers(ExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
 		SortedExampleSet ses = (set instanceof SortedExampleSet) ? (SortedExampleSet)set : null;
 		if (ses == null) {
 			throw new InvalidParameterException("RegressionRules support only sorted example sets");
 		}
-		
-		Covering cov = new Covering();
-		
-		double sum_y = 0;
-		double sum_y2 = 0;
-		
-		// put everything to negatives by default
+		double sum_y = 0.0, sum_y2 = 0.0;
+		//initially, everything as negatives
 		for (int id = 0; id < set.size(); ++id) {
 			Example ex = set.getExample(id);
-			double w = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
-			cov.weighted_N += w;
+			double weight = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
+
+			ct.weighted_N += weight;
+
 			if (this.getPremise().evaluate(ex)) { // if covered
-				cov.weighted_n += w; 
-				cov.negatives.add(id);
-				
+				ct.weighted_n += weight;
+				negatives.add(id);
+
 				double y = ex.getLabel();
 				sum_y += y;
-				sum_y2 += y*y; 
-			}
-		}
-		
-		cov.mean_y = sum_y / cov.weighted_n;
-		cov.stddev_y = Math.sqrt(sum_y2 / cov.weighted_n - cov.mean_y * cov.mean_y); // VX = E(X^2) - (EX)^2
-		
-		// get median from covered elements
-		double cur = 0;
-		int medianId = 0;
-		Iterator<Integer> it = cov.negatives.iterator();
-		while (it.hasNext()) {
-			int id = it.next();
-			Example ex = set.getExample(id);
-			
-			// if example covered
-			cur += set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
-			if (cur > cov.weighted_n / 2) {
-				break; 
-			}
-			medianId = id;
-		}
-		
-		cov.median_y = set.getExample(medianId).getLabel();
-	
-		// update positives
-		for (int id = 0; id < set.size(); ++id) {
-			Example ex = set.getExample(id);
-			
-			// if inside epsilon
-			if (Math.abs(ex.getLabel() - cov.median_y) <= cov.stddev_y) {
-				double w = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
-				cov.weighted_N -= w;
-				cov.weighted_P += w;
-				// if covered
-				if (this.getPremise().evaluate(ex)) {
-					cov.negatives.remove(id);
-					cov.weighted_n -= w;
-					cov.positives.add(id);
-					cov.weighted_p += w;
-				}
+				sum_y2 += y*y;
 			}
 		}
 
-		return cov;
-	}	
-	
+		ct.mean_y = sum_y / ct.weighted_n;
+		ct.stddev_y = Math.sqrt(sum_y2 / ct.weighted_n - ct.mean_y * ct.mean_y); // VX = E(X^2) - (EX)^2
+
+		double cur = 0;
+		int medianId = 0;
+		Iterator<Integer> it = negatives.iterator();
+		while (it.hasNext()) {
+			int id = it.next();
+			Example ex = set.getExample(id);
+
+			// if example covered
+			cur += set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
+			if (cur > ct.weighted_n / 2) {
+				break;
+			}
+			medianId = id;
+		}
+
+		ct.median_y = set.getExample(medianId).getLabel();
+
+		// update positives
+		for (int id = 0; id < set.size(); ++id) {
+			Example ex = set.getExample(id);
+
+			// if inside epsilon
+			if (Math.abs(ex.getLabel() - ct.median_y) <= ct.stddev_y) {
+				double w = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
+				ct.weighted_N -= w;
+				ct.weighted_P += w;
+				// if covered
+				if (this.getPremise().evaluate(ex)) {
+					negatives.remove(id);
+					ct.weighted_n -= w;
+					positives.add(id);
+					ct.weighted_p += w;
+				}
+			}
+		}
+	}
 	/**
 	 * Generates a text representation of the rule.
 	 * @return Text representation.

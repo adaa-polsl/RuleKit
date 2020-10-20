@@ -27,7 +27,8 @@ codeQuality {
 }
 
 sourceCompatibility = 1.8
-version = '1.3.3'
+version = '1.3.4'
+
 
 jar {
 	baseName = 'rulekit'

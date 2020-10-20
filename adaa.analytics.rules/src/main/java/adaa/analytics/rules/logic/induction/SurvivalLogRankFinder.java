@@ -22,6 +22,7 @@ import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.tools.container.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -58,7 +59,7 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 	}
 
 	@Override
-	protected double calculateQuality(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
+	protected double calculateQuality(@NotNull ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
 		Covering cov = (Covering)ct;
 		
 		Set<Integer> coveredIndices = cov.positives; // in survival rules all examples are classified as positives
