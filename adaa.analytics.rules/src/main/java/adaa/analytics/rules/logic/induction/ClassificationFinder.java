@@ -224,7 +224,7 @@ public class ClassificationFinder extends AbstractFinder {
 	 * @param trainSet Training set. 
 	 * @return Updated covering object.
 	 */
-	public Covering prune(final Rule rule, final ExampleSet trainSet) {
+	public void prune(final Rule rule, final ExampleSet trainSet) {
 		Logger.log("ClassificationFinder.prune()\n", Level.FINE);
 		
 		// check preconditions
@@ -266,9 +266,7 @@ public class ClassificationFinder extends AbstractFinder {
 		int conditionsLeft = rule.getPremise().getSubconditions().size();
 
 		ContingencyTable ct = new ContingencyTable();
-
-
-		rule.covers(trainSet, ct, new HashSet<Integer>(), new HashSet<Integer>());
+		rule.covers(trainSet, ct);
 		double initialQuality = calculateQuality(trainSet, ct, params.getPruningMeasure());
 		boolean continueClimbing = true;
 		boolean weighting = (trainSet.getAttributes().getWeight() != null);
@@ -399,23 +397,19 @@ public class ClassificationFinder extends AbstractFinder {
 		rule.setPremise(prunedPremise);
 
 		ct = new ContingencyTable();
-		Set<Integer> positives = new HashSet<>(), negatives = new HashSet<>();
+		IntegerBitSet positives = new IntegerBitSet(trainSet.size());
+		IntegerBitSet negatives = new IntegerBitSet(trainSet.size());
+
 		rule.covers(trainSet, ct, positives, negatives);
+
 		rule.setWeighted_p(ct.weighted_p);
 		rule.setWeighted_n(ct.weighted_n);
-		rule.getCoveredPositives().retainAll(positives);
-		rule.getCoveredNegatives().retainAll(negatives);
+		rule.setCoveredPositives(positives);
+		rule.setCoveredNegatives(negatives);
 
 		Pair<Double,Double> qp = calculateQualityAndPValue(trainSet, ct, params.getVotingMeasure());
 		rule.setWeight(qp.getFirst());
 		rule.setPValue(qp.getSecond());
-
-		Covering covering = new Covering(ct);
-		covering.positives.addAll(positives);
-		covering.negatives.addAll(negatives);
-
-
-		return covering;
 	}
 
 	/**

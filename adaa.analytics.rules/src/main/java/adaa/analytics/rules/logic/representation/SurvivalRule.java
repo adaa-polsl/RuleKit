@@ -71,7 +71,7 @@ public class SurvivalRule extends Rule {
 	@Override
 	public Covering covers(ExampleSet set, Set<Integer> ids) {
 		Covering covered = new Covering();
-		
+
 		for (int id : ids) {
 			Example ex = set.getExample(id);
 			double w = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
@@ -84,17 +84,35 @@ public class SurvivalRule extends Rule {
 		return covered;
 	}
 
+
 	@Override
-	public void covers(ExampleSet set, @NotNull ContingencyTable ct,  @NotNull Set<Integer> positives, @NotNull Set<Integer> negatives) {
-		for (int i = 0; i < set.size(); i++) {
-			Example ex = set.getExample(i);
-			double weight = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
+	public void covers(ExampleSet set, @NotNull ContingencyTable ct) {
+		boolean unweighted = set.getAttributes().getWeight() == null;
+
+		for (Example ex: set) {
+			double weight = unweighted ? 1.0 : ex.getWeight();
 
 			ct.weighted_P += weight;
 			if (this.getPremise().evaluate(ex)){
-				positives.add(i);
 				ct.weighted_p += weight;
 			}
+		}
+	}
+
+	@Override
+	public void covers(ExampleSet set, @NotNull ContingencyTable ct,  @NotNull Set<Integer> positives, @NotNull Set<Integer> negatives) {
+		int id = 0;
+		boolean unweighted = set.getAttributes().getWeight() == null;
+
+		for (Example ex : set) {
+			double weight = unweighted ? 1.0 : ex.getWeight();
+
+			ct.weighted_P += weight;
+			if (this.getPremise().evaluate(ex)){
+				positives.add(id);
+				ct.weighted_p += weight;
+			}
+			++id;
 		}
 	}
 

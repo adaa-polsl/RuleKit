@@ -90,9 +90,41 @@ public class ClassificationRule extends Rule {
 	 * @return Information about covering.
 	 */
 	public Covering covers(ExampleSet set) {
-		Covering covered = new Covering();
-		covers(set, covered, covered.positives, covered.negatives);
-		return covered;
+		//assert false: "Obsolete method in ClassificationRule: Covering covers(ExampleSet set)";
+		//return null;
+
+		Covering cov = new Covering();
+		this.covers(set, cov, cov.positives, cov.negatives);
+		return cov;
+	}
+
+	/**
+	 * Applies the rule on a specified example set.
+	 * @param set Example set.
+	 * @param ct Output contingency table.
+	 */
+	@Override
+	public void covers(ExampleSet set, ContingencyTable ct) {
+
+		boolean unweighted = set.getAttributes().getWeight() == null;
+		for (Example ex : set) {
+			double w = unweighted ? 1.0 : ex.getWeight();
+
+			boolean consequenceAgree = this.getConsequence().evaluate(ex);
+			if (consequenceAgree) {
+				ct.weighted_P += w;
+			} else {
+				ct.weighted_N += w;
+			}
+
+			if (this.getPremise().evaluate(ex)) {
+				if (consequenceAgree) {
+					ct.weighted_p += w;
+				} else {
+					ct.weighted_n += w;
+				}
+			}
+		}
 	}
 	
 	/**
@@ -103,11 +135,11 @@ public class ClassificationRule extends Rule {
 	 * @param negatives Output collection of covered negative ids.
 	 */
 	public void covers(ExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
-
 		int id = 0;
+		boolean unweighted = set.getAttributes().getWeight() == null;
 		for (Example ex : set) {
-			double w = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
-			
+			double w = unweighted ? 1.0 : ex.getWeight();
+
 			boolean consequenceAgree = this.getConsequence().evaluate(ex);
 			if (consequenceAgree) {
 				ct.weighted_P += w;

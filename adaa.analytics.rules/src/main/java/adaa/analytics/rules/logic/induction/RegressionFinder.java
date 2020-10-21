@@ -168,11 +168,8 @@ public class RegressionFinder extends AbstractFinder {
 			newRule = new SurvivalRule(newPremise, rule.getConsequence());
 		}
 
-		ContingencyTable ct = new ContingencyTable();
-
-		Set<Integer> positives = new HashSet<>(), negatives = new HashSet<>();
-		newRule.covers(dataset, ct, positives, negatives);
-		Covering cov = new Covering(ct, positives, negatives);
+		Covering cov = new Covering();
+		newRule.covers(dataset, cov, cov.positives, cov.negatives);
 
 		double newlyCovered = 0;
 		if (dataset.getAttributes().getWeight() == null) {
@@ -181,10 +178,10 @@ public class RegressionFinder extends AbstractFinder {
 					SetHelper.intersectionSize(uncovered, cov.negatives);
 		} else {
 			// calculate weights of newly covered examples
-			for (int id : positives) {
+			for (int id : cov.positives) {
 				newlyCovered += uncovered.contains(id) ? dataset.getExample(id).getWeight() : 0;
 			}
-			for (int id : negatives) {
+			for (int id : cov.negatives) {
 				newlyCovered += uncovered.contains(id) ? dataset.getExample(id).getWeight() : 0;
 			}
 		}

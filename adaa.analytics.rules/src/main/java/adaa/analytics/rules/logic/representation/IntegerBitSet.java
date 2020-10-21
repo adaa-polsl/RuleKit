@@ -293,10 +293,17 @@ public class IntegerBitSet implements Set<Integer> {
 			}
 		} else {
 			// global implementation (slow)
-			this.clear();
-			Iterator<?> it = arg0.iterator();
-			while (it.hasNext()) {
-				this.add((Integer)it.next());
+			Iterator<?> it = this.iterator();
+
+			// iterate over this elements
+			for (int i = 0; i < size(); ++i) {
+				int wordId = i / Long.SIZE;
+				int wordOffset = i % Long.SIZE;
+
+				// remove element if not present in another collection
+				if(!arg0.contains((Integer)it.next())) {
+					words[wordId] &= ~(1L << wordOffset);
+				}
 			}
 		}
 		

@@ -118,10 +118,9 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 		boolean isRuleEmpty = rule.getPremise().getSubconditions().size() == 0;
 		
 		// get current covering
-		ContingencyTable ct = new ContingencyTable();
+		Covering covering =  new Covering();
+		rule.covers(dataset, covering, covering.positives, covering.negatives);
 
-
-		Covering covering = rule.covers(dataset);
 		Set<Integer> covered = new HashSet<Integer>();
 		covered.addAll(covering.positives);
 		covered.addAll(covering.negatives);
@@ -176,7 +175,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 
 					Pair<Double,Double> qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
 					rule.setWeight(qp.getFirst());
-					
+
 					carryOn = true;
 					Logger.log("Preferred condition " + rule.getPremise().getSubconditions().size() + " added: " 
 							+ rule.toString() + "\n", Level.FINER);
@@ -216,7 +215,10 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 					
 					condition.setType(ConditionBase.Type.PREFERRED);
 					rule.getPremise().addSubcondition(condition);
-					covering = rule.covers(dataset);
+
+					// update covering
+					covering.clear();
+					rule.covers(dataset, covering, covering.positives, covering.negatives);
 					covered.clear();
 					covered.addAll(covering.positives);
 					covered.addAll(covering.negatives);
@@ -260,7 +262,8 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 					
 				if (condition != null) {
 					rule.getPremise().addSubcondition(condition);
-					covering = rule.covers(dataset);
+					covering.clear();
+					rule.covers(dataset, covering, covering.positives, covering.negatives);
 					
 					covered.clear();
 					covered.addAll(covering.positives);

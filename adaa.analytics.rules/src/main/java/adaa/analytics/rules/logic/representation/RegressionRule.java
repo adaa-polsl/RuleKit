@@ -84,11 +84,14 @@ public class RegressionRule extends Rule {
 	 */
 	@Override
 	public Covering covers(ExampleSet set) {
+		//assert false: "Obsolete method in RegressionRule: Covering covers(ExampleSet set)";
+		//return null;
+
 		Covering cov = new Covering();
 		this.covers(set, cov, cov.positives, cov.negatives);
 		return cov;
 	}
-
+	
 	@Override
 	public void covers(ExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
 		SortedExampleSet ses = (set instanceof SortedExampleSet) ? (SortedExampleSet)set : null;

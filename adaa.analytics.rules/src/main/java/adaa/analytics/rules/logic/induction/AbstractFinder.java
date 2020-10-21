@@ -23,10 +23,7 @@ import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
-import adaa.analytics.rules.logic.representation.ConditionBase;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.Rule;
+import adaa.analytics.rules.logic.representation.*;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
@@ -90,7 +87,8 @@ public abstract class AbstractFinder implements AutoCloseable {
 		int initialConditionsCount = rule.getPremise().getSubconditions().size();
 		
 		// get current covering
-		Covering covering = rule.covers(dataset);
+		Covering covering = new Covering();
+		rule.covers(dataset, covering, covering.positives, covering.negatives);
 		Set<Integer> covered = new HashSet<Integer>();
 		covered.addAll(covering.positives);
 		covered.addAll(covering.negatives);
@@ -108,8 +106,9 @@ public abstract class AbstractFinder implements AutoCloseable {
 			
 			if (condition != null) {
 				rule.getPremise().addSubcondition(condition);
-				covering = rule.covers(dataset);
-				
+
+				covering = new Covering();
+				rule.covers(dataset, covering, covering.positives, covering.negatives);
 				covered.clear();
 				covered.addAll(covering.positives);
 				covered.addAll(covering.negatives);
@@ -148,7 +147,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 	 * @param trainSet Training set. 
 	 * @return Covering of the rule after pruning.
 	 */
-	public Covering prune(final Rule rule, final ExampleSet trainSet) {
+	public void prune(final Rule rule, final ExampleSet trainSet) {
 		
 		Logger.log("AbstractFinder.prune()\n", Level.FINE);
 		
@@ -157,8 +156,10 @@ public abstract class AbstractFinder implements AutoCloseable {
 			rule.getWeighted_P() == Double.NaN || rule.getWeighted_N() == Double.NaN) {
 			throw new IllegalArgumentException();
 		}
-		
-		Covering covering = rule.covers(trainSet);
+
+		Covering covering = new Covering();
+		rule.covers(trainSet, covering, covering.positives, covering.negatives);
+
 		double initialQuality = calculateQuality(trainSet, covering, params.getPruningMeasure());
 		boolean continueClimbing = true;
 		
@@ -174,7 +175,8 @@ public abstract class AbstractFinder implements AutoCloseable {
 				
 				// disable subcondition to calculate measure
 				cnd.setDisabled(true);
-				covering = rule.covers(trainSet);
+				covering = new Covering();
+				rule.covers(trainSet, covering, covering.positives, covering.negatives);
 				cnd.setDisabled(false);
 				
 				double q = calculateQuality(trainSet, covering, params.getPruningMeasure());
@@ -196,14 +198,13 @@ public abstract class AbstractFinder implements AutoCloseable {
 				continueClimbing = false;
 			}
 		}
-		
-		covering = rule.covers(trainSet);
+
+		covering = new Covering();
+		rule.covers(trainSet, covering, covering.positives, covering.negatives);
 		rule.setCoveringInformation(covering);
 		Pair<Double,Double> qp = calculateQualityAndPValue(trainSet, covering, params.getVotingMeasure());
 		rule.setWeight(qp.getFirst());
 		rule.setPValue(qp.getSecond());
-		
-		return covering;
 	}
 
 	/**

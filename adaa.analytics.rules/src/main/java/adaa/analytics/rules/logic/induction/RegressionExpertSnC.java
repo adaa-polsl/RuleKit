@@ -18,17 +18,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 
+import adaa.analytics.rules.logic.representation.*;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
-
-import adaa.analytics.rules.logic.representation.CompoundCondition;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.Knowledge;
-import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.RegressionRuleSet;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
-import adaa.analytics.rules.logic.representation.SingletonSet;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
@@ -139,7 +131,9 @@ public class RegressionExpertSnC extends RegressionSnC {
 		
 		// try to generate new rules
 		Logger.log("Processing other rules...\n", Level.FINE);
-		carryOn = uncovered.size() > 0; 
+		carryOn = uncovered.size() > 0;
+		Covering cov = new Covering();
+
 		while (carryOn) {
 			Logger.log("Uncovered positive weight: " + uncovered_pn +  "/" + weighted_PN + "\n", Level.FINE);
 			
@@ -160,13 +154,14 @@ public class RegressionExpertSnC extends RegressionSnC {
 				}
 				Logger.log("Candidate rule: " + rule.toString() + "\n", Level.FINE);
 				Logger.log(".", Level.INFO);
-				
-				Covering covered = rule.covers(ses);
-				
+
+				cov.clear();
+				rule.covers(ses, cov, cov.positives, cov.negatives);
+
 				// remove covered examples
 				int previouslyUncovered = uncovered.size();
-				uncovered.removeAll(covered.positives);
-				uncovered.removeAll(covered.negatives);
+				uncovered.removeAll(cov.positives);
+				uncovered.removeAll(cov.negatives);
 				
 				uncovered_pn = 0;
 				for (int id : uncovered) {

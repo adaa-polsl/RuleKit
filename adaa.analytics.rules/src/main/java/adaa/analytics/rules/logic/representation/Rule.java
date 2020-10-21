@@ -18,8 +18,11 @@ import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 
 import com.rapidminer.example.ExampleSet;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -195,11 +198,36 @@ public abstract class Rule implements Serializable {
 	 * Applies the rule on a specified example set.
 	 * @param set Example set.
 	 * @param ct Output contingency table.
+	 */
+	public void covers(ExampleSet set, ContingencyTable ct) {
+		Set<Integer> dummy = new Set<Integer>() {
+			public int size() { return 0; }
+			public boolean isEmpty() { return false; }
+			public boolean contains(Object o) { return false; }
+			public Iterator<Integer> iterator() { return null; }
+			public Object[] toArray() { return new Object[0]; }
+			public <T> T[] toArray(@NotNull T[] ts) { return null; }
+			public boolean add(Integer i) { return false; }
+			public boolean remove(Object o) { return false; }
+			public boolean containsAll(@NotNull Collection<?> collection) { return false; }
+			public boolean addAll(@NotNull Collection<? extends Integer> collection) { return false; }
+			public boolean retainAll(@NotNull Collection<?> collection) { return false; }
+			public boolean removeAll(@NotNull Collection<?> collection) { return false; }
+			public void clear() { }
+		};
+
+		this.covers(set, ct, dummy, dummy);
+	}
+
+	/**
+	 * Applies the rule on a specified example set.
+	 * @param set Example set.
+	 * @param ct Output contingency table.
 	 * @param positives Output collection of covered positive ids.
 	 * @param negatives Output collection of covered negative ids.
 	 */
 	public void covers(ExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
-	//	throw new Exception("Not implemented: Rule.covers(ExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives)");
+		assert false: "Not implemented: Rule.covers(ExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives)";
 	}
 	
 	/**

@@ -101,13 +101,14 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 				}
 				Logger.log("Candidate rule: " + rule.toString() + "\n", Level.FINE);
 				Logger.log(".", Level.INFO);
-				
-				Covering covered = rule.covers(ses, uncovered);
+
+				Covering covering = new Covering();
+				rule.covers(ses, covering, covering.positives, covering.negatives);
 				
 				// remove covered examples
 				int previouslyUncovered = uncovered.size();
-				uncovered.removeAll(covered.positives);
-				uncovered.removeAll(covered.negatives);
+				uncovered.removeAll(covering.positives);
+				uncovered.removeAll(covering.negatives);
 				
 				uncovered_pn = 0;
 				for (int id : uncovered) {
