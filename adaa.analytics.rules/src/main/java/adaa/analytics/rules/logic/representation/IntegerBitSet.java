@@ -287,26 +287,27 @@ public class IntegerBitSet implements Set<Integer> {
 	public boolean retainAll(Collection<?> arg0) {
 		if ((arg0 instanceof IntegerBitSet)) {
 			// bitset implementation (fast)
-			IntegerBitSet other = (IntegerBitSet)arg0;	
+			IntegerBitSet other = (IntegerBitSet)arg0;
 			for (int i = 0; i < words.length; ++i) {
-				words[i] &= other.words[i];		
+				words[i] &= other.words[i];
 			}
 		} else {
 			// global implementation (slow)
-			Iterator<?> it = this.iterator();
 
 			// iterate over this elements
-			for (int i = 0; i < size(); ++i) {
+			for (int i = 0; i < maxElement; ++i) {
 				int wordId = i / Long.SIZE;
 				int wordOffset = i % Long.SIZE;
 
+				long val = words[wordId] & (1L << wordOffset);
+
 				// remove element if not present in another collection
-				if(!arg0.contains((Integer)it.next())) {
+				if(val != 0 && !arg0.contains(i)) {
 					words[wordId] &= ~(1L << wordOffset);
 				}
 			}
 		}
-		
+
 		return true;
 	}
 	
