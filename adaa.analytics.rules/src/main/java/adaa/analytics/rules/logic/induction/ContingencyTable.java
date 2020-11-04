@@ -38,6 +38,10 @@ public class ContingencyTable {
 		this.weighted_P = P;
 		this.weighted_N = N;
 	}
-	
+
+	public void clear() {
+		weighted_p = weighted_n = weighted_P = weighted_N = 0;
+		mean_y = median_y = stddev_y = 0;
+	}
 	
 }

@@ -81,23 +81,25 @@ public class RegressionExpertSnC extends RegressionSnC {
 		boolean carryOn = true; 
 		double uncovered_pn = weighted_PN;
 		Logger.log("Processing expert rules...\n", Level.FINE);
-		
+		RegressionExpertFinder erf = (RegressionExpertFinder)finder;
+
 		// add expert rules to the ruleset and try to refine them
 		for (Rule r : knowledge.getRules()) {
 			Logger.log("Uncovered positive weight: " + uncovered_pn +  "/" + weighted_PN + "\n", Level.FINE);
 			Rule rule = (Rule) SerializationUtils.clone(r);
-			
-			RegressionExpertFinder erf = (RegressionExpertFinder)finder;
-			
+
+			// rule covers everything at the beginning (adjustment phase corrects covering)
+			rule.setWeighted_P(weighted_PN);
+			rule.setWeighted_N(0);
+			rule.setWeighted_p(weighted_PN);
+			rule.setWeighted_n(0);
+
+			rule.setCoveredPositives(new IntegerBitSet(dataset.size()));
+			rule.setCoveredNegatives(new IntegerBitSet(dataset.size()));
+			rule.getCoveredPositives().setAll();
+
 			erf.adjust(rule, dataset, uncovered);
-			
-			Covering cov = rule.covers(ses);
-			
-			Pair<Double,Double> qp = finder.calculateQualityAndPValue(dataset, cov, params.getVotingMeasure());
-			rule.setWeight(qp.getFirst());
-			rule.setPValue(qp.getSecond());
-		
-			rule.setCoveringInformation(cov);
+
 			Logger.log("Expert rule: " + rule.toString() + "\n", Level.FINE);
 			double t = System.nanoTime();
 			finder.grow(rule, ses, uncovered);
@@ -116,12 +118,10 @@ public class RegressionExpertSnC extends RegressionSnC {
 
 			finder.postprocess(rule, ses);
 			ruleset.addRule(rule);
-			cov = rule.covers(ses);
-			rule.setCoveringInformation(cov);
-			
+
 			// remove examples covered by the rule and update statistics
-			uncovered.removeAll(cov.positives);
-			uncovered.removeAll(cov.negatives);
+			uncovered.removeAll(rule.getCoveredPositives());
+			uncovered.removeAll(rule.getCoveredNegatives());
 			uncovered_pn = 0;
 			for (int id : uncovered) {
 				Example e = ses.getExample(id);
@@ -140,7 +140,17 @@ public class RegressionExpertSnC extends RegressionSnC {
 			Rule rule = factory.create(
 				new CompoundCondition(),
 				new ElementaryCondition(label.getName(), new SingletonSet(Double.NaN, null)));
-			
+
+			// rule covers everything at the beginning
+			rule.setWeighted_P(weighted_PN);
+			rule.setWeighted_N(0);
+			rule.setWeighted_p(weighted_PN);
+			rule.setWeighted_n(0);
+
+			rule.setCoveredPositives(new IntegerBitSet(dataset.size()));
+			rule.setCoveredNegatives(new IntegerBitSet(dataset.size()));
+			rule.getCoveredPositives().setAll();
+
 			double t = System.nanoTime();
 			carryOn = (finder.grow(rule, ses, uncovered) > 0);
 			ruleset.setGrowingTime( ruleset.getGrowingTime() + (System.nanoTime() - t) / 1e9);
@@ -155,13 +165,10 @@ public class RegressionExpertSnC extends RegressionSnC {
 				Logger.log("Candidate rule: " + rule.toString() + "\n", Level.FINE);
 				Logger.log(".", Level.INFO);
 
-				cov.clear();
-				rule.covers(ses, cov, cov.positives, cov.negatives);
-
 				// remove covered examples
 				int previouslyUncovered = uncovered.size();
-				uncovered.removeAll(cov.positives);
-				uncovered.removeAll(cov.negatives);
+				uncovered.removeAll(rule.getCoveredPositives());
+				uncovered.removeAll(rule.getCoveredNegatives());
 				
 				uncovered_pn = 0;
 				for (int id : uncovered) {

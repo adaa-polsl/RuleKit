@@ -114,6 +114,9 @@ public abstract class AbstractFinder implements AutoCloseable {
 				covered.addAll(covering.negatives);
 
 				rule.setCoveringInformation(covering);
+				rule.getCoveredPositives().setAll(covering.positives);
+				rule.getCoveredNegatives().setAll(covering.negatives);
+
 				Pair<Double, Double> qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
 				rule.setWeight(qp.getFirst());
 				rule.setPValue(qp.getSecond());
@@ -202,6 +205,10 @@ public abstract class AbstractFinder implements AutoCloseable {
 		covering = new Covering();
 		rule.covers(trainSet, covering, covering.positives, covering.negatives);
 		rule.setCoveringInformation(covering);
+
+		rule.getCoveredPositives().addAll(covering.positives);
+		rule.getCoveredNegatives().addAll(covering.negatives);
+
 		Pair<Double,Double> qp = calculateQualityAndPValue(trainSet, covering, params.getVotingMeasure());
 		rule.setWeight(qp.getFirst());
 		rule.setPValue(qp.getSecond());

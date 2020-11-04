@@ -50,7 +50,9 @@ public class Covering extends ContingencyTable{
 
 	public int getSize() { return positives.size() + negatives.size(); }
 
+	@Override
 	public void clear() {
+		super.clear();
 		positives.clear();
 		negatives.clear();
 	}

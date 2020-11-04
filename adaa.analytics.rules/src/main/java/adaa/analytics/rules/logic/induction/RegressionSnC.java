@@ -19,15 +19,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
+import adaa.analytics.rules.logic.representation.*;
 import org.apache.commons.lang.StringUtils;
-
-import adaa.analytics.rules.logic.representation.CompoundCondition;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.RegressionRuleSet;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
-import adaa.analytics.rules.logic.representation.SingletonSet;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
@@ -87,7 +80,17 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 			Rule rule = factory.create(
 				new CompoundCondition(),
 				new ElementaryCondition(label.getName(), new SingletonSet(Double.NaN, null)));
-			
+
+			// rule covers everything at the beginning
+			rule.setWeighted_P(weighted_PN);
+			rule.setWeighted_N(0);
+			rule.setWeighted_p(weighted_PN);
+			rule.setWeighted_n(0);
+
+			rule.setCoveredPositives(new IntegerBitSet(dataset.size()));
+			rule.setCoveredNegatives(new IntegerBitSet(dataset.size()));
+			rule.getCoveredPositives().setAll();
+
 			double t = System.nanoTime();
 			carryOn = (finder.grow(rule, ses, uncovered) > 0);
 			ruleset.setGrowingTime( ruleset.getGrowingTime() + (System.nanoTime() - t) / 1e9);

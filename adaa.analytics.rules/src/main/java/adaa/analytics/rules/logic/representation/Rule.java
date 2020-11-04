@@ -30,7 +30,7 @@ import java.util.Set;
  * @author Adam Gudys
  *
  */
-public abstract class Rule implements Serializable {
+public abstract class Rule implements Serializable, Cloneable {
 	/** Serialization id. */
 	private static final long serialVersionUID = -1296329752476014421L;
 	
@@ -246,6 +246,11 @@ public abstract class Rule implements Serializable {
 	public String printStats() {
 		String s ="(p=" + weighted_p + ", n=" + weighted_n + ", P=" + weighted_P + ", N=" + weighted_N + ", weight=" + getWeight() + ", pval=" + pvalue + ")";
 		return s;
+	}
+
+	public Object clone() throws CloneNotSupportedException
+	{
+		return super.clone();
 	}
 
 	public void copyFrom(final Rule ref) {

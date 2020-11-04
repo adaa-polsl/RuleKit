@@ -161,6 +161,14 @@ public class IntegerBitSet implements Set<Integer> {
 		int rest = maxElement % Long.SIZE;
 		words[words.length - 1] = (~(0L)) >>> (Long.SIZE - rest);
 	}
+
+	/**
+	 * Clears set and adds all elements from another collections.
+	 */
+	public void setAll(Collection<? extends Integer> arg0) {
+		this.clear();
+		this.addAll(arg0);
+	}
 	
 	/**
 	 * Generates complement of the set (negates all bits). 

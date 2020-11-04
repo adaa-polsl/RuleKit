@@ -53,12 +53,15 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 			CompoundCondition expertPremise = rule.getPremise();
 			rule.setPremise(new CompoundCondition());
 
+			Covering covering = new Covering();
+
 			for (ConditionBase cnd : expertPremise.getSubconditions()) {
 				ElementaryCondition ec = (ElementaryCondition)cnd;
 				if (ec.isAdjustable()) {
 					
 					// update covering information - needed for automatic induction
-					Covering covering = rule.covers(dataset);
+					covering.clear();
+					rule.covers(dataset, covering, covering.positives, covering.negatives);
 					Set<Integer> covered = new HashSet<Integer>();
 					covered.addAll(covering.positives);
 					covered.addAll(covering.negatives);
@@ -97,8 +100,12 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 				}
 			}
 			
-			Covering covering = rule.covers(dataset);
+			covering.clear();
+			rule.covers(dataset, covering, covering.positives, covering.negatives);
 			rule.setCoveringInformation(covering);
+
+			rule.getCoveredPositives().setAll(covering.positives);
+			rule.getCoveredNegatives().setAll(covering.negatives);
 			
 			Pair<Double,Double> qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
 			rule.setWeight(qp.getFirst());
@@ -222,6 +229,10 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 					covered.clear();
 					covered.addAll(covering.positives);
 					covered.addAll(covering.negatives);
+
+					rule.getCoveredPositives().setAll(covering.positives);
+					rule.getCoveredNegatives().setAll(covering.negatives);
+
 					rule.setCoveringInformation(covering);
 					Pair<Double,Double> qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
 					rule.setWeight(qp.getFirst());
@@ -269,9 +280,13 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 					covered.addAll(covering.positives);
 					covered.addAll(covering.negatives);
 
-					double v = calculateQuality(dataset, covering, params.getVotingMeasure());
+					rule.getCoveredPositives().setAll(covering.positives);
+					rule.getCoveredNegatives().setAll(covering.negatives);
+
 					rule.setCoveringInformation(covering);
-					rule.setWeight(v);
+					Pair<Double, Double> qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
+					rule.setWeight(qp.getFirst());
+					rule.setPValue(qp.getSecond());
 					
 					Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
 							+ rule.toString() + "\n", Level.FINER);
@@ -281,7 +296,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 				
 			} while (carryOn); 
 		}
-		
+
 		// if rule has been successfully grown
 		int addedConditionsCount = rule.getPremise().getSubconditions().size() - initialConditionsCount;
 		rule.setInducedContitionsCount(addedConditionsCount);
