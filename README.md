@@ -1,6 +1,6 @@
 # RuleKit
-
-[![CI tests](https://github.com/adaa-polsl/RuleKit-dev/workflows/Java%20project%20workflow/badge.svg)](https://github.com/adaa-polsl/RuleKit-dev/actions)
+[![GitHub downloads](https://img.shields.io/github/downloads/adaa-polsl/RuleKit/total.svg?style=flag&label=GitHub%20downloads)](https://github.com/adaa-polsl/RuleKit/releases)
+[![CI tests](https://github.com/adaa-polsl/RuleKit/workflows/Java%20project%20workflow/badge.svg)](https://github.com/adaa-polsl/RuleKit/actions)
 
 
 Rule-based models are often used for data analysis as they combine interpretability with predictive power. We present RuleKit, a versatile tool for rule learning. Based on a sequential covering induction algorithm, it is suitable for classification, regression, and survival problems. The presence of user-guided induction mode facilitates verifying hypotheses concerning data dependencies which are expected or of interest. The powerful and flexible experimental environment allows straightforward investigation of different induction schemes. The analysis can be performed in batch mode, through RapidMiner plugin, or R package. A documented Java API is also provided for convenience. 
