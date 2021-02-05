@@ -1,8 +1,12 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.RuleSetBase;
+import com.rapidminer.example.Attribute;
+import com.rapidminer.example.Example;
+import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
+import org.junit.Assert;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.FromDataPoints;
 import org.junit.experimental.theories.Theories;
@@ -57,11 +61,28 @@ public class ClassificationSnCTest {
         }
     }
 
+    private void test_confidence(ExampleSet prediction) {
+        for (int i = 0; i < prediction.size(); i++) {
+            Example example = prediction.getExample(i);
+            Attribute label = example.getAttributes().getLabel();
+            List<String> labelValues = label.getMapping().getValues();
+
+            double confidenceSum = 0;
+            for (String labelValue : labelValues) {
+                confidenceSum += example.getValue(example.getAttributes().get("confidence_" + labelValue));
+            }
+            Assert.assertEquals(1.0, confidenceSum, 0.01);
+        }
+    }
+
     @Theory
     public void runTestCase(@FromDataPoints("Test cases") TestCase testCase) throws OperatorException, OperatorCreationException, IOException {
         ClassificationFinder finder = new ClassificationFinder(testCase.getParameters());
         ClassificationSnC snc = new ClassificationSnC(finder, testCase.getParameters());
         RuleSetBase ruleSet = snc.run(testCase.getExampleSet());
+
+        ExampleSet prediction = ruleSet.apply(testCase.getExampleSet());
+        test_confidence(prediction);
 
         this.writeReport(testCase, ruleSet);
         RuleSetComparator.assertRulesAreEqual(testCase.getReferenceReport().getRules(), ruleSet.getRules());
