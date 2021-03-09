@@ -60,24 +60,6 @@ public class ClassificationFinder extends AbstractFinder {
 		MissingValuesHandler.ignore = params.isIgnoreMissing();
 	}
 	
-	/***
-	 * Calculates rule quality and p-value on a training set. P-value is calculated
-	 * using a hypergeometric statistical test.
-	 * 
-	 * @param trainSet Training set.
-	 * @param ct Contingency table.
-	 * @param measure Quality measure to be calculated.
-	 * @return Pair containing value of rule quality measure and p-value.
-	 */
-	protected Pair<Double,Double> calculateQualityAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
-		Hypergeometric test = new Hypergeometric();
-		Pair<Double, Double> statAndPValue = test.calculate(ct);
-	
-		return new Pair<Double, Double>(
-				calculateQuality(trainSet, ct, measure), 
-				statAndPValue.getSecond());
-	}
-
 	/**
 	 * If example set is unweighted, method precalculates conditions coverings and stores
 	 * them as bit vectors in @see precalculatedCoverings field.
@@ -267,7 +249,7 @@ public class ClassificationFinder extends AbstractFinder {
 
 		ContingencyTable ct = new ContingencyTable();
 		rule.covers(trainSet, ct);
-		double initialQuality = calculateQuality(trainSet, ct, params.getPruningMeasure());
+		double initialQuality = params.getPruningMeasure().calculate(trainSet, ct);
 		boolean continueClimbing = true;
 		boolean weighting = (trainSet.getAttributes().getWeight() != null);
 		
@@ -337,7 +319,7 @@ public class ClassificationFinder extends AbstractFinder {
 						}
 					}
 					
-					double q = ((ClassificationMeasure)params.getPruningMeasure()).calculate(p, n, P, N);
+					double q = params.getPruningMeasure().calculate(p, n, P, N);
 					return q;
 				});
 				
@@ -407,9 +389,8 @@ public class ClassificationFinder extends AbstractFinder {
 		rule.setCoveredPositives(positives);
 		rule.setCoveredNegatives(negatives);
 
-		Pair<Double,Double> qp = calculateQualityAndPValue(trainSet, ct, params.getVotingMeasure());
-		rule.setWeight(qp.getFirst());
-		rule.setPValue(qp.getSecond());
+		rule.updateWeightAndPValue(trainSet, ct, params.getVotingMeasure());
+
 	}
 
 	/**
@@ -531,7 +512,7 @@ public class ClassificationFinder extends AbstractFinder {
 
 						// evaluate left-side condition: a in (-inf, v)
 						if (left_prec > apriori_prec) {
-							double quality = ((ClassificationMeasure) params.getInductionMeasure()).calculate(left_p, left_n, P, N);
+							double quality = params.getInductionMeasure().calculate(left_p, left_n, P, N);
 
 							if ((quality > best.quality || (quality == best.quality && left_p > best.covered)) && (toCover_left_p > 0)) {
 								ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_le(midpoint));
@@ -546,7 +527,7 @@ public class ClassificationFinder extends AbstractFinder {
 
 						// evaluate right-side condition: a in <v, inf)
 						if (right_prec > apriori_prec) {
-							double quality = ((ClassificationMeasure) params.getInductionMeasure()).calculate(right_p, right_n, P, N);
+							double quality = params.getInductionMeasure().calculate(right_p, right_n, P, N);
 
 							if ((quality > best.quality || (quality == best.quality && right_p > best.covered)) && (toCover_right_p > 0)) {
 								ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_geq(midpoint));
@@ -596,8 +577,7 @@ public class ClassificationFinder extends AbstractFinder {
 						// try all possible conditions
 						for (int i = 0; i < attr.getMapping().size(); ++i) {
 							// evaluate equality condition a = v
-							double quality = ((ClassificationMeasure) params.getInductionMeasure()).calculate(
-									p[i], n[i], P, N);
+							double quality = params.getInductionMeasure().calculate(p[i], n[i], P, N);
 							if ((quality > best.quality || (quality == best.quality && p[i] > best.covered)) && (toCover_p[i] > 0)) {
 								ElementaryCondition candidate =
 										new ElementaryCondition(attr.getName(), new SingletonSet((double) i, attr.getMapping().getValues()));
@@ -626,8 +606,7 @@ public class ClassificationFinder extends AbstractFinder {
 							//}
 
 							// evaluate equality condition a = v
-							double quality = ((ClassificationMeasure) params.getInductionMeasure()).calculate(
-									p, n, P, N);
+							double quality = params.getInductionMeasure().calculate(p, n, P, N);
 							if ((quality > best.quality || (quality == best.quality && p > best.covered)) && (toCover_p > 0)) {
 								ElementaryCondition candidate =
 										new ElementaryCondition(attr.getName(), new SingletonSet((double) i, attr.getMapping().getValues()));
@@ -705,7 +684,7 @@ public class ClassificationFinder extends AbstractFinder {
 			ct.weighted_p = currentRule.getWeighted_p();
 			ct.weighted_n = currentRule.getWeighted_n();
 
-			double qualityBefore = calculateQuality(trainSet, ct, params.getInductionMeasure());
+			double qualityBefore = params.getInductionMeasure().calculate(trainSet, ct);
 
 			if (trainSet.getAttributes().getWeight() != null) {
 				// calculate weights
@@ -738,12 +717,12 @@ public class ClassificationFinder extends AbstractFinder {
 			if (add) {
 
 				// recalculate quality
-				double qualityAfter = calculateQuality(trainSet, ct, params.getInductionMeasure());
+				double qualityAfter = params.getInductionMeasure().calculate(trainSet, ct);
 
 				if (bestRule != null) {
 					if (qualityAfter > qualityBefore) {
 						// quality increase
-						double bestQuality = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
+						double bestQuality = params.getInductionMeasure().calculate(
 								bestRule.getWeighted_p(), bestRule.getWeighted_n(), bestRule.getWeighted_P(), bestRule.getWeighted_N());
 
 						if (bestRule.getPremise() != currentRule.getPremise() && qualityAfter > bestQuality) {
@@ -774,10 +753,8 @@ public class ClassificationFinder extends AbstractFinder {
 				currentRule.setWeighted_p(ct.weighted_p);
 				currentRule.setWeighted_n(ct.weighted_n);
 
-				Pair<Double, Double> qp = calculateQualityAndPValue(trainSet, ct, params.getVotingMeasure());
-				currentRule.setWeight(qp.getFirst());
-				currentRule.setPValue(qp.getSecond());
-				
+				currentRule.updateWeightAndPValue(trainSet, ct, params.getVotingMeasure());
+
 				Logger.log("Condition " + currentRule.getPremise().getSubconditions().size() + " added: "
 						+ currentRule.toString() + " " + currentRule.printStats() + "\n", Level.FINER);
 			}
@@ -788,9 +765,9 @@ public class ClassificationFinder extends AbstractFinder {
 
 		// best is current and has not been updated from the beginning
 		if (carryOn == false && bestRule != null) {
-			double bestQuality = ((ClassificationMeasure) params.getInductionMeasure()).calculate(
+			double bestQuality = params.getInductionMeasure().calculate(
 					bestRule.getWeighted_p(), bestRule.getWeighted_n(), bestRule.getWeighted_P(), bestRule.getWeighted_N());
-			double currentQuality = ((ClassificationMeasure) params.getInductionMeasure()).calculate(
+			double currentQuality = params.getInductionMeasure().calculate(
 					currentRule.getWeighted_p(), currentRule.getWeighted_n(), currentRule.getWeighted_P(), currentRule.getWeighted_N());
 
 			if (currentQuality > bestQuality) {

@@ -117,9 +117,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 				rule.getCoveredPositives().setAll(covering.positives);
 				rule.getCoveredNegatives().setAll(covering.negatives);
 
-				Pair<Double, Double> qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
-				rule.setWeight(qp.getFirst());
-				rule.setPValue(qp.getSecond());
+				rule.updateWeightAndPValue(dataset, covering, params.getVotingMeasure());
 				
 				Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
 						+ rule.toString() + "\n", Level.FINER);
@@ -163,7 +161,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 		Covering covering = new Covering();
 		rule.covers(trainSet, covering, covering.positives, covering.negatives);
 
-		double initialQuality = calculateQuality(trainSet, covering, params.getPruningMeasure());
+		double initialQuality = params.getPruningMeasure().calculate(trainSet, covering);
 		boolean continueClimbing = true;
 		
 		while (continueClimbing) {
@@ -182,7 +180,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 				rule.covers(trainSet, covering, covering.positives, covering.negatives);
 				cnd.setDisabled(false);
 				
-				double q = calculateQuality(trainSet, covering, params.getPruningMeasure());
+				double q = params.getPruningMeasure().calculate(trainSet, covering);
 				
 				if (q > bestQuality) {
 					bestQuality = q;
@@ -209,9 +207,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 		rule.getCoveredPositives().addAll(covering.positives);
 		rule.getCoveredNegatives().addAll(covering.negatives);
 
-		Pair<Double,Double> qp = calculateQualityAndPValue(trainSet, covering, params.getVotingMeasure());
-		rule.setWeight(qp.getFirst());
-		rule.setPValue(qp.getSecond());
+		rule.updateWeightAndPValue(trainSet, covering, params.getVotingMeasure());
 	}
 
 	/**
@@ -226,34 +222,6 @@ public abstract class AbstractFinder implements AutoCloseable {
 		final ExampleSet dataset) {
 	}
 
-	/**
-	 * Calculates quality on a training set.
-	 * 
-	 * @param trainSet Training set.
-	 * @param ct Contingency table.
-	 * @param measure Quality measure to be calculated.
-	 * @return Calculated measure.
-	 */
-	protected double calculateQuality(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
-		return ((ClassificationMeasure)measure).calculate(ct);
-	}
-	
-	/***
-	 * Calculates rule quality and p-value on a training set. The method returns
-	 * 1.0 as a p-value - this behavior should be overridden by derived classes.
-	 * 
-	 * @param trainSet Training set.
-	 * @param ct Contingency table.
-	 * @param measure Quality measure to be calculated.
-	 * @return Pair containing value of rule quality measure and p-value.
-	 */
-	protected Pair<Double,Double> calculateQualityAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
-	
-		return new Pair<Double, Double>(
-				calculateQuality(trainSet, ct, measure), 
-				1.0);
-	}
-	
 	/**
 	 * Abstract method representing all procedures which induce an elementary condition.
 	 * 

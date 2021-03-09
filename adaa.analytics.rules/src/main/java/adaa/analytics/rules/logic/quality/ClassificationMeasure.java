@@ -17,6 +17,7 @@ package adaa.analytics.rules.logic.quality;
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.utils.compiler.CompilerUtils;
 
+import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.OperatorException;
 
 import java.io.*;
@@ -123,6 +124,7 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
         this.criterion = criterion;
     }
 
+    @Override
     public String getName() {
         return ClassificationMeasure.getName(criterion);
     }
@@ -136,8 +138,15 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
         }
     }
 
+    @Override
     public double calculate(double p, double n, double P, double N) {
         return calculate(p, n, P, N, this.criterion);
+    }
+
+    @Override
+    public double calculate(ExampleSet dataset, ContingencyTable ct) {
+        return calculate(ct.weighted_p, ct.weighted_n,
+                ct.weighted_P, ct.weighted_N, this.criterion);
     }
 
     public double calculate(double p, double n, double P, double N, int criterion) {
@@ -306,11 +315,6 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
             default:
                 throw new IllegalArgumentException("ClassificationMeasure: unknown measure type");
         }
-    }
-
-    public double calculate(ContingencyTable ct) {
-        return this.calculate(ct.weighted_p, ct.weighted_n,
-                ct.weighted_P, ct.weighted_N);
     }
 
     private double log2(double x) {

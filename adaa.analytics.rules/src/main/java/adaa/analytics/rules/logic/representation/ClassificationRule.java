@@ -21,8 +21,11 @@ package adaa.analytics.rules.logic.representation;
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 
+import adaa.analytics.rules.logic.quality.Hypergeometric;
+import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.tools.container.Pair;
 
 import java.util.Set;
 
@@ -50,6 +53,23 @@ public class ClassificationRule extends Rule {
 	public ClassificationRule(CompoundCondition premise, ElementaryCondition consequence) {
 		super(premise, consequence);
 	}
+
+	/***
+	 * Calculates {@link #weight} and {@link #pvalue}.
+	 *
+	 * @param trainSet Training set.
+	 * @param ct Contingency table.
+	 *  @param votingMeasure Measure used as weight.
+	 */
+	@Override
+	public void updateWeightAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure) {
+		Hypergeometric test = new Hypergeometric();
+		Pair<Double, Double> statAndPValue = test.calculate(ct);
+
+		this.weight = votingMeasure.calculate(trainSet, ct);
+		this.pvalue = statAndPValue.getSecond();
+	}
+
 
 	/**
 	 * Applies the rule on a part of a specified example set.

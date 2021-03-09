@@ -16,8 +16,12 @@ package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
+import adaa.analytics.rules.logic.quality.ChiSquareVarianceTest;
+import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.Statistics;
+import com.rapidminer.tools.container.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -61,7 +65,22 @@ public class SurvivalRule extends Rule {
 		super(r);
 		this.estimator = estimator;
 	}
-	
+
+	/***
+	 * Calculates {@link #weight} and {@link #pvalue}.
+	 *
+	 * @param trainSet Training set.
+	 * @param ct Contingency table.
+	 *  @param votingMeasure Measure used as weight.
+	 */
+	@Override
+	public void updateWeightAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure) {
+		double logrank = votingMeasure.calculate(trainSet, ct);
+
+		this.weight = logrank;
+		this.pvalue = 1 - logrank;
+	}
+
 	/**
 	 * Applies the rule on a part of a specified example set.
 	 * @param set Example set.

@@ -137,23 +137,14 @@ public class RegressionFinder extends AbstractFinder {
 		return (ElementaryCondition)best.condition;
 	}
 
-	
+
 	protected boolean checkCandidate(
-			ExampleSet dataset, 
-			Rule rule,
-			ElementaryCondition candidate,
-			Set<Integer> uncovered, 
-			ConditionEvaluation currentBest) {
-		return checkCandidateCoverage(dataset, rule, candidate, uncovered, currentBest);
-	}
-	
-	protected boolean checkCandidateCoverage(
-			ExampleSet dataset, 
+			ExampleSet dataset,
 			Rule rule,
 			ConditionBase candidate,
-			Set<Integer> uncovered, 
+			Set<Integer> uncovered,
 			ConditionEvaluation currentBest) {
-		
+
 		try {
 			Logger.log("Evaluating candidate: " + candidate, Level.FINEST);
 
@@ -164,33 +155,35 @@ public class RegressionFinder extends AbstractFinder {
 			Rule newRule = (Rule) rule.clone();
 			newRule.setPremise(newPremise);
 
+
 			Covering cov = new Covering();
 			newRule.covers(dataset, cov, cov.positives, cov.negatives);
 
-			double newlyCovered = 0;
+			double new_p = 0, new_n = 0;
+
 			if (dataset.getAttributes().getWeight() == null) {
 				// unweighted examples
-				newlyCovered = SetHelper.intersectionSize(uncovered, cov.positives) +
-						SetHelper.intersectionSize(uncovered, cov.negatives);
+				new_p = SetHelper.intersectionSize(uncovered, cov.positives);
+				new_n =	SetHelper.intersectionSize(uncovered, cov.negatives);
 			} else {
 				// calculate weights of newly covered examples
 				for (int id : cov.positives) {
-					newlyCovered += uncovered.contains(id) ? dataset.getExample(id).getWeight() : 0;
+					new_p += uncovered.contains(id) ? dataset.getExample(id).getWeight() : 0;
 				}
 				for (int id : cov.negatives) {
-					newlyCovered += uncovered.contains(id) ? dataset.getExample(id).getWeight() : 0;
+					new_n += uncovered.contains(id) ? dataset.getExample(id).getWeight() : 0;
 				}
 			}
 
-			if (newlyCovered >= params.getMinimumCovered()) {
-				double quality = calculateQuality(dataset, cov, params.getInductionMeasure());
-
+			if (checkCoverage(cov.weighted_p, cov.weighted_n, new_p, new_n, rule.getWeighted_P(), rule.getWeighted_N())) {
+				double quality = params.getInductionMeasure().calculate(dataset, cov);
+				
 				Logger.log(", q=" + quality, Level.FINEST);
 
-				if (quality > currentBest.quality || (quality == currentBest.quality && newlyCovered > currentBest.covered)) {
+				if (quality > currentBest.quality || (quality == currentBest.quality && new_p + new_n > currentBest.covered)) {
 					currentBest.quality = quality;
 					currentBest.condition = candidate;
-					currentBest.covered = newlyCovered;
+					currentBest.covered = new_p + new_n;
 					currentBest.covering = cov;
 					Logger.log(", approved!\n", Level.FINEST);
 					//rule.setWeight(quality);
@@ -204,37 +197,10 @@ public class RegressionFinder extends AbstractFinder {
 		}
 		return false;
 	}
-	
-	@Override
-	protected Pair<Double,Double> calculateQualityAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
-		
-/*		double[] covY = new double[cov.getSize()];
-		double[] uncovY = new double[trainSet.size() - cov.getSize()];
-		
-		int ic = 0;
-		int iuc = 0;
-		
-		for (int ie = 0; ie < trainSet.size(); ++ie) {
-			 
-			if (cov.positives.contains(ie) || cov.negatives.contains(ie)) {
-				covY[ic++] = trainSet.getExample(ie).getLabel();
-			} else {
-				uncovY[iuc++] = trainSet.getExample(ie).getLabel();
-			}
-		}
-		
-		MannWhitneyUTest test = new MannWhitneyUTest();
-		res.pvalue = test.mannWhitneyUTest(covY, uncovY);
-		
-		//KolmogorovSmirnovTest test = new KolmogorovSmirnovTest();
-		//res.pvalue = test.kolmogorovSmirnovTest(covY, uncovY);
-*/
-		ChiSquareVarianceTest test = new ChiSquareVarianceTest();
-		double expectedDev = Math.sqrt(trainSet.getStatistics(trainSet.getAttributes().getLabel(), Statistics.VARIANCE));
-		Pair<Double,Double> statsAndPVal = test.calculateLower(expectedDev, ct.stddev_y, (int)(ct.weighted_p + ct.weighted_n));
-		
-		return new Pair<Double,Double>(
-				super.calculateQuality(trainSet, ct, measure),
-				statsAndPVal.getSecond());
+
+
+	boolean checkCoverage(double p, double n, double new_p, double new_n, double P, double N) {
+		return ((new_p + new_n) >= params.getAbsoluteMinimumCovered(P + N)) &&
+				((p + n) >= params.getAbsoluteMinimumCoveredAll(P + N));
 	}
 }

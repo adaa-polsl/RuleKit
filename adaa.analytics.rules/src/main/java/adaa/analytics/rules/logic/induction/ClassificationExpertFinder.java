@@ -128,9 +128,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 				rule.setWeighted_p(rule.getCoveredPositives().size());
 				rule.setWeighted_n(rule.getCoveredNegatives().size());
 
-				Pair<Double, Double> qp = calculateQualityAndPValue(dataset, rule.getCoveringInformation(), params.getVotingMeasure());
-				rule.setWeight(qp.getFirst());
-				rule.setPValue(qp.getSecond());
+				rule.updateWeightAndPValue(dataset, rule.getCoveringInformation(), params.getVotingMeasure());
 
 				Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: "
 						+ rule.toString() + " " + rule.printStats() + "\n", Level.FINER);
@@ -150,10 +148,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 				rule.getWeighted_N());
 		}
 
-		Pair<Double,Double> qp = calculateQualityAndPValue(dataset, ct, params.getVotingMeasure());
-		rule.setWeight(qp.getFirst());
-		rule.setPValue(qp.getSecond());
-
+		rule.updateWeightAndPValue(dataset, ct, params.getVotingMeasure());
 	}
 	
 	/**

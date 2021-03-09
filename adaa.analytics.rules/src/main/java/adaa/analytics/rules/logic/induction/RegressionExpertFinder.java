@@ -106,11 +106,9 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 
 			rule.getCoveredPositives().setAll(covering.positives);
 			rule.getCoveredNegatives().setAll(covering.negatives);
-			
-			Pair<Double,Double> qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
-			rule.setWeight(qp.getFirst());
-			rule.setPValue(qp.getSecond());		
-		}
+
+			rule.updateWeightAndPValue(dataset, covering, params.getVotingMeasure());
+	}
 	
 	
 	@Override 
@@ -166,7 +164,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 						continue;
 					}
 						
-					checkCandidateCoverage(dataset, rule, candidate, uncovered, bestEvaluation);
+					checkCandidate(dataset, rule, candidate, uncovered, bestEvaluation);
 				}
 				
 				if (bestEvaluation.condition != null) {
@@ -180,8 +178,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 					rule.getPremise().addSubcondition(bestEvaluation.condition);
 					rule.setCoveringInformation(bestEvaluation.covering);
 
-					Pair<Double,Double> qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
-					rule.setWeight(qp.getFirst());
+					rule.updateWeightAndPValue(dataset, covering, params.getVotingMeasure());
 
 					carryOn = true;
 					Logger.log("Preferred condition " + rule.getPremise().getSubconditions().size() + " added: " 
@@ -234,9 +231,8 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 					rule.getCoveredNegatives().setAll(covering.negatives);
 
 					rule.setCoveringInformation(covering);
-					Pair<Double,Double> qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
-					rule.setWeight(qp.getFirst());
-					rule.setPValue(qp.getSecond());
+					rule.updateWeightAndPValue(dataset, covering, params.getVotingMeasure());
+
 					Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
 							+ rule.toString() + "\n", Level.FINER);
 					
@@ -284,10 +280,8 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 					rule.getCoveredNegatives().setAll(covering.negatives);
 
 					rule.setCoveringInformation(covering);
-					Pair<Double, Double> qp = calculateQualityAndPValue(dataset, covering, params.getVotingMeasure());
-					rule.setWeight(qp.getFirst());
-					rule.setPValue(qp.getSecond());
-					
+					rule.updateWeightAndPValue(dataset, covering, params.getVotingMeasure());
+
 					Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
 							+ rule.toString() + "\n", Level.FINER);
 				} else {
@@ -302,15 +296,24 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 		rule.setInducedContitionsCount(addedConditionsCount);
 		return addedConditionsCount;
 	}
-	
+
 	@Override
 	protected boolean checkCandidate(
-			ExampleSet dataset, 
+			ExampleSet dataset,
 			Rule rule,
-			ElementaryCondition candidate,
-			Set<Integer> uncovered, 
+			ConditionBase candidate,
+			Set<Integer> uncovered,
 			ConditionEvaluation currentBest) {
-		return super.checkCandidate(dataset, rule, candidate, uncovered, currentBest) &&
-				!knowledge.isForbidden(candidate.getAttribute(), candidate.getValueSet());
+
+		boolean ok = super.checkCandidate(dataset, rule, candidate, uncovered, currentBest);
+
+		// verify knowledge only on elementary conditions
+		if (ok && candidate instanceof  ElementaryCondition) {
+			ok &= !knowledge.isForbidden(
+					((ElementaryCondition)candidate).getAttribute(),
+					((ElementaryCondition)candidate).getValueSet());
+		}
+
+		return ok;
 	}
 }

@@ -17,7 +17,9 @@ package adaa.analytics.rules.logic.representation;
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 
+import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.tools.container.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -193,6 +195,15 @@ public abstract class Rule implements Serializable, Cloneable {
 	 */
 	@Deprecated
 	public abstract Covering covers(ExampleSet set);
+
+	/***
+	 * Calculates {@link #weight} and {@link #pvalue}.
+	 *
+	 * @param trainSet Training set.
+	 * @param ct Contingency table.
+	*  @param votingMeasure Measure used as weight.
+	 */
+	public abstract void updateWeightAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure);
 	
 	/**
 	 * Applies the rule on a specified example set.

@@ -25,7 +25,7 @@ import com.rapidminer.tools.container.Pair;
  *
  * @author Adam Gudys
  */
-public class Hypergeometric implements IQualityMeasure {
+public class Hypergeometric extends StatisticalTest {
 	
 	/**
 	 * 
@@ -87,7 +87,7 @@ public class Hypergeometric implements IQualityMeasure {
 	    return a + b - c;
 	}
 
-	@Override
+	//@Override
 	public String getName() {
 		return "HyperGeometricStatistics";
 	}

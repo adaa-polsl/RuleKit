@@ -39,26 +39,33 @@ public class InductionParameters implements Serializable {
 	private IQualityMeasure votingMeasure = new ClassificationMeasure(ClassificationMeasure.Correlation);
 
 	/** Minimum number of previously uncovered examples that a new rule has to cover. */
+	/** Minimum number of previously uncovered examples that a new rule has to cover. */
 	private double minimumCovered = 5.0;
-	private double maximumUncoveredFraction = 0.01;
+	private double minimumCoveredAll = 0.0;
+	private double maximumUncoveredFraction = 0;
+
 	private boolean ignoreMissing = false;
 	private boolean pruningEnabled = true;
 	private double maxGrowingConditions = 0;
-
 	private boolean selectBestCandidate = false;
-	
+
 	public IQualityMeasure getInductionMeasure() {return inductionMeasure;}
 	public void setInductionMeasure(IQualityMeasure inductionMeasure) {this.inductionMeasure = inductionMeasure;}
 
 	public IQualityMeasure getPruningMeasure() {return pruningMeasure;}
 	public void setPruningMeasure(IQualityMeasure pruningMeasure) {this.pruningMeasure = pruningMeasure;}
-	
+
 	public IQualityMeasure getVotingMeasure() {return votingMeasure;}
 	public void setVotingMeasure(IQualityMeasure pruningMeasure) {this.votingMeasure = pruningMeasure;}
 
 	public double getMinimumCovered() {return minimumCovered;}
+	public double getAbsoluteMinimumCovered(double size) { return minimumCovered * (minimumCovered >= 1 ? 1 : size); }
 	public void setMinimumCovered(double minimumCovered) {this.minimumCovered = minimumCovered;}
-	
+
+	public double getMinimumCoveredAll() {return minimumCoveredAll;}
+	public double getAbsoluteMinimumCoveredAll(double size) { return minimumCoveredAll * (minimumCoveredAll >= 1 ? 1 : size); }
+	public void setMinimumCoveredAll(double minimumCoveredAll) {this.minimumCoveredAll = minimumCoveredAll;}
+
 	public double getMaximumUncoveredFraction() {return maximumUncoveredFraction;}
 	public void setMaximumUncoveredFraction(double v) {this.maximumUncoveredFraction = v;}
 
@@ -67,7 +74,7 @@ public class InductionParameters implements Serializable {
 
 	public boolean isPruningEnabled() {return pruningEnabled;}
 	public void setEnablePruning(boolean enablePruning) {this.pruningEnabled = enablePruning;}
-	
+
 	public double getMaxGrowingConditions() { return maxGrowingConditions; }
 	public void setMaxGrowingConditions(double maxGrowingConditions) { this.maxGrowingConditions = maxGrowingConditions; }
 

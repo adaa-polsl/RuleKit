@@ -14,8 +14,11 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.quality;
 
+import adaa.analytics.rules.logic.induction.ContingencyTable;
+import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 
+import com.rapidminer.example.ExampleSet;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
 import com.rapidminer.tools.container.Pair;
@@ -34,8 +37,39 @@ public class LogRank implements IQualityMeasure, Serializable {
 	private static final long serialVersionUID = -6859067049486703913L;
 	
 	protected ChiSquaredDistribution dist = new ChiSquaredDistribution(1.0);
-	
-	public Pair<Double,Double> calculate(KaplanMeierEstimator kme1, KaplanMeierEstimator kme2) {
+
+	@Override
+	public String getName() {
+		return "LogRankStatistics";
+	}
+
+	@Override
+	public double calculate(double p, double n, double P, double N) {
+		assert false: "LogRank: unable to calculate quality from contingency matrix only";
+		return 0;
+	}
+
+	@Override
+	public double calculate(ExampleSet dataset, ContingencyTable ct) {
+		Covering cov = (Covering)ct;
+
+		Set<Integer> coveredIndices = cov.positives; // in survival rules all examples are classified as positives
+		Set<Integer> uncoveredIndices = new HashSet<Integer>();
+		for (int i = 0; i < dataset.size(); ++i) {
+			if (!coveredIndices.contains(i)) {
+				uncoveredIndices.add(i);
+			}
+		}
+
+		KaplanMeierEstimator coveredEstimator = new KaplanMeierEstimator(dataset, coveredIndices);
+		KaplanMeierEstimator uncoveredEstimator = new KaplanMeierEstimator(dataset, uncoveredIndices);
+
+		Pair<Double,Double> statsAndPValue = compareEstimators(coveredEstimator, uncoveredEstimator);
+		return 1 - statsAndPValue.getSecond();
+	}
+
+
+	public Pair<Double,Double> compareEstimators(KaplanMeierEstimator kme1, KaplanMeierEstimator kme2) {
 		
 		Pair<Double,Double> res = new Pair<Double,Double>(0.0, 0.0);
 		
@@ -73,8 +107,5 @@ public class LogRank implements IQualityMeasure, Serializable {
 		return res;
 	}
 
-	@Override
-	public String getName() {
-		return "LogRankStatistics";
-	}
+
 }

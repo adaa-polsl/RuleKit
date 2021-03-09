@@ -16,9 +16,13 @@ package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
+import adaa.analytics.rules.logic.quality.ChiSquareVarianceTest;
+import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.Statistics;
 import com.rapidminer.example.set.SortedExampleSet;
+import com.rapidminer.tools.container.Pair;
 
 import java.security.InvalidParameterException;
 import java.util.Iterator;
@@ -52,7 +56,23 @@ public class RegressionRule extends Rule {
 	public RegressionRule(CompoundCondition premise, ElementaryCondition consequence) {
 		super(premise, consequence);
 	}
-	
+
+	/***
+	 * Calculates {@link #weight} and {@link #pvalue}.
+	 *
+	 * @param trainSet Training set.
+	 * @param ct Contingency table.
+	 *  @param votingMeasure Measure used as weight.
+	 */
+	@Override
+	public void updateWeightAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure) {
+		ChiSquareVarianceTest test = new ChiSquareVarianceTest();
+		double expectedDev = Math.sqrt(trainSet.getStatistics(trainSet.getAttributes().getLabel(), Statistics.VARIANCE));
+		Pair<Double,Double> statsAndPVal = test.calculateLower(expectedDev, ct.stddev_y, (int)(ct.weighted_p + ct.weighted_n));
+
+		this.weight = votingMeasure.calculate(trainSet, ct);
+		this.pvalue = statsAndPVal.getSecond();
+	}
 
 	/**
 	 * Sets p,n,P,N as well as consequence value and standard deviation on the basis of covering information.

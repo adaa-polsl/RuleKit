@@ -57,29 +57,4 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 		KaplanMeierEstimator kme = new KaplanMeierEstimator(dataset, covered);
 		((SurvivalRule)rule).setEstimator(kme);
 	}
-
-	@Override
-	protected double calculateQuality(@NotNull ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
-		Covering cov = (Covering)ct;
-		
-		Set<Integer> coveredIndices = cov.positives; // in survival rules all examples are classified as positives
-		Set<Integer> uncoveredIndices = new HashSet<Integer>();
-		for (int i = 0; i < trainSet.size(); ++i) {
-			if (!coveredIndices.contains(i)) { 
-				uncoveredIndices.add(i);
-			}
-		}
-		
-		KaplanMeierEstimator coveredEstimator = new KaplanMeierEstimator(trainSet, coveredIndices);
-		KaplanMeierEstimator uncoveredEstimator = new KaplanMeierEstimator(trainSet, uncoveredIndices);
-		
-		Pair<Double,Double> statsAndPValue = ((LogRank)measure).calculate(coveredEstimator, uncoveredEstimator);
-		return 1 - statsAndPValue.getSecond();
-	}
-
-	@Override
-	protected Pair<Double,Double> calculateQualityAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure measure) {
-		double logrank = calculateQuality(trainSet, ct, measure);
-		return new Pair<Double,Double>(logrank, 1-logrank);
-	}
 }
