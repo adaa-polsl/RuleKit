@@ -1,0 +1,325 @@
+% ========================================================================================================
+% Bone-marrow 
+% ========================================================================================================
+%
+% Source:
+%
+% Marek Sikora (marek.sikora '@' polsl.pl), Łukasz Wróbel (lukasz.wrobel '@' polsl.pl), Adam Gudyś (adam.gudys '@' polsl.pl)  
+% Faculty of Automatic Control, Electronics and Computer Science, Silesian University of Technology, 44-100 Gliwice, Poland 
+%
+%
+% Data Set Information:
+%
+% The data set describes pediatric patients with several hematologic diseases: malignant disorders
+% (i.a. acute lymphoblastic leukemia, acute myelogenous leukemia, chronic myelogenous
+% leukemia, myelodysplastic syndrome) and nonmalignant cases (i.a. severe aplastic anemia,
+% Fanconi anemia, with X-linked adrenoleukodystrophy). All patients were subject to the unmanipulated allogeneic 
+% unrelated donor hematopoietic stem cell transplantation. 
+% 
+% The motivation of the study was to identify the most important factors influencing the success or failure of the transplantation 
+% procedure. In particular, the aim was to verify the hypothesis that increased dosage of CD34+ cells / kg extends overall survival
+% time without simultaneous occurrence of undesirable events affecting patients' quality of life (Kawłak et al., 2010).
+
+% The data set has been used in out work concerning survival rules (Wróbel et al., 2017) and user-guided rule induction (
+% Sikora et al., 2019). The authors of the research on stem cell transplantation (Kawłak et al., 2010) who inspired our study 
+% also contributed to the set. 
+%
+%
+% Relevant Papers:
+%
+% Gudyś, A, Sikora, M, Wróbel, Ł (2020) RuleKit: A Comprehensive Suite for Rule-Based Learning, 
+%     Knowledge-Based Systems (https://doi.org/10.1016/j.knosys.2020.105480)
+% Sikora, M, Wróbel, Ł, Gudyś, A (2019) GuideR: a guided separate-and-conquer rule learning in classification, regression, and survival settings, 
+%     Knowledge-Based Systems, 173:1-14 (https://doi.org/10.1016/j.knosys.2019.02.019)
+% Wróbel, Ł, Gudyś, A, Sikora, M (2017) Learning rule sets from survival data, 
+%     BMC Bioinformatics, 18(1):285 (https://doi.org/10.1186/s12859-017-1693-x) 
+% Kałwak, K, Porwolik, J, Mielcarek, M et al. (2010) Higher CD34+ and CD3+ cell doses in the graft promote long-term survival, 
+%     and have no impact on the incidence of severe acute or chronic graft-versus-host disease after in vivo t cell-depleted 
+%     unrelated donor hematopoietic stem cell transplantation in children, 
+%     Biology of Blood and Marrow Transplantation, 16(10): 1388-1401 (https://doi.org/10.1016/j.bbmt.2010.04.001)
+%
+%
+% Citation Request:
+%
+% @article{sikora2019guider,
+% 	title={{GuideR: A guided separate-and-conquer rule learning in classification, regression, and survival settings}},
+%	author={Sikora, Marek and Wr{\'o}bel, {\L}ukasz and Gudy{\'s}, Adam},
+%	journal={Knowledge-Based Systems},
+%	volume={173},
+%	pages={1--14},
+%	year={2019},
+%	publisher={Elsevier}
+% }
+%
+%
+% Attribute Information:
+%
+% The set contains 187 examples characterized by 37 attributes. 
+% The meaning of the features is as follows:
+%
+%  donor_age - Age of the donor at the time of hematopoietic stem cells apheresis
+%  donor_age_below_35 - Is donor age less than 35 (yes, no)
+%  donor_ABO - ABO blood group of the donor of hematopoietic stem cells (0, A, B, AB)
+%  donor_CMV - Presence of cytomegalovirus infection in the donor of hematopoietic stem cells prior to transplantation (present, absent)
+%  recipient_age - Age of the recipient of hematopoietic stem cells at the time of transplantation
+%  recipient_age_below_10 - Is recipient age below 10 (yes, no)
+%  recipient_age_int - Age of the recipient discretized to intervals (0,5], (5, 10], (10, 20]
+%  recipient_gender - Gender of the recipient (female, male)
+%  recipient_body_mass - Body mass of the recipient of hematopoietic stem cells at the time of the transplantation
+%  recipient_ABO - ABO blood group of the recipient of hematopoietic stem cells (0, A, B ,AB)
+%  recipient_rh - Presence of the Rh factor on recipient’s red blood cells (plus ,minus)
+%  recipient_CMV - Presence of cytomegalovirus infection in the donor of hematopoietic stem cells prior to transplantation (present, absent)
+%  disease - Type of disease (ALL, AML, chronic, nonmalignant, lymphoma)
+%  disease_group - Type of disease (malignant, nonmalignant)
+%  gender_match - Compatibility of the donor and recipient according to their gender (female to male, other)
+%  ABO_match - Compatibility of the donor and the recipient of hematopoietic stem cells according to ABO blood group (matched, mismatched)
+%  CMV_status - Serological compatibility of the donor and the recipient of hematopoietic stem cells according to cytomegalovirus infection prior to transplantation (the higher the value the lower the compatibility)
+%  HLA_match - Compatibility of antigens of the main histocompatibility complex of the donor and the recipient of hematopoietic stem cells (10/10, 9/10, 8/10, 7/10)
+%  HLA_mismatch - HLA matched or mismatched
+%  antigen - In how many antigens there is a difference between the donor nad the recipient (0-3)
+%  allel - In how many allele there is a difference between the donor nad the recipient (0-4)
+%  HLA_group_1 - The difference type between the donor and the recipient (HLA matched, one antigen, one allel, DRB1 cell, two allele or allel+antigen, two antigenes+allel, mismatched)
+%  risk_group - Risk group (high, low)
+%  stem_cell_source - Source of hematopoietic stem cells (peripheral blood, bone marrow)
+%  tx_post_relapse - The second bone marrow transplantation after relapse (yes ,no)
+%  CD34_x1e6_per_kg - CD34kgx10d6 - CD34+ cell dose per kg of recipient body weight (10^6/kg)
+%  CD3_x1e8_per_kg - CD3+ cell dose per kg of recipient body weight (10^8/kg)
+%  CD3_to_CD34_ratio - CD3+ cell to CD34+ cell ratio
+%  ANC_recovery - Time to neutrophils recovery defined as neutrophils count >0.5 x 10^9/L
+%  PLT_recovery - Time to platelet recovery defined as platelet count >50000/mm3
+%  acute_GvHD_II_III_IV - Development of acute graft versus host disease stage II or III or IV (yes, no)
+%  acute_GvHD_III_IV - Development of acute graft versus host disease stage III or IV (yes, no)
+%  time_to_acute_GvHD_III_IV - Time to development of acute graft versus host disease stage III or IV
+%  extensive_chronic_GvHD - Development of extensive chronic graft versus host disease (yes, no)
+%  relapse - Relapse of the disease (yes, no)
+%  survival_time - Time of observation (if alive) or time to event (if dead) in days
+%  survival_status - Survival status (0 - alive, 1 - dead)
+
+@relation bone-marrow
+
+@attribute donor_age numeric
+@attribute donor_age_below_35 {no, yes}
+@attribute donor_ABO {0, A, AB, B}
+@attribute donor_CMV {absent, present}
+@attribute recipient_age numeric
+@attribute recipient_age_below_10 {no, yes}
+@attribute recipient_age_int {0_5, 10_20, 5_10}
+@attribute recipient_gender {female, male}
+@attribute recipient_body_mass numeric
+@attribute recipient_ABO {0, A, AB, B}
+@attribute recipient_rh {minus, plus}
+@attribute recipient_CMV {absent, present}
+@attribute disease {ALL, AML, chronic, lymphoma, nonmalignant}
+@attribute disease_group {malignant, nonmalignant}
+@attribute gender_match {female_to_male, other}
+@attribute ABO_match {matched, mismatched}
+@attribute CMV_status {0, 1, 2, 3}
+@attribute HLA_match {10/10, 7/10, 8/10, 9/10}
+@attribute HLA_mismatch {matched, mismatched}
+@attribute antigen {0, 1, 2, 3}
+@attribute allel {0, 1, 2, 3, 4}
+@attribute HLA_group_1 {DRB1_cell, matched, mismatched, one_allel, one_antigen, three_diffs, two_diffs}
+@attribute risk_group {high, low}
+@attribute stem_cell_source {bone_marrow, peripheral_blood}
+@attribute tx_post_relapse {no, yes}
+@attribute CD34_x1e6_per_kg numeric
+@attribute CD3_x1e8_per_kg numeric
+@attribute CD3_to_CD34_ratio numeric
+@attribute ANC_recovery numeric
+@attribute PLT_recovery numeric
+@attribute acute_GvHD_II_III_IV {no, yes}
+@attribute acute_GvHD_III_IV {no, yes}
+@attribute time_to_acute_GvHD_III_IV numeric
+@attribute extensive_chronic_GvHD {no, yes}
+@attribute relapse {no, yes}
+@attribute survival_time numeric
+@attribute survival_status {0, 1}
+
+@data
+22.830137,yes,A,present,9.6,yes,5_10,male,35.0,A,plus,present,ALL,malignant,other,matched,3,10/10,matched,0,0,matched,high,peripheral_blood,no,7.2,5.38,1.33876,19.0,51.0,yes,yes,32.0,no,no,999.0,0
+23.342466,yes,B,absent,4.0,yes,0_5,male,20.6,B,plus,absent,ALL,malignant,other,matched,0,10/10,matched,0,0,matched,low,bone_marrow,no,4.5,0.41,11.078295,16.0,37.0,yes,no,1000000.0,no,yes,163.0,1
+26.394521,yes,B,absent,6.6,yes,5_10,male,23.4,B,plus,present,ALL,malignant,other,matched,2,10/10,matched,0,0,matched,low,bone_marrow,no,7.94,0.42,19.01323,23.0,20.0,yes,no,1000000.0,no,yes,435.0,1
+39.684932,no,A,present,18.1,no,10_20,female,50.0,AB,plus,absent,AML,malignant,other,mismatched,1,10/10,matched,0,0,matched,low,bone_marrow,no,4.25,0.14,29.481647,23.0,29.0,yes,yes,19.0,?,no,53.0,1
+33.358904,yes,A,absent,1.3,yes,0_5,female,9.0,AB,minus,present,chronic,malignant,other,mismatched,0,9/10,matched,2,1,one_antigen,high,peripheral_blood,no,51.85,13.05,3.972255,14.0,14.0,no,no,1000000.0,no,no,2043.0,0
+27.391781,yes,AB,?,8.9,yes,5_10,male,40.0,0,plus,present,chronic,malignant,other,mismatched,?,10/10,matched,0,0,matched,high,bone_marrow,yes,3.27,0.39,8.412758,16.0,70.0,no,no,1000000.0,no,no,2800.0,0
+34.520548,yes,0,absent,14.4,no,10_20,female,51.0,A,minus,?,AML,malignant,other,mismatched,?,10/10,matched,0,0,matched,low,peripheral_blood,no,17.78,7.39,2.406248,17.0,29.0,yes,yes,18.0,?,no,41.0,1
+21.435616,yes,0,present,18.2,no,10_20,male,56.0,A,plus,absent,nonmalignant,nonmalignant,other,mismatched,1,7/10,mismatched,2,3,mismatched,low,bone_marrow,no,6.41,?,?,22.0,58.0,yes,yes,22.0,?,no,45.0,1
+32.641096,yes,AB,absent,7.9,yes,5_10,male,20.5,0,plus,present,nonmalignant,nonmalignant,other,mismatched,2,10/10,matched,0,0,matched,low,peripheral_blood,no,23.54,6.24,3.772555,15.0,14.0,no,no,1000000.0,no,no,671.0,0
+28.783562,yes,A,absent,4.7,yes,0_5,male,16.5,0,plus,present,nonmalignant,nonmalignant,female_to_male,mismatched,2,9/10,matched,1,2,DRB1_cell,low,peripheral_blood,no,7.69,7.43,1.035244,16.0,17.0,yes,no,1000000.0,no,no,676.0,0
+29.731507,yes,0,present,1.9,yes,0_5,female,10.5,B,plus,absent,chronic,malignant,other,mismatched,1,9/10,matched,1,2,one_allel,high,peripheral_blood,no,17.66,1.49,11.883664,12.0,13.0,no,no,1000000.0,yes,no,599.0,0
+36.8,no,A,absent,13.4,no,10_20,female,47.0,A,plus,absent,chronic,malignant,other,matched,0,8/10,mismatched,2,2,two_diffs,high,peripheral_blood,no,14.46,6.45,2.242442,11.0,16.0,yes,no,1000000.0,yes,no,2503.0,0
+40.863014,no,0,present,5.1,yes,5_10,male,18.1,A,plus,absent,ALL,malignant,other,mismatched,1,10/10,matched,0,0,matched,low,peripheral_blood,no,15.42,5.64,2.734654,14.0,37.0,no,no,1000000.0,no,no,964.0,0
+30.60274,yes,0,absent,11.5,no,10_20,male,42.0,A,plus,present,lymphoma,malignant,other,mismatched,0,10/10,matched,0,0,matched,high,bone_marrow,no,3.14,0.85,3.713956,20.0,48.0,yes,no,1000000.0,no,yes,335.0,1
+30.676712,yes,A,absent,17.8,no,10_20,male,55.0,A,plus,absent,AML,malignant,other,matched,0,10/10,matched,0,0,matched,high,peripheral_blood,no,8.03,3.55,2.26309,16.0,16.0,yes,no,1000000.0,no,no,1432.0,0
+41.164384,no,0,present,13.5,no,10_20,male,30.0,B,plus,present,chronic,malignant,other,mismatched,3,9/10,matched,2,1,one_antigen,high,bone_marrow,no,4.79,0.4,12.028841,17.0,19.0,no,no,1000000.0,no,no,3288.0,0
+40.232877,no,AB,present,17.9,no,10_20,male,97.8,0,plus,absent,chronic,malignant,other,mismatched,1,9/10,matched,1,2,one_allel,low,peripheral_blood,no,5.45,3.42,1.595133,11.0,16.0,yes,no,1000000.0,?,no,58.0,1
+40.821918,no,AB,present,4.7,yes,0_5,female,20.5,0,plus,absent,chronic,malignant,other,mismatched,1,10/10,matched,0,0,matched,low,peripheral_blood,no,20.72,5.64,3.676416,13.0,23.0,yes,no,1000000.0,no,no,1615.0,0
+43.375342,no,0,absent,0.6,yes,0_5,female,6.0,A,plus,?,ALL,malignant,other,mismatched,?,10/10,matched,0,0,matched,low,peripheral_blood,no,22.97,16.31,1.408646,24.0,74.0,yes,no,1000000.0,no,no,704.0,0
+31.745205,yes,A,present,17.7,no,10_20,male,64.0,0,plus,present,ALL,malignant,other,mismatched,3,10/10,matched,0,0,matched,low,peripheral_blood,no,8.84,5.16,1.711795,17.0,25.0,no,no,1000000.0,no,no,884.0,0
+43.578082,no,0,present,14.7,no,10_20,male,62.0,A,plus,present,ALL,malignant,female_to_male,mismatched,3,9/10,matched,2,1,one_antigen,high,peripheral_blood,yes,0.82,2.22,0.36872,26.0,30.0,no,no,1000000.0,no,no,115.0,1
+42.380822,no,B,absent,9.7,yes,5_10,male,43.2,AB,plus,present,nonmalignant,nonmalignant,other,mismatched,2,9/10,matched,1,2,one_antigen,low,peripheral_blood,no,6.34,5.15,1.231287,15.0,18.0,yes,no,1000000.0,yes,no,330.0,1
+31.545205,yes,A,present,13.9,no,10_20,female,31.0,A,plus,present,chronic,malignant,other,matched,3,10/10,matched,0,0,matched,low,peripheral_blood,no,27.0,7.08,3.81488,18.0,14.0,yes,no,1000000.0,no,no,2231.0,0
+24.780822,yes,A,present,10.9,no,10_20,male,39.3,B,plus,present,nonmalignant,nonmalignant,other,mismatched,3,9/10,matched,2,1,DRB1_cell,low,peripheral_blood,no,20.45,3.54,5.781319,11.0,13.0,no,no,1000000.0,no,no,149.0,1
+30.50411,yes,B,absent,6.7,yes,5_10,female,23.8,B,plus,absent,ALL,malignant,other,matched,0,10/10,matched,0,0,matched,low,bone_marrow,no,2.87,0.21,13.890231,18.0,27.0,yes,yes,21.0,yes,no,2105.0,0
+20.605479,yes,AB,absent,8.5,yes,5_10,male,26.8,0,plus,absent,nonmalignant,nonmalignant,female_to_male,mismatched,0,10/10,matched,0,0,matched,low,peripheral_blood,no,12.95,7.74,1.672532,13.0,11.0,no,no,1000000.0,no,no,914.0,0
+40.969863,no,B,absent,0.7,yes,0_5,male,6.4,B,plus,absent,nonmalignant,nonmalignant,female_to_male,matched,0,10/10,matched,0,0,matched,high,bone_marrow,yes,5.91,3.3,1.788507,16.0,88.0,yes,no,1000000.0,no,no,1522.0,0
+39.983562,no,A,absent,4.7,yes,0_5,male,17.0,B,plus,?,ALL,malignant,other,mismatched,?,7/10,mismatched,2,3,mismatched,low,peripheral_blood,no,11.27,3.48,3.242425,16.0,1000000.0,yes,yes,16.0,?,no,35.0,1
+33.052055,yes,A,absent,2.8,yes,0_5,male,14.3,0,plus,present,chronic,malignant,other,mismatched,2,10/10,matched,0,0,matched,high,peripheral_blood,no,23.21,11.59,2.001808,14.0,14.0,yes,yes,20.0,no,no,1041.0,0
+39.172603,no,A,present,8.4,yes,5_10,female,38.3,A,plus,present,ALL,malignant,other,matched,3,10/10,matched,0,0,matched,low,peripheral_blood,no,5.86,3.17,1.849607,15.0,23.0,yes,no,1000000.0,no,yes,576.0,1
+24.731507,yes,A,absent,8.6,yes,5_10,female,20.0,B,plus,?,ALL,malignant,other,mismatched,?,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,9.78,4.11,2.380569,14.0,18.0,yes,no,1000000.0,no,no,676.0,0
+24.353425,yes,A,present,4.6,yes,0_5,male,23.0,A,plus,absent,ALL,malignant,other,matched,1,10/10,matched,0,0,matched,low,peripheral_blood,no,9.81,5.81,1.687395,14.0,19.0,no,no,1000000.0,no,no,531.0,0
+39.024658,no,0,absent,3.1,yes,0_5,male,15.0,B,plus,present,ALL,malignant,female_to_male,mismatched,2,9/10,matched,1,2,one_allel,low,bone_marrow,no,6.45,0.4,16.186239,13.0,23.0,yes,yes,36.0,?,no,96.0,1
+23.446575,yes,B,present,10.9,no,10_20,male,49.6,0,plus,present,nonmalignant,nonmalignant,other,mismatched,2,10/10,matched,0,0,matched,low,peripheral_blood,no,12.58,3.6,3.49847,17.0,16.0,no,no,1000000.0,no,no,1084.0,0
+39.380822,no,A,present,1.7,yes,0_5,male,10.0,A,plus,present,chronic,malignant,other,matched,3,9/10,matched,2,1,one_antigen,high,peripheral_blood,no,5.37,1.93,2.778202,17.0,66.0,yes,yes,18.0,no,no,2293.0,0
+20.961644,yes,A,present,1.6,yes,0_5,female,11.25,A,minus,absent,AML,malignant,other,matched,1,10/10,matched,0,0,matched,high,peripheral_blood,yes,9.97,5.41,1.841206,13.0,112.0,no,no,1000000.0,yes,no,321.0,1
+49.860274,no,0,present,16.6,no,10_20,male,63.0,B,plus,present,nonmalignant,nonmalignant,other,mismatched,3,10/10,matched,0,0,matched,low,peripheral_blood,no,15.28,1.74,8.784289,18.0,24.0,no,no,1000000.0,no,no,111.0,1
+43.517808,no,0,absent,2.2,yes,0_5,female,10.5,B,plus,present,chronic,malignant,other,mismatched,2,9/10,matched,2,1,one_antigen,high,peripheral_blood,no,22.02,8.06,2.733138,16.0,16.0,no,no,1000000.0,no,yes,149.0,1
+40.536986,no,0,absent,2.1,yes,0_5,female,15.0,0,plus,present,AML,malignant,other,matched,2,10/10,matched,0,0,matched,low,peripheral_blood,no,19.59,3.36,5.837647,12.0,11.0,yes,no,1000000.0,no,no,1690.0,0
+21.4,yes,A,present,13.3,no,10_20,female,43.5,0,plus,absent,AML,malignant,other,mismatched,1,10/10,matched,0,0,matched,low,peripheral_blood,no,8.73,3.94,2.215047,12.0,15.0,no,no,1000000.0,no,no,452.0,0
+34.273973,yes,0,present,13.8,no,10_20,male,48.0,0,plus,absent,ALL,malignant,female_to_male,matched,1,9/10,matched,2,1,DRB1_cell,low,peripheral_blood,no,5.81,8.39,0.692898,15.0,285.0,yes,no,1000000.0,no,no,1376.0,0
+20.471233,yes,A,absent,3.1,yes,0_5,male,15.0,B,plus,absent,ALL,malignant,other,mismatched,0,10/10,matched,0,0,matched,low,bone_marrow,no,2.29,0.98,2.335954,17.0,1000000.0,yes,no,1000000.0,?,no,28.0,1
+44.380822,no,0,absent,4.1,yes,0_5,male,15.3,A,plus,absent,AML,malignant,other,mismatched,0,10/10,matched,0,0,matched,low,peripheral_blood,no,31.57,6.54,4.824785,12.0,72.0,no,no,1000000.0,no,no,2118.0,0
+20.358904,yes,0,present,9.9,yes,5_10,male,29.0,B,plus,?,nonmalignant,nonmalignant,other,mismatched,?,10/10,matched,0,0,matched,low,bone_marrow,no,5.33,5.75,0.927108,15.0,1000000.0,no,no,1000000.0,?,no,60.0,1
+31.526027,yes,0,absent,11.4,no,10_20,male,41.4,A,minus,absent,AML,malignant,female_to_male,mismatched,0,10/10,matched,0,0,matched,low,peripheral_blood,no,12.94,1.83,7.060927,12.0,13.0,no,no,1000000.0,no,no,1327.0,0
+38.761644,no,0,absent,13.4,no,10_20,female,76.0,0,plus,absent,ALL,malignant,other,matched,0,10/10,matched,0,0,matched,low,peripheral_blood,no,10.3,1.71,6.022997,12.0,14.0,yes,no,1000000.0,no,no,150.0,1
+28.805479,yes,0,absent,11.3,no,10_20,male,34.1,A,plus,present,chronic,malignant,female_to_male,mismatched,2,9/10,matched,1,2,one_allel,high,bone_marrow,no,3.35,0.74,4.517296,17.0,25.0,yes,yes,14.0,no,no,1006.0,0
+36.868493,no,B,present,12.1,no,10_20,female,60.4,B,plus,present,nonmalignant,nonmalignant,other,matched,3,10/10,matched,0,0,matched,low,peripheral_blood,no,12.2,1.66,7.369445,14.0,19.0,yes,no,1000000.0,no,no,1754.0,0
+29.772603,yes,0,absent,8.5,yes,5_10,female,30.0,A,plus,present,ALL,malignant,other,mismatched,2,8/10,mismatched,3,1,two_diffs,high,bone_marrow,yes,2.68,0.73,3.650173,14.0,24.0,yes,yes,15.0,yes,no,2354.0,0
+28.821918,yes,A,present,15.1,no,10_20,female,48.8,A,plus,present,ALL,malignant,other,matched,3,10/10,matched,0,0,matched,high,bone_marrow,no,1.93,0.59,3.280961,22.0,107.0,no,no,1000000.0,no,no,1000.0,0
+30.287671,yes,0,present,8.3,yes,5_10,female,38.5,0,plus,absent,ALL,malignant,other,matched,1,10/10,matched,0,0,matched,low,peripheral_blood,no,2.26,0.4,5.69203,17.0,21.0,yes,yes,14.0,no,no,942.0,0
+33.120548,yes,0,absent,6.9,yes,5_10,male,28.5,0,minus,present,ALL,malignant,other,matched,2,8/10,mismatched,2,2,three_diffs,low,peripheral_blood,no,16.65,4.15,4.011209,14.0,14.0,no,no,1000000.0,no,no,2926.0,0
+39.641096,no,B,absent,4.9,yes,0_5,male,7.5,A,plus,present,nonmalignant,nonmalignant,other,mismatched,2,9/10,matched,2,1,DRB1_cell,low,peripheral_blood,no,16.02,11.85,1.351711,11.0,51.0,no,no,1000000.0,no,no,1346.0,0
+39.632877,no,A,absent,5.0,yes,0_5,male,19.5,A,plus,absent,nonmalignant,nonmalignant,other,matched,0,8/10,mismatched,1,3,three_diffs,low,peripheral_blood,no,16.46,8.71,1.890822,14.0,12.0,no,no,1000000.0,no,no,1424.0,0
+34.169863,yes,A,present,6.5,yes,5_10,female,23.0,AB,minus,present,nonmalignant,nonmalignant,other,mismatched,3,10/10,matched,0,0,matched,low,peripheral_blood,no,16.2,8.63,1.876834,21.0,37.0,yes,no,1000000.0,no,no,2036.0,0
+31.194521,yes,AB,present,1.8,yes,0_5,male,8.15,0,plus,present,nonmalignant,nonmalignant,other,mismatched,3,8/10,mismatched,2,2,two_diffs,low,peripheral_blood,no,57.78,5.24,11.017048,13.0,10.0,no,no,1000000.0,no,no,1958.0,0
+30.389041,yes,AB,present,3.4,yes,0_5,male,10.0,0,minus,present,nonmalignant,nonmalignant,other,mismatched,3,7/10,mismatched,2,3,mismatched,high,peripheral_blood,yes,21.74,7.32,2.969988,12.0,15.0,no,no,1000000.0,no,no,1791.0,0
+24.367123,yes,A,present,2.3,yes,0_5,male,14.0,0,plus,present,chronic,malignant,other,mismatched,3,9/10,matched,2,1,DRB1_cell,high,peripheral_blood,no,9.17,8.94,1.025586,17.0,1000000.0,yes,yes,62.0,no,no,137.0,1
+37.287671,no,B,present,7.9,yes,5_10,female,37.0,0,plus,present,nonmalignant,nonmalignant,other,mismatched,3,10/10,matched,0,0,matched,low,bone_marrow,no,1.7,0.13,12.958576,1000000.0,1000000.0,no,no,1000000.0,?,no,11.0,1
+30.2,yes,0,absent,2.8,yes,0_5,female,13.0,B,plus,present,ALL,malignant,other,mismatched,2,10/10,matched,0,0,matched,low,peripheral_blood,no,38.32,12.23,3.133461,11.0,11.0,no,no,1000000.0,no,no,2279.0,0
+35.087671,no,A,absent,12.6,no,10_20,male,51.0,B,plus,absent,ALL,malignant,other,mismatched,0,9/10,matched,1,2,one_allel,high,peripheral_blood,yes,20.44,3.55,5.761517,13.0,17.0,yes,no,1000000.0,no,yes,261.0,1
+29.161644,yes,A,absent,4.5,yes,0_5,male,15.0,0,plus,absent,nonmalignant,nonmalignant,female_to_male,mismatched,0,10/10,matched,0,0,matched,high,bone_marrow,yes,6.66,0.99,6.739936,12.0,79.0,no,no,1000000.0,no,no,181.0,1
+44.413699,no,B,present,15.6,no,10_20,male,68.0,A,plus,absent,ALL,malignant,other,mismatched,1,9/10,matched,2,1,one_antigen,low,bone_marrow,no,0.79,0.13,6.157698,20.0,32.0,yes,no,1000000.0,no,no,1949.0,0
+55.40274,no,0,present,18.4,no,10_20,female,47.0,B,plus,present,AML,malignant,other,mismatched,3,10/10,matched,0,0,matched,high,bone_marrow,yes,1.85,0.13,14.130301,18.0,30.0,no,no,1000000.0,?,no,19.0,1
+43.715068,no,0,present,14.0,no,10_20,male,52.0,B,minus,absent,chronic,malignant,other,mismatched,1,10/10,matched,0,0,matched,low,bone_marrow,no,1.99,0.29,6.750632,18.0,119.0,no,no,1000000.0,yes,no,1838.0,0
+45.915068,no,0,absent,14.2,no,10_20,female,61.0,A,plus,present,ALL,malignant,other,mismatched,2,9/10,matched,2,1,one_antigen,low,bone_marrow,no,2.34,0.05,47.869839,16.0,22.0,no,no,1000000.0,?,no,55.0,1
+22.643836,yes,A,absent,12.7,no,10_20,male,54.9,0,plus,present,chronic,malignant,other,mismatched,2,10/10,matched,0,0,matched,high,peripheral_blood,no,10.78,3.47,3.10536,15.0,27.0,yes,no,1000000.0,no,no,224.0,1
+47.112329,no,A,present,11.5,no,10_20,female,30.0,A,plus,present,chronic,malignant,other,matched,3,8/10,mismatched,2,2,two_diffs,high,peripheral_blood,no,24.34,8.75,2.780611,15.0,19.0,no,no,1000000.0,no,no,606.0,1
+26.221918,yes,A,absent,3.9,yes,0_5,male,11.9,A,plus,present,nonmalignant,nonmalignant,other,matched,2,9/10,matched,1,2,one_allel,low,peripheral_blood,no,24.09,16.07,1.498879,11.0,12.0,yes,yes,49.0,yes,no,306.0,1
+24.476712,yes,0,absent,14.8,no,10_20,male,49.0,A,plus,present,AML,malignant,other,mismatched,2,9/10,matched,1,2,one_allel,high,peripheral_blood,yes,8.91,4.78,1.865411,14.0,17.0,yes,no,1000000.0,no,no,1728.0,0
+35.287671,no,A,present,12.2,no,10_20,female,30.8,B,plus,present,ALL,malignant,other,mismatched,3,10/10,matched,0,0,matched,low,peripheral_blood,no,9.89,3.38,2.927597,15.0,18.0,yes,no,1000000.0,no,no,1587.0,0
+31.671233,yes,AB,absent,11.8,no,10_20,male,45.5,0,plus,absent,ALL,malignant,other,mismatched,0,10/10,matched,0,0,matched,low,peripheral_blood,no,10.44,4.26,2.449389,14.0,32.0,yes,no,1000000.0,no,no,445.0,0
+26.731507,yes,0,present,11.3,no,10_20,female,46.7,A,plus,present,nonmalignant,nonmalignant,other,mismatched,3,10/10,matched,0,0,matched,low,peripheral_blood,no,8.82,4.94,1.786075,17.0,22.0,no,no,1000000.0,no,no,1243.0,0
+39.643836,no,A,absent,13.5,no,10_20,female,47.0,0,plus,absent,lymphoma,malignant,other,mismatched,0,9/10,matched,2,1,one_antigen,high,bone_marrow,no,3.65,0.29,12.479226,19.0,27.0,no,no,1000000.0,?,no,66.0,1
+41.542466,no,AB,absent,13.5,no,10_20,female,58.0,0,plus,present,chronic,malignant,other,mismatched,2,10/10,matched,0,0,matched,low,peripheral_blood,no,14.12,1.24,11.405197,14.0,14.0,yes,no,1000000.0,no,no,1937.0,0
+42.268493,no,0,absent,17.8,no,10_20,male,56.5,A,plus,?,AML,malignant,female_to_male,mismatched,?,9/10,matched,2,1,one_antigen,low,bone_marrow,no,1.91,0.15,12.36598,16.0,47.0,yes,no,1000000.0,yes,no,435.0,1
+41.443836,no,A,present,3.8,yes,0_5,female,16.5,0,plus,present,chronic,malignant,other,mismatched,3,9/10,matched,2,1,one_antigen,high,bone_marrow,no,8.58,0.77,11.123182,16.0,29.0,yes,no,1000000.0,no,yes,102.0,1
+29.964384,yes,0,absent,6.5,yes,5_10,female,16.0,A,plus,absent,chronic,malignant,other,mismatched,0,7/10,mismatched,1,4,mismatched,high,peripheral_blood,no,43.96,7.32,6.002989,11.0,13.0,yes,yes,24.0,no,no,113.0,1
+21.263014,yes,B,absent,7.4,yes,5_10,male,26.5,0,plus,present,ALL,malignant,other,mismatched,2,10/10,matched,0,0,matched,low,bone_marrow,no,3.53,0.84,4.184092,21.0,170.0,no,no,1000000.0,no,no,1397.0,0
+21.756164,yes,A,present,5.5,yes,5_10,male,28.0,B,minus,present,chronic,malignant,other,mismatched,3,9/10,matched,2,1,one_antigen,high,peripheral_blood,no,11.68,5.8,2.014498,22.0,44.0,yes,no,1000000.0,no,yes,849.0,1
+29.980822,yes,A,present,9.2,yes,5_10,male,26.0,B,minus,present,ALL,malignant,other,mismatched,3,10/10,matched,0,0,matched,low,peripheral_blood,no,11.34,5.4,2.098238,16.0,17.0,yes,no,1000000.0,no,yes,200.0,1
+22.112329,yes,A,absent,14.6,no,10_20,male,37.5,B,minus,present,lymphoma,malignant,other,mismatched,2,10/10,matched,0,0,matched,low,peripheral_blood,no,7.91,?,?,1000000.0,1000000.0,no,no,1000000.0,?,no,26.0,1
+37.0,no,A,absent,14.1,no,10_20,male,44.3,A,plus,present,lymphoma,malignant,other,matched,2,10/10,matched,0,0,matched,high,peripheral_blood,yes,10.12,3.7,2.734269,15.0,16.0,yes,no,1000000.0,?,no,60.0,1
+33.550685,yes,A,present,12.1,no,10_20,male,43.0,A,plus,present,lymphoma,malignant,other,matched,3,9/10,matched,2,1,one_antigen,high,peripheral_blood,no,9.47,2.14,4.420206,12.0,20.0,no,no,1000000.0,no,yes,403.0,1
+35.630137,no,A,absent,15.5,no,10_20,female,61.3,A,plus,present,AML,malignant,other,matched,2,9/10,matched,2,1,one_antigen,low,bone_marrow,no,1.9,0.36,5.276616,18.0,1000000.0,no,no,1000000.0,?,no,60.0,1
+40.052055,no,A,absent,3.9,yes,0_5,female,14.1,A,plus,present,nonmalignant,nonmalignant,other,matched,2,10/10,matched,0,0,matched,low,peripheral_blood,no,16.0,10.06,1.589775,12.0,13.0,no,no,1000000.0,no,yes,1018.0,1
+33.791781,yes,B,absent,11.2,no,10_20,male,34.0,A,plus,absent,chronic,malignant,female_to_male,mismatched,0,10/10,matched,0,0,matched,low,bone_marrow,no,1.38,?,?,22.0,56.0,no,no,1000000.0,no,no,2699.0,0
+32.372603,yes,A,absent,20.2,no,10_20,male,62.5,AB,minus,absent,AML,malignant,other,mismatched,0,8/10,mismatched,3,1,two_diffs,high,peripheral_blood,no,9.11,3.39,2.687529,16.0,111.0,yes,no,1000000.0,no,yes,767.0,0
+25.210959,yes,0,absent,1.7,yes,0_5,male,11.2,A,plus,present,ALL,malignant,female_to_male,mismatched,2,10/10,matched,0,0,matched,low,peripheral_blood,no,12.09,6.59,1.833687,15.0,32.0,yes,yes,11.0,no,no,580.0,0
+28.276712,yes,B,absent,18.2,no,10_20,female,72.5,A,plus,present,ALL,malignant,other,mismatched,2,9/10,matched,2,1,one_antigen,low,bone_marrow,no,1.31,0.09,14.642869,21.0,1000000.0,yes,no,1000000.0,no,no,202.0,1
+40.386301,no,0,absent,8.2,yes,5_10,female,24.5,B,minus,absent,nonmalignant,nonmalignant,other,mismatched,0,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,17.45,5.09,3.430293,20.0,15.0,yes,no,1000000.0,no,no,1195.0,0
+21.972603,yes,0,absent,15.4,no,10_20,male,70.0,B,plus,absent,AML,malignant,female_to_male,mismatched,0,10/10,matched,0,0,matched,low,bone_marrow,no,1.58,0.25,6.34585,18.0,29.0,yes,no,1000000.0,yes,no,136.0,1
+30.835616,yes,0,absent,5.0,yes,0_5,female,?,0,plus,absent,ALL,malignant,other,matched,0,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,34.1,?,?,9.0,10.0,yes,no,1000000.0,yes,no,385.0,1
+22.408219,yes,0,present,7.6,yes,5_10,female,34.0,A,minus,?,nonmalignant,nonmalignant,other,mismatched,?,10/10,matched,0,0,matched,low,peripheral_blood,no,11.65,1.68,6.928599,15.0,1000000.0,yes,yes,21.0,yes,no,161.0,1
+52.476712,no,AB,present,9.4,yes,5_10,female,22.6,A,minus,absent,chronic,malignant,other,mismatched,1,9/10,matched,2,1,one_antigen,high,peripheral_blood,no,17.59,7.35,2.394072,13.0,16.0,no,no,1000000.0,no,yes,824.0,0
+21.128767,yes,0,absent,14.0,no,10_20,male,54.1,0,plus,absent,ALL,malignant,female_to_male,matched,0,10/10,matched,0,0,matched,high,peripheral_blood,no,5.08,7.16,0.709805,15.0,17.0,yes,no,1000000.0,no,no,1257.0,0
+19.446575,yes,0,present,15.3,no,10_20,male,51.1,A,plus,absent,chronic,malignant,other,mismatched,1,10/10,matched,0,0,matched,high,peripheral_blood,no,7.2,5.27,1.365785,12.0,15.0,no,no,1000000.0,no,no,1280.0,0
+30.156164,yes,A,absent,7.2,yes,5_10,male,24.3,A,plus,absent,lymphoma,malignant,other,matched,0,10/10,matched,0,0,matched,low,peripheral_blood,no,17.12,7.32,2.337369,16.0,21.0,yes,no,1000000.0,?,yes,67.0,1
+49.205479,no,0,absent,5.7,yes,5_10,male,23.0,A,plus,absent,chronic,malignant,female_to_male,mismatched,0,8/10,mismatched,3,1,two_diffs,high,peripheral_blood,no,6.9,4.97,1.38917,15.0,13.0,yes,yes,26.0,yes,no,191.0,1
+41.873973,no,A,absent,6.1,yes,5_10,female,19.0,A,plus,absent,chronic,malignant,other,matched,0,10/10,matched,0,0,matched,low,peripheral_blood,no,17.02,2.33,7.305471,13.0,11.0,yes,yes,99.0,no,no,130.0,1
+27.676712,yes,0,present,11.5,no,10_20,male,33.0,0,plus,absent,AML,malignant,other,matched,1,10/10,matched,0,0,matched,high,peripheral_blood,yes,14.87,5.83,2.552321,13.0,26.0,yes,no,1000000.0,yes,no,2286.0,0
+40.339726,no,B,present,3.2,yes,0_5,male,17.2,A,plus,present,nonmalignant,nonmalignant,female_to_male,mismatched,3,10/10,matched,0,0,matched,low,peripheral_blood,no,21.59,7.93,2.722087,15.0,17.0,no,no,1000000.0,no,no,510.0,0
+40.183562,no,0,absent,18.3,no,10_20,female,?,0,plus,present,ALL,malignant,other,matched,2,9/10,matched,2,1,one_antigen,high,peripheral_blood,no,9.28,?,?,13.0,27.0,yes,no,1000000.0,?,no,56.0,1
+33.915068,yes,A,absent,9.5,yes,5_10,female,23.0,0,plus,?,lymphoma,malignant,other,mismatched,?,9/10,matched,2,1,one_antigen,high,peripheral_blood,yes,36.34,4.83,7.517388,14.0,13.0,yes,no,1000000.0,yes,no,745.0,1
+25.715068,yes,0,absent,17.3,no,10_20,male,73.0,0,plus,absent,chronic,malignant,other,matched,0,10/10,matched,0,0,matched,low,peripheral_blood,no,7.1,2.84,2.498917,12.0,20.0,yes,yes,58.0,yes,no,534.0,1
+28.709589,yes,B,present,3.1,yes,0_5,female,15.3,A,plus,present,AML,malignant,other,mismatched,?,10/10,matched,0,0,matched,low,peripheral_blood,no,2.81,13.77,0.204132,17.0,189.0,no,no,100.0,no,no,454.0,0
+30.594521,yes,0,absent,16.5,no,10_20,female,55.2,A,plus,present,chronic,malignant,other,mismatched,2,8/10,mismatched,3,1,two_diffs,low,peripheral_blood,no,6.36,2.45,2.59522,12.0,21.0,yes,yes,11.0,no,no,68.0,1
+35.764384,no,0,absent,7.7,yes,5_10,female,18.6,A,plus,absent,ALL,malignant,other,mismatched,0,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,9.38,5.07,1.848795,17.0,21.0,yes,no,1000000.0,yes,no,511.0,0
+42.049315,no,A,absent,18.7,no,10_20,male,52.7,0,plus,absent,AML,malignant,female_to_male,mismatched,0,8/10,mismatched,2,2,three_diffs,high,peripheral_blood,yes,5.37,3.32,1.6173,10.0,42.0,no,no,1000000.0,no,yes,274.0,1
+39.249315,no,0,absent,5.6,yes,5_10,male,24.3,A,plus,present,nonmalignant,nonmalignant,other,mismatched,2,10/10,matched,0,0,matched,low,peripheral_blood,no,18.59,6.35,2.929081,13.0,12.0,yes,no,1000000.0,?,no,28.0,1
+38.827397,no,A,absent,7.7,yes,5_10,male,19.5,B,plus,present,ALL,malignant,other,mismatched,2,8/10,mismatched,2,2,two_diffs,high,bone_marrow,no,1.28,0.2,6.537721,18.0,91.0,yes,yes,19.0,no,no,1593.0,0
+22.528767,yes,0,absent,9.0,yes,5_10,male,25.2,A,plus,absent,chronic,malignant,other,mismatched,0,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,11.26,2.97,3.787339,14.0,14.0,yes,yes,55.0,no,no,472.0,0
+28.268493,yes,0,present,5.4,yes,5_10,female,19.6,A,plus,?,chronic,malignant,other,mismatched,?,9/10,matched,1,2,one_allel,high,peripheral_blood,no,15.51,13.27,1.168705,16.0,13.0,no,no,1000000.0,no,no,1138.0,0
+28.723288,yes,A,present,7.3,yes,5_10,male,25.0,B,minus,absent,chronic,malignant,other,mismatched,1,8/10,mismatched,2,2,two_diffs,low,peripheral_blood,no,20.0,8.03,2.491794,14.0,14.0,yes,no,1000000.0,yes,no,1839.0,0
+37.254795,no,0,present,17.8,no,10_20,female,90.0,0,plus,absent,chronic,malignant,other,matched,1,8/10,mismatched,3,1,two_diffs,high,peripheral_blood,no,7.0,4.72,1.483826,12.0,30.0,no,no,1000000.0,?,no,57.0,1
+35.79726,no,0,absent,8.1,yes,5_10,female,26.9,B,plus,absent,nonmalignant,nonmalignant,other,mismatched,0,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,17.3,2.22,7.805782,14.0,21.0,yes,no,1000000.0,no,no,1754.0,0
+26.663014,yes,0,absent,7.1,yes,5_10,male,32.0,B,plus,absent,ALL,malignant,other,mismatched,0,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,14.74,6.02,2.449323,13.0,14.0,yes,no,1000000.0,no,yes,672.0,1
+43.065753,no,B,absent,6.7,yes,5_10,female,17.6,0,plus,present,ALL,malignant,other,mismatched,2,10/10,matched,0,0,matched,low,bone_marrow,no,4.27,0.04,99.56097,18.0,24.0,no,no,1000000.0,no,no,2117.0,0
+21.405479,yes,0,present,12.7,no,10_20,female,37.0,A,plus,present,chronic,malignant,other,mismatched,3,9/10,matched,1,2,one_allel,low,peripheral_blood,no,7.78,4.46,1.744246,15.0,13.0,yes,no,1000000.0,yes,no,236.0,1
+25.284932,yes,A,present,4.5,yes,0_5,female,19.0,0,plus,present,nonmalignant,nonmalignant,other,mismatched,3,10/10,matched,0,0,matched,low,peripheral_blood,no,24.7,4.9,5.045842,14.0,12.0,no,no,1000000.0,no,no,1679.0,0
+33.643836,yes,B,absent,17.5,no,10_20,male,65.0,B,minus,absent,ALL,malignant,other,matched,0,10/10,matched,0,0,matched,low,peripheral_blood,no,7.97,5.11,1.558548,19.0,23.0,no,no,1000000.0,no,no,718.0,0
+33.857534,yes,A,absent,1.3,yes,0_5,male,9.6,A,plus,absent,chronic,malignant,other,matched,0,9/10,matched,2,1,one_antigen,high,peripheral_blood,no,10.75,10.56,1.018042,17.0,1000000.0,yes,yes,19.0,?,no,48.0,1
+24.284932,yes,0,absent,1.3,yes,0_5,female,10.5,B,plus,absent,chronic,malignant,other,mismatched,0,10/10,matched,0,0,matched,low,bone_marrow,no,4.37,0.97,4.489022,17.0,21.0,yes,no,100.0,no,no,2153.0,0
+51.991781,no,A,absent,16.7,no,10_20,male,50.6,A,plus,absent,chronic,malignant,female_to_male,matched,0,10/10,matched,0,0,matched,low,peripheral_blood,no,4.44,2.4,1.851411,13.0,14.0,yes,yes,33.0,no,no,117.0,1
+29.158904,yes,0,absent,15.1,no,10_20,female,60.0,A,plus,absent,chronic,malignant,other,mismatched,0,9/10,matched,1,2,one_allel,low,peripheral_blood,no,7.45,1.77,4.2187,12.0,13.0,yes,no,1000000.0,no,no,1781.0,0
+36.435616,no,0,absent,20.1,no,10_20,male,54.5,AB,minus,present,ALL,malignant,other,mismatched,2,10/10,matched,0,0,matched,low,peripheral_blood,no,10.14,1.96,5.164562,17.0,24.0,no,no,1000000.0,yes,no,290.0,1
+37.380822,no,A,absent,17.8,no,10_20,female,51.3,0,plus,absent,AML,malignant,other,mismatched,0,8/10,mismatched,3,1,two_diffs,high,bone_marrow,yes,10.85,10.14,1.070314,14.0,15.0,yes,no,1000000.0,yes,no,2112.0,0
+22.493151,yes,0,absent,2.3,yes,0_5,male,12.0,A,plus,present,ALL,malignant,other,mismatched,2,9/10,matched,2,1,DRB1_cell,low,peripheral_blood,no,20.41,15.9,1.283387,12.0,12.0,no,no,1000000.0,no,no,1301.0,0
+47.369863,no,0,present,11.6,no,10_20,male,33.0,A,?,present,ALL,malignant,female_to_male,mismatched,3,8/10,mismatched,2,2,two_diffs,low,peripheral_blood,no,6.28,5.8,1.082899,18.0,30.0,yes,yes,34.0,no,yes,108.0,1
+40.317808,no,0,absent,17.7,no,10_20,male,59.0,?,?,?,ALL,malignant,female_to_male,?,?,10/10,matched,0,0,matched,high,peripheral_blood,no,4.49,1.0,4.468419,18.0,19.0,no,no,1000000.0,yes,no,196.0,1
+42.739726,no,0,present,7.7,yes,5_10,female,20.8,A,plus,absent,ALL,malignant,other,mismatched,1,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,15.47,11.49,1.346764,16.0,18.0,yes,yes,21.0,no,no,1188.0,0
+22.863014,yes,A,absent,17.9,no,10_20,female,42.4,0,plus,present,nonmalignant,nonmalignant,other,mismatched,2,10/10,matched,0,0,matched,low,peripheral_blood,no,9.73,3.25,2.997231,1000000.0,1000000.0,no,no,1000000.0,?,no,10.0,1
+40.912329,no,A,present,2.0,yes,0_5,female,12.0,A,plus,present,ALL,malignant,other,matched,3,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,19.3,10.49,1.839537,17.0,17.0,yes,no,1000000.0,yes,no,1171.0,0
+35.627397,no,A,absent,17.4,no,10_20,male,65.0,0,minus,absent,chronic,malignant,other,mismatched,0,9/10,matched,1,2,one_allel,low,peripheral_blood,no,12.04,3.19,3.774746,16.0,24.0,yes,yes,42.0,no,no,2525.0,0
+22.430137,yes,0,present,16.0,no,10_20,male,44.5,B,plus,present,AML,malignant,other,mismatched,3,10/10,matched,0,0,matched,high,peripheral_blood,no,14.66,6.92,2.118673,11.0,17.0,yes,no,1000000.0,no,no,1025.0,0
+34.005479,yes,0,absent,9.0,yes,5_10,female,33.0,0,plus,absent,ALL,malignant,other,matched,0,8/10,mismatched,2,2,two_diffs,low,peripheral_blood,no,8.34,3.08,2.703806,18.0,46.0,yes,no,1000000.0,no,no,182.0,1
+34.624658,yes,0,present,14.7,no,10_20,male,62.0,B,plus,absent,ALL,malignant,other,mismatched,1,10/10,matched,0,0,matched,low,bone_marrow,no,2.88,0.05,56.065024,18.0,51.0,no,no,1000000.0,no,yes,996.0,1
+46.00274,no,B,present,18.8,no,10_20,male,103.4,0,plus,?,lymphoma,malignant,other,mismatched,?,8/10,mismatched,3,1,two_diffs,high,peripheral_blood,no,1.64,0.17,9.456741,1000000.0,1000000.0,no,no,1000000.0,?,no,15.0,1
+38.2,no,0,absent,16.0,no,10_20,male,71.0,A,plus,absent,chronic,malignant,other,mismatched,0,9/10,matched,1,2,DRB1_cell,high,bone_marrow,no,5.25,0.27,19.210978,14.0,30.0,yes,yes,14.0,?,no,48.0,1
+51.005479,no,B,absent,18.9,no,10_20,male,70.0,B,plus,present,ALL,malignant,other,matched,2,10/10,matched,0,0,matched,low,peripheral_blood,no,4.77,4.59,1.038752,13.0,1000000.0,no,no,1000000.0,?,no,41.0,1
+36.789041,no,0,absent,16.6,no,10_20,female,58.9,0,plus,present,ALL,malignant,other,matched,2,10/10,matched,0,0,matched,low,bone_marrow,no,3.5,0.47,7.423372,19.0,1000000.0,yes,yes,15.0,?,no,42.0,1
+43.745205,no,0,absent,3.3,yes,0_5,female,13.0,0,plus,present,AML,malignant,other,matched,2,8/10,mismatched,2,2,two_diffs,high,peripheral_blood,no,44.0,12.23,3.597279,11.0,12.0,yes,yes,27.0,no,no,2337.0,0
+43.126027,no,0,present,5.2,yes,5_10,female,20.9,B,plus,absent,ALL,malignant,other,mismatched,1,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,6.78,8.48,0.799458,16.0,21.0,no,no,1000000.0,no,no,1385.0,0
+46.545205,no,0,absent,6.0,yes,5_10,male,17.3,B,minus,absent,ALL,malignant,female_to_male,mismatched,0,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,17.61,6.25,2.818993,16.0,33.0,no,no,1000000.0,no,no,766.0,0
+30.279452,yes,A,absent,3.4,yes,0_5,male,14.8,0,minus,present,chronic,malignant,other,mismatched,2,9/10,matched,2,1,one_antigen,low,bone_marrow,no,10.96,1.03,10.611083,15.0,19.0,no,no,1000000.0,no,yes,2932.0,0
+39.627397,no,B,absent,17.0,no,10_20,female,62.0,A,plus,present,AML,malignant,other,mismatched,2,8/10,mismatched,2,2,two_diffs,high,peripheral_blood,no,12.36,1.97,6.258729,17.0,14.0,no,no,1000000.0,no,no,2761.0,0
+20.394521,yes,B,absent,6.8,yes,5_10,male,23.0,A,plus,present,ALL,malignant,female_to_male,mismatched,2,9/10,matched,2,1,DRB1_cell,high,peripheral_blood,no,9.72,6.3,1.543305,12.0,18.0,yes,yes,10.0,yes,no,214.0,1
+25.772603,yes,A,absent,18.2,no,10_20,female,54.6,A,plus,?,AML,malignant,other,matched,?,10/10,matched,0,0,matched,low,peripheral_blood,no,6.55,2.14,3.065758,15.0,32.0,no,no,1000000.0,no,no,494.0,0
+40.391781,no,0,present,13.7,no,10_20,male,35.5,A,plus,present,chronic,malignant,female_to_male,mismatched,3,9/10,matched,2,1,one_antigen,high,peripheral_blood,no,2.25,4.94,0.455355,17.0,29.0,no,no,1000000.0,no,no,754.0,0
+39.0,no,AB,?,5.1,yes,5_10,male,17.5,0,plus,?,ALL,malignant,other,mismatched,?,10/10,matched,0,0,matched,high,peripheral_blood,yes,48.63,13.01,3.737477,10.0,9.0,no,no,1000000.0,?,no,59.0,1
+23.09589,yes,AB,absent,18.3,no,10_20,male,62.0,A,plus,?,chronic,malignant,female_to_male,mismatched,?,10/10,matched,0,0,matched,high,bone_marrow,no,1.88,0.24,7.910679,23.0,1000000.0,no,no,1000000.0,?,yes,64.0,1
+43.30411,no,A,absent,14.0,no,10_20,male,58.0,A,plus,present,ALL,malignant,other,matched,2,10/10,matched,0,0,matched,low,peripheral_blood,no,9.86,2.85,3.465003,17.0,24.0,yes,yes,21.0,no,no,1214.0,0
+19.663014,yes,0,present,13.0,no,10_20,female,43.0,AB,plus,present,chronic,malignant,other,mismatched,3,10/10,matched,0,0,matched,low,peripheral_blood,no,6.62,2.75,2.40947,16.0,21.0,yes,no,1000000.0,yes,no,1895.0,0
+35.430137,no,A,absent,13.5,no,10_20,male,65.0,B,plus,present,ALL,malignant,female_to_male,mismatched,2,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,8.63,7.15,1.2068,14.0,18.0,yes,yes,14.0,?,no,90.0,1
+25.506849,yes,B,absent,12.2,no,10_20,female,44.1,B,plus,present,ALL,malignant,other,matched,2,9/10,matched,2,1,one_antigen,low,bone_marrow,no,3.53,0.49,7.243234,18.0,37.0,yes,no,1000000.0,no,no,246.0,1
+29.619178,yes,B,absent,10.0,yes,10_20,male,55.0,B,plus,present,ALL,malignant,other,matched,2,10/10,matched,0,0,matched,low,peripheral_blood,no,9.37,3.75,2.496128,16.0,74.0,no,no,1000000.0,no,no,2317.0,0
+45.136986,no,0,absent,15.5,no,10_20,male,71.0,B,plus,present,AML,malignant,other,mismatched,2,8/10,mismatched,2,2,two_diffs,high,peripheral_blood,no,1.22,1.45,0.843646,14.0,25.0,yes,no,1000000.0,no,no,2461.0,0
+19.506849,yes,A,absent,12.9,no,10_20,male,40.3,A,plus,present,AML,malignant,other,matched,2,9/10,matched,1,2,DRB1_cell,high,peripheral_blood,yes,4.22,1.42,2.965539,17.0,20.0,yes,no,1000000.0,no,yes,413.0,1
+40.419178,no,A,present,3.0,yes,0_5,male,13.0,A,minus,present,chronic,malignant,other,matched,3,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,39.07,6.42,6.081859,11.0,12.0,yes,yes,51.0,no,no,1741.0,0
+30.972603,yes,AB,absent,11.5,no,10_20,female,36.0,A,plus,present,chronic,malignant,other,mismatched,2,10/10,matched,0,0,matched,low,bone_marrow,no,3.16,0.24,12.984467,15.0,27.0,no,no,1000000.0,no,no,3364.0,0
+29.306849,yes,A,absent,14.1,no,10_20,male,49.0,A,plus,present,AML,malignant,other,matched,2,10/10,matched,0,0,matched,low,peripheral_blood,no,5.01,2.05,2.446267,13.0,16.0,yes,no,1000000.0,yes,no,353.0,1
+30.421918,yes,0,absent,8.5,yes,5_10,male,24.0,AB,minus,present,ALL,malignant,female_to_male,mismatched,2,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,12.52,9.27,1.350554,14.0,33.0,yes,yes,18.0,no,yes,1074.0,0
+24.575342,yes,B,absent,5.0,yes,0_5,male,25.4,A,plus,present,ALL,malignant,other,mismatched,2,7/10,mismatched,2,3,mismatched,low,peripheral_blood,no,10.0,4.09,2.443228,12.0,14.0,no,no,1000000.0,no,yes,1692.0,0
+41.627397,no,B,absent,13.4,no,10_20,male,38.4,B,plus,present,ALL,malignant,other,matched,2,10/10,matched,0,0,matched,high,peripheral_blood,yes,8.98,7.6,1.181537,16.0,1000000.0,no,no,1000000.0,no,no,174.0,1
+23.578082,yes,B,present,6.4,yes,5_10,male,18.3,B,plus,absent,ALL,malignant,other,mismatched,1,10/10,matched,0,0,matched,low,peripheral_blood,no,12.17,6.56,1.854875,15.0,20.0,yes,no,1000000.0,no,no,433.0,0
+29.126027,yes,B,present,4.2,yes,0_5,female,18.0,A,plus,present,ALL,malignant,other,mismatched,3,9/10,matched,1,2,one_allel,high,bone_marrow,no,4.54,0.37,12.272474,15.0,28.0,no,no,1000000.0,no,yes,421.0,1
+22.257534,yes,0,absent,4.4,yes,0_5,male,16.0,B,plus,present,nonmalignant,nonmalignant,other,mismatched,2,10/10,matched,0,0,matched,high,peripheral_blood,yes,21.99,11.71,1.878043,16.0,21.0,yes,yes,18.0,no,no,1308.0,0
+18.646575,yes,A,present,9.6,yes,5_10,male,36.0,B,plus,present,ALL,malignant,other,mismatched,3,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,12.03,3.86,3.120205,13.0,15.0,yes,no,1000000.0,no,no,2483.0,0
+24.180822,yes,AB,absent,12.5,no,10_20,female,35.9,B,plus,present,AML,malignant,other,mismatched,2,10/10,matched,0,0,matched,low,peripheral_blood,no,3.28,10.61,0.309048,15.0,24.0,no,no,1000000.0,no,no,1297.0,0
+35.890411,no,0,present,9.7,yes,5_10,female,44.3,A,plus,present,AML,malignant,other,mismatched,3,10/10,matched,0,0,matched,high,peripheral_blood,yes,10.89,4.86,2.241175,13.0,21.0,yes,no,1000000.0,yes,yes,397.0,1
+29.928767,yes,A,absent,11.2,no,10_20,male,30.5,0,minus,absent,AML,malignant,female_to_male,mismatched,0,8/10,mismatched,2,2,three_diffs,low,peripheral_blood,no,15.12,5.16,2.929514,13.0,16.0,yes,no,1000000.0,no,no,458.0,0
+35.443836,no,A,present,3.6,yes,0_5,female,17.0,AB,plus,absent,ALL,malignant,other,mismatched,1,9/10,matched,2,1,one_antigen,high,peripheral_blood,no,32.73,8.06,4.061324,14.0,16.0,yes,no,1000000.0,no,yes,147.0,1
+28.073973,yes,AB,absent,2.9,yes,0_5,female,11.2,A,plus,absent,AML,malignant,other,mismatched,0,8/10,mismatched,2,2,two_diffs,high,peripheral_blood,no,10.38,5.02,2.069057,13.0,27.0,yes,yes,17.0,?,no,31.0,1
+41.476712,no,B,present,17.8,no,10_20,male,50.8,AB,plus,absent,AML,malignant,female_to_male,mismatched,1,10/10,matched,0,0,matched,high,peripheral_blood,yes,6.87,5.65,1.214932,21.0,25.0,no,no,1000000.0,no,yes,1243.0,1
+40.947945,no,A,present,16.1,no,10_20,male,57.0,B,plus,absent,ALL,malignant,female_to_male,mismatched,1,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,11.283,2.76,4.094514,15.0,21.0,no,no,1000000.0,no,no,2208.0,0
+36.690411,no,A,absent,3.4,yes,0_5,female,24.0,B,plus,present,ALL,malignant,other,mismatched,2,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,7.47,8.85,0.843967,15.0,247.0,yes,no,1000000.0,no,no,2373.0,0
+42.416438,no,0,absent,4.3,yes,0_5,male,14.0,AB,plus,absent,nonmalignant,nonmalignant,female_to_male,mismatched,0,10/10,matched,0,0,matched,low,peripheral_blood,no,36.65,20.02,1.830242,18.0,20.0,yes,no,1000000.0,no,no,1185.0,0
+34.167123,yes,0,absent,12.7,no,10_20,female,49.0,B,plus,present,ALL,malignant,other,mismatched,2,9/10,matched,1,2,one_allel,low,peripheral_blood,no,11.45,6.85,1.671314,13.0,14.0,yes,no,1000000.0,no,no,1985.0,0
+37.060274,no,A,absent,8.8,yes,5_10,male,24.0,A,minus,present,AML,malignant,other,matched,2,9/10,matched,1,2,one_allel,high,peripheral_blood,no,14.43,6.54,2.205359,12.0,19.0,yes,no,1000000.0,no,no,1873.0,0
+30.024658,yes,A,absent,7.5,yes,5_10,male,28.0,AB,minus,absent,ALL,malignant,female_to_male,mismatched,0,9/10,matched,2,1,one_antigen,low,bone_marrow,no,8.11,0.5,16.32616,16.0,100.0,yes,no,1000000.0,no,no,1627.0,0
+30.854795,yes,A,present,4.8,yes,0_5,male,25.0,B,plus,absent,ALL,malignant,female_to_male,mismatched,1,8/10,mismatched,1,3,two_diffs,low,peripheral_blood,no,7.87,7.81,1.007599,13.0,23.0,yes,no,1000000.0,?,no,41.0,1
+37.632877,no,0,present,8.8,yes,5_10,male,33.0,A,plus,present,AML,malignant,other,mismatched,3,10/10,matched,0,0,matched,high,peripheral_blood,no,12.58,5.19,2.426122,1000000.0,1000000.0,no,no,1000000.0,?,no,6.0,1
+37.575342,no,A,present,12.9,no,10_20,male,44.0,A,minus,present,lymphoma,malignant,other,matched,3,10/10,matched,0,0,matched,high,peripheral_blood,yes,11.08,4.39,2.52275,15.0,22.0,yes,yes,16.0,no,yes,385.0,1
+22.89589,yes,A,absent,13.9,no,10_20,female,44.5,0,plus,present,AML,malignant,other,mismatched,2,10/10,matched,0,0,matched,high,peripheral_blood,no,4.64,4.47,1.038858,12.0,30.0,no,no,1000000.0,no,no,634.0,1
+27.347945,yes,A,present,10.4,no,10_20,female,33.0,B,plus,present,nonmalignant,nonmalignant,other,mismatched,3,10/10,matched,0,0,matched,low,peripheral_blood,no,7.73,4.73,1.635559,16.0,16.0,yes,no,1000000.0,no,no,1895.0,0
+27.780822,yes,A,absent,8.0,yes,5_10,male,24.0,0,plus,absent,chronic,malignant,other,mismatched,0,9/10,matched,2,1,one_antigen,low,peripheral_blood,no,15.41,1.91,8.07777,13.0,14.0,yes,yes,54.0,yes,no,382.0,1
+55.553425,no,A,present,9.5,yes,5_10,male,37.0,AB,plus,absent,nonmalignant,nonmalignant,other,mismatched,1,10/10,matched,?,?,matched,high,peripheral_blood,yes,9.91,10.45,0.948135,18.0,20.0,yes,no,1000000.0,no,no,1109.0,0

@@ -108,6 +108,10 @@ The detailed RuleKit documentation can be found on [Wiki pages](../../wiki) whic
 
 JavaDoc for the project is available [here](https://adaa-polsl.github.io/RuleKit/).  
 
+# Datasets 
+
+The repository contains the datasets used in the GuideR study. We also provide the latest UCI revision of the [*Bone marrow transplant: children*](https://github.com/adaa-polsl/RuleKit/blob/master/data/bone-marrow-uci.arff) dataset. We recommend using this dataset at it contains lots of improvements compared to the previous release (e.g., textual encoding of attribute values). 
+
 # Authors and licensing
 
 RuleKit Development Team:
