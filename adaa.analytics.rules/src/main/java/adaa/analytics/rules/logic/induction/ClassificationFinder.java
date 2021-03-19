@@ -206,7 +206,7 @@ public class ClassificationFinder extends AbstractFinder {
 	 * @param trainSet Training set. 
 	 * @return Updated covering object.
 	 */
-	public void prune(final Rule rule, final ExampleSet trainSet) {
+	public void prune(final Rule rule, final ExampleSet trainSet, final Set<Integer> uncovered) {
 		Logger.log("ClassificationFinder.prune()\n", Level.FINE);
 		
 		// check preconditions

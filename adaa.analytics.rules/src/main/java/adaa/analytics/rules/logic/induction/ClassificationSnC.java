@@ -151,7 +151,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 						if (params.isPruningEnabled()) {
 							Logger.log("Before prunning:" + rule.toString() + "\n" , Level.FINE);
 							t = System.nanoTime();
-							finder.prune(rule, dataset);
+							finder.prune(rule, dataset, uncoveredPositives);
 							ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 						}
 						

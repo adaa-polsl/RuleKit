@@ -108,7 +108,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 			if (params.isPruningEnabled()) {
 				Logger.log("Before prunning: " + rule.toString() + "\n" , Level.FINE);
 				t = System.nanoTime();
-				finder.prune(rule, ses);
+				finder.prune(rule, ses, uncovered);
 				ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 			}
 			Logger.log("Candidate rule: " + rule.toString() + "\n", Level.FINE);
@@ -159,7 +159,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 				if (params.isPruningEnabled()) {
 					Logger.log("Before prunning: " + rule.toString() + "\n" , Level.FINE);
 					t = System.nanoTime();
-					finder.prune(rule, ses);
+					finder.prune(rule, ses, uncovered);
 					ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 				}
 				Logger.log("Candidate rule: " + rule.toString() + "\n", Level.FINE);

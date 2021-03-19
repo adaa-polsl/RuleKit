@@ -145,10 +145,14 @@ public abstract class AbstractFinder implements AutoCloseable {
 	 * Removes irrelevant conditions from rule using hill-climbing strategy. 
 	 * 
 	 * @param rule Rule to be pruned.
-	 * @param trainSet Training set. 
+	 * @param trainSet Training set.
+	 * @param uncovered Collection of examples yet uncovered by the model (positive examples in the classification problems).
 	 * @return Covering of the rule after pruning.
 	 */
-	public void prune(final Rule rule, final ExampleSet trainSet) {
+	public void prune(
+			final Rule rule,
+			final ExampleSet trainSet,
+			final Set<Integer> uncovered) {
 		
 		Logger.log("AbstractFinder.prune()\n", Level.FINE);
 		
