@@ -1,14 +1,21 @@
 
 
 Rules
-	IF [PD = <0.50, inf) AND MM116 = (-inf, 1)] AND BA13 = <1068.50, 1071.50) THEN MM116_pred = {0.9} 
-	IF [PD = <0.50, inf) AND MM116 = (-inf, 1)] AND DMM116 = <-0.05, inf) AND MM31 = <0.32, 0.36) THEN MM116_pred = {0.7} 
-	IF [PD = <0.50, inf) AND MM116 = (-inf, 1)] AND AS038 = <2.25, inf) AND MM31 = <0.38, inf) AND BA13 = (-inf, 1075) THEN MM116_pred = {0.9} 
-	IF [PD = <0.50, inf) AND MM116 = (-inf, 1)] AND DMM116 = <-0.05, inf) AND MM31 = <0.36, inf) AND BA13 = <1071.50, inf) THEN MM116_pred = {0.8} 
-	IF [PD = <0.50, inf) AND MM116 = (-inf, 1)] AND MM31 = <0.28, inf) THEN MM116_pred = {0.8} 
-	IF MM116 = (-inf, 0.60) AND MM31 = (-inf, 0.24) THEN MM116_pred = {0.4} 
-	IF PD = (-inf, 0.50) AND MM31 = <0.23, 0.26) THEN MM116_pred = {0.5} 
-	IF MM116 = (-inf, 0.85) AND AS038 = <2.25, 2.45) AND MM31 = <0.23, 0.28) THEN MM116_pred = {0.5} 
-	IF MM31 = <0.23, 0.31) AND PG072 = (-inf, 1.95) AND BA13 = (-inf, 1075.50) THEN MM116_pred = {0.5} 
-	IF MM116 = (-inf, 0.65) AND DMM116 = <-0.05, 0.05) AND MM31 = <0.24, inf) AND BA13 = <1070.50, inf) THEN MM116_pred = {0.5} 
-	IF MM116 = <0.55, inf) THEN MM116_pred = {0.9} 
+	IF [PD = <0.50, inf) AND MM116 = (-inf, 1)] AND BA13 = <1068.50, 1071.50) THEN MM116_pred = {0.90} 
+	IF [PD = <0.50, inf) AND MM116 = (-inf, 1)] AND DMM116 = <-0.05, inf) AND MM31 = <0.32, 0.36) THEN MM116_pred = {0.70} 
+	IF [PD = <0.50, inf) AND MM116 = (-inf, 1)] AND DMM116 = <-0.05, inf) AND MM31 = <0.37, 0.50) AND BA13 = <1071, inf) THEN MM116_pred = {0.80} 
+	IF [PD = <0.50, inf) AND MM116 = (-inf, 1)] AND AS038 = <2.25, inf) AND BA13 = (-inf, 1075) THEN MM116_pred = {0.90} 
+	IF [PD = <0.50, inf) AND MM116 = (-inf, 1)] AND AS038 = <2.25, inf) AND MM31 = <0.28, 0.36) THEN MM116_pred = {0.60} 
+	IF MM116 = (-inf, 0.60) AND MM31 = (-inf, 0.24) THEN MM116_pred = {0.40} 
+	IF MM31 = <0.24, 0.31) AND PG072 = (-inf, 1.95) AND BA13 = (-inf, 1075.50) THEN MM116_pred = {0.50} 
+	IF MM116 = (-inf, 0.65) AND MM31 = <0.24, 0.30) AND BA13 = <1073.50, inf) THEN MM116_pred = {0.50} 
+	IF MM116 = <0.55, 0.85) AND DMM116 = <-0.05, inf) AND MM31 = <0.26, 0.33) THEN MM116_pred = {0.60} 
+	IF MM31 = (-inf, 0.33) THEN MM116_pred = {0.50} 
+	IF MM116 = (-inf, 0.75) AND MM31 = <0.24, inf) THEN MM116_pred = {0.60} 
+	IF MM116 = <1.05, 1.25) AND AS038 = (-inf, 2.45) AND MM31 = <0.39, inf) AND BA13 = (-inf, 1076.50) THEN MM116_pred = {1.20} 
+	IF MM116 = <1.05, 1.25) AND MM31 = <0.37, 0.57) AND PG072 = <1.75, inf) AND BA13 = <1069.50, inf) THEN MM116_pred = {1.20} 
+	IF MM116 = <0.95, 1.25) THEN MM116_pred = {1.10} 
+	IF MM116 = <0.95, 1.35) THEN MM116_pred = {1.10} 
+	IF MM116 = (-inf, 0.85) AND DMM116 = (-inf, 0.05) AND AS038 = (-inf, 2.45) AND MM31 = (-inf, 0.36) AND PG072 = <1.65, inf) THEN MM116_pred = {0.50} 
+	IF MM31 = (-inf, 0.36) THEN MM116_pred = {0.50} 
+	IF MM116 = (-inf, 0.95) AND MM31 = <0.32, inf) THEN MM116_pred = {0.80} 

@@ -25,7 +25,9 @@ import com.rapidminer.example.set.SortedExampleSet;
 import com.rapidminer.tools.container.Pair;
 
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -120,6 +122,8 @@ public class RegressionRule extends Rule {
 		}
 		double sum_y = 0.0, sum_y2 = 0.0;
 		//initially, everything as negatives
+		List<Integer> orderedNegatives = new ArrayList<Integer>(set.size());
+
 		for (int id = 0; id < set.size(); ++id) {
 			Example ex = set.getExample(id);
 			double weight = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
@@ -128,6 +132,7 @@ public class RegressionRule extends Rule {
 
 			if (this.getPremise().evaluate(ex)) { // if covered
 				ct.weighted_n += weight;
+				orderedNegatives.add(id);
 				negatives.add(id);
 
 				double y = ex.getLabel();
@@ -136,22 +141,32 @@ public class RegressionRule extends Rule {
 			}
 		}
 
+		if (negatives.size() == 0) {
+			return;
+		}
+
 		ct.mean_y = sum_y / ct.weighted_n;
 		ct.stddev_y = Math.sqrt(sum_y2 / ct.weighted_n - ct.mean_y * ct.mean_y); // VX = E(X^2) - (EX)^2
 
-		double cur = 0;
+		boolean weighted = (set.getAttributes().getWeight() != null);
 		int medianId = 0;
-		Iterator<Integer> it = negatives.iterator();
-		while (it.hasNext()) {
-			int id = it.next();
-			Example ex = set.getExample(id);
 
-			// if example covered
-			cur += set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
-			if (cur > ct.weighted_n / 2) {
-				break;
+		if (weighted) {
+			double cur = 0;
+			Iterator<Integer> it = negatives.iterator();
+			while (it.hasNext()) {
+				int id = it.next();
+				Example ex = set.getExample(id);
+
+				// if example covered
+				cur += set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
+				if (cur > ct.weighted_n / 2) {
+					break;
+				}
+				medianId = id;
 			}
-			medianId = id;
+		} else {
+			medianId = orderedNegatives.get(orderedNegatives.size() / 2);
 		}
 
 		ct.median_y = set.getExample(medianId).getLabel();
