@@ -18,12 +18,14 @@ import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
+import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.tools.container.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -228,6 +230,24 @@ public abstract class Rule implements Serializable, Cloneable {
 		};
 
 		this.covers(set, ct, dummy, dummy);
+	}
+
+	/**
+	 * Gets indices of covered examples without positive/negative distinction.
+	 * @param set Example set to be examined.
+	 * @return Set of indices of covered examples.
+	 */
+	public Set<Integer> coversUnlabelled(ExampleSet set) {
+		Set<Integer> out = new HashSet<>();
+		int id = 0;
+		for (Example ex : set) {
+			if (premise.evaluate(ex)) {
+				out.add(id);
+			}
+			++ id;
+
+		}
+		return out;
 	}
 
 	/**
