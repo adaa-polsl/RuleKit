@@ -30,6 +30,7 @@ import com.rapidminer.parameter.*;
 import com.rapidminer.parameter.conditions.BooleanParameterCondition;
 import com.rapidminer.parameter.conditions.ParameterCondition;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -316,8 +317,13 @@ public class ExpertRuleGenerator extends RuleGenerator {
 	 * @param set Reference example set.
 	 */
 	protected void fixMappings(Iterable<Rule> rules, ExampleSet set) {
+
 		for (Rule r : rules) {
-			for (ConditionBase c: r.getPremise().getSubconditions()) {
+			List<ConditionBase> toCheck = new ArrayList<ConditionBase>(); // list of elementary conditions to check
+			toCheck.addAll(r.getPremise().getSubconditions());
+			toCheck.add(r.getConsequence());
+
+			for (ConditionBase c: toCheck) {
 				ElementaryCondition ec = (c instanceof ElementaryCondition) ? (ElementaryCondition)c : null;
 				if (ec != null) {
 					Attribute a = set.getAttributes().get(ec.getAttribute());
