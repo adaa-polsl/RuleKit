@@ -65,11 +65,13 @@ public class ExperimentalConsole {
 
         public String inFile;
         public String modelFile;
+        public String modelCsvFile;
 
         private TrainElement(Element train){
 
             inFile = train.getElementsByTagName("in_file").item(0).getTextContent();
             modelFile = train.getElementsByTagName("model_file").item(0).getTextContent();
+            modelCsvFile = getXmlParameterValue(train, "model_csv");
         }
     }
 
@@ -276,13 +278,15 @@ public class ExperimentalConsole {
 
             // Prediction
             String predictionPerformanceFilePath = null;
+            String testingReportFilePath = null;
             List<PredictElement> predictElements = new ArrayList<>();
 
             NodeList predictionNodes = node.getElementsByTagName("prediction");
             if(predictionNodes.getLength() == 1){
                 Element predictionElement = (Element)predictionNodes.item(0);
 
-                predictionPerformanceFilePath = predictionElement.getElementsByTagName("performance_file").item(0).getTextContent();
+                predictionPerformanceFilePath = getXmlParameterValue(predictionElement,"performance_file");
+                testingReportFilePath = getXmlParameterValue(predictionElement,"report_file");
 
                 Logger.log("Performance file " + predictionPerformanceFilePath + lineSeparator, Level.FINE);
 
@@ -335,8 +339,11 @@ public class ExperimentalConsole {
                         null : new SynchronizedReport(outDirPath + "/" + predictionPerformanceFilePath, getSimpleHeader());
                 SynchronizedReport trainingSynchronizedReport = trainingReportFilePath == null || trainingReportFilePath.isEmpty() ?
                         null : new SynchronizedReport(outDirPath + "/" + trainingReportFilePath, getHeader());
+                SynchronizedReport testingSynchornizedReport = testingReportFilePath == null || testingReportFilePath.isEmpty() ?
+                        null : new SynchronizedReport(outDirPath + "/" + testingReportFilePath, getHeader());
 
-                ttValidationExp = new TrainTestValidationExperiment(trainingSynchronizedReport, predictionSynchronizedReport,
+                ttValidationExp = new TrainTestValidationExperiment(
+                        trainingSynchronizedReport, testingSynchornizedReport, predictionSynchronizedReport,
                         label, options, new Pair<String, Map<String,Object>>(wrapper.name, wrapper.map), 
                         outDirPath, trainElements, predictElements);
                 
@@ -354,7 +361,15 @@ public class ExperimentalConsole {
         Logger.log("Experiments finished", Level.INFO);
         RapidMiner.quit(RapidMiner.ExitMode.NORMAL);
     }
-    
+
+    private String getXmlParameterValue(Element element, String name) {
+        NodeList subnodes = element.getElementsByTagName(name);
+        if (subnodes.getLength() > 0) {
+            return subnodes.item(0).getTextContent();
+        }
+
+        return null;
+    }
     
     private boolean findSwitch(List<String> params, String name) {
         if (params.contains(name)) {

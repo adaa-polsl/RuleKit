@@ -25,6 +25,7 @@ import adaa.analytics.rules.operator.RulePerformanceEvaluator;
 import adaa.analytics.rules.utils.RapidMiner5;
 
 import com.rapidminer.example.Attributes;
+import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.*;
 import com.rapidminer.operator.performance.PerformanceVector;
 import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
@@ -40,8 +41,9 @@ import com.sun.tools.javac.util.Pair;
 
 import org.apache.commons.lang.StringUtils;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.security.InvalidParameterException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -50,8 +52,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-
-import javax.swing.JTable.PrintMode;
 
 public class TrainTestValidationExperiment implements Runnable{
 
@@ -149,6 +149,7 @@ public class TrainTestValidationExperiment implements Runnable{
             validationEvaluator.getOutputPorts().getPortByName("performance").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(0));
             validationEvaluator.getOutputPorts().getPortByName("example set").connectTo(writeArff.getInputPorts().getPortByName("input"));
             applier.getOutputPorts().getPortByName("model").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(1));
+            writeArff.getOutputPorts().getPortByName("through").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(2));
 
             roleSetter.setParameter(ChangeAttributeRole.PARAMETER_NAME, labelAttribute);
             roleSetter.setParameter(ChangeAttributeRole.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
@@ -157,9 +158,11 @@ public class TrainTestValidationExperiment implements Runnable{
     }
 
     // General parameters
-    protected SynchronizedReport qualityReport;
+    protected SynchronizedReport performanceTable;
 
-    protected SynchronizedReport modelReport;
+    protected SynchronizedReport trainingReport;
+
+    protected SynchronizedReport testingReport;
 
     private final String outDirPath;
     private final String labelAttribute;
@@ -174,7 +177,7 @@ public class TrainTestValidationExperiment implements Runnable{
     public void setVerbose(boolean v) { isVerbose = v; }
     public boolean getVerbose() { return isVerbose; }
     
-    public TrainTestValidationExperiment(SynchronizedReport trainingReport, SynchronizedReport predictionPerformance,
+    public TrainTestValidationExperiment(SynchronizedReport trainingReport, SynchronizedReport testingReport, SynchronizedReport predictionPerformance,
                                          String labelAttribute, Map<String, String> options, Pair<String,Map<String, Object>> paramSet,
                                          String outDirPath, List<ExperimentalConsole.TrainElement> trainElements,
                                          List<ExperimentalConsole.PredictElement> predictElements){
@@ -187,8 +190,9 @@ public class TrainTestValidationExperiment implements Runnable{
         this.options = options;
         this.paramSet = paramSet;
 
-        this.qualityReport = predictionPerformance;
-        this.modelReport = trainingReport;
+        this.performanceTable = predictionPerformance;
+        this.testingReport = testingReport;
+        this.trainingReport = trainingReport;
     }
 
     @Override
@@ -249,7 +253,7 @@ public class TrainTestValidationExperiment implements Runnable{
 
             // Train process
             Logger.log("TRAINING\n"
-            		+ "Log file: " + modelReport.getFile() + "\n",  Level.INFO);
+            		+ "Log file: " + trainingReport.getFile() + "\n",  Level.INFO);
             
             for(ExperimentalConsole.TrainElement te : trainElements){
             	Logger.log("Building model " + te.modelFile + " from dataset " + te.inFile + "\n", Level.INFO);
@@ -272,8 +276,18 @@ public class TrainTestValidationExperiment implements Runnable{
 
                 PerformanceVector performance;
 
+                if (te.modelCsvFile != null) {
+                    RuleSetBase model = (RuleSetBase)objs[1];
+                    f = new File(te.modelCsvFile);
+                    String csvFilePath = f.isAbsolute() ? te.modelCsvFile : (outDirPath + "/" + te.modelCsvFile);
+
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(csvFilePath));
+                    writer.write(model.toTable());
+                    writer.close();
+                }
+
                 // training report
-                if (modelReport != null) {
+                if (trainingReport != null) {
                     StringBuilder sb = new StringBuilder();
                     sb.append(StringUtils.repeat("=", 80));
                     sb.append("\n");
@@ -301,14 +315,14 @@ public class TrainTestValidationExperiment implements Runnable{
                     }
 
                     sb.append("\n\n");
-                    modelReport.append(sb.toString());
+                    trainingReport.append(sb.toString());
                     Logger.log(" [OK]\n", Level.INFO);
                 }
             }
 
             // Test process
             Logger.log("PREDICTION\n"
-            		+ "Performance file: " + qualityReport.getFile() + "\n", Level.INFO);
+            		+ "Performance file: " + performanceTable.getFile() + "\n", Level.INFO);
             for(ExperimentalConsole.PredictElement pe : predictElements) {
             	Logger.log("Applying model " + pe.modelFile + " on " + pe.testFile + ", saving predictions in " +  pe.testFile, Level.INFO);
                 Date begin = new Date();
@@ -341,8 +355,19 @@ public class TrainTestValidationExperiment implements Runnable{
                 long t2 = System.nanoTime();
                 double elapsedSec = (double)(t2 - t1) / 1e9;
 
+                // Testing report
+                if (testingReport != null) {
+                    ExampleSet predictions = (ExampleSet)objs[2];
+                    if (predictions.getAnnotations().containsKey(RuleSetBase.ANNOTATION_TEST_REPORT)) {
+                        testingReport.append("================================================================================\n");
+                        testingReport.append(testFileName + "\n");
+                        testingReport.append(predictions.getAnnotations().get(RuleSetBase.ANNOTATION_TEST_REPORT));
+                        testingReport.append("\n\n");
+                    }
+                }
+
                 // Performance log
-                if(qualityReport != null){
+                if(performanceTable != null){
 
                     PerformanceVector testPerformance = (PerformanceVector)objs[0];
                 	RuleSetBase model = (RuleSetBase)objs[1];
@@ -370,7 +395,7 @@ public class TrainTestValidationExperiment implements Runnable{
                     }
                     
                     String configString = "Parameters: " + model.getParams().toString().replace("\n", "; ");
-                    qualityReport.add(new String[] { configString, performanceHeader.toString()}, row.toString());
+                    performanceTable.add(new String[] { configString, performanceHeader.toString()}, row.toString());
                 }
                 
                 Logger.log(" [OK]\n", Level.INFO);

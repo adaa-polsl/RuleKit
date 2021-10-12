@@ -172,6 +172,41 @@ public class ClassificationRuleSet extends RuleSetBase {
         Attribute predictedLabel = createPredictionAttributes(mappedExampleSet, getLabel());
         ExampleSet result = performPrediction(mappedExampleSet, predictedLabel);
 
+        // generate testing report
+        if (exampleSet.getAttributes().getLabel() != null) {
+            StringBuilder sb = new StringBuilder();
+            int rid = 1;
+            for (Rule r: rules) {
+                double p = 0;
+                double n = 0;
+                double P = 0;
+                double N = 0;
+                for (Example e: exampleSet) {
+
+                    boolean premiseAgree = r.getPremise().evaluate(e);
+                    boolean consequenceAgree = r.getConsequence().evaluate(e);
+
+                    if (consequenceAgree) {
+                        P += 1.0;  // positive
+                        if (premiseAgree) {
+                            p += 1.0; // covered positive
+                        }
+                    } else {
+                        N += 1.0; // negative
+                        if (premiseAgree) { // covered negative
+                            n += 1.0;
+                        }
+                    }
+
+                }
+
+                sb.append("r" + rid + ": " + r.toString() + "(p=" + p + ", n=" + n + ", P=" + P + ", N=" + N + ")\n");
+                ++rid;
+            }
+
+            result.getAnnotations().put(ANNOTATION_TEST_REPORT, sb.toString());
+        }
+
         // Copy in order to avoid RemappedExampleSets wrapped around each other accumulating over time
         //copyPredictedLabel(result, exampleSet);
         return result;

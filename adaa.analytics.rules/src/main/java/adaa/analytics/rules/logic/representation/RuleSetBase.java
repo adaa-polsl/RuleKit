@@ -14,16 +14,16 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 
+import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.learner.SimplePredictionModel;
+import javafx.util.Pair;
 
 /**
  * Abstract class representing all rule-based models (classification/regression/survival).
@@ -44,9 +44,22 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 		/** Fraction of rules significant at assumed level. */
 		public double fraction = 0;
 	};
+
+	private class AttributeRank {
+		public int count;
+
+		public double weight;
+
+		public AttributeRank(int count, double weight) {
+			this.count = count;
+			this.weight = weight;
+		}
+	}
 	
 	/** Serialization identifier. */
 	private static final long serialVersionUID = -7112032011785315168L;
+
+	public static final String ANNOTATION_TEST_REPORT = "annotation_test_report";
 
 	/** Training set. */
 	protected ExampleSet trainingSet;
@@ -297,12 +310,43 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 		}
 		
 		sb.append("Rules:\n");
+		Map<String, AttributeRank> attributeCountsWeights = new LinkedHashMap<>(); // create attribute ranking
+		Map<String, Double> attributeWeights = new LinkedHashMap<>(); // create attribute ranking
+		for (Attribute a: trainingSet.getAttributes()) {
+			attributeCountsWeights.put(a.getName(), new AttributeRank(0, 0.0));
+		}
 		int rid = 1;
+
 		for (Rule r : rules) {
 			sb.append("r" + rid + ": " + r.toString() + " " + r.printStats() + "\n");
 			++rid;
+
+			// update attribute ranking
+			for (String a: r.getPremise().getAttributes()) {
+				AttributeRank rank = attributeCountsWeights.get(a);
+				rank.weight += r.getWeight();
+				++rank.count;
+			}
 		}
-		
+		List<Map.Entry<String,AttributeRank>> ranking = new ArrayList<>();
+		ranking.addAll(attributeCountsWeights.entrySet());
+		ranking.sort((Map.Entry<String,AttributeRank> e1, Map.Entry<String,AttributeRank> e2) ->
+				Integer.compare(e1.getValue().count, e2.getValue().count));
+
+		sb.append("\nAttribute ranking (by count):\n");
+		for (Map.Entry<String,AttributeRank> e : ranking) {
+			sb.append(e.getKey() + ": " + e.getValue().count + "\n");
+		}
+
+		ranking.sort((Map.Entry<String,AttributeRank> e1, Map.Entry<String,AttributeRank> e2) ->
+				Double.compare(e1.getValue().weight, e2.getValue().weight));
+
+		sb.append("\nAttribute ranking (by weight):\n");
+		for (Map.Entry<String,AttributeRank> e : ranking) {
+			sb.append(e.getKey() + ": " + e.getValue().weight + "\n");
+		}
+
+
 		sb.append("\nCoverage of training examples by rules (1-based):\n");
 		for (int eid = 0; eid < trainingSet.size(); ++eid){
 			Example ex = trainingSet.getExample(eid);
@@ -345,6 +389,22 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 	//	sb.append("General information:\n");
 	//	sb.append("voting: " + (getIsVoting() ? "true" : "false") + "\n");
 		
+		return sb.toString();
+	}
+
+	public String toTable() {
+		StringBuilder sb = new StringBuilder();
+
+		if (rules.size() > 0) {
+			sb.append(rules.get(0).getTableHeader());
+			sb.append('\n');
+
+			for (Rule r : rules) {
+				sb.append(r.toTable());
+				sb.append('\n');
+			}
+		}
+
 		return sb.toString();
 	}
 

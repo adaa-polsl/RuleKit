@@ -125,7 +125,7 @@ public abstract class Rule implements Serializable, Cloneable {
 	public IntegerBitSet getCoveredNegatives() { return coveredNegatives; }
 	/** Sets {@link #coveredNegatives} */
 	public void setCoveredNegatives(IntegerBitSet v) { coveredNegatives = v; }
-	
+
 	/**
 	 * Creates empty rule.
 	 */
@@ -277,6 +277,48 @@ public abstract class Rule implements Serializable, Cloneable {
 	public String printStats() {
 		String s ="(p=" + weighted_p + ", n=" + weighted_n + ", P=" + weighted_P + ", N=" + weighted_N + ", weight=" + getWeight() + ", pval=" + pvalue + ")";
 		return s;
+	}
+
+	public String getTableHeader() {
+		return "Rule, p, n, P, N, weight, p-value, covered_examples, attributes";
+	}
+
+	/**
+	 * Converts a rule to semicolon-separated tabular form with selected statistics.
+	 * @return Tabular rule representation.
+	 */
+	public String toTable() {
+		StringBuilder sb = new StringBuilder();
+		char delim = ',';
+
+		sb.append('\"');
+		sb.append(toString()); sb.append('\"'); sb.append(delim);
+		sb.append(weighted_p); sb.append(delim);
+		sb.append(weighted_n); sb.append(delim);
+		sb.append(weighted_P); sb.append(delim);
+		sb.append(weighted_N); sb.append(delim);
+		sb.append(weight); sb.append(delim);
+		sb.append(pvalue); sb.append(delim);
+
+		IntegerBitSet cov = coveredPositives.clone();
+		cov.addAll(coveredNegatives);
+		sb.append('\"');
+		for (int ex: cov) {
+			sb.append(ex);
+			sb.append(',');
+		}
+
+		sb.setCharAt(sb.length() - 1, '\"'); // replace comma with quote
+		sb.append(delim);
+		sb.append('\"');
+
+		for (String a: getPremise().getAttributes()) {
+			sb.append(a);
+			sb.append(',');
+		}
+		sb.setCharAt(sb.length() - 1, '\"'); // replace comma with quote
+
+		return sb.toString();
 	}
 
 	public Object clone() throws CloneNotSupportedException
