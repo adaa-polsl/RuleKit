@@ -605,16 +605,20 @@ public class ClassificationFinder extends AbstractFinder {
 								//continue;
 							//}
 
-							// evaluate equality condition a = v
-							double quality = params.getInductionMeasure().calculate(p, n, P, N);
-							if ((quality > best.quality || (quality == best.quality && p > best.covered)) && (toCover_p > 0)) {
-								ElementaryCondition candidate =
-										new ElementaryCondition(attr.getName(), new SingletonSet((double) i, attr.getMapping().getValues()));
-								if (checkCandidate(candidate, classId, P, toCover_p)) {
-									Logger.log("\tCurrent best: " + candidate + " (p=" + p + ", n=" + n + ", new_p=" + (double) toCover_p + ", quality=" + quality + "\n", Level.FINEST);
-									best.quality = quality;
-									best.covered = p;
-									best.condition = candidate;
+							double prec = p / (p + n);
+
+							if (prec > apriori_prec) {
+								// evaluate equality condition a = v
+								double quality = params.getInductionMeasure().calculate(p, n, P, N);
+								if ((quality > best.quality || (quality == best.quality && p > best.covered)) && (toCover_p > 0)) {
+									ElementaryCondition candidate =
+											new ElementaryCondition(attr.getName(), new SingletonSet((double) i, attr.getMapping().getValues()));
+									if (checkCandidate(candidate, classId, P, toCover_p)) {
+										Logger.log("\tCurrent best: " + candidate + " (p=" + p + ", n=" + n + ", new_p=" + (double) toCover_p + ", quality=" + quality + "\n", Level.FINEST);
+										best.quality = quality;
+										best.covered = p;
+										best.condition = candidate;
+									}
 								}
 							}
 						}

@@ -24,10 +24,7 @@ import com.rapidminer.tools.container.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Abstract class representing all kinds of rules (classification/regression/survival).
@@ -37,7 +34,9 @@ import java.util.Set;
 public abstract class Rule implements Serializable, Cloneable {
 	/** Serialization id. */
 	private static final long serialVersionUID = -1296329752476014421L;
-	
+
+	protected Map<String, Object> stats = new TreeMap<String, Object>();
+
 	/** Rule premise.*/
 	protected CompoundCondition premise;
 	
@@ -125,6 +124,9 @@ public abstract class Rule implements Serializable, Cloneable {
 	public IntegerBitSet getCoveredNegatives() { return coveredNegatives; }
 	/** Sets {@link #coveredNegatives} */
 	public void setCoveredNegatives(IntegerBitSet v) { coveredNegatives = v; }
+
+	public Object getStat(String key) {  return stats.get(key); }
+	public void putStat(String key, Object val) { stats.put(key, val); }
 
 	/**
 	 * Creates empty rule.
@@ -280,7 +282,13 @@ public abstract class Rule implements Serializable, Cloneable {
 	}
 
 	public String getTableHeader() {
-		return "Rule, p, n, P, N, weight, p-value, covered_examples, attributes";
+		String header = "Rule,p,n,P,N,weight,p-value,covered_positives,covered_negatives,attributes";
+
+		for (String key : stats.keySet()) {
+			header += ", " + key;
+		}
+
+		return header;
 	}
 
 	/**
@@ -300,23 +308,38 @@ public abstract class Rule implements Serializable, Cloneable {
 		sb.append(weight); sb.append(delim);
 		sb.append(pvalue); sb.append(delim);
 
-		IntegerBitSet cov = coveredPositives.clone();
-		cov.addAll(coveredNegatives);
-		sb.append('\"');
-		for (int ex: cov) {
-			sb.append(ex);
-			sb.append(',');
+		if (coveredPositives.size() > 0) {
+			sb.append('\"');
+			for (int ex : coveredPositives) {
+				sb.append(ex);
+				sb.append(',');
+			}
+			sb.setCharAt(sb.length() - 1, '\"'); // replace comma with quote
 		}
-
-		sb.setCharAt(sb.length() - 1, '\"'); // replace comma with quote
 		sb.append(delim);
-		sb.append('\"');
 
+		if (coveredNegatives.size() > 0) {
+			sb.append('\"');
+			for (int ex : coveredNegatives) {
+				sb.append(ex);
+				sb.append(',');
+			}
+			sb.setCharAt(sb.length() - 1, '\"'); // replace comma with quote
+		}
+		sb.append(delim);
+
+		sb.append('\"');
 		for (String a: getPremise().getAttributes()) {
 			sb.append(a);
 			sb.append(',');
 		}
 		sb.setCharAt(sb.length() - 1, '\"'); // replace comma with quote
+
+		// add extra statistics
+		for (String key : stats.keySet()) {
+			sb.append(',');
+			sb.append(stats.get(key));
+		}
 
 		return sb.toString();
 	}
@@ -324,6 +347,19 @@ public abstract class Rule implements Serializable, Cloneable {
 	public Object clone() throws CloneNotSupportedException
 	{
 		return super.clone();
+	}
+
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		} else {
+			Rule ref = (obj instanceof Rule) ? (Rule) obj : null;
+			if (ref != null) {
+				return premise.equals(ref.premise) && consequence.equals(ref.consequence);
+			} else {
+				return false;
+			}
+		}
 	}
 
 	public void copyFrom(final Rule ref) {
