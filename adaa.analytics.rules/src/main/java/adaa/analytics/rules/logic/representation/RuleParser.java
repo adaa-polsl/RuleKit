@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.Float.NaN;
+
 /**
  * Class for parsing rules from text.
  * @author Adam Gudys
@@ -38,7 +40,7 @@ public class RuleParser {
 	public static Rule parseRule(String s, ExampleSetMetaData meta) {
 		Rule rule = null; 
 		
-    	Pattern pattern = Pattern.compile("IF\\s+(?<premise>.+)\\s+THEN\\s+(?<consequence>.+)");
+    	Pattern pattern = Pattern.compile("IF\\s+(?<premise>.+)\\s+THEN(?<consequence>\\s+.*|\\s*)");
     	Matcher matcher = pattern.matcher(s);
  	
     	boolean isSurvival = false;
@@ -49,9 +51,21 @@ public class RuleParser {
     	if (matcher.find()) {
 	    	String pre = matcher.group("premise");
 	    	String con = matcher.group("consequence");
-	    	
+
+			ElementaryCondition consequence;
 	    	CompoundCondition premise = parseCompoundCondition(pre, meta);
-	    	ElementaryCondition consequence = parseElementaryCondition(con, meta);
+
+	    	if (con == null || con.trim().length() == 0) {
+	    		if (!meta.getLabelMetaData().isNumerical())
+	    			throw new IllegalArgumentException("Empty conclusion for non-numeric label attribute");
+	    		consequence = new ElementaryCondition();
+	    		consequence.attribute = meta.getLabelMetaData().getName();
+	    		consequence.valueSet = new SingletonSet(NaN, null);
+	    		consequence.adjustable = false;
+	    		consequence.disabled = false;
+			} else {
+				consequence = parseElementaryCondition(con, meta);
+			}
 	    	
 	    	if (premise == null || consequence == null) {
 	    		return null;

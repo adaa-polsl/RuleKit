@@ -12,8 +12,8 @@
             <param name ="expert_rules">
             </param>
             <param name ="expert_preferred_conditions">
-                <entry name="preferred-condition-0">3: IF PD = &lt;0.5, inf) THEN MM116_pred = {NaN}</entry>
-                <entry name="preferred-condition-1">3: IF PD = (-inf, 0.5) THEN MM116_pred = {NaN}</entry>
+                <entry name="preferred-condition-0">3: IF PD = &lt;0.5, inf) THEN</entry>
+                <entry name="preferred-condition-1">3: IF PD = (-inf, 0.5) THEN</entry>
             </param>
         </parameter_set>
 
@@ -27,7 +27,7 @@
             <param name ="expert_rules">
             </param>
             <param name ="expert_preferred_conditions">
-                <entry name="preferred-condition-0">5: IF PD = &lt;0.5, inf) AND MM116 = (-inf, 1.0) THEN MM116_pred = {NaN}</entry>
+                <entry name="preferred-condition-0">5: IF PD = &lt;0.5, inf) AND MM116 = (-inf, 1.0) THEN</entry>
             </param>
         </parameter_set>
 
@@ -41,7 +41,7 @@
             <param name ="expert_rules">
             </param>
             <param name ="expert_preferred_conditions">
-                <entry name="preferred-condition-0">5: IF PD = (-inf, 0.5) AND MM116 = (1.0, inf) THEN MM116_pred = {NaN}</entry>
+                <entry name="preferred-condition-0">5: IF PD = (-inf, 0.5) AND MM116 = (1.0, inf) THEN</entry>
             </param>
         </parameter_set>
 
@@ -54,9 +54,9 @@
             <param name="induce_using_automatic">true</param>
             <param name ="expert_rules"></param>
             <param name ="expert_preferred_conditions">
-                <entry name="preferred-attribute-0">inf: IF PD = Any THEN MM116_pred = {NaN}</entry>
-                <entry name="preferred-attribute-1">inf: IF MM116 = Any THEN MM116_pred = {NaN}</entry>
-                <entry name="preferred-attribute-2">inf: IF DMM116 = Any THEN MM116_pred = {NaN}</entry>
+                <entry name="preferred-attribute-0">inf: IF PD = Any THEN</entry>
+                <entry name="preferred-attribute-1">inf: IF MM116 = Any THEN</entry>
+                <entry name="preferred-attribute-2">inf: IF DMM116 = Any THEN</entry>
             </param>
         </parameter_set>
 

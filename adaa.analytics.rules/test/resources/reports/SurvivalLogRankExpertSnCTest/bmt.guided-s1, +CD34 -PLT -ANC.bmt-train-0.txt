@@ -1,17 +1,17 @@
 
 
 Rules
-	IF [CD34kgx10d6 = (-inf, 11.86)] AND Relapse = {0} AND Donorage35 = {1} AND Recipientage = <17.85, inf) THEN survival_status = {NaN}
-	IF [CD34kgx10d6 = (-inf, 11.86)] AND RecipientRh = {1} AND Recipientage = <17.85, inf) THEN survival_status = {NaN}
-	IF [CD34kgx10d6 = (-inf, 11.86)] AND Txpostrelapse = {0} AND CD3dCD34 = <6.25, inf) AND Rbodymass = <38.50, inf) THEN survival_status = {NaN}
-	IF [CD34kgx10d6 = (-inf, 11.86)] AND Donorage = <31.95, inf) AND CD3dCD34 = <4.34, 38.68) THEN survival_status = {NaN}
-	IF [CD34kgx10d6 = (-inf, 11.86)] AND Donorage = <33.15, inf) AND CD3dkgx10d8 = (-inf, 4.75) AND CD3dCD34 = <0.94, 51.97) AND Rbodymass = <33.50, inf) THEN survival_status = {NaN}
-	IF [CD34kgx10d6 = (-inf, 11.86)] AND Diseasegroup = {1} AND Relapse = {0} AND Donorage = <27.02, inf) AND Donorage35 = {0} AND CD3dCD34 = (-inf, 14.33) THEN survival_status = {NaN}
-	IF [CD34kgx10d6 = <11.86, inf)] AND Relapse = {0} THEN survival_status = {NaN}
-	IF [CD34kgx10d6 = (-inf, 11.86)] AND CD3dkgx10d8 = (-inf, 4.65) AND Recipientage = <12.60, inf) THEN survival_status = {NaN}
-	IF [CD34kgx10d6 = (-inf, 11.86)] AND Donorage35 = {1} AND Rbodymass = <32.75, inf) THEN survival_status = {NaN}
-	IF [CD34kgx10d6 = (-inf, 11.86)] AND Donorage = <35.70, inf) AND CD3dCD34 = <1.30, inf) THEN survival_status = {NaN}
-	IF [CD34kgx10d6 = (-inf, 11.86)] AND Relapse = {0} AND Stemcellsource = {1} AND time_to_aGvHD_III_IV = <27, inf) AND Rbodymass = (-inf, 54.50) AND Recipientage = (-inf, 14.95) THEN survival_status = {NaN}
-	IF [CD34kgx10d6 = (-inf, 11.86)] AND Stemcellsource = {0} AND Donorage = <23.22, inf) AND extcGvHD = {1} AND Donorage35 = {0} AND Recipientage = <3.25, 8.40) THEN survival_status = {NaN}
-	IF [CD34kgx10d6 = (-inf, 11.86)] AND Recipientgender = {1} AND ABOmatch = {1} AND Txpostrelapse = {0} AND Recipientage10 = {0} AND CD3dCD34 = (-inf, 4.30) THEN survival_status = {NaN}
-	IF [CD34kgx10d6 = <11.86, inf)] THEN survival_status = {NaN}
+	IF [CD34kgx10d6 = (-inf, 11.86)] AND Relapse = {0} AND Donorage35 = {1} AND Recipientage = <17.85, inf) THEN 
+	IF [CD34kgx10d6 = (-inf, 11.86)] AND RecipientRh = {1} AND Recipientage = <17.85, inf) THEN 
+	IF [CD34kgx10d6 = (-inf, 11.86)] AND Txpostrelapse = {0} AND CD3dCD34 = <6.25, inf) AND Rbodymass = <38.50, inf) THEN 
+	IF [CD34kgx10d6 = (-inf, 11.86)] AND Donorage = <31.95, inf) AND CD3dCD34 = <4.34, 38.68) THEN 
+	IF [CD34kgx10d6 = (-inf, 11.86)] AND Donorage = <33.15, inf) AND CD3dkgx10d8 = (-inf, 4.75) AND CD3dCD34 = <0.94, 51.97) AND Rbodymass = <33.50, inf) THEN 
+	IF [CD34kgx10d6 = (-inf, 11.86)] AND Diseasegroup = {1} AND Relapse = {0} AND Donorage = <27.02, inf) AND Donorage35 = {0} AND CD3dCD34 = (-inf, 14.33) THEN 
+	IF [CD34kgx10d6 = <11.86, inf)] AND Relapse = {0} THEN 
+	IF [CD34kgx10d6 = (-inf, 11.86)] AND CD3dkgx10d8 = (-inf, 4.65) AND Recipientage = <12.60, inf) THEN 
+	IF [CD34kgx10d6 = (-inf, 11.86)] AND Donorage35 = {1} AND Rbodymass = <32.75, inf) THEN 
+	IF [CD34kgx10d6 = (-inf, 11.86)] AND Donorage = <35.70, inf) AND CD3dCD34 = <1.30, inf) THEN 
+	IF [CD34kgx10d6 = (-inf, 11.86)] AND Relapse = {0} AND Stemcellsource = {1} AND time_to_aGvHD_III_IV = <27, inf) AND Rbodymass = (-inf, 54.50) AND Recipientage = (-inf, 14.95) THEN 
+	IF [CD34kgx10d6 = (-inf, 11.86)] AND Stemcellsource = {0} AND Donorage = <23.22, inf) AND extcGvHD = {1} AND Donorage35 = {0} AND Recipientage = <3.25, 8.40) THEN 
+	IF [CD34kgx10d6 = (-inf, 11.86)] AND Recipientgender = {1} AND ABOmatch = {1} AND Txpostrelapse = {0} AND Recipientage10 = {0} AND CD3dCD34 = (-inf, 4.30) THEN 
+	IF [CD34kgx10d6 = <11.86, inf)] THEN 

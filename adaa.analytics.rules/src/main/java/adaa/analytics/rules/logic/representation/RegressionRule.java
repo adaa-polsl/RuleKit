@@ -30,6 +30,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import static java.lang.Float.NaN;
+
 /**
  * Class representing regression rule.
  * @author Adam Gudys
@@ -196,9 +198,16 @@ public class RegressionRule extends Rule {
 	 */
 	@Override
 	public String toString() {
-		double lo = getConsequenceValue() - stddev;
-		double hi = getConsequenceValue() + stddev;
-		String s = "IF " + premise.toString() + " THEN " + consequence.toString() + " [" + DoubleFormatter.format(lo) + "," + DoubleFormatter.format(hi) + "]";
+		String consequenceString;
+		if (consequence.valueSet instanceof SingletonSet &&
+				((SingletonSet) consequence.valueSet).value == NaN && ((SingletonSet) consequence.valueSet).mapping == null) {
+			consequenceString = "";
+		} else {
+			double lo = getConsequenceValue() - stddev;
+			double hi = getConsequenceValue() + stddev;
+			consequenceString = consequence.toString() + " [" + DoubleFormatter.format(lo) + "," + DoubleFormatter.format(hi) + "]";
+		}
+		String s = "IF " + premise.toString() + " THEN " + consequenceString;
 		return s;
 	}
 }

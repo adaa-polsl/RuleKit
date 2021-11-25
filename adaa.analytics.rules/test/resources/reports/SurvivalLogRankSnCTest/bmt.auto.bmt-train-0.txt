@@ -1,8 +1,8 @@
 
 
 Rules
-	IF Relapse = {0} AND Donorage = (-inf, 45.53) AND Recipientage = (-inf, 17.45) THEN survival_status = {NaN}
-	IF HLAmismatch = {0} AND Relapse = {1} THEN survival_status = {NaN}
-	IF Relapse = {0} AND Rbodymass = (-inf, 69) AND Recipientage = (-inf, 18) THEN survival_status = {NaN}
-	IF aGvHDIIIIV = {1} AND ANCrecovery = (-inf, 19.50) AND Stemcellsource = {1} AND Txpostrelapse = {0} THEN survival_status = {NaN}
-	IF Donorage = <28.03, inf) AND CD34kgx10d6 = <1.27, 6.72) AND CD3dCD34 = <0.89, inf) AND Rbodymass = <31.50, inf) AND Recipientage = <11.55, inf) THEN survival_status = {NaN}
+	IF Relapse = {0} AND Donorage = (-inf, 45.53) AND Recipientage = (-inf, 17.45) THEN 
+	IF HLAmismatch = {0} AND Relapse = {1} THEN 
+	IF Relapse = {0} AND Rbodymass = (-inf, 69) AND Recipientage = (-inf, 18) THEN 
+	IF aGvHDIIIIV = {1} AND ANCrecovery = (-inf, 19.50) AND Stemcellsource = {1} AND Txpostrelapse = {0} THEN 
+	IF Donorage = <28.03, inf) AND CD34kgx10d6 = <1.27, 6.72) AND CD3dCD34 = <0.89, inf) AND Rbodymass = <31.50, inf) AND Recipientage = <11.55, inf) THEN 

@@ -26,6 +26,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 import java.util.*;
 
+import static java.lang.Double.NaN;
+
+
 /**
  * Abstract class representing all kinds of rules (classification/regression/survival).
  * @author Adam Gudys
@@ -44,16 +47,16 @@ public abstract class Rule implements Serializable, Cloneable {
 	protected ElementaryCondition consequence;
 	
 	/** Number of positives covered by the rule (accounting weights). */
-	protected double weighted_p = Double.NaN;
+	protected double weighted_p = NaN;
 	
 	/** Number of negatives covered by the rule (accounting weights). */
-	protected double weighted_n = Double.NaN;
+	protected double weighted_n = NaN;
 	
 	/** Number of positives in the training set (accounting weights). */
-	protected double weighted_P = Double.NaN;
+	protected double weighted_P = NaN;
 	
 	/** Number of negatives in the training set (accounting weights). */
-	protected double weighted_N = Double.NaN;
+	protected double weighted_N = NaN;
 	
 	/** Rule weight. */
 	protected double weight = Double.NEGATIVE_INFINITY;
@@ -268,7 +271,14 @@ public abstract class Rule implements Serializable, Cloneable {
 	 * @return Text representation.
 	 */
 	public String toString() {
-		String s = "IF " + premise.toString() + " THEN " + consequence.toString();	
+		String consequenceString;
+		if (consequence.valueSet instanceof SingletonSet &&
+				Double.isNaN(((SingletonSet) consequence.valueSet).value) && ((SingletonSet) consequence.valueSet).mapping == null) {
+			consequenceString = "";
+		} else {
+			consequenceString = consequence.toString();
+		}
+		String s = "IF " + premise.toString() + " THEN " + consequenceString;
 		return s;
 	}
 	
