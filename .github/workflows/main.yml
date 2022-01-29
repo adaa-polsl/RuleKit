@@ -1,11 +1,18 @@
 name: GitHub Actions CI
 
 on:
-  pull_request:
+ push:
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'    
+ pull_request:
     branches:
       - develop
       - master
-  workflow_dispatch:
+    paths-ignore:
+      - '**.md'    
+ workflow_dispatch:
 
 jobs:
   python_script:
