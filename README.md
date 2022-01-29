@@ -1,9 +1,10 @@
 # RuleKit
+[![GitHub downloads](https://img.shields.io/github/downloads/adaa-polsl/RuleKit/total.svg?style=flag&label=GitHub%20downloads)](https://github.com/adaa-polsl/RuleKit/releases)
+[![GitHub Actions CI](../../actions/workflows/main.yml/badge.svg)](../../actions/workflows/main.yml)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
-[![CI tests](https://github.com/adaa-polsl/RuleKit-dev/workflows/Java%20project%20workflow/badge.svg)](https://github.com/adaa-polsl/RuleKit-dev/actions)
 
-
-Rule-based models are often used for data analysis as they combine interpretability with predictive power. We present RuleKit, a versatile tool for rule learning. Based on a sequential covering induction algorithm, it is suitable for classification, regression, and survival problems. The presence of user-guided induction mode facilitates verifying hypotheses concerning data dependencies which are expected or of interest. The powerful and flexible experimental environment allows straightforward investigation of different induction schemes. The analysis can be performed in batch mode, through RapidMiner plugin, or R package. A documented Java API is also provided for convenience. 
+Rule-based models are often used for data analysis as they combine interpretability with predictive power. We present RuleKit, a versatile tool for rule learning. Based on a sequential covering induction algorithm, it is suitable for classification, regression, and survival problems. The presence of user-guided induction mode facilitates verifying hypotheses concerning data dependencies which are expected or of interest. The powerful and flexible experimental environment allows straightforward investigation of different induction schemes. The analysis can be performed in batch mode, through RapidMiner plugin, as well as R package and [Python](https://github.com/adaa-polsl/RuleKit-python) packages. A documented Java API is also provided for convenience. 
 
 RuleKit provides all the functionalities included in our previous packages:
 * [LR-Rules](https://github.com/adaa-polsl/LR-Rules) (Wróbel et al, 2017) for survival rules induction,
@@ -74,6 +75,10 @@ Below we present a survival analysis of *BMT-Ch* dataset with RuleKit R package.
  
 [This Wiki section](../../wiki/3-R-package) contains detailed information on using RuleKit R package. 
 
+## Python package
+
+Rulekit Python package can be found [here](https://github.com/adaa-polsl/RuleKit-python)
+
 # Documentation
 
 The detailed RuleKit documentation can be found on [Wiki pages](../../wiki) which cover the following topics: 
@@ -107,6 +112,10 @@ The detailed RuleKit documentation can be found on [Wiki pages](../../wiki) whic
 8. [Empirical results](../../wiki/8-Empirical-results)
 
 JavaDoc for the project is available [here](https://adaa-polsl.github.io/RuleKit/).  
+
+# Datasets 
+
+The repository contains the datasets used in the GuideR study. We also provide the latest UCI revision of the [*Bone marrow transplant: children*](https://github.com/adaa-polsl/RuleKit/blob/master/data/bone-marrow-uci.arff) dataset. We recommend using this dataset at it contains lots of improvements compared to the previous release (e.g., textual encoding of attribute values). 
 
 # Authors and licensing
 
