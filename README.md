@@ -110,6 +110,7 @@ The detailed RuleKit documentation can be found on [Wiki pages](../../wiki) whic
 	1.	[Running an experiment](../../wiki/7-Library-API#71-running-an-experiment)
 	2.	[Developing a new algorithm](../../wiki/7-Library-API#72-developing-a-new-algorithm)
 8. [Empirical results](../../wiki/8-Empirical-results)
+9. [Contrast set mining](../../wiki/9-Contrast-set-mining)
 
 JavaDoc for the project is available [here](https://adaa-polsl.github.io/RuleKit/).  
 

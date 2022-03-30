@@ -33,8 +33,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.DoubleFormatter;
+import adaa.analytics.rules.operator.RuleGenerator;
 import adaa.analytics.rules.utils.VersionService;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -102,8 +105,8 @@ public class ExperimentalConsole {
         /** Mapping between parameter names and their values. */
         final Map<String, Object> map = new TreeMap<>();
     }
-    
-    protected boolean isVerbose = false;
+
+    boolean isVerbose = false;
 
     protected int experimentalThreads = 1;
    
@@ -125,16 +128,21 @@ public class ExperimentalConsole {
     }
 
     private void parse(String[] args) {
-    	try {
+
+        try {
 	    	System.out.print(getHeader());
     	
 	    	ArrayList<String> argList = new ArrayList<String>();
 	    	argList.addAll(Arrays.asList(args));
-	    
-	    	isVerbose = findSwitch(argList, "-v");
+
+            boolean isVeryVerbose = findSwitch(argList, "-vv");
+	    	isVerbose = findSwitch(argList, "-v") | isVeryVerbose;
+
 	    	experimentalThreads = findOption(argList, "-exp-threads", 1);
 
-	    	Logger.getInstance().addStream(System.out, isVerbose ? Level.FINE : Level.INFO);	
+	    	Logger.getInstance().addStream(System.out, isVeryVerbose ?
+                    Level.FINEST :
+                    (isVerbose ? Level.FINE : Level.INFO));
 	    
             if (argList.size() == 1) {
             	System.setProperty(PlatformUtilities.PROPERTY_RAPIDMINER_HOME, Paths.get("").toAbsolutePath().toString());
@@ -190,6 +198,11 @@ public class ExperimentalConsole {
                 Element paramNode = (Element) paramNodes.item(paramId);
                 String name = paramNode.getAttribute("name");
 
+                // backward compatibility
+                if (name.equals("min_rule_covered")) {
+                    name = RuleGenerator.PARAMETER_MINCOV_NEW;
+                }
+
                 String[] expertParamNames = new String[]{
                         ExpertRuleGenerator.PARAMETER_EXPERT_RULES,
                         ExpertRuleGenerator.PARAMETER_EXPERT_PREFERRED_CONDITIONS,
@@ -240,9 +253,19 @@ public class ExperimentalConsole {
             String outDirectory = node.getElementsByTagName("out_directory").item(0).getTextContent();
 
             Map<String, String> options = new HashMap<>();
+            NodeList ignoreNodes = node.getElementsByTagName("ignore");
+            if (ignoreNodes.getLength() > 0) {
+                options.put("ignore", ignoreNodes.item(0).getTextContent());
+            }
+
             if (node.getElementsByTagName(SurvivalRule.SURVIVAL_TIME_ROLE).getLength() > 0) {
                 String val = node.getElementsByTagName(SurvivalRule.SURVIVAL_TIME_ROLE).item(0).getTextContent();
                 options.put(SurvivalRule.SURVIVAL_TIME_ROLE, val);
+            }
+
+            if (node.getElementsByTagName(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getLength() > 0) {
+                String val = node.getElementsByTagName(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).item(0).getTextContent();
+                options.put(ContrastRule.CONTRAST_ATTRIBUTE_ROLE, val);
             }
 
             if (node.getElementsByTagName(Attributes.WEIGHT_NAME).getLength() > 0) {

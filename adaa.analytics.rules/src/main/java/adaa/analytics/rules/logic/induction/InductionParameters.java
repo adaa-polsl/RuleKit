@@ -39,22 +39,29 @@ public class InductionParameters implements Serializable {
 	private IQualityMeasure votingMeasure = new ClassificationMeasure(ClassificationMeasure.Correlation);
 
 	/** Minimum number of previously uncovered examples that a new rule has to cover. */
-	/** Minimum number of previously uncovered examples that a new rule has to cover. */
 	private double minimumCovered = 5.0;
 	private double minimumCoveredAll = 0.0;
 	private double maximumUncoveredFraction = 0;
+	private boolean conditionComplementEnabled = false;
 
 	private boolean ignoreMissing = false;
 	private boolean pruningEnabled = true;
 	private double maxGrowingConditions = 0;
 	private boolean selectBestCandidate = false;
+	private double maxcovNegative = Double.MAX_VALUE;
+
+	private double penaltyStrength = 0.5;
+	private double penaltySaturation = 0.2;
+	private boolean binaryContrastIncluded = false;
+
+	private int maxPassesCount = 5;
 
 	public IQualityMeasure getInductionMeasure() {return inductionMeasure;}
 	public void setInductionMeasure(IQualityMeasure inductionMeasure) {this.inductionMeasure = inductionMeasure;}
 
 	public IQualityMeasure getPruningMeasure() {return pruningMeasure;}
 	public void setPruningMeasure(IQualityMeasure pruningMeasure) {this.pruningMeasure = pruningMeasure;}
-
+	
 	public IQualityMeasure getVotingMeasure() {return votingMeasure;}
 	public void setVotingMeasure(IQualityMeasure pruningMeasure) {this.votingMeasure = pruningMeasure;}
 
@@ -65,7 +72,7 @@ public class InductionParameters implements Serializable {
 	public double getMinimumCoveredAll() {return minimumCoveredAll;}
 	public double getAbsoluteMinimumCoveredAll(double size) { return minimumCoveredAll * (minimumCoveredAll >= 1 ? 1 : size); }
 	public void setMinimumCoveredAll(double minimumCoveredAll) {this.minimumCoveredAll = minimumCoveredAll;}
-
+	
 	public double getMaximumUncoveredFraction() {return maximumUncoveredFraction;}
 	public void setMaximumUncoveredFraction(double v) {this.maximumUncoveredFraction = v;}
 
@@ -74,19 +81,45 @@ public class InductionParameters implements Serializable {
 
 	public boolean isPruningEnabled() {return pruningEnabled;}
 	public void setEnablePruning(boolean enablePruning) {this.pruningEnabled = enablePruning;}
-
+	
 	public double getMaxGrowingConditions() { return maxGrowingConditions; }
 	public void setMaxGrowingConditions(double maxGrowingConditions) { this.maxGrowingConditions = maxGrowingConditions; }
 
 	public boolean getSelectBestCandidate() { return selectBestCandidate; }
 	public void setSelectBestCandidate(boolean selectBestCandidate) { this.selectBestCandidate = selectBestCandidate; }
 
+	public double getMaxcovNegative() {return maxcovNegative;}
+	public void setMaxcovNegative(double v) {this.maxcovNegative = v;}
+
+	public double getPenaltyStrength() {return penaltyStrength;}
+	public void setPenaltyStrength(double v) {this.penaltyStrength = v;}
+
+	public double getPenaltySaturation() {return penaltySaturation;}
+	public void setPenaltySaturation(double v) {this.penaltySaturation = v;}
+
+	public boolean isBinaryContrastIncluded() {return binaryContrastIncluded;}
+	public void setBinaryContrastIncluded(boolean v) {this.binaryContrastIncluded = v;}
+
+	public int getMaxPassesCount() { return maxPassesCount; }
+	public void setMaxPassesCount(int maxCoverageCount) {  this.maxPassesCount = maxCoverageCount; }
+
+	public boolean isConditionComplementEnabled() { return conditionComplementEnabled; }
+	public void setConditionComplementEnabled(boolean value) { this.conditionComplementEnabled = value; }
+
 	public String toString() {
-		return	
-			"min_rule_covered=" + minimumCovered + "\n" +
-			"induction_measure=" + inductionMeasure.getName() + "\n" +
-			"pruning_measure=" + pruningMeasure.getName() + "\n" +
-			"voting_measure=" + votingMeasure.getName() + "\n";
+		return "mincov_new=" + minimumCovered + "\n" +
+				"mincov_all=" + minimumCoveredAll + "\n" +
+				"maxcov_negative=" + maxcovNegative + "\n" +
+				"max_uncovered_fraction=" + maximumUncoveredFraction + "\n" +
+				"induction_measure=" + inductionMeasure.getName() + "\n" +
+				"pruning_measure=" + (pruningEnabled ? pruningMeasure.getName() : "OFF") + "\n" +
+				"voting_measure=" + votingMeasure.getName() + "\n" +
+				"penalty_strength=" + penaltyStrength + "\n" +
+				"penalty_saturation=" + penaltySaturation + "\n" +
+				"select_best_candidate=" + selectBestCandidate + "\n" +
+				"max_passes_count=" + maxPassesCount + "\n" +
+				"complementary_conditions=" + conditionComplementEnabled + "\n";
 
 	}
+
 }

@@ -16,7 +16,6 @@ package adaa.analytics.rules.logic.induction;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.representation.*;
@@ -78,8 +77,8 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 			Logger.log("Uncovered positive weight: " + uncovered_pn +  "/" + weighted_PN + "\n", Level.FINE);
 			
 			Rule rule = factory.create(
-				new CompoundCondition(),
-				new ElementaryCondition(label.getName(), new SingletonSet(Double.NaN, null)));
+					new CompoundCondition(),
+					new ElementaryCondition(label.getName(), new SingletonSet(Double.NaN, null)));
 
 			// rule covers everything at the beginning
 			rule.setWeighted_P(weighted_PN);

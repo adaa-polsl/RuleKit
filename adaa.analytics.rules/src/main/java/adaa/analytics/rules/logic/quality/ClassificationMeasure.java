@@ -120,6 +120,8 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
     private  IUserMeasure userMeasure;
     protected int criterion = Correlation;
 
+    public int getCriterion() { return criterion; }
+
     public ClassificationMeasure(int criterion) {
         this.criterion = criterion;
     }

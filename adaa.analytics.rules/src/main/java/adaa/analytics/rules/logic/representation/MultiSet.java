@@ -32,6 +32,8 @@ public class MultiSet<T> implements Iterable<T>, Serializable {
 	
 	/** Collection storing elements with their multiplicity */
 	protected Map<T, Integer> map = new LinkedHashMap<>();
+
+	protected int totalCount = 0;
 	
 	/**
 	 * Verifies the multiset contains a given element.
@@ -58,6 +60,9 @@ public class MultiSet<T> implements Iterable<T>, Serializable {
 	public boolean add(T v, int count) {
 		int current = map.containsKey(v) ? map.get(v) : 0;
 		map.put(v, current + count);
+
+		totalCount += count;
+
 		return true;
 	}
 	
@@ -78,16 +83,29 @@ public class MultiSet<T> implements Iterable<T>, Serializable {
 		int count = map.containsKey(v) ? map.get(v) : 0;
 		if (count > 1)  {
 			map.put((T)v, count - 1);
-		} else {
+			--totalCount;
+		} else if (count == 1) {
 			map.remove(v);
+			--totalCount;
 		}
 	}
-	
+
+	public void clear() {
+		map.clear();
+		totalCount = 0;
+	}
+
 	/**
 	 * Gets size of the multiset.
 	 * @return Number of unique elements in the multiset.
 	 */
 	public int size() { return map.keySet().size(); }
+
+	/**
+	 * Gets multisize of the multiset.
+	 * @return Number of all elements in the multiset.
+	 */
+	public int multisize() { return totalCount; }
 	
 	/**
 	 * Multiset iterator.

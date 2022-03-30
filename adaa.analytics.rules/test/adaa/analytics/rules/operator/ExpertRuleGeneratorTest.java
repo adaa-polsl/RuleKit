@@ -92,7 +92,7 @@ public class ExpertRuleGeneratorTest {
         trainRoleSetter.setParameter(ChangeAttributeRole.PARAMETER_NAME, LABEL_ATTRIBUTE);
         trainRoleSetter.setParameter(ChangeAttributeRole.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
 
-        ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_MIN_RULE_COVERED, "8");
+        ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_MINCOV_NEW, "8");
         ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_INDUCTION_MEASURE, ClassificationMeasure.getName(ClassificationMeasure.BinaryEntropy));
         ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_PRUNING_MEASURE, ClassificationMeasure.getName(ClassificationMeasure.BinaryEntropy));
         //ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_PRUNING_MEASURE, ClassificationMeasure.getName(ClassificationMeasure.UserDefined));

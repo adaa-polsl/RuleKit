@@ -15,10 +15,8 @@
 package adaa.analytics.rules.experiments;
 
 import adaa.analytics.rules.consoles.ExperimentalConsole;
-import adaa.analytics.rules.logic.representation.DoubleFormatter;
-import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
+import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.operator.ChangeAttributeRoleAndAnnotate;
 import adaa.analytics.rules.operator.ExpertRuleGenerator;
 import adaa.analytics.rules.operator.RuleGenerator;
 import adaa.analytics.rules.operator.RulePerformanceEvaluator;
@@ -63,9 +61,11 @@ public class TrainTestValidationExperiment implements Runnable{
         public ArffExampleSource arff;
         public ArffExampleSource arff2;
         public ModelWriter modelWriter = null;
-        public ChangeAttributeRole roleSetter = null;
-        public ChangeAttributeRole roleSetter2 = null;
+        public ModelApplier applier;
+        public ChangeAttributeRoleAndAnnotate roleSetter = null;
+        public ChangeAttributeRoleAndAnnotate roleSetter2 = null;
         public RuleGenerator ruleGenerator = null;
+        public RulePerformanceEvaluator evaluator;
 
         public com.rapidminer.Process process;
 
@@ -73,10 +73,10 @@ public class TrainTestValidationExperiment implements Runnable{
         public TrainProcessWrapper() throws OperatorCreationException {
             arff = RapidMiner5.createOperator(ArffExampleSource.class);
             arff2 = RapidMiner5.createOperator(ArffExampleSource.class);
-            ModelApplier trainApplier = OperatorService.createOperator(ModelApplier.class);
-            roleSetter2 = OperatorService.createOperator(ChangeAttributeRole.class);
-            roleSetter = OperatorService.createOperator(ChangeAttributeRole.class);
-            RulePerformanceEvaluator trainValidationEvaluator2 = RapidMiner5.createOperator(RulePerformanceEvaluator.class);
+            applier = OperatorService.createOperator(ModelApplier.class);
+            roleSetter2 = RapidMiner5.createOperator(ChangeAttributeRoleAndAnnotate.class);
+            roleSetter = RapidMiner5.createOperator(ChangeAttributeRoleAndAnnotate.class);
+            evaluator = RapidMiner5.createOperator(RulePerformanceEvaluator.class);
             modelWriter = RapidMiner5.createOperator(ModelWriter.class);
             ruleGenerator = RapidMiner5.createOperator(ExpertRuleGenerator.class);
 
@@ -86,9 +86,9 @@ public class TrainTestValidationExperiment implements Runnable{
             process.getRootOperator().getSubprocess(0).addOperator(arff2);
             process.getRootOperator().getSubprocess(0).addOperator(roleSetter);
             process.getRootOperator().getSubprocess(0).addOperator(roleSetter2);
-            process.getRootOperator().getSubprocess(0).addOperator(trainValidationEvaluator2);
+            process.getRootOperator().getSubprocess(0).addOperator(evaluator);
             process.getRootOperator().getSubprocess(0).addOperator(ruleGenerator);
-            process.getRootOperator().getSubprocess(0).addOperator(trainApplier);
+            process.getRootOperator().getSubprocess(0).addOperator(applier);
             process.getRootOperator().getSubprocess(0).addOperator(modelWriter);
 
             process.getRootOperator().setParameter(ProcessRootOperator.PARAMETER_LOGVERBOSITY, "" + LogService.OFF);
@@ -97,11 +97,12 @@ public class TrainTestValidationExperiment implements Runnable{
             roleSetter.getOutputPorts().getPortByName("example set output").connectTo(ruleGenerator.getInputPorts().getPortByName("training set"));
             ruleGenerator.getOutputPorts().getPortByName("model").connectTo(modelWriter.getInputPorts().getPortByName("input"));
             arff2.getOutputPorts().getPortByName("output").connectTo(roleSetter2.getInputPorts().getPortByName("example set input"));
-            roleSetter2.getOutputPorts().getPortByName("example set output").connectTo(trainApplier.getInputPorts().getPortByName("unlabelled data"));
-            modelWriter.getOutputPorts().getPortByName("through").connectTo(trainApplier.getInputPorts().getPortByName("model"));
-            trainApplier.getOutputPorts().getPortByName("labelled data").connectTo(trainValidationEvaluator2.getInputPorts().getPortByName("labelled data"));
-            trainValidationEvaluator2.getOutputPorts().getPortByName("performance").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(0));
-            trainApplier.getOutputPorts().getPortByName("model").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(1));
+            roleSetter2.getOutputPorts().getPortByName("example set output").connectTo(applier.getInputPorts().getPortByName("unlabelled data"));
+            modelWriter.getOutputPorts().getPortByName("through").connectTo(applier.getInputPorts().getPortByName("model"));
+            applier.getOutputPorts().getPortByName("labelled data").connectTo(evaluator.getInputPorts().getPortByName("labelled data"));
+
+            applier.getOutputPorts().getPortByName("model").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(0));
+            evaluator.getOutputPorts().getPortByName("performance").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(1));
 
             // configure role setter
             roleSetter.setParameter(ChangeAttributeRole.PARAMETER_NAME, labelAttribute);
@@ -119,6 +120,7 @@ public class TrainTestValidationExperiment implements Runnable{
         public ModelLoader modelLoader = null;
         public ChangeAttributeRole roleSetter = null;
         public ArffExampleSetWriter writeArff = null;
+        public AbstractPerformanceEvaluator evaluator;
 
         public com.rapidminer.Process process;
 
@@ -129,13 +131,13 @@ public class TrainTestValidationExperiment implements Runnable{
             ModelApplier applier = OperatorService.createOperator(ModelApplier.class);
             modelLoader = RapidMiner5.createOperator(ModelLoader.class);
             writeArff = RapidMiner5.createOperator(ArffExampleSetWriter.class);
-            AbstractPerformanceEvaluator validationEvaluator = RapidMiner5.createOperator(RulePerformanceEvaluator.class);
+            evaluator = RapidMiner5.createOperator(RulePerformanceEvaluator.class);
 
             process = new com.rapidminer.Process();
             process.getRootOperator().getSubprocess(0).addOperator(arff);
             process.getRootOperator().getSubprocess(0).addOperator(roleSetter);
             process.getRootOperator().getSubprocess(0).addOperator(applier);
-            process.getRootOperator().getSubprocess(0).addOperator(validationEvaluator);
+            process.getRootOperator().getSubprocess(0).addOperator(evaluator);
             process.getRootOperator().getSubprocess(0).addOperator(writeArff);
             process.getRootOperator().getSubprocess(0).addOperator(modelLoader);
 
@@ -145,11 +147,12 @@ public class TrainTestValidationExperiment implements Runnable{
             arff.getOutputPorts().getPortByName("output").connectTo(roleSetter.getInputPorts().getPortByName("example set input"));
             roleSetter.getOutputPorts().getPortByName("example set output").connectTo(applier.getInputPorts().getPortByName("unlabelled data"));
             modelLoader.getOutputPorts().getPortByName("output").connectTo(applier.getInputPorts().getPortByName("model"));
-            applier.getOutputPorts().getPortByName("labelled data").connectTo(validationEvaluator.getInputPorts().getPortByName("labelled data"));
-            validationEvaluator.getOutputPorts().getPortByName("performance").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(0));
-            validationEvaluator.getOutputPorts().getPortByName("example set").connectTo(writeArff.getInputPorts().getPortByName("input"));
-            applier.getOutputPorts().getPortByName("model").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(1));
-            writeArff.getOutputPorts().getPortByName("through").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(2));
+            applier.getOutputPorts().getPortByName("labelled data").connectTo(evaluator.getInputPorts().getPortByName("labelled data"));
+            applier.getOutputPorts().getPortByName("model").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(0));
+
+            evaluator.getOutputPorts().getPortByName("performance").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(1));
+            evaluator.getOutputPorts().getPortByName("example set").connectTo(writeArff.getInputPorts().getPortByName("input"));
+ 			writeArff.getOutputPorts().getPortByName("through").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(2));
 
             roleSetter.setParameter(ChangeAttributeRole.PARAMETER_NAME, labelAttribute);
             roleSetter.setParameter(ChangeAttributeRole.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
@@ -203,15 +206,41 @@ public class TrainTestValidationExperiment implements Runnable{
             TrainProcessWrapper train =  new TrainProcessWrapper();
             TestProcessWrapper test = new TestProcessWrapper();
 
-            // survival dataset - set proper role
             List<String[]> roles = new ArrayList<>();
 
+            // add custom roles to mask ignored attributes
+            if (options.containsKey("ignore")) {
+                String[] attrs = options.get("ignore").split(",");
+                int i = 0;
+                for (String a: attrs) {
+                    roles.add(new String[]{a, "ignored_" + i});
+                    ++i;
+                }
+            }
+
+            // survival dataset - set proper role
             if (options.containsKey(SurvivalRule.SURVIVAL_TIME_ROLE)) {
                 roles.add(new String[]{options.get(SurvivalRule.SURVIVAL_TIME_ROLE), SurvivalRule.SURVIVAL_TIME_ROLE});
             }
 
             if (options.containsKey(Attributes.WEIGHT_NAME)) {
                 roles.add(new String[]{options.get(Attributes.WEIGHT_NAME), Attributes.WEIGHT_NAME});
+            }
+
+            if (options.containsKey(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
+                String contrastAttr = options.get(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+
+                 // use annotation for storing contrast attribute info
+                 train.roleSetter.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_NAME, ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+                 train.roleSetter.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_VALUE, contrastAttr);
+                 train.roleSetter2.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_NAME, ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+                 train.roleSetter2.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_VALUE, contrastAttr);
+                 test.roleSetter.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_NAME, ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+                 test.roleSetter.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_VALUE, contrastAttr);
+
+                 train.evaluator.setEnabled(false);
+                 test.evaluator.setEnabled(false);
+                 test.writeArff.setEnabled(false);
             }
 
             if (roles.size() > 0) {
@@ -252,32 +281,33 @@ public class TrainTestValidationExperiment implements Runnable{
             DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss");
 
             // Train process
-            Logger.log("TRAINING\n"
+            if (trainElements.size() > 0) {
+                Logger.log("TRAINING\n"
             		+ "Log file: " + trainingReport.getFile() + "\n",  Level.INFO);
-            
-            for(ExperimentalConsole.TrainElement te : trainElements){
-            	Logger.log("Building model " + te.modelFile + " from dataset " + te.inFile + "\n", Level.INFO);
-                File f = new File(te.modelFile);
-                String modelFilePath = f.isAbsolute() ? te.modelFile : (outDirPath + "/" + te.modelFile);
-                f = new File(te.inFile);
-                String inFilePath = f.isAbsolute() ? te.inFile : (System.getProperty("user.dir") + "/" + te.inFile);
 
-                f = new File(inFilePath);
-                String trainFileName = f.getName();
+                for(ExperimentalConsole.TrainElement te : trainElements) {
+                    Logger.log("Building model " + te.modelFile + " from dataset " + te.inFile + "\n", Level.INFO);
+                    File f = new File(te.modelFile);
+                    String modelFilePath = f.isAbsolute() ? te.modelFile : (outDirPath + "/" + te.modelFile);
+                    f = new File(te.inFile);
+                    String inFilePath = f.isAbsolute() ? te.inFile : (System.getProperty("user.dir") + "/" + te.inFile);
 
-                Logger.log("Train params: \n   Model file path: " + modelFilePath + "\n" +
-                        "   Input file path: " + inFilePath + "\n", Level.FINE);
+                    f = new File(inFilePath);
+                    String trainFileName = f.getName();
 
-                train.modelWriter.setParameter(ModelWriter.PARAMETER_MODEL_FILE, modelFilePath);
-                train.arff.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, inFilePath);
-                train.arff2.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, inFilePath);
-                IOContainer out = train.process.run();
-                IOObject[] objs = out.getIOObjects();
+                    Logger.log("Train params: \n   Model file path: " + modelFilePath + "\n" +
+                            "   Input file path: " + inFilePath + "\n", Level.FINE);
 
-                PerformanceVector performance;
+                    train.modelWriter.setParameter(ModelWriter.PARAMETER_MODEL_FILE, modelFilePath);
+                    train.arff.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, inFilePath);
+                    train.arff2.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, inFilePath);
+                    IOContainer out = train.process.run();
+                    IOObject[] objs = out.getIOObjects();
+
+                    PerformanceVector performance;
 
                 if (te.modelCsvFile != null) {
-                    RuleSetBase model = (RuleSetBase)objs[1];
+                    RuleSetBase model = (RuleSetBase)objs[0];
                     f = new File(te.modelCsvFile);
                     String csvFilePath = f.isAbsolute() ? te.modelCsvFile : (outDirPath + "/" + te.modelCsvFile);
 
@@ -286,119 +316,128 @@ public class TrainTestValidationExperiment implements Runnable{
                     writer.close();
                 }
 
-                // training report
+                    // training report
                 if (trainingReport != null) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(StringUtils.repeat("=", 80));
-                    sb.append("\n");
-                    sb.append(trainFileName);
-                    sb.append("\n\n");
-                    Model model = (Model)objs[1];
-                    sb.append(model.toString());
+                        StringBuilder sb = new StringBuilder();
+                        sb.append(StringUtils.repeat("=", 80));
+                        sb.append("\n");
+                        sb.append(trainFileName);
+                        sb.append("\n\n");
+                        Model model = (Model) objs[0];
+                        sb.append(model.toString());
 
-                    sb.append("\nModel characteristics:\n");
-                    	
-                    RuleSetBase ruleModel = (RuleSetBase)model;
-                    performance = RuleGenerator.recalculatePerformance(ruleModel);
-                    for (String name : performance.getCriteriaNames()) {
-                        double avg = performance.getCriterion(name).getAverage();
-                        sb.append(name).append(": ").append(avg).append("\n");
-                    }
+                        sb.append("\nModel characteristics:\n");
 
-                    sb.append("\nTraining set performance:\n");
+                        RuleSetBase ruleModel = (RuleSetBase) model;
+                        performance = RuleGenerator.recalculatePerformance(ruleModel);
+                        for (String name : performance.getCriteriaNames()) {
+                            double avg = performance.getCriterion(name).getAverage();
+                            sb.append(name).append(": ").append(avg).append("\n");
+                        }
 
-                    performance = (PerformanceVector)objs[0];
-                    // add performance
-                    for (String name : performance.getCriteriaNames()) {
-                        double avg = performance.getCriterion(name).getAverage();
-                        sb.append(name).append(": ").append(avg).append("\n");
-                    }
+                        if (objs.length > 1) {
+                            // if evaluator is enabled
+                            sb.append("\nTraining set performance:\n");
 
-                    sb.append("\n\n");
+                            performance = (PerformanceVector) objs[1];
+                            // add performance
+                            for (String name : performance.getCriteriaNames()) {
+                                double avg = performance.getCriterion(name).getAverage();
+                                sb.append(name).append(": ").append(avg).append("\n");
+                            }
+                        }
+
+                        sb.append("\n\n");
                     trainingReport.append(sb.toString());
-                    Logger.log(" [OK]\n", Level.INFO);
+                        Logger.log(" [OK]\n", Level.INFO);
+                    }
                 }
             }
 
             // Test process
-            Logger.log("PREDICTION\n"
+            if (predictElements.size() > 0) {
+                Logger.log("PREDICTION\n"
             		+ "Performance file: " + performanceTable.getFile() + "\n", Level.INFO);
             for(ExperimentalConsole.PredictElement pe : predictElements) {
-            	Logger.log("Applying model " + pe.modelFile + " on " + pe.testFile + ", saving predictions in " +  pe.testFile, Level.INFO);
-                Date begin = new Date();
-                String dateString = dateFormat.format(begin);
+                    Logger.log("Applying model " + pe.modelFile + " on " + pe.testFile + ", saving predictions in " + pe.testFile, Level.INFO);
+                    Date begin = new Date();
+                    String dateString = dateFormat.format(begin);
 
-                File f = new File(pe.modelFile);
-                String modelFilePath = f.isAbsolute() ? pe.modelFile :
-                        (outDirPath + "/" + pe.modelFile);
-                f = new File(pe.predictionsFile);
-                String predictionsFilePath = f.isAbsolute() ? pe.predictionsFile :
-                        (outDirPath + "/" + pe.predictionsFile);
-                f = new File(pe.testFile);
-                String testFilePath = f.isAbsolute() ? pe.testFile :
-                        (System.getProperty("user.dir") + "/" + pe.testFile);
+                    File f = new File(pe.modelFile);
+                    String modelFilePath = f.isAbsolute() ? pe.modelFile :
+                            (outDirPath + "/" + pe.modelFile);
+                    f = new File(pe.predictionsFile);
+                    String predictionsFilePath = f.isAbsolute() ? pe.predictionsFile :
+                            (outDirPath + "/" + pe.predictionsFile);
+                    f = new File(pe.testFile);
+                    String testFilePath = f.isAbsolute() ? pe.testFile :
+                            (System.getProperty("user.dir") + "/" + pe.testFile);
 
-                f = new File(testFilePath);
-                String testFileName = f.getName();
+                    f = new File(testFilePath);
+                    String testFileName = f.getName();
 
-                Logger.log("Test params: \n   Model file path:       " + modelFilePath + "\n" +
-                        "   Predictions file path: " + predictionsFilePath + "\n" +
-                        "   Test file path:        " + testFilePath + "\n", Level.FINE);
+                    Logger.log("Test params: \n   Model file path:       " + modelFilePath + "\n" +
+                            "   Predictions file path: " + predictionsFilePath + "\n" +
+                            "   Test file path:        " + testFilePath + "\n", Level.FINE);
 
-                test.modelLoader.setParameter(ModelLoader.PARAMETER_MODEL_FILE, modelFilePath);
-                test.arff.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, testFilePath);
-                test.writeArff.setParameter(ArffExampleSetWriter.PARAMETER_EXAMPLE_SET_FILE, predictionsFilePath);
+                    test.modelLoader.setParameter(ModelLoader.PARAMETER_MODEL_FILE, modelFilePath);
+                    test.arff.setParameter(ArffExampleSource.PARAMETER_DATA_FILE, testFilePath);
+                    test.writeArff.setParameter(ArffExampleSetWriter.PARAMETER_EXAMPLE_SET_FILE, predictionsFilePath);
 
-                long t1 = System.nanoTime();
-                IOContainer out = test.process.run();
-                IOObject[] objs = out.getIOObjects();
-                long t2 = System.nanoTime();
-                double elapsedSec = (double)(t2 - t1) / 1e9;
+                    long t1 = System.nanoTime();
+                    IOContainer out = test.process.run();
+                    IOObject[] objs = out.getIOObjects();
+                    long t2 = System.nanoTime();
+                    double elapsedSec = (double)(t2 - t1) / 1e9;
 
-                // Testing report
-                if (testingReport != null) {
-                    ExampleSet predictions = (ExampleSet)objs[2];
-                    if (predictions.getAnnotations().containsKey(RuleSetBase.ANNOTATION_TEST_REPORT)) {
-                        testingReport.append("================================================================================\n");
-                        testingReport.append(testFileName + "\n");
-                        testingReport.append(predictions.getAnnotations().get(RuleSetBase.ANNOTATION_TEST_REPORT));
-                        testingReport.append("\n\n");
-                    }
-                }
+					// Testing report
+	                if (testingReport != null) {
+	                    ExampleSet predictions = (ExampleSet)objs[2];
+	                    if (predictions.getAnnotations().containsKey(RuleSetBase.ANNOTATION_TEST_REPORT)) {
+	                        testingReport.append("================================================================================\n");
+	                        testingReport.append(testFileName + "\n");
+	                        testingReport.append(predictions.getAnnotations().get(RuleSetBase.ANNOTATION_TEST_REPORT));
+	                        testingReport.append("\n\n");
+	                    }
+	                }
 
-                // Performance log
+                    // Performance log
                 if(performanceTable != null){
 
-                    PerformanceVector testPerformance = (PerformanceVector)objs[0];
-                	RuleSetBase model = (RuleSetBase)objs[1];
-                	PerformanceVector performance = RuleGenerator.recalculatePerformance(model); 
-                        	
-                	for (String name : testPerformance.getCriteriaNames()) {
-                		performance.addCriterion(testPerformance.getCriterion(name));
-                	}
-                	
-                    String[] columns = performance.getCriteriaNames();
+                        RuleSetBase model = (RuleSetBase) objs[0];
+                        PerformanceVector performance = RuleGenerator.recalculatePerformance(model);
 
-                    Logger.log(performance + "\n", Level.FINE);
+                        if (objs.length > 1) {
+                            // if evaluator is enabled
+                            PerformanceVector testPerformance = (PerformanceVector) objs[1];
+                            for (String name : testPerformance.getCriteriaNames()) {
+                                performance.addCriterion(testPerformance.getCriterion(name));
+                            }
+                        }
 
-                    // generate headers
-                    StringBuilder performanceHeader = new StringBuilder("Dataset, time started, elapsed[s], ");
-                    StringBuilder row = new StringBuilder(testFileName + "," + dateString + "," + elapsedSec + ",");
+                        String[] columns = performance.getCriteriaNames();
 
-                    for (String name : columns) {
-                        performanceHeader.append(name).append(",");
-                    }
+                        Logger.log(performance + "\n", Level.FINE);
 
-                    for (String name : performance.getCriteriaNames()) {
-                        double avg = performance.getCriterion(name).getAverage();
-                        row.append(avg).append(", ");
-                    }
-                    
-                    String configString = "Parameters: " + model.getParams().toString().replace("\n", "; ");
+                        // generate headers
+                        StringBuilder performanceHeader = new StringBuilder("Dataset, time started, elapsed[s], ");
+                        StringBuilder row = new StringBuilder(testFileName + "," + dateString + "," + elapsedSec + ",");
+
+                        for (String name : columns) {
+                            performanceHeader.append(name).append(",");
+                        }
+
+                        for (String name : performance.getCriteriaNames()) {
+                            double avg = performance.getCriterion(name).getAverage();
+                            row.append(avg).append(", ");
+                        }
+
+                        String configString = "Parameters: " + model.getParams().toString().replace("\n", "; ");
                     performanceTable.add(new String[] { configString, performanceHeader.toString()}, row.toString());
+                    }
+
+                    Logger.log(" [OK]\n", Level.INFO);
                 }
-                
-                Logger.log(" [OK]\n", Level.INFO);
             }
         }  catch (Exception e) {
            if (isVerbose) {

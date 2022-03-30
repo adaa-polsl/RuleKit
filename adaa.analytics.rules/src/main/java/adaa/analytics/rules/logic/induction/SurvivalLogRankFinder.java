@@ -52,6 +52,8 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 			final Rule rule,
 			final ExampleSet dataset) {
 
+		super.postprocess(rule, dataset);
+
 		Covering cov = rule.covers(dataset);
 		Set<Integer> covered = cov.positives;
 		KaplanMeierEstimator kme = new KaplanMeierEstimator(dataset, covered);

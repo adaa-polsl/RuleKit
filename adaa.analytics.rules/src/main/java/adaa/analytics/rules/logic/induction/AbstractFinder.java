@@ -14,15 +14,15 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
+import adaa.analytics.rules.logic.quality.IQualityModifier;
+import adaa.analytics.rules.logic.quality.NoneQualityModifier;
 import adaa.analytics.rules.logic.representation.*;
 
 import com.rapidminer.example.Attribute;
@@ -51,6 +51,10 @@ public abstract class AbstractFinder implements AutoCloseable {
 	 * Thread pool to be used by the algorithm.
 	 */
 	protected ExecutorService pool;
+
+	protected IQualityModifier modifier;
+
+	protected List<IFinderObserver> observers = new ArrayList<IFinderObserver>();
 	
 	/**
 	 * Initializes induction parameters and thread pool.
@@ -62,12 +66,19 @@ public abstract class AbstractFinder implements AutoCloseable {
 		
 		threadCount = Runtime.getRuntime().availableProcessors();
 		pool = Executors.newFixedThreadPool(threadCount);
+		modifier = new NoneQualityModifier();
 	}
 
 	@Override
 	public void close() {
 		pool.shutdown();
 	}
+
+	/**
+	 * Can be implemented by subclasses to perform some initial processing prior growing.
+	 * @param trainSet Training set.
+	 */
+	public void preprocess(ExampleSet trainSet) {}
 
 	/**
 	 * Adds elementary conditions to the rule premise until termination conditions are fulfilled.
@@ -83,7 +94,11 @@ public abstract class AbstractFinder implements AutoCloseable {
 		final Set<Integer> uncovered) {
 
 		Logger.log("AbstractFinder.grow()\n", Level.FINE);
-		
+
+		for (IFinderObserver o: observers) {
+			o.growingStarted(rule);
+		}
+
 		int initialConditionsCount = rule.getPremise().getSubconditions().size();
 		
 		// get current covering
@@ -106,6 +121,10 @@ public abstract class AbstractFinder implements AutoCloseable {
 			
 			if (condition != null) {
 				rule.getPremise().addSubcondition(condition);
+
+				for (IFinderObserver o: observers) {
+					o.conditionAdded(condition);
+				}
 
 				covering = new Covering();
 				rule.covers(dataset, covering, covering.positives, covering.negatives);
@@ -138,6 +157,11 @@ public abstract class AbstractFinder implements AutoCloseable {
 		// if rule has been successfully grown
 		int addedConditionsCount = rule.getPremise().getSubconditions().size() - initialConditionsCount;
 		rule.setInducedContitionsCount(addedConditionsCount);
+
+		for (IFinderObserver o: observers) {
+			o.growingFinished(rule);
+		}
+
 		return addedConditionsCount;
 	}
 	
@@ -145,7 +169,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 	 * Removes irrelevant conditions from rule using hill-climbing strategy. 
 	 * 
 	 * @param rule Rule to be pruned.
-	 * @param trainSet Training set.
+	 * @param trainSet Training set. 
 	 * @param uncovered Collection of examples yet uncovered by the model (positive examples in the classification problems).
 	 * @return Covering of the rule after pruning.
 	 */
@@ -155,6 +179,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 			final Set<Integer> uncovered) {
 		
 		Logger.log("AbstractFinder.prune()\n", Level.FINE);
+		boolean weighting = (trainSet.getAttributes().getWeight() != null);
 		
 		// check preconditions
 		if (rule.getWeighted_p() == Double.NaN || rule.getWeighted_p() == Double.NaN ||
@@ -162,12 +187,39 @@ public abstract class AbstractFinder implements AutoCloseable {
 			throw new IllegalArgumentException();
 		}
 
+		IntegerBitSet positives = new IntegerBitSet(trainSet.size());
+		IntegerBitSet negatives = new IntegerBitSet(trainSet.size());
+		IntegerBitSet localUncovered;
+
+		// fixme: ugly workaround for having IntegerBitSet in Covering instance
 		Covering covering = new Covering();
+		covering.positives = positives;
+		covering.negatives = negatives;
+
 		rule.covers(trainSet, covering, covering.positives, covering.negatives);
 
+		if (uncovered instanceof IntegerBitSet) {
+			localUncovered = (IntegerBitSet) uncovered;
+		} else {
+			localUncovered = new IntegerBitSet(trainSet.size());
+			localUncovered.addAll(uncovered);
+		}
+
+		double new_p = 0, new_n = 0;
+
+		if (weighting) {
+
+		} else {
+			new_p = positives.calculateIntersectionSize(localUncovered);
+			new_n = negatives.calculateIntersectionSize(localUncovered);
+		}
+
 		double initialQuality = params.getPruningMeasure().calculate(trainSet, covering);
+		initialQuality = modifier.modifyQuality(
+				initialQuality, null, covering.weighted_p + covering.weighted_n, new_p + new_n);
+
 		boolean continueClimbing = true;
-		
+
 		while (continueClimbing) {
 			ConditionBase toRemove = null;
 			double bestQuality = Double.NEGATIVE_INFINITY;
@@ -180,12 +232,25 @@ public abstract class AbstractFinder implements AutoCloseable {
 				
 				// disable subcondition to calculate measure
 				cnd.setDisabled(true);
-				covering = new Covering();
+				covering.clear();
 				rule.covers(trainSet, covering, covering.positives, covering.negatives);
 				cnd.setDisabled(false);
+
+				if (weighting) {
+					new_p = 0;
+					new_n = 0;
+				} else {
+					new_p = positives.calculateIntersectionSize(localUncovered);
+					new_n = negatives.calculateIntersectionSize(localUncovered);
+				}
 				
 				double q = params.getPruningMeasure().calculate(trainSet, covering);
 				
+				if (cnd instanceof  ElementaryCondition) {
+					ElementaryCondition ec = (ElementaryCondition)cnd;
+					q = modifier.modifyQuality(q, ec.getAttribute(), covering.weighted_p + covering.weighted_n, new_p + new_n);
+				}
+
 				if (q > bestQuality) {
 					bestQuality = q;
 					toRemove = cnd;
@@ -196,6 +261,11 @@ public abstract class AbstractFinder implements AutoCloseable {
 			if (bestQuality >= initialQuality) {
 				initialQuality = bestQuality;
 				rule.getPremise().removeSubcondition(toRemove);
+
+				for (IFinderObserver o: observers) {
+					o.conditionRemoved(toRemove);
+				}
+
 				// stop climbing when only single condition remains
 				continueClimbing = rule.getPremise().getSubconditions().size() > 1;
 				Logger.log("Condition removed: " + rule + "\n", Level.FINER);
@@ -204,7 +274,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 			}
 		}
 
-		covering = new Covering();
+		covering.clear();
 		rule.covers(trainSet, covering, covering.positives, covering.negatives);
 		rule.setCoveringInformation(covering);
 
@@ -224,6 +294,10 @@ public abstract class AbstractFinder implements AutoCloseable {
 	public void postprocess(
 		final Rule rule,
 		final ExampleSet dataset) {
+
+		for (IFinderObserver o: observers) {
+			o.ruleReady(rule);
+		}
 	}
 
 	/**

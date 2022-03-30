@@ -104,7 +104,7 @@ public class APITestConsole {
 	    	testRoleSetter.setParameter(testRoleSetter.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
 	    	
 	    	// configure rule induction algorithm
-	    	ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_MIN_RULE_COVERED, "8");
+	    	ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_MINCOV_NEW, "8");
 	    	ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_INDUCTION_MEASURE, ClassificationMeasure.getName(ClassificationMeasure.BinaryEntropy));
 	    	ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_PRUNING_MEASURE, ClassificationMeasure.getName(ClassificationMeasure.UserDefined));
 	    	ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_USER_PRUNING_EQUATION, "2 * p / n");

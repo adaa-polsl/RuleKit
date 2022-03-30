@@ -26,16 +26,8 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
+import adaa.analytics.rules.logic.representation.*;
 import org.apache.commons.lang.StringUtils;
-
-import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
-import adaa.analytics.rules.logic.representation.CompoundCondition;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.IntegerBitSet;
-import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
-import adaa.analytics.rules.logic.representation.SingletonSet;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
@@ -53,10 +45,10 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 	/**
 	 * Module for finding single classification rules.
 	 */
-	protected ClassificationFinder finder;
+	protected AbstractFinder finder;
 
 	
-	public ClassificationSnC(ClassificationFinder finder, InductionParameters params) {
+	public ClassificationSnC(AbstractFinder finder, InductionParameters params) {
 		super(params);
 		this.finder = finder;
 		this.factory = new RuleFactory(RuleFactory.CLASSIFICATION, true, params, null);
@@ -73,11 +65,17 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 		beginTime = System.nanoTime();
 
 		ClassificationRuleSet finalRuleset = (ClassificationRuleSet) factory.create(dataset);
-		Attribute label = dataset.getAttributes().getLabel();
-		NominalMapping mapping = label.getMapping();
+
+		// use contrast attribute if specified
+		final Attribute outputAttr = (dataset.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE) == null)
+				? dataset.getAttributes().getLabel()
+				: dataset.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+
+		NominalMapping mapping = outputAttr.getMapping();
+
 		boolean weighted = (dataset.getAttributes().getWeight() != null);
 
-		int threadCount = Runtime.getRuntime().availableProcessors();
+		int threadCount = 1;//Runtime.getRuntime().availableProcessors();
 		ExecutorService pool = Executors.newFixedThreadPool(threadCount);
 		Semaphore mutex = new Semaphore(1);
 		AtomicInteger totalRules = new AtomicInteger(0);
@@ -109,7 +107,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 					Example e = dataset.getExample(id);
 					double w = dataset.getAttributes().getWeight() == null ? 1.0 : e.getWeight();
 					
-					if ((double)e.getLabel() == classId) {
+					if ((double)e.getValue(outputAttr) == classId) {
 						weighted_P += w;
 						positives.add(id);
 					} else {
@@ -130,7 +128,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 							uncovered_p +  "/" + weighted_P + "\n", Level.FINE);
 					Rule rule = factory.create(
 							new CompoundCondition(),
-							new ElementaryCondition(label.getName(), new SingletonSet((double)classId, mapping.getValues())));
+							new ElementaryCondition(outputAttr.getName(), new SingletonSet((double)classId, mapping.getValues())));
 
 					// rule covers everything at the beginning
 					rule.setWeighted_P(weighted_P);

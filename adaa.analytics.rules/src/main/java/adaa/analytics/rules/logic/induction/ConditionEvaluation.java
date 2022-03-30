@@ -25,4 +25,5 @@ public class ConditionEvaluation {
 	public Covering covering = null;
 	public double quality = -Double.MAX_VALUE;
 	public double covered = 0;
+	public boolean opposite = false;
 }

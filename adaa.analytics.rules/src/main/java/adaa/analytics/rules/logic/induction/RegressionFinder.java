@@ -98,10 +98,17 @@ public class RegressionFinder extends AbstractFinder {
 				} else {
 					// try all possible conditions
 					for (int i = 0; i < attr.getMapping().size(); ++i) {
+						// evaluate straight condition
 						ElementaryCondition candidate = new ElementaryCondition(
-								attr.getName(), new SingletonSet((double)i, attr.getMapping().getValues())); 
-						
+								attr.getName(), new SingletonSet((double)i, attr.getMapping().getValues()));
 						checkCandidate(dataset, rule, candidate, uncovered, best);
+
+						// evaluate complementary condition if enabled
+						if (params.isConditionComplementEnabled()) {
+							candidate = new ElementaryCondition(
+									attr.getName(), new SingletonSetComplement((double) i, attr.getMapping().getValues()));
+							checkCandidate(dataset, rule, candidate, uncovered, best);
+						}
 					}
 				}
 			
@@ -137,61 +144,69 @@ public class RegressionFinder extends AbstractFinder {
 		return (ElementaryCondition)best.condition;
 	}
 
-
+	
 	protected boolean checkCandidate(
-			ExampleSet dataset,
+			ExampleSet dataset, 
 			Rule rule,
 			ConditionBase candidate,
-			Set<Integer> uncovered,
+			Set<Integer> uncovered, 
 			ConditionEvaluation currentBest) {
 
 		try {
-			Logger.log("Evaluating candidate: " + candidate, Level.FINEST);
+		Logger.log("Evaluating candidate: " + candidate, Level.FINEST);
+		
+		CompoundCondition newPremise = new CompoundCondition();
+		newPremise.getSubconditions().addAll(rule.getPremise().getSubconditions());
+		newPremise.addSubcondition(candidate);
+		
+		Rule newRule = (Rule) rule.clone();
+		newRule.setPremise(newPremise);
 
-			CompoundCondition newPremise = new CompoundCondition();
-			newPremise.getSubconditions().addAll(rule.getPremise().getSubconditions());
-			newPremise.addSubcondition(candidate);
+		 
+		Covering cov = new Covering();
+		newRule.covers(dataset, cov, cov.positives, cov.negatives);
 
-			Rule newRule = (Rule) rule.clone();
-			newRule.setPremise(newPremise);
+		double new_p = 0, new_n = 0;
 
+		if (dataset.getAttributes().getWeight() == null) {
+			// unweighted examples
+			new_p = SetHelper.intersectionSize(uncovered, cov.positives);
+			new_n =	SetHelper.intersectionSize(uncovered, cov.negatives);
+		} else {
+			// calculate weights of newly covered examples
+			for (int id : cov.positives) {
+				new_p += uncovered.contains(id) ? dataset.getExample(id).getWeight() : 0;
+			}
+			for (int id : cov.negatives) {
+				new_n += uncovered.contains(id) ? dataset.getExample(id).getWeight() : 0;
+			}
+		}
+		
+		if (checkCoverage(cov.weighted_p, cov.weighted_n, new_p, new_n, rule.getWeighted_P(), rule.getWeighted_N())) {
+			double quality = params.getInductionMeasure().calculate(dataset, cov);
 
-			Covering cov = new Covering();
-			newRule.covers(dataset, cov, cov.positives, cov.negatives);
-
-			double new_p = 0, new_n = 0;
-
-			if (dataset.getAttributes().getWeight() == null) {
-				// unweighted examples
-				new_p = SetHelper.intersectionSize(uncovered, cov.positives);
-				new_n =	SetHelper.intersectionSize(uncovered, cov.negatives);
-			} else {
-				// calculate weights of newly covered examples
-				for (int id : cov.positives) {
-					new_p += uncovered.contains(id) ? dataset.getExample(id).getWeight() : 0;
-				}
-				for (int id : cov.negatives) {
-					new_n += uncovered.contains(id) ? dataset.getExample(id).getWeight() : 0;
-				}
+			if (candidate instanceof  ElementaryCondition) {
+				ElementaryCondition ec = (ElementaryCondition)candidate;
+				quality = modifier.modifyQuality(quality, ec.getAttribute(), cov.weighted_p + cov.weighted_n, new_p + new_n);
 			}
 
-			if (checkCoverage(cov.weighted_p, cov.weighted_n, new_p, new_n, rule.getWeighted_P(), rule.getWeighted_N())) {
-				double quality = params.getInductionMeasure().calculate(dataset, cov);
-				
-				Logger.log(", q=" + quality, Level.FINEST);
-
-				if (quality > currentBest.quality || (quality == currentBest.quality && new_p + new_n > currentBest.covered)) {
-					currentBest.quality = quality;
-					currentBest.condition = candidate;
-					currentBest.covered = new_p + new_n;
-					currentBest.covering = cov;
-					Logger.log(", approved!\n", Level.FINEST);
-					//rule.setWeight(quality);
-					return true;
-				}
-			}
-
-			Logger.log("\n", Level.FINEST);
+			Logger.log(", q=" + quality, Level.FINEST);
+			
+			if (quality > currentBest.quality ||
+					(quality == currentBest.quality && (new_p + new_n > currentBest.covered || currentBest.opposite))) {
+				currentBest.quality = quality;
+				currentBest.condition = candidate;
+				currentBest.covered = new_p + new_n;
+				currentBest.covering = cov;
+				currentBest.opposite = (candidate instanceof ElementaryCondition) &&
+						(((ElementaryCondition)candidate).getValueSet() instanceof SingletonSetComplement);
+				Logger.log(", approved!\n", Level.FINEST);
+				//rule.setWeight(quality);
+				return true;
+			} 
+		}
+		
+		Logger.log("\n", Level.FINEST);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -203,4 +218,5 @@ public class RegressionFinder extends AbstractFinder {
 		return ((new_p + new_n) >= params.getAbsoluteMinimumCovered(P + N)) &&
 				((p + n) >= params.getAbsoluteMinimumCoveredAll(P + N));
 	}
+
 }

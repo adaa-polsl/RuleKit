@@ -24,6 +24,7 @@ import com.rapidminer.tools.container.Pair;
 import org.apache.commons.lang.SerializationUtils;
 
 import java.util.*;
+import java.util.concurrent.locks.Condition;
 import java.util.logging.Level;
 
 /**
@@ -106,9 +107,9 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 
 			rule.getCoveredPositives().setAll(covering.positives);
 			rule.getCoveredNegatives().setAll(covering.negatives);
-
+			
 			rule.updateWeightAndPValue(dataset, covering, params.getVotingMeasure());
-	}
+		}
 	
 	
 	@Override 
@@ -163,7 +164,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 					if (!allowedAttributes.containsAll(attrs)) {
 						continue;
 					}
-						
+
 					checkCandidate(dataset, rule, candidate, uncovered, bestEvaluation);
 				}
 				
@@ -281,7 +282,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 
 					rule.setCoveringInformation(covering);
 					rule.updateWeightAndPValue(dataset, covering, params.getVotingMeasure());
-
+					
 					Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
 							+ rule.toString() + "\n", Level.FINER);
 				} else {
@@ -296,13 +297,13 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 		rule.setInducedContitionsCount(addedConditionsCount);
 		return addedConditionsCount;
 	}
-
+	
 	@Override
 	protected boolean checkCandidate(
-			ExampleSet dataset,
+			ExampleSet dataset, 
 			Rule rule,
 			ConditionBase candidate,
-			Set<Integer> uncovered,
+			Set<Integer> uncovered, 
 			ConditionEvaluation currentBest) {
 
 		boolean ok = super.checkCandidate(dataset, rule, candidate, uncovered, currentBest);

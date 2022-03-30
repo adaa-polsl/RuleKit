@@ -234,7 +234,7 @@ public class ClassificationFinderPrecalculated extends ClassificationFinder {
 
                             if ((quality > best.quality || (quality == best.quality && left_p > best.covered)) && (toCover_left_p > 0)) {
                                 ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_le(midpoint));
-                                if (checkCandidate(candidate, classId, rule.getWeighted_P(), toCover_left_p)) {
+                                if (checkCandidate(candidate, classId, left_p, left_n, toCover_left_p, rule.getWeighted_P())) {
                                     Logger.log("\tCurrent best: " + candidate + " (p=" + left_p + ", n=" + left_n + ", new_p=" + (double)toCover_left_p +", quality="  + quality + "\n", Level.FINEST);
                                     best.quality = quality;
                                     best.covered = left_p;
@@ -249,7 +249,7 @@ public class ClassificationFinderPrecalculated extends ClassificationFinder {
                                     right_p, right_n, rule.getWeighted_P(), rule.getWeighted_N());
                             if ((quality > best.quality || (quality == best.quality && right_p > best.covered)) && (toCover_right_p > 0)) {
                                 ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_geq(midpoint));
-                                if (checkCandidate(candidate, classId, rule.getWeighted_P(), toCover_right_p)) {
+                                if (checkCandidate(candidate, classId, right_p, right_n, toCover_right_p, rule.getWeighted_P())) {
                                     Logger.log("\tCurrent best: " + candidate + " (p=" + right_p + ", n=" + right_n + ", new_p=" + (double)toCover_right_p + ", quality="  + quality + "\n", Level.FINEST);
                                     best.quality = quality;
                                     best.covered = right_p;
@@ -274,7 +274,7 @@ public class ClassificationFinderPrecalculated extends ClassificationFinder {
                         if ((quality > best.quality || (quality == best.quality && p > best.covered)) && (toCover_p > 0)) {
                             ElementaryCondition candidate =
                                     new ElementaryCondition(attr.getName(), new SingletonSet((double)i, attr.getMapping().getValues()));
-                            if (checkCandidate(candidate, classId, rule.getWeighted_P(), toCover_p)) {
+                            if (checkCandidate(candidate, classId, p, n, toCover_p, rule.getWeighted_P())) {
                                 Logger.log("\tCurrent best: " + candidate + " (p=" + p + ", n=" + n + ", new_p=" + (double)toCover_p + ", quality="  + quality + "\n", Level.FINEST);
                                 best.quality = quality;
                                 best.covered = p;

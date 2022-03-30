@@ -146,7 +146,7 @@ public class SurvivalRuleSet extends RuleSetBase {
 	}
 	
 	/**
-	 * Generates text representation of the survival rule set. Beside elements returned by the base class, 
+	 * Generates text representation of the survival rule set. Beside list of rules,
 	 * it contains survival function estimates of the entire training set and particular rules.
 	 * @return Rule set in the text form.
 	 */

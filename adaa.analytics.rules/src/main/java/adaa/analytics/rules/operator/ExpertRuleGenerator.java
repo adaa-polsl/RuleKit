@@ -267,15 +267,21 @@ public class ExpertRuleGenerator extends RuleGenerator {
 			
 			InductionParameters params = new InductionParameters();
 			params.setInductionMeasure(createMeasure(MeasureDestination.INDUCTION, new ClassificationMeasure(ClassificationMeasure.Correlation)));
-			params.setPruningMeasure(createMeasure(MeasureDestination.PRUNING, params.getInductionMeasure())); 
+			params.setPruningMeasure(createMeasure(MeasureDestination.PRUNING, params.getInductionMeasure()));
 			params.setVotingMeasure(createMeasure(MeasureDestination.VOTING, params.getInductionMeasure()));
-				
-			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MIN_RULE_COVERED));
+
+			params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
+
+			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MINCOV_NEW));
+			params.setMinimumCoveredAll(getParameterAsDouble(PARAMETER_MINCOV_ALL));
+			params.setMaxcovNegative(getParameterAsDouble(PARAMETER_MAXCOV_NEGATIVE));
+
 			params.setEnablePruning(getParameterAsBoolean(PARAMETER_ENABLE_PRUNING));
 			params.setIgnoreMissing(getParameterAsBoolean(PARAMETER_IGNORE_MISSING));
 			params.setMaxGrowingConditions(getParameterAsDouble(PARAMETER_MAX_GROWING));
-			
-			
+			params.setSelectBestCandidate(getParameterAsBoolean(PARAMETER_SELECT_BEST_CANDIDATE));
+			params.setConditionComplementEnabled(getParameterAsBoolean(PARAMETER_COMPLEMENTARY_CONDITIONS));
+
 			AbstractFinder finder = null;
 			AbstractSeparateAndConquer snc = null;
 			

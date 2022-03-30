@@ -1,0 +1,52 @@
+RuleKit 1.4.0 (build 77ec9b1b2eb1be38f61b5fda04fc9b3425b4d82f 30.03.2022)
+    RuleKit Development Team (c) 2019
+
+================================================================================
+toy.arff
+
+Params:
+mincov_new=0.1
+mincov_all=0.1
+maxcov_negative=0.5
+max_uncovered_fraction=0.0
+induction_measure=Correlation
+pruning_measure=Negative controlled Correlation
+voting_measure=Correlation
+penalty_strength=0.5
+penalty_saturation=0.2
+select_best_candidate=true
+max_passes_count=3
+complementary_conditions=true
+
+Contrast sets:
+blue vs <others>(support=0.81, neg_support=0.12, delta_support=0.68, neg2pos_support=0.15, precision=0.91, neg_precision=0.094, delta_precision=0.81, )
+cs-1: IF a1 = <1.67, inf) AND a3 = !{2} THEN class = {blue} (supp=202/250=0.81, neg_supp=21/170=0.12, d_supp=0.68, neg2pos_supp =0.15, prec=0.91, d_prec=0.81, redundancy=0.0, mincov_all=0.1, pass_number=1)
+
+red vs <others>(support=0.58, neg_support=0.081, delta_support=0.50, neg2pos_support=0.10, precision=0.89, neg_precision=0.11, delta_precision=0.78, )
+cs-2: IF a3 = {2} THEN class = {red} (supp=77/170=0.45, neg_supp=0/250=0.0, d_supp=0.45, neg2pos_supp =0.0, prec=1, d_prec=1, redundancy=0.0, mincov_all=0.1, pass_number=1)
+cs-3: IF a3 = {1} THEN class = {red} (supp=85/170=0.50, neg_supp=6/250=0.024, d_supp=0.48, neg2pos_supp =0.048, prec=0.93, d_prec=0.87, redundancy=0.0, mincov_all=0.1, pass_number=1)
+cs-4: IF a1 = <0.92, 1.78) AND a2 = <3.55, inf) THEN class = {red} (supp=73/170=0.43, neg_supp=6/250=0.024, d_supp=0.41, neg2pos_supp =0.056, prec=0.92, d_prec=0.85, redundancy=0.0, mincov_all=0.1, pass_number=2)
+cs-5: IF a2 = <2.15, 5.61) AND a3 = !{4} THEN class = {red} (supp=157/170=0.92, neg_supp=69/250=0.28, d_supp=0.65, neg2pos_supp =0.30, prec=0.69, d_prec=0.39, redundancy=0.25, mincov_all=0.1, pass_number=2)
+
+
+Coverage of training examples by contrast sets (1-based):
+2,4,5;2,3,5;2,4,5;2,4,5;2,4,5;2,4,5;2,4,5;2,4,5;3,5;2,4,5;2,4,5;2,4,5;2,4,5;4,5;2,4,5;2,4,5;2,4,5;2,3,4,5;2,4,5;2,4,5;2,4,5;2,4,5;2,4,5;3,4,5;2,4,5;2,3,5;2,4;2,4,5;2,3,5;2,4,5;2,5;2,4;2,4,5;2,4,5;2,4,5;2,3,5;2,4,5;2,4,5;2,4,5;2,4,5;2,3,5;2,4,5;2,5;2,4,5;2,4,5;2,4,5;2,4;2,3,5;2,3,4,5;2,4,5;2,4;2,4,5;2,3,5;2,4,5;2,3,4,5;2,4;2,4,5;2,4,5;2,4,5;2,4,5;2,4,5;2,4,5;2,4,5;2,4,5;2,4,5;2,5;2,4,5;2,5;2,4,5;2,4,5;2,4,5;4,5;2,4,5;2,4,5;2,3,5;2,4,5;2,4,5;2,4,5;2,4,5;3,5;2,5;2,4,5;2,3,5;2,4,5;2,3,4,5;2,3,5;2,4,5;2,3,4,5;2,4,5;2,4,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1;1,5;1;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;3,5;1,5;1,5;1,5;1,5;1,5;3,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1;1,5;1,5;3,5;1,5;1;1,5;1;1;1;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1,5;1;1,5;1,5;1,5;3;5;4,5;3,5;2,4,5;-;3,5;3,5;3,5;3,5;3,5;3,5;2,4,5;3;-;-;2,5;3,5;3,5;-;-;5;-;3;3,5;5;3;3;5;3,5;3;-;-;-;5;3;3,5;5;3;-;3,5;3,5;3,5;3;2,3,5;3;5;5;5;3,5;5;3;5;3,5;2,4,5;3,5;-;3;5;3,5;3;3;-;3;3,5;-;-;-;-;-;2,3,5;3,5;3;5;5;3;3;4,5;3,5;5;5;3,5;3;3,5;3,5;5;5;5;5;5;3,5;3;3,5;5;3;3;3,5;5;4,5;-;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3;3,5;3;3;3;3;3;3;3;3;3,5;3;3;3;3,5;3;3;3;3,5;3;3;3;3;3,5;3;3;3,5;3;3;3;3;3;3,5;3;3;3,5;3;3;3;3;3;3;3,5;
+Model characteristics:
+time_total_s: 0.0
+time_growing_s: 0.0
+time_pruning_s: 0.0
+#rules: 5.0
+#conditions_per_rule: 2.0
+#induced_conditions_per_rule: 3.4
+support: 0.6922352941176471
+neg_support: 0.10226470588235295
+delta_support: 0.5899705882352941
+neg2pos_support: 0.12678445694413157
+precision: 0.8970156522642845
+neg_precision: 0.10298434773571545
+delta_precision: 0.794031304528569
+attribute_occurence: 0.75
+redundancy: 0.4058641975308642
+total_duplicates: 3.0
+
+

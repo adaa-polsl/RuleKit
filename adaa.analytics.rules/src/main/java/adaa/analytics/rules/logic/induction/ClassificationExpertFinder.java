@@ -244,7 +244,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 					}
 					double prec = p / (p + n);
 					
-					if (newlyCoveredPositivesCount >= params.getMinimumCovered() && prec > apriori_prec) {
+					if (newlyCoveredPositivesCount >= params.getAbsoluteMinimumCovered(rule.getWeighted_P()) && prec > apriori_prec) {
 					
 						double q = ((ClassificationMeasure)params.getInductionMeasure()).calculate(
 								p, n, rule.getWeighted_P(), rule.getWeighted_N());
@@ -359,8 +359,8 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 	 * @return
 	 */
 	@Override
-	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double totalPositives, double newlyCoveredPositives) {
-		return super.checkCandidate(cnd, classId, totalPositives, newlyCoveredPositives) &&
+	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double p, double n, double new_p, double P) {
+		return super.checkCandidate(cnd, classId, p, n, new_p, P) &&
 			!knowledge.isForbidden(cnd.getAttribute(), cnd.getValueSet(), (int)classId);
 	}
 	

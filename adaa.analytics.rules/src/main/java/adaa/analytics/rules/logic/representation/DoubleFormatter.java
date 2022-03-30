@@ -1,5 +1,7 @@
 package adaa.analytics.rules.logic.representation;
 
+import org.apache.commons.math3.util.Precision;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Locale;

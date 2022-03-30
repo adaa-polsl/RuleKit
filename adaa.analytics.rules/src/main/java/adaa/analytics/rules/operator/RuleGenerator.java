@@ -18,9 +18,9 @@ import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
+import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.utils.OperatorI18N;
+import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.Model;
 import com.rapidminer.operator.OperatorCapability;
@@ -79,22 +79,28 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	protected PerformanceVector performances; 
 	
 	/**
-	 * Positive integer representing minimum number of previously uncovered examples to be covered by a new rule 
+	 * Number/fraction of previously uncovered examples to be covered by a new rule.
 	 * (positive examples for classification problems).
 	 */
-	public static final String PARAMETER_MIN_RULE_COVERED = "min_rule_covered";
-	
-	/**
-	 * Floating-point number from [0,1] interval representing maximum fraction of examples that may remain uncovered by the rule set.
+	public static final String PARAMETER_MINCOV_NEW = "mincov_new";
+
+		/**
+	 * Number/fraction examples to be covered by a new rule.
+	 * (positive examples for classification problems).
+	 */
+	public static final String PARAMETER_MINCOV_ALL = "mincov_all";
+
+		/**
+	 * Fraction of examples that may remain uncovered by the rule set.
 	 */
 	public static final String PARAMETER_MAX_UNCOVERED_FRACTION = "max_uncovered_fraction";
-	
+
 	/**
 	 * Non-negative integer representing maximum number of conditions which can be added to the rule in the growing phase 
 	 * (use this parameter for large datasets if execution time is prohibitive); 0 indicates no limit.
 	 */
 	public static final String PARAMETER_MAX_GROWING = "max_growing";
-
+	
 	/**
 	 *  Flag determining if best candidate should be selected from growing phase."
 	 */
@@ -104,12 +110,12 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	 * Name of the rule quality measure used during growing (ignored in the survival analysis where log-rank statistics is used).
 	 */
 	public static final String PARAMETER_INDUCTION_MEASURE = "induction_measure";
-	
+
 	/**
 	 * Binary parameter indicating whether pruning should be enabled.
 	 */
 	public static final String PARAMETER_ENABLE_PRUNING = "enable_pruning";
-
+	
 	/**
 	 * Name of the rule quality measure used during pruning.
 	 */
@@ -141,6 +147,21 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	 *  considered as not fulfilling the condition build upon that attribute)
 	 */
 	public static final String PARAMETER_IGNORE_MISSING = "ignore_missing";
+
+	/**
+	 *
+	 */
+	public static final String PARAMETER_MAXCOV_NEGATIVE = "maxcov_negative";
+
+	public static final String PARAMETER_PENALTY_STRENGTH = "penalty_strength";
+
+	public static final String PARAMETER_PENALTY_SATURATION = "penalty_saturation";
+
+	public static final String PARAMETER_MAX_PASSES_COUNT = "max_passes_count";
+
+	public static final String PARAMETER_INCLUDE_BINARY_CONTRAST = "include_binary_contrast";
+
+	public static final String PARAMETER_COMPLEMENTARY_CONDITIONS = "complementary_conditions";
 
 	/**
 	 * Invokes base class constructor.
@@ -176,22 +197,45 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 			params.setVotingMeasure(createMeasure(MeasureDestination.VOTING, params.getInductionMeasure()));
 			
 			params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
-			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MIN_RULE_COVERED));
+
+			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MINCOV_NEW));
+			params.setMinimumCoveredAll(getParameterAsDouble(PARAMETER_MINCOV_ALL));
+			params.setMaxcovNegative(getParameterAsDouble(PARAMETER_MAXCOV_NEGATIVE));
+
 			params.setEnablePruning(getParameterAsBoolean(PARAMETER_ENABLE_PRUNING));
 			params.setIgnoreMissing(getParameterAsBoolean(PARAMETER_IGNORE_MISSING));
 			params.setMaxGrowingConditions(getParameterAsDouble(PARAMETER_MAX_GROWING));
 			params.setSelectBestCandidate(getParameterAsBoolean(PARAMETER_SELECT_BEST_CANDIDATE));
-			
+			params.setConditionComplementEnabled(getParameterAsBoolean(PARAMETER_COMPLEMENTARY_CONDITIONS));
+
+			params.setPenaltyStrength(getParameterAsDouble(PARAMETER_PENALTY_STRENGTH));
+			params.setPenaltySaturation(getParameterAsDouble(PARAMETER_PENALTY_SATURATION));
+			params.setMaxPassesCount(getParameterAsInt(PARAMETER_MAX_PASSES_COUNT));
+			params.setBinaryContrastIncluded(getParameterAsBoolean(PARAMETER_INCLUDE_BINARY_CONTRAST));
+
 			AbstractSeparateAndConquer snc;
 			AbstractFinder finder;
-			
+
+			Attribute contrastAttr = null;
+
+			if (exampleSet.getAnnotations().containsKey(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
+				contrastAttr = exampleSet.getAttributes().get(exampleSet.getAnnotations().get(ContrastRule.CONTRAST_ATTRIBUTE_ROLE));
+			}
+
+			// set role only when not null and different than label attribute
+			if (contrastAttr != null && contrastAttr != exampleSet.getAttributes().getLabel()) {
+				exampleSet.getAttributes().setSpecialAttribute(contrastAttr, ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+			}
+
 			if (exampleSet.getAttributes().findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
 				// survival problem
 			//	if (getParameterAsBoolean(PARAMETER_LOGRANK_SURVIVAL)) {
 					params.setInductionMeasure(new LogRank());
 					params.setPruningMeasure(new LogRank());
 					params.setVotingMeasure(new LogRank());
-					finder = new SurvivalLogRankFinder(params);
+					finder = contrastAttr != null
+							? new ContrastSurvivalFinder(params)
+							: new SurvivalLogRankFinder(params);
 					snc = new SurvivalLogRankSnC((SurvivalLogRankFinder)finder, params);
 			//	} else {
 			//		ClassificationFinder finder = new ClassificationFinder(params);
@@ -199,18 +243,30 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 			//	}
 			} else if (exampleSet.getAttributes().getLabel().isNumerical()) {
 				// regression problem
-				finder = new RegressionFinder(params);
+				finder = contrastAttr != null
+						? new ContrastRegressionFinder(params)
+						: new RegressionFinder(params);
+
 				snc = new RegressionSnC((RegressionFinder) finder, params);
 			} else {
 				// classification problem
-				finder = new ClassificationFinder(params);
+				finder = contrastAttr != null
+						? new ContrastClassificationFinder(params)
+						: new ClassificationFinder(params);
 				snc = new ClassificationSnC((ClassificationFinder) finder, params);
+			}
+
+			// overwrite snc for contrast sets
+			if (contrastAttr != null) {
+				params.setConditionComplementEnabled(true);
+				params.setSelectBestCandidate(true);
+				snc = new ContrastSnC(finder, params);
 			}
 			
 			RuleSetBase rs = snc.run(exampleSet);
 			performances = recalculatePerformance(rs);
 			model = rs;
-
+			
 			finder.close();
 			
 		} catch (IllegalAccessException e) {
@@ -245,25 +301,29 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		List<ParameterType> types = new ArrayList<ParameterType>();
 		ParameterType tmp;
 
+		InductionParameters defaultParams = new InductionParameters();
+
+
 		// those parameters are the same for regression, classification, and survival
-		types.add(new ParameterTypeDouble(
-				PARAMETER_MIN_RULE_COVERED, getParameterDescription(PARAMETER_MIN_RULE_COVERED), 0, Double.MAX_VALUE, 5));
-		types.add(new ParameterTypeDouble(
-				PARAMETER_MAX_UNCOVERED_FRACTION, getParameterDescription(PARAMETER_MAX_UNCOVERED_FRACTION), 0, Double.MAX_VALUE, 0));
-		
-		types.add(new ParameterTypeDouble(
-				PARAMETER_MAX_GROWING, getParameterDescription(PARAMETER_MAX_GROWING), 0, Double.MAX_VALUE, 0));
+		types.add(new ParameterTypeDouble(PARAMETER_MINCOV_NEW, getParameterDescription(PARAMETER_MINCOV_NEW),
+				0, Double.MAX_VALUE, defaultParams.getMinimumCovered()));
 
-		types.add(new ParameterTypeBoolean(
-				PARAMETER_SELECT_BEST_CANDIDATE, getParameterDescription(PARAMETER_SELECT_BEST_CANDIDATE), false));
+		types.add(new ParameterTypeDouble(PARAMETER_MINCOV_ALL, getParameterDescription(PARAMETER_MINCOV_ALL),
+				0, Double.MAX_VALUE, defaultParams.getMinimumCoveredAll()));
 
-		// get log rank flag only in survival mode
-/*		tmp = new ParameterTypeBoolean(
-				PARAMETER_LOGRANK_SURVIVAL, getParameterDescription(PARAMETER_LOGRANK_SURVIVAL), true);
-		tmp.registerDependencyCondition(survivalMetaCondition);
-		tmp.setHidden(true);
-		types.add(tmp);
-*/
+		types.add(new ParameterTypeDouble(PARAMETER_MAX_UNCOVERED_FRACTION, getParameterDescription(PARAMETER_MAX_UNCOVERED_FRACTION),
+				0, Double.MAX_VALUE, defaultParams.getMaximumUncoveredFraction()));
+
+		types.add(new ParameterTypeDouble(PARAMETER_MAX_GROWING, getParameterDescription(PARAMETER_MAX_GROWING),
+				0, Double.MAX_VALUE, defaultParams.getMaxGrowingConditions()));
+
+		types.add(new ParameterTypeBoolean(PARAMETER_SELECT_BEST_CANDIDATE, getParameterDescription(PARAMETER_SELECT_BEST_CANDIDATE),
+				defaultParams.getSelectBestCandidate()));
+
+		types.add(new ParameterTypeBoolean(PARAMETER_COMPLEMENTARY_CONDITIONS, getParameterDescription(PARAMETER_COMPLEMENTARY_CONDITIONS),
+				defaultParams.isConditionComplementEnabled()));
+
+
 		// add measures only when log rank flag is not set
 		ParameterCondition measuresCondition = new OrParameterCondition(this, false,
 				classificationMetaCondition,
@@ -272,7 +332,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		
 		tmp = new ParameterTypeStringCategory(
 				PARAMETER_INDUCTION_MEASURE, getParameterDescription(PARAMETER_INDUCTION_MEASURE),
-				ClassificationMeasure.NAMES, ClassificationMeasure.getName(ClassificationMeasure.Correlation), false);
+				ClassificationMeasure.NAMES, defaultParams.getInductionMeasure().getName(), false);
 		tmp.registerDependencyCondition(measuresCondition);
 		types.add(tmp);
 
@@ -284,13 +344,14 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		types.add(tmp);
 
 		tmp = new ParameterTypeBoolean(
-				PARAMETER_ENABLE_PRUNING, getParameterDescription(PARAMETER_ENABLE_PRUNING), true);
+				PARAMETER_ENABLE_PRUNING, getParameterDescription(PARAMETER_ENABLE_PRUNING),
+				defaultParams.isPruningEnabled());
 		types.add(tmp);
 		tmp.registerDependencyCondition(measuresCondition);
 		
 		tmp = new ParameterTypeStringCategory(
 				PARAMETER_PRUNING_MEASURE, getParameterDescription(PARAMETER_PRUNING_MEASURE),
-				ClassificationMeasure.NAMES, ClassificationMeasure.getName(ClassificationMeasure.Correlation), false);
+				ClassificationMeasure.NAMES, defaultParams.getPruningMeasure().getName(), false);
 		tmp.registerDependencyCondition(new BooleanParameterCondition(this, PARAMETER_ENABLE_PRUNING, true, true));
 		types.add(tmp);
 		tmp = new ParameterTypeString(PARAMETER_USER_PRUNING_EQUATION, getParameterDescription(PARAMETER_USER_PRUNING_EQUATION),true);
@@ -299,16 +360,32 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 
 		tmp = new ParameterTypeStringCategory(
 				PARAMETER_VOTING_MEASURE, getParameterDescription(PARAMETER_VOTING_MEASURE),
-				ClassificationMeasure.NAMES, ClassificationMeasure.getName(ClassificationMeasure.Correlation), false);
+				ClassificationMeasure.NAMES, defaultParams.getVotingMeasure().getName(), false);
 		tmp.registerDependencyCondition(measuresCondition);
 		types.add(tmp);
 		tmp = new ParameterTypeString(PARAMETER_USER_VOTING_EQUATION, getParameterDescription(PARAMETER_USER_VOTING_EQUATION),true);
 		tmp.registerDependencyCondition(new EqualStringCondition(this,PARAMETER_VOTING_MEASURE,true,"UserDefined"));
 		types.add(tmp);
 		
-		types.add(new ParameterTypeBoolean(
-				PARAMETER_IGNORE_MISSING, getParameterDescription(PARAMETER_IGNORE_MISSING), false));
-		
+		types.add(new ParameterTypeBoolean(PARAMETER_IGNORE_MISSING, getParameterDescription(PARAMETER_IGNORE_MISSING),
+				defaultParams.isIgnoreMissing()));
+
+		tmp = new ParameterTypeDouble(PARAMETER_MAXCOV_NEGATIVE, getParameterDescription(PARAMETER_MAXCOV_NEGATIVE),
+				0, Double.MAX_VALUE, defaultParams.getMaxcovNegative());
+		types.add(tmp);
+
+		tmp = new ParameterTypeDouble(PARAMETER_PENALTY_STRENGTH, getParameterDescription(PARAMETER_PENALTY_STRENGTH),
+				0, Double.MAX_VALUE, defaultParams.getPenaltyStrength());
+		types.add(tmp);
+
+		tmp = new ParameterTypeDouble(
+				PARAMETER_PENALTY_SATURATION, getParameterDescription(PARAMETER_PENALTY_SATURATION),
+				0, Double.MAX_VALUE, defaultParams.getPenaltySaturation());
+		types.add(tmp);
+
+		types.add(new ParameterTypeInt(PARAMETER_MAX_PASSES_COUNT, getParameterDescription(PARAMETER_MAX_PASSES_COUNT),
+				1, Integer.MAX_VALUE, defaultParams.getMaxPassesCount()));
+
 		return types;
     }
 	 
@@ -370,19 +447,33 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		pv.addCriterion(new EstimatedPerformance("#rules", rs.getRules().size(), 1, false));
 		pv.addCriterion(new EstimatedPerformance("#conditions_per_rule", rs.calculateConditionsCount(), 1, false));
 		pv.addCriterion(new EstimatedPerformance("#induced_conditions_per_rule", rs.calculateInducedCondtionsCount(), 1, false));
-		
-		pv.addCriterion(new EstimatedPerformance("avg_rule_coverage", rs.calculateAvgRuleCoverage(), 1, false));
-		pv.addCriterion(new EstimatedPerformance("avg_rule_precision", rs.calculateAvgRulePrecision(), 1, false));
-		pv.addCriterion(new EstimatedPerformance("avg_rule_quality", rs.calculateAvgRuleQuality(), 1, false));
-		
-		pv.addCriterion(new EstimatedPerformance("avg_pvalue", rs.calculateSignificance(0.05).p , 1, false));
-		pv.addCriterion(new EstimatedPerformance("avg_FDR_pvalue", rs.calculateSignificanceFDR(0.05).p, 1, false));
-		pv.addCriterion(new EstimatedPerformance("avg_FWER_pvalue", rs.calculateSignificanceFWER(0.05).p, 1, false));
-		
-		pv.addCriterion(new EstimatedPerformance("fraction_0.05_significant", rs.calculateSignificance(0.05).fraction, 1, false));
-		pv.addCriterion(new EstimatedPerformance("fraction_0.05_FDR_significant", rs.calculateSignificanceFDR(0.05).fraction, 1, false));
-		pv.addCriterion(new EstimatedPerformance("fraction_0.05_FWER_significant", rs.calculateSignificanceFWER(0.05).fraction, 1, false));
-			
+
+		if (rs instanceof ContrastRuleSet) {
+			ContrastRuleSet crs = (ContrastRuleSet)rs;
+
+			ContrastIndicators indicators = crs.calculateAvgContrastIndicators();
+
+			for (String k: indicators.values.keySet()) {
+				pv.addCriterion(new EstimatedPerformance(k, indicators.get(k), 1, false));
+			}
+
+			double[] stats = crs.calculateAttributeStats();
+			pv.addCriterion(new EstimatedPerformance("attribute_occurence", stats[0], 1, false));
+			pv.addCriterion(new EstimatedPerformance("redundancy", stats[1], 1, false));
+			pv.addCriterion(new EstimatedPerformance("total_duplicates", crs.getTotalDuplicates(), 1, false));
+		} else {
+			pv.addCriterion(new EstimatedPerformance("avg_rule_coverage", rs.calculateAvgRuleCoverage(), 1, false));
+			pv.addCriterion(new EstimatedPerformance("avg_rule_precision", rs.calculateAvgRulePrecision(), 1, false));
+			pv.addCriterion(new EstimatedPerformance("avg_rule_quality", rs.calculateAvgRuleQuality(), 1, false));
+
+			pv.addCriterion(new EstimatedPerformance("avg_pvalue", rs.calculateSignificance(0.05).p, 1, false));
+			pv.addCriterion(new EstimatedPerformance("avg_FDR_pvalue", rs.calculateSignificanceFDR(0.05).p, 1, false));
+			pv.addCriterion(new EstimatedPerformance("avg_FWER_pvalue", rs.calculateSignificanceFWER(0.05).p, 1, false));
+
+			pv.addCriterion(new EstimatedPerformance("fraction_0.05_significant", rs.calculateSignificance(0.05).fraction, 1, false));
+			pv.addCriterion(new EstimatedPerformance("fraction_0.05_FDR_significant", rs.calculateSignificanceFDR(0.05).fraction, 1, false));
+			pv.addCriterion(new EstimatedPerformance("fraction_0.05_FWER_significant", rs.calculateSignificanceFWER(0.05).fraction, 1, false));
+		}
 		return pv;
 	 }
 }

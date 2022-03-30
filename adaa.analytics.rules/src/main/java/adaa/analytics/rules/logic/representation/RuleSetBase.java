@@ -17,13 +17,12 @@ package adaa.analytics.rules.logic.representation;
 import java.util.*;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
-import adaa.analytics.rules.logic.quality.IQualityMeasure;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.learner.SimplePredictionModel;
-import javafx.util.Pair;
+
 
 /**
  * Abstract class representing all rule-based models (classification/regression/survival).

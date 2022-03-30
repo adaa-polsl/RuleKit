@@ -45,7 +45,7 @@ public class RuleGeneratorFromStream extends ExpertRuleGenerator {
 			params.setVotingMeasure(createMeasure(MeasureDestination.VOTING, params.getInductionMeasure()));
 
 			params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
-			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MIN_RULE_COVERED));
+			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MINCOV_NEW));
 			params.setEnablePruning(getParameterAsBoolean(PARAMETER_ENABLE_PRUNING));
 			params.setIgnoreMissing(getParameterAsBoolean(PARAMETER_IGNORE_MISSING));
 

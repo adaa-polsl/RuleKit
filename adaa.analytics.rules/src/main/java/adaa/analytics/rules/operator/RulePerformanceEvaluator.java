@@ -17,13 +17,13 @@ package adaa.analytics.rules.operator;
 import adaa.analytics.rules.logic.quality.ClassificationRulesPerformance;
 import adaa.analytics.rules.logic.quality.ExtendedBinaryPerformance;
 import adaa.analytics.rules.logic.quality.IntegratedBrierScore;
+import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
-import com.rapidminer.operator.OperatorCreationException;
-import com.rapidminer.operator.OperatorDescription;
-import com.rapidminer.operator.OperatorException;
+import com.rapidminer.operator.*;
 import com.rapidminer.operator.performance.*;
+import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.UndefinedParameterError;
 
@@ -89,7 +89,7 @@ public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 	public static final int TYPE_BINARY_CLASSIFICATION = 1;
 	public static final int TYPE_REGRESSION = 2;
 	public static final int TYPE_SURVIVAL = 3;
-	
+
 	private static final CriterionClassWrapper[] COMMON_CRITERIA_CLASSES = {
 		
 	};
@@ -170,7 +170,7 @@ public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 		super(description);
 		
 		criteriaNames = new ArrayList<ArrayList<String>>();
-		for (int i = 0; i <= 3; ++i) {
+		for (int i = 0; i <= 4; ++i) {
 			criteriaNames.add(new ArrayList<String>());
 		}
 		
@@ -196,10 +196,8 @@ public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 		for (CriterionClassWrapper ccw : SURVIVAL_CRITERIA_CLASSES) {
 			criteriaNames.get(TYPE_SURVIVAL).add(ccw.create().getName());
 		}
-		
 	}
-	
-	
+
 	@Override
     public List<ParameterType> getParameterTypes() {
 		List<ParameterType> params = super.getParameterTypes();
@@ -246,9 +244,12 @@ public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 	 * @return Integer representing one of the possible types (TYPE_CLASSIFICATION, TYPE_BINARY_CLASSIFICATION,
 	 *  	TYPE_REGRESSION, TYPE_SURVIVAL).
 	 */
-	public static int determineExperimentType(ExampleSet set) {
+	public int determineExperimentType(ExampleSet set) throws UserError {
 		Attribute label = set.getAttributes().getLabel();
-		if (set.getAttributes().findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
+
+		if (set.getAnnotations().containsKey(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
+			throw new UserError(this, "Operator does not evaluate contrast sets.");
+		} else if (set.getAttributes().findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
 			return TYPE_SURVIVAL;
 		} else if (label.isNominal()) {
 			if (label.getMapping().size() == 2) {
@@ -265,17 +266,21 @@ public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 	@Override
 	protected void init(ExampleSet exampleSet) {
 		testSet = exampleSet;
-		
-		int type = determineExperimentType(this.testSet);
-		
-		// disable all criteria
-		for (PerformanceCriterion c: getCriteria()) {
-    		setParameter(c.getName(), "false");
-    	}
-		
-		// enable only suitable criteria
-		for (String cname: criteriaNames.get(type)) {
-			setParameter(cname, "true");
+
+		try {
+			int type = determineExperimentType(this.testSet);
+
+			// disable all criteria
+			for (PerformanceCriterion c : getCriteria()) {
+				setParameter(c.getName(), "false");
+			}
+
+			// enable only suitable criteria
+			for (String cname : criteriaNames.get(type)) {
+				setParameter(cname, "true");
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 	
