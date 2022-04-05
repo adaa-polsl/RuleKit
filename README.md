@@ -6,9 +6,10 @@
 
 Rule-based models are often used for data analysis as they combine interpretability with predictive power. We present RuleKit, a versatile tool for rule learning. Based on a sequential covering induction algorithm, it is suitable for classification, regression, and survival problems. The presence of user-guided induction mode facilitates verifying hypotheses concerning data dependencies which are expected or of interest. The powerful and flexible experimental environment allows straightforward investigation of different induction schemes. The analysis can be performed in batch mode, through RapidMiner plugin, as well as R package and [Python](https://github.com/adaa-polsl/RuleKit-python) packages. A documented Java API is also provided for convenience. 
 
-RuleKit provides all the functionalities included in our previous packages:
-* [LR-Rules](https://github.com/adaa-polsl/LR-Rules) (Wróbel et al, 2017) for survival rules induction,
-* [GuideR](https://github.com/adaa-polsl/GuideR) (Sikora et al, 2019) for user-guided induction.
+RuleKit provides latest versions of our algorithms (some of them were initially published as independent packages and integrated later):
+* [LR-Rules](https://github.com/adaa-polsl/LR-Rules) (Wróbel et al, 2017) - survival rules induction,
+* [GuideR](https://github.com/adaa-polsl/GuideR) (Sikora et al, 2019) - user-guided induction.
+* RuleKit-CS (Gudyś et al, 2022) - contrast set mining.
 
 
 # Getting started
@@ -135,7 +136,10 @@ The software is publicly available under [GNU AGPL-3.0 license](LICENSE).
  
 # Citing
 
-[Gudyś, A, Sikora, M, Wróbel, Ł (2019) RuleKit: A Comprehensive Suite for Rule-Based Learning, Knowledge-Based Systems, https://doi.org/10.1016/j.knosys.2020.105480](https://doi.org/10.1016/j.knosys.2020.105480)
+[Gudyś, A, Sikora, M, Wróbel, Ł (2022) Separate and conquer heuristic allows robust mining of contrast sets from various types of data,  	
+https://doi.org/10.48550/arXiv.2204.00497](https://doi.org/10.48550/arXiv.2204.00497)
+
+[Gudyś, A, Sikora, M, Wróbel, Ł (2020) RuleKit: A comprehensive suite for rule-based learning, Knowledge-Based Systems, 194: 105480](https://doi.org/10.1016/j.knosys.2020.105480)
 
 [Sikora, M, Wróbel, Ł, Gudyś, A (2019) GuideR: a guided separate-and-conquer rule learning in classification, regression, and survival settings, Knowledge-Based Systems, 173:1-14.](https://www.sciencedirect.com/science/article/abs/pii/S0950705119300802?dgcid=coauthor)
 
