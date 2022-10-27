@@ -199,7 +199,7 @@ public class ExperimentalConsole {
                 String name = paramNode.getAttribute("name");
 
                 // backward compatibility
-                if (name.equals("min_rule_covered")) {
+                if (name.equals("min_rule_covered") || name.equals("mincov_new")) {
                     name = RuleGenerator.PARAMETER_MINCOV_NEW;
                 }
 

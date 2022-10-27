@@ -7,13 +7,11 @@ import com.rapidminer.example.set.AttributeValueFilter;
 import com.rapidminer.example.set.ConditionedExampleSet;
 import com.rapidminer.example.table.NominalMapping;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 public class ContrastSnC extends ClassificationSnC {
-
-    private static double[] MINCOV_ALLS = {0.8, 0.5, 0.2, 0.1};
-
-    //private static double[] MINCOV_ALLS = {0.1};
 
     public ContrastSnC(AbstractFinder finder, InductionParameters params) {
         super(finder, params);
@@ -39,15 +37,16 @@ public class ContrastSnC extends ClassificationSnC {
         ContrastRuleSet rs = (ContrastRuleSet) factory.create(dataset);
         IPenalizedFinder pf = (IPenalizedFinder)finder;
 
-        // reset
+        // reset penalties
         pf.getAttributePenalties().init(dataset);
 
         // determine if multiple mincov should be used
-        double [] mincovs;
-        if (params.getMinimumCoveredAll() >= 0) {
-            mincovs = new double[] { params.getMinimumCoveredAll() };
+        List<Double> mincovs;
+        if (params.getMinimumCoveredAll_list().size() == 0) {
+            mincovs = new ArrayList<Double>();
+            mincovs.add(params.getMinimumCoveredAll());
         } else {
-            mincovs = MINCOV_ALLS;
+            mincovs = params.getMinimumCoveredAll_list();
         }
 
         for (double mincovAll : mincovs) {

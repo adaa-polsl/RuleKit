@@ -15,6 +15,8 @@
 package adaa.analytics.rules.logic.induction;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
@@ -53,6 +55,8 @@ public class InductionParameters implements Serializable {
 	private double penaltyStrength = 0.5;
 	private double penaltySaturation = 0.2;
 	private boolean binaryContrastIncluded = false;
+
+	private List<Double> minimumCoveredAll_list = new ArrayList<Double>();
 
 	private int maxPassesCount = 5;
 
@@ -106,10 +110,22 @@ public class InductionParameters implements Serializable {
 	public boolean isConditionComplementEnabled() { return conditionComplementEnabled; }
 	public void setConditionComplementEnabled(boolean value) { this.conditionComplementEnabled = value; }
 
+	public List<Double> getMinimumCoveredAll_list() { return minimumCoveredAll_list; }
+	public void setMinimumCoveredAll_list(List<Double> minimumCovered) {this.minimumCoveredAll_list.addAll(minimumCovered);}
+
+
 	public String toString() {
-		return "mincov_new=" + minimumCovered + "\n" +
-				"mincov_all=" + minimumCoveredAll + "\n" +
-				"maxcov_negative=" + maxcovNegative + "\n" +
+
+		String mincov_all_desc = "minsupp_all=";
+		if (minimumCoveredAll_list.size() > 0) {
+			mincov_all_desc += minimumCoveredAll_list;
+		} else {
+			mincov_all_desc += minimumCoveredAll;
+		}
+
+		return "minsupp_new=" + minimumCovered + "\n" +
+				mincov_all_desc + "\n" +
+				"max_neg2pos=" + maxcovNegative + "\n" +
 				"max_uncovered_fraction=" + maximumUncoveredFraction + "\n" +
 				"induction_measure=" + inductionMeasure.getName() + "\n" +
 				"pruning_measure=" + (pruningEnabled ? pruningMeasure.getName() : "OFF") + "\n" +

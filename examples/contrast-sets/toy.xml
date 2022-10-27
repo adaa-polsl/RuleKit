@@ -5,9 +5,9 @@
 		<param name="induction_measure">Correlation</param>
 		<param name="pruning_measure">Correlation</param>
 		<param name="voting_measure">Correlation</param>
-		<param name="mincov_all">0.1</param>
-		<param name="mincov_new">0.1</param>
-		<param name="maxcov_negative">0.5</param>
+		<param name="minsupp_all">0.1</param>
+		<param name="minsupp_new">0.1</param>
+		<param name="max_neg2pos">0.5</param>
 		<param name="max_passes_count">1</param>
 		<param name="penalty_strength">0</param>
 		<param name="penalty_saturation">1</param>
@@ -18,9 +18,9 @@
 		<param name="induction_measure">Correlation</param>
 		<param name="pruning_measure">Correlation</param>
 		<param name="voting_measure">Correlation</param>
-		<param name="mincov_all">0.1</param>
-		<param name="mincov_new">0.1</param>
-		<param name="maxcov_negative">0.5</param>
+		<param name="minsupp_all">0.1</param>
+		<param name="minsupp_new">0.1</param>
+		<param name="max_neg2pos">0.5</param>
 		<param name="max_passes_count">3</param>
 		<param name="penalty_strength">0.5</param>
 		<param name="penalty_saturation">1.0</param>
@@ -30,9 +30,9 @@
 		<param name="induction_measure">Correlation</param>
 		<param name="pruning_measure">Correlation</param>
 		<param name="voting_measure">Correlation</param>
-		<param name="mincov_all">0.1</param>
-		<param name="mincov_new">0.1</param>
-		<param name="maxcov_negative">0.5</param>
+		<param name="minsupp_all">0.1</param>
+		<param name="minsupp_new">0.1</param>
+		<param name="max_neg2pos">0.5</param>
 		<param name="max_passes_count">3</param>
 		<param name="penalty_strength">0.5</param>
 		<param name="penalty_saturation">0.2</param>
@@ -48,11 +48,11 @@
 	<dataset>
 	<label>class</label>
 	<contrast_attribute>class</contrast_attribute>
-	<out_directory>./results-cs/toy/</out_directory>
+	<out_directory>./toy/</out_directory>
 		<training>
 			<report_file>training.log</report_file>
 			<train>
-				<in_file>../data/contrast-sets/toy.arff</in_file>
+				<in_file>../../data/contrast-sets/toy.arff</in_file>
 				<model_file>toy.mdl</model_file>
 				<model_csv>toy.csv</model_csv>
 			</train>
