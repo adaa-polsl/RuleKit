@@ -35,9 +35,12 @@ import com.rapidminer.parameter.conditions.BooleanParameterCondition;
 import com.rapidminer.parameter.conditions.EqualStringCondition;
 import com.rapidminer.parameter.conditions.OrParameterCondition;
 import com.rapidminer.parameter.conditions.ParameterCondition;
+import org.codehaus.groovy.reflection.ParameterTypes;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The basic RuleKit learner operator. It enables inducing classification, regression,
@@ -84,11 +87,15 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	 */
 	public static final String PARAMETER_MINCOV_NEW = "mincov_new";
 
-		/**
+	/**
 	 * Number/fraction examples to be covered by a new rule.
 	 * (positive examples for classification problems).
 	 */
 	public static final String PARAMETER_MINCOV_ALL = "mincov_all";
+
+	/**
+	 */
+	public static final String PARAMETER_MINCOV_ALL_LIST = "mincov_all_list";
 
 		/**
 	 * Fraction of examples that may remain uncovered by the rule set.
@@ -213,6 +220,12 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 			params.setMaxPassesCount(getParameterAsInt(PARAMETER_MAX_PASSES_COUNT));
 			params.setBinaryContrastIncluded(getParameterAsBoolean(PARAMETER_INCLUDE_BINARY_CONTRAST));
 
+			String tmp = getParameterAsString(PARAMETER_MINCOV_ALL_LIST);
+			if (tmp.length() > 0) {
+				List<Double> mincovs = Arrays.stream(tmp.split(" +")).map(Double::parseDouble).collect(Collectors.toList());
+				params.setMinimumCoveredAll_list(mincovs);
+			}
+
 			AbstractSeparateAndConquer snc;
 			AbstractFinder finder;
 
@@ -262,8 +275,11 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 				params.setSelectBestCandidate(true);
 				snc = new ContrastSnC(finder, params);
 			}
-			
+
+			double beginTime = System.nanoTime();
 			RuleSetBase rs = snc.run(exampleSet);
+			rs.setTotalTime((System.nanoTime() - beginTime) / 1e9);
+
 			performances = recalculatePerformance(rs);
 			model = rs;
 			
@@ -385,6 +401,9 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 
 		types.add(new ParameterTypeInt(PARAMETER_MAX_PASSES_COUNT, getParameterDescription(PARAMETER_MAX_PASSES_COUNT),
 				1, Integer.MAX_VALUE, defaultParams.getMaxPassesCount()));
+
+		tmp = new ParameterTypeString(PARAMETER_MINCOV_ALL_LIST, getParameterDescription(PARAMETER_MINCOV_ALL), "");
+		types.add(tmp);
 
 		return types;
     }

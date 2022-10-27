@@ -45,9 +45,7 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 	public RuleSetBase run(final ExampleSet dataset) {
 		
 		Logger.log("RegressionSnC.run()\n", Level.FINE);
-		double beginTime;
-		beginTime = System.nanoTime();
-		
+
 		RuleSetBase ruleset = factory.create(dataset);
 		Attribute label = dataset.getAttributes().getLabel();
 		SortedExampleSet ses = new SortedExampleSet(dataset, label, SortedExampleSet.INCREASING);
@@ -134,8 +132,7 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 				}
 			}
 		}
-		
-		ruleset.setTotalTime((System.nanoTime() - beginTime) / 1e9);
+
 		return ruleset;
 	}
 }

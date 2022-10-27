@@ -61,8 +61,6 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 	 */
 	public RuleSetBase run(ExampleSet dataset) {
 		Logger.log("ClassificationSnC.run()\n", Level.FINE);
-		double beginTime;
-		beginTime = System.nanoTime();
 
 		ClassificationRuleSet finalRuleset = (ClassificationRuleSet) factory.create(dataset);
 
@@ -218,8 +216,6 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 			}
 			
 		}
-		
-		finalRuleset.setTotalTime((System.nanoTime() - beginTime) / 1e9);
 
 		pool.shutdown();
 

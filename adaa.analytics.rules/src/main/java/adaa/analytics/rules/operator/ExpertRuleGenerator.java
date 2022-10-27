@@ -302,8 +302,11 @@ public class ExpertRuleGenerator extends RuleGenerator {
 				snc = new RegressionExpertSnC((RegressionExpertFinder)finder, params, knowledge);
 			}
 
+			double beginTime = System.nanoTime();
 			model = snc.run(exampleSet);
 			RuleSetBase rs = (RuleSetBase)model;
+			rs.setTotalTime((System.nanoTime() - beginTime) / 1e9);
+
 			performances = recalculatePerformance(rs);
 			finder.close();
 			

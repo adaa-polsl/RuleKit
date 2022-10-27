@@ -96,7 +96,7 @@
 @ATTRIBUTE precip 		{lt-norm,norm,gt-norm}
 @ATTRIBUTE temp 		{lt-norm,norm,gt-norm}
 @ATTRIBUTE hail 		{yes,no}
-@ATTRIBUTE crop-hist 		{diff-lst-year,same-lst-yr,same-lst-two-yrs, same-lst-sev-yrs}
+@ATTRIBUTE crop-hist 		{diff-lst-year,same-lst-yr,same-lst-two-yrs,same-lst-sev-yrs}
 @ATTRIBUTE area-damaged		{scattered,low-areas,upper-areas,whole-field}
 @ATTRIBUTE severity 		{minor,pot-severe,severe}
 @ATTRIBUTE seed-tmt 		{none,fungicide,other}

@@ -9,7 +9,7 @@ Rule-based models are often used for data analysis as they combine interpretabil
 RuleKit provides latest versions of our algorithms (some of them were initially published as independent packages and integrated later):
 * [LR-Rules](https://github.com/adaa-polsl/LR-Rules) (Wróbel et al, 2017) - survival rules induction,
 * [GuideR](https://github.com/adaa-polsl/GuideR) (Sikora et al, 2019) - user-guided induction.
-* RuleKit-CS (Gudyś et al, 2022) - contrast set mining.
+* [RuleKit-CS](https://doi.org/10.48550/arXiv.2204.00497) (Gudyś et al, 2022) - contrast set mining.
 
 
 # Getting started

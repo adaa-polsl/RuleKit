@@ -48,11 +48,11 @@
 	<dataset>
 	<label>class</label>
 	<contrast_attribute>class</contrast_attribute>
-	<out_directory>./results-cs/toy/</out_directory>
+	<out_directory>./toy/</out_directory>
 		<training>
 			<report_file>training.log</report_file>
 			<train>
-				<in_file>../data/contrast-sets/toy.arff</in_file>
+				<in_file>../../data/contrast-sets/toy.arff</in_file>
 				<model_file>toy.mdl</model_file>
 				<model_csv>toy.csv</model_csv>
 			</train>
