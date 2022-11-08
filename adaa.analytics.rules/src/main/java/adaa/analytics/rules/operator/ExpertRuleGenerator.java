@@ -31,10 +31,12 @@ import com.rapidminer.parameter.conditions.BooleanParameterCondition;
 import com.rapidminer.parameter.conditions.ParameterCondition;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * An ExpertRuleGenerator is an operator that extends RuleGenerator by providing user 
@@ -273,7 +275,6 @@ public class ExpertRuleGenerator extends RuleGenerator {
 			params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
 
 			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MINCOV_NEW));
-			params.setMinimumCoveredAll(getParameterAsDouble(PARAMETER_MINCOV_ALL));
 			params.setMaxcovNegative(getParameterAsDouble(PARAMETER_MAXCOV_NEGATIVE));
 
 			params.setEnablePruning(getParameterAsBoolean(PARAMETER_ENABLE_PRUNING));
@@ -281,6 +282,17 @@ public class ExpertRuleGenerator extends RuleGenerator {
 			params.setMaxGrowingConditions(getParameterAsDouble(PARAMETER_MAX_GROWING));
 			params.setSelectBestCandidate(getParameterAsBoolean(PARAMETER_SELECT_BEST_CANDIDATE));
 			params.setConditionComplementEnabled(getParameterAsBoolean(PARAMETER_COMPLEMENTARY_CONDITIONS));
+
+			String tmp = getParameterAsString(PARAMETER_MINCOV_ALL);
+			if (tmp.length() > 0) {
+				List<Double> mincovs = Arrays.stream(tmp.split(" +")).map(Double::parseDouble).collect(Collectors.toList());
+
+				if (mincovs.size() == 1) {
+					params.setMinimumCoveredAll(mincovs.get(0));
+				} else {
+					params.setMinimumCoveredAll_list(mincovs);
+				}
+			}
 
 			AbstractFinder finder = null;
 			AbstractSeparateAndConquer snc = null;

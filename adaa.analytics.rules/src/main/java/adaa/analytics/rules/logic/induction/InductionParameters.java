@@ -52,13 +52,13 @@ public class InductionParameters implements Serializable {
 	private boolean selectBestCandidate = false;
 	private double maxcovNegative = Double.MAX_VALUE;
 
-	private double penaltyStrength = 0.5;
-	private double penaltySaturation = 0.2;
+	private double penaltyStrength = 0;
+	private double penaltySaturation = 0;
 	private boolean binaryContrastIncluded = false;
 
 	private List<Double> minimumCoveredAll_list = new ArrayList<Double>();
 
-	private int maxPassesCount = 5;
+	private int maxPassesCount = 1;
 
 	public IQualityMeasure getInductionMeasure() {return inductionMeasure;}
 	public void setInductionMeasure(IQualityMeasure inductionMeasure) {this.inductionMeasure = inductionMeasure;}
@@ -123,9 +123,10 @@ public class InductionParameters implements Serializable {
 			mincov_all_desc += minimumCoveredAll;
 		}
 
+
 		return "minsupp_new=" + minimumCovered + "\n" +
 				mincov_all_desc + "\n" +
-				"max_neg2pos=" + maxcovNegative + "\n" +
+				"max_neg2pos=" + (maxcovNegative == Double.MAX_VALUE ? "OFF" : maxcovNegative) + "\n" +
 				"max_uncovered_fraction=" + maximumUncoveredFraction + "\n" +
 				"induction_measure=" + inductionMeasure.getName() + "\n" +
 				"pruning_measure=" + (pruningEnabled ? pruningMeasure.getName() : "OFF") + "\n" +
