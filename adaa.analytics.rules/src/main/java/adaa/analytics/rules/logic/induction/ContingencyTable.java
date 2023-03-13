@@ -29,6 +29,8 @@ public class ContingencyTable {
 	public double median_y = 0;
 	public double mean_y = 0;
 	public double stddev_y = 0;
+
+	public double targetLabel;
 	
 	public ContingencyTable() {	}
 	
@@ -42,6 +44,7 @@ public class ContingencyTable {
 	public void clear() {
 		weighted_p = weighted_n = weighted_P = weighted_N = 0;
 		mean_y = median_y = stddev_y = 0;
+		targetLabel = -1;
 	}
 	
 }

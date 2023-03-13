@@ -4,16 +4,13 @@ import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.quality.NegativeControlledMeasure;
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.NominalMapping;
 import com.rapidminer.tools.container.Pair;
 
 import java.io.Serializable;
+import java.security.InvalidParameterException;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 public class ContrastSurvivalFinder extends SurvivalLogRankFinder implements IPenalizedFinder {
 
@@ -29,18 +26,23 @@ public class ContrastSurvivalFinder extends SurvivalLogRankFinder implements IPe
 
         @Override
         public double calculate(ExampleSet dataset, ContingencyTable ct) {
+
+            ContrastSurvivalExampleSet ces = (dataset instanceof ContrastExampleSet) ? (ContrastSurvivalExampleSet)dataset : null;
+            if (ces == null) {
+                throw new InvalidParameterException("ContrastSurvivalRuleSet supports only ContrastSurvivalExampleSet instances");
+            }
+
             Covering cov = (Covering)ct;
             Set<Integer> examples = new HashSet<>();
             examples.addAll(cov.positives);
-            KaplanMeierEstimator positiveEstimator = new KaplanMeierEstimator(dataset, examples);
-
             examples.addAll(cov.negatives);
             KaplanMeierEstimator entireEstimator = new KaplanMeierEstimator(dataset, examples);
 
             // compare estimators of:
             // - all covered examples (entire contrast set)
-            // - covered positives
-            Pair<Double,Double> statsAndPValue = super.compareEstimators(positiveEstimator, entireEstimator);
+            // - entire group
+            KaplanMeierEstimator groupEstimator = ces.getGroupEstimators().get((int)ct.targetLabel);
+            Pair<Double,Double> statsAndPValue = super.compareEstimators(groupEstimator, entireEstimator);
 
             // smaller test statistics -> smaller difference -> better contrast set
             return -statsAndPValue.getFirst();

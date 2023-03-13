@@ -21,6 +21,18 @@ public class ContrastRuleSet extends ClassificationRuleSet {
 
     private Map<String, Integer> numDuplicates = new TreeMap<>();
 
+    public List<ContrastRule> getAllSets() {
+        List<ContrastRule> out = new ArrayList<ContrastRule>();
+        for (String key: sets.keySet()) {
+            List<ContrastRule> cs = sets.get(key);
+            for (ContrastRule r : cs) {
+                out.add(r);
+            }
+        }
+
+        return out;
+    }
+
     public int getTotalDuplicates() {
         int total = 0;
         for (int v: numDuplicates.values()) {

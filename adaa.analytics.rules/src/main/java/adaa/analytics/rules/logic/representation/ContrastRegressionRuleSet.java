@@ -8,6 +8,7 @@ import com.rapidminer.example.set.ConditionedExampleSet;
 import com.rapidminer.example.table.NominalMapping;
 import com.rapidminer.operator.tools.ExpressionEvaluationException;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,31 +39,13 @@ public class ContrastRegressionRuleSet extends ContrastRuleSet {
     public ContrastRegressionRuleSet(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
         super(exampleSet, isVoting, params, knowledge);
 
-        // establish training survival estimator
-        exampleSet.recalculateAttributeStatistics(exampleSet.getAttributes().getLabel());
-        trainingMean = exampleSet.getStatistics(exampleSet.getAttributes().getLabel(), "average");
-
-        final Attribute contrastAttr = (exampleSet.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE) == null)
-                ? exampleSet.getAttributes().getLabel()
-                : exampleSet.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
-
-        // establish contrast groups survival estimator
-        try {
-            NominalMapping mapping = contrastAttr.getMapping();
-
-            for (int i = 0; i < mapping.size(); ++i) {
-                AttributeValueFilterSingleCondition cnd = new AttributeValueFilterSingleCondition(
-                        contrastAttr, AttributeValueFilterSingleCondition.EQUALS, mapping.mapIndex(i));
-
-                ExampleSet conditionedSet = new ConditionedExampleSet(exampleSet,cnd);
-
-                conditionedSet.recalculateAttributeStatistics(exampleSet.getAttributes().getLabel());
-                groupMeans.add(conditionedSet.getStatistics(exampleSet.getAttributes().getLabel(), "average"));
-            }
-
-        } catch (ExpressionEvaluationException e) {
-            e.printStackTrace();
+        ContrastRegressionExampleSet cer = (exampleSet instanceof ContrastExampleSet) ? (ContrastRegressionExampleSet)exampleSet : null;
+        if (cer == null) {
+            throw new InvalidParameterException("ContrastRegressionRuleSet supports only ContrastRegressionExampleSet instances");
         }
+
+        trainingMean = cer.getTrainingEstimator();
+        groupMeans.addAll(cer.getGroupEstimators());
     }
 
     /**

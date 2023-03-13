@@ -4,8 +4,11 @@ import adaa.analytics.rules.logic.representation.*;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.set.AttributeValueFilter;
+import com.rapidminer.example.set.AttributeValueFilterSingleCondition;
 import com.rapidminer.example.set.ConditionedExampleSet;
+import com.rapidminer.example.set.SimpleExampleSet;
 import com.rapidminer.example.table.NominalMapping;
+import com.rapidminer.operator.tools.ExpressionEvaluationException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +21,7 @@ public class ContrastSnC extends ClassificationSnC {
 
         int ruleType = RuleFactory.CONTRAST;
 
-        if (finder instanceof  ContrastRegressionFinder) {
+        if (finder instanceof ContrastRegressionFinder) {
             ruleType = RuleFactory.CONTRAST_REGRESSION;
         } else if (finder instanceof  ContrastSurvivalFinder) {
             ruleType = RuleFactory.CONTRAST_SURVIVAL;
@@ -34,7 +37,19 @@ public class ContrastSnC extends ClassificationSnC {
      * @return Rule set.
      */
     public RuleSetBase run(ExampleSet dataset) {
-        ContrastRuleSet rs = (ContrastRuleSet) factory.create(dataset);
+
+        // make a contrast dataset
+        ContrastExampleSet ces;
+
+        if (factory.getType() == RuleFactory.CONTRAST_REGRESSION) {
+            ces = new ContrastRegressionExampleSet((SimpleExampleSet) dataset);
+        } else if (factory.getType() == RuleFactory.CONTRAST_SURVIVAL) {
+            ces = new ContrastSurvivalExampleSet((SimpleExampleSet) dataset);
+        } else {
+            ces = new ContrastExampleSet((SimpleExampleSet) dataset);
+        }
+
+        ContrastRuleSet rs = (ContrastRuleSet) factory.create(ces);
         IPenalizedFinder pf = (IPenalizedFinder)finder;
 
         // reset penalties
@@ -52,7 +67,7 @@ public class ContrastSnC extends ClassificationSnC {
         for (double mincovAll : mincovs) {
             params.setMinimumCoveredAll(mincovAll);
 
-            run(dataset, rs);
+            run(ces, rs);
 
             // reset penalty when multiple passes
             if (params.getMaxPassesCount() > 1) {
@@ -68,13 +83,11 @@ public class ContrastSnC extends ClassificationSnC {
      * @param dataset Training data set.
      * @return Rule set.
      */
-    public void run(ExampleSet dataset, ContrastRuleSet crs) {
+    protected void run(ContrastExampleSet dataset, ContrastRuleSet crs) {
         Logger.log("ContrastSnC.run()\n", Level.FINE);
 
         // try to get contrast attribute (use label if not specified)
-        final Attribute contrastAttr = (dataset.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE) == null)
-                ? dataset.getAttributes().getLabel()
-                : dataset.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+        final Attribute contrastAttr = dataset.getContrastAttribute();
 
         NominalMapping mapping = contrastAttr.getMapping();
         IPenalizedFinder pf = (IPenalizedFinder)finder;

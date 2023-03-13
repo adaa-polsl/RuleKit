@@ -27,7 +27,7 @@ codeQuality {
 }
 
 sourceCompatibility = 1.8
-version = '1.4.5'
+version = '1.4.8'
 
 
 jar {

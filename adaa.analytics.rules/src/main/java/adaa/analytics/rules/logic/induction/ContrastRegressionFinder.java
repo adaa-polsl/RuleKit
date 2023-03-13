@@ -11,6 +11,7 @@ import com.rapidminer.tools.container.Pair;
 import org.apache.commons.math3.stat.inference.MannWhitneyUTest;
 
 import java.io.Serializable;
+import java.security.InvalidParameterException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -30,24 +31,26 @@ public class ContrastRegressionFinder extends RegressionFinder implements IPenal
 
         @Override
         public double calculate(ExampleSet dataset, ContingencyTable ct) {
-            Covering cov = (Covering)ct;
 
-            double positiveSum = 0;
-            double totalSum = 0;
+            ContrastRegressionExampleSet cer = (dataset instanceof ContrastExampleSet) ? (ContrastRegressionExampleSet)dataset : null;
+            if (cer == null) {
+                throw new InvalidParameterException("ContrastSurvivalRuleSet supports only ContrastRegressionExampleSet instances");
+            }
+
+            Covering cov = (Covering)ct;
+            double sum = 0;
 
             int i = 0;
             for (int e : cov.positives) {
-                double label = dataset.getExample(e).getLabel();
-                positiveSum += label;
+                sum += dataset.getExample(e).getLabel();
             }
-
-            totalSum = positiveSum;
             for (int e : cov.negatives) {
-                totalSum += dataset.getExample(e).getLabel();
+                sum += dataset.getExample(e).getLabel();
             }
 
             // the smaller the difference in means, the better the contrast set
-            double diff = Math.abs(positiveSum / cov.weighted_p - totalSum / (cov.weighted_p + cov.weighted_n));
+            double groupEstimator = cer.getGroupEstimators().get((int)ct.targetLabel);
+            double diff = Math.abs(sum / (cov.weighted_p + cov.weighted_n) - groupEstimator);
             return -diff;
         }
 

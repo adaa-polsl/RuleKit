@@ -101,6 +101,8 @@ public class ClassificationRule extends Rule {
 				}
 			} 
 		}
+
+		covered.targetLabel = ((SingletonSet)this.getConsequence().getValueSet()).getValue();
 		return covered;
 	}
 	
@@ -145,6 +147,8 @@ public class ClassificationRule extends Rule {
 				}
 			}
 		}
+
+		ct.targetLabel = ((SingletonSet)this.getConsequence().getValueSet()).getValue();
 	}
 	
 	/**
@@ -178,5 +182,7 @@ public class ClassificationRule extends Rule {
 			}
 			++id;
 		}
+
+		ct.targetLabel = ((SingletonSet)this.getConsequence().getValueSet()).getValue();
 	}
 }

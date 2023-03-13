@@ -7,9 +7,11 @@ import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.set.AttributeValueFilterSingleCondition;
 import com.rapidminer.example.set.Condition;
 import com.rapidminer.example.set.ConditionedExampleSet;
+import com.rapidminer.example.set.SortedExampleSet;
 import com.rapidminer.example.table.NominalMapping;
 import com.rapidminer.operator.tools.ExpressionEvaluationException;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,28 +42,13 @@ public class ContrastSurvivalRuleSet extends ContrastRuleSet {
     public ContrastSurvivalRuleSet(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
         super(exampleSet, isVoting, params, knowledge);
 
-        // establish training survival estimator
-        trainingEstimator = new KaplanMeierEstimator(exampleSet);
-
-        final Attribute contrastAttr = (exampleSet.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE) == null)
-                ? exampleSet.getAttributes().getLabel()
-                : exampleSet.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
-
-        // establish contrast groups survival estimator
-        try {
-            NominalMapping mapping = contrastAttr.getMapping();
-
-            for (int i = 0; i < mapping.size(); ++i) {
-                 AttributeValueFilterSingleCondition cnd = new AttributeValueFilterSingleCondition(
-                        contrastAttr, AttributeValueFilterSingleCondition.EQUALS, mapping.mapIndex(i));
-
-                ExampleSet conditionedSet = new ConditionedExampleSet(exampleSet,cnd);
-                groupEstimators.add(new KaplanMeierEstimator(conditionedSet));
-            }
-
-        } catch (ExpressionEvaluationException e) {
-            e.printStackTrace();
+        ContrastSurvivalExampleSet ces = (exampleSet instanceof ContrastExampleSet) ? (ContrastSurvivalExampleSet)exampleSet : null;
+        if (ces == null) {
+            throw new InvalidParameterException("ContrastSurvivalRuleSet supports only ContrastExampleSet instances");
         }
+
+        trainingEstimator = ces.getTrainingEstimator();
+        groupEstimators.addAll(ces.getGroupEstimators());
     }
 
     /**
@@ -99,7 +86,7 @@ public class ContrastSurvivalRuleSet extends ContrastRuleSet {
             }
 
             // rule estimators
-            for (Rule r: rules) {
+            for (Rule r: getAllSets()) {
                 KaplanMeierEstimator kme = ((ContrastSurvivalRule)r).getEstimator();
                 sb.append("," + kme.getProbabilityAt(t));
             }
