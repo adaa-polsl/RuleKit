@@ -26,7 +26,6 @@ import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.set.SortedExampleSet;
-import com.rapidminer.tools.container.Pair;
 
 /**
  * User-guided separate'n'conquer algorithm for generating regression rule sets.
@@ -57,7 +56,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 		
 		RuleSetBase ruleset = factory.create(dataset);
 		Attribute label = dataset.getAttributes().getLabel();
-		SortedExampleSet ses = new SortedExampleSet(dataset, label, SortedExampleSet.INCREASING);
+		SortedExampleSet ses = new SortedExampleSetEx(dataset, label, SortedExampleSet.INCREASING);
 		ses.recalculateAttributeStatistics(ses.getAttributes().getLabel());
 		
 		if (factory.getType() == RuleFactory.REGRESSION) {

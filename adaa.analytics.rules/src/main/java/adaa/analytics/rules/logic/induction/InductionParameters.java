@@ -59,6 +59,7 @@ public class InductionParameters implements Serializable {
 	private List<Double> minimumCoveredAll_list = new ArrayList<Double>();
 
 	private int maxPassesCount = 1;
+	private boolean meanBasedRegression = false;
 
 	public IQualityMeasure getInductionMeasure() {return inductionMeasure;}
 	public void setInductionMeasure(IQualityMeasure inductionMeasure) {this.inductionMeasure = inductionMeasure;}
@@ -109,6 +110,9 @@ public class InductionParameters implements Serializable {
 
 	public boolean isConditionComplementEnabled() { return conditionComplementEnabled; }
 	public void setConditionComplementEnabled(boolean value) { this.conditionComplementEnabled = value; }
+
+	public boolean isMeanBasedRegression() { return meanBasedRegression; }
+	public void setMeanBasedRegression(boolean value) { this.meanBasedRegression = value; }
 
 	public List<Double> getMinimumCoveredAll_list() { return minimumCoveredAll_list; }
 	public void setMinimumCoveredAll_list(List<Double> minimumCovered) {this.minimumCoveredAll_list.addAll(minimumCovered);}

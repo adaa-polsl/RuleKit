@@ -35,7 +35,6 @@ import com.rapidminer.parameter.conditions.BooleanParameterCondition;
 import com.rapidminer.parameter.conditions.EqualStringCondition;
 import com.rapidminer.parameter.conditions.OrParameterCondition;
 import com.rapidminer.parameter.conditions.ParameterCondition;
-import org.codehaus.groovy.reflection.ParameterTypes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -166,6 +165,8 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 
 	public static final String PARAMETER_COMPLEMENTARY_CONDITIONS = "complementary_conditions";
 
+	public static final String PARAMETER_MEAN_BASED_REGRESSION = "mean_based_regression";
+
 	/**
 	 * Invokes base class constructor.
 	 * @param description Operator description.
@@ -214,6 +215,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 			params.setPenaltySaturation(getParameterAsDouble(PARAMETER_PENALTY_SATURATION));
 			params.setMaxPassesCount(getParameterAsInt(PARAMETER_MAX_PASSES_COUNT));
 			params.setBinaryContrastIncluded(getParameterAsBoolean(PARAMETER_INCLUDE_BINARY_CONTRAST));
+			params.setMeanBasedRegression(getParameterAsBoolean(PARAMETER_MEAN_BASED_REGRESSION));
 
 			String tmp = getParameterAsString(PARAMETER_MINCOV_ALL);
 			if (tmp.length() > 0) {
@@ -401,7 +403,8 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		types.add(new ParameterTypeInt(PARAMETER_MAX_PASSES_COUNT, getParameterDescription(PARAMETER_MAX_PASSES_COUNT),
 				1, Integer.MAX_VALUE, defaultParams.getMaxPassesCount()));
 
-
+		types.add(new ParameterTypeBoolean(PARAMETER_MEAN_BASED_REGRESSION, getParameterDescription(PARAMETER_MEAN_BASED_REGRESSION),
+				defaultParams.isMeanBasedRegression()));
 
 		return types;
     }

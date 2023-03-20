@@ -43,21 +43,22 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 
 	@Override
 	public RuleSetBase run(final ExampleSet dataset) {
-		
+
 		Logger.log("RegressionSnC.run()\n", Level.FINE);
 
 		RuleSetBase ruleset = factory.create(dataset);
 		Attribute label = dataset.getAttributes().getLabel();
-		SortedExampleSet ses = new SortedExampleSet(dataset, label, SortedExampleSet.INCREASING);
+		SortedExampleSetEx ses = new SortedExampleSetEx(dataset, label, SortedExampleSet.INCREASING);
 		ses.recalculateAttributeStatistics(ses.getAttributes().getLabel());
 			
 		if (factory.getType() == RuleFactory.REGRESSION) {
 			double median = ses.getExample(ses.size() / 2).getLabel();
 			RegressionRuleSet tmp = (RegressionRuleSet)ruleset;
-			tmp.setDefaultValue(median);
+			tmp.setDefaultValue(median); // use this even in mean-based variant
 		}
 		
 		Set<Integer> uncovered = new HashSet<Integer>();
+		//Set<Integer> uncovered = new IntegerBitSet(ses.size());
 		double weighted_PN = 0;
 		// at the beginning rule set does not cover any examples
 		for (int id = 0; id < ses.size(); ++id) {

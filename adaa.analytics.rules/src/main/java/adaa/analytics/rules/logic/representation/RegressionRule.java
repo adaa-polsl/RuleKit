@@ -21,14 +21,10 @@ import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.Statistics;
-import com.rapidminer.example.set.SortedExampleSet;
 import com.rapidminer.tools.container.Pair;
 
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static java.lang.Float.NaN;
 
@@ -38,10 +34,16 @@ import static java.lang.Float.NaN;
  *
  */
 public class RegressionRule extends Rule {
-	
+
 	/** Serialization id. */
 	private static final long serialVersionUID = -6597003506869205514L;
-	
+
+	private static boolean useMean = false;
+
+	public static void setUseMean(boolean v) { useMean = v; }
+
+	public static boolean getUseMean() { return useMean; }
+
 	/** Standard deviation of examples covered by the rule w.r.t. value in a consequence */
 	private double stddev = 0.0;
 	
@@ -85,7 +87,7 @@ public class RegressionRule extends Rule {
 	@Override
 	public void setCoveringInformation(Covering cov) {
 		super.setCoveringInformation(cov);
-		this.setConsequenceValue(cov.median_y);
+		this.setConsequenceValue(useMean ? cov.mean_y : cov.median_y);
 		this.stddev = cov.stddev_y;
 	}
 
@@ -118,9 +120,9 @@ public class RegressionRule extends Rule {
 	
 	@Override
 	public void covers(ExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
-		SortedExampleSet ses = (set instanceof SortedExampleSet) ? (SortedExampleSet)set : null;
+		SortedExampleSetEx ses = (set instanceof SortedExampleSetEx) ? (SortedExampleSetEx)set : null;
 		if (ses == null) {
-			throw new InvalidParameterException("RegressionRules support only sorted example sets");
+			throw new InvalidParameterException("RegressionRules support only ListedExampleSet example sets");
 		}
 		double sum_y = 0.0, sum_y2 = 0.0;
 		//initially, everything as negatives
@@ -128,18 +130,16 @@ public class RegressionRule extends Rule {
 
 		for (int id = 0; id < set.size(); ++id) {
 			Example ex = set.getExample(id);
-			double weight = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
-
-			ct.weighted_N += weight;
 
 			if (this.getPremise().evaluate(ex)) { // if covered
-				ct.weighted_n += weight;
-				orderedNegatives.add(id);
-				negatives.add(id);
+				double w = ses.weights[id];
+				double y = ses.labelsWeighted[id];
 
-				double y = ex.getLabel();
+				ct.weighted_n += w;
 				sum_y += y;
 				sum_y2 += y*y;
+				orderedNegatives.add(id);
+				negatives.add(id);
 			}
 		}
 
@@ -148,6 +148,7 @@ public class RegressionRule extends Rule {
 		}
 
 		ct.mean_y = sum_y / ct.weighted_n;
+		ct.mean_y2 = sum_y2 / ct.weighted_n;
 		ct.stddev_y = Math.sqrt(sum_y2 / ct.weighted_n - ct.mean_y * ct.mean_y); // VX = E(X^2) - (EX)^2
 
 		boolean weighted = (set.getAttributes().getWeight() != null);
@@ -173,22 +174,30 @@ public class RegressionRule extends Rule {
 
 		ct.median_y = set.getExample(medianId).getLabel();
 
-		// update positives
-		for (int id = 0; id < set.size(); ++id) {
-			Example ex = set.getExample(id);
+		// update positives inside epsilon
+		double label = useMean ? ct.mean_y : ct.median_y;
 
-			// if inside epsilon
-			if (Math.abs(ex.getLabel() - ct.median_y) <= ct.stddev_y) {
-				double w = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
-				ct.weighted_N -= w;
-				ct.weighted_P += w;
-				// if covered
-				if (this.getPremise().evaluate(ex)) {
-					negatives.remove(id);
-					ct.weighted_n -= w;
-					positives.add(id);
-					ct.weighted_p += w;
-				}
+		// binary search to get elements inside epsilon
+		// assumption: double value preceeding/following one being search appears at most once
+		int lo = Arrays.binarySearch(ses.labels, Math.nextDown(label - ct.stddev_y));
+		if (lo < 0) {
+			lo = -(lo + 1); // if element not found, extract id of the next larger: ret = (-(insertion point) - 1)
+		} else { lo += 1;} // if element found move to next one (first inside a range)
+
+		int hi = Arrays.binarySearch(ses.labels, Math.nextUp(label + ct.stddev_y));
+		if (hi < 0) { hi = -(hi + 1); // if element not found, extract id of the next larger: ret = (-(insertion point) - 1)
+		} // if element found - do nothing (first after the range)
+
+		ct.weighted_P = ses.totalWeightsBefore[hi] - ses.totalWeightsBefore[lo];
+		ct.weighted_N = ses.totalWeightsBefore[set.size()] - ct.weighted_P;
+
+		for (int id = lo; id < hi; ++id) {
+			Example ex = set.getExample(id);
+			if (this.getPremise().evaluate(ex)) {
+				negatives.remove(id);
+				ct.weighted_n -= ses.weights[id];
+				positives.add(id);
+				ct.weighted_p += ses.weights[id];
 			}
 		}
 	}

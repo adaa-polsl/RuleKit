@@ -65,6 +65,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 		this.params = params;
 		
 		threadCount = Runtime.getRuntime().availableProcessors();
+		//threadCount = 1;
 		pool = Executors.newFixedThreadPool(threadCount);
 		modifier = new NoneQualityModifier();
 	}
@@ -139,7 +140,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 				rule.updateWeightAndPValue(dataset, covering, params.getVotingMeasure());
 				
 				Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
-						+ rule.toString() + "\n", Level.FINER);
+						+ rule.toString() + ", weight=" + rule.getWeight() + "\n", Level.FINER);
 				
 				if (params.getMaxGrowingConditions() > 0) {
 					if (rule.getPremise().getSubconditions().size() - initialConditionsCount >= 
@@ -268,7 +269,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 
 				// stop climbing when only single condition remains
 				continueClimbing = rule.getPremise().getSubconditions().size() > 1;
-				Logger.log("Condition removed: " + rule + "\n", Level.FINER);
+				Logger.log("Condition removed: " + rule + ", q=" + bestQuality +"\n", Level.FINER);
 			} else {
 				continueClimbing = false;
 			}

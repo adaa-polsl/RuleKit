@@ -14,6 +14,8 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
+import com.sun.jna.platform.win32.WinDef;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
@@ -36,7 +38,11 @@ public class IntegerBitSet implements Set<Integer> {
 		private IntegerBitSet bitset;
 		
 		/** Current element identifier. */
-		private int id;
+		private int id = 0;
+
+		private int wordId = 0;
+
+		private long word = 0;
 		
 		/** 
 		 * Creates iterator object.
@@ -44,8 +50,10 @@ public class IntegerBitSet implements Set<Integer> {
 		 */
 		public BitIterator(IntegerBitSet bitset) {
 			this.bitset = bitset;
-			this.id = 0;
-			moveToNext();
+			this.word = bitset.words[0];
+
+			// seek to the first 1 or go outside collection (hasNext() == true) if no more elements
+			while (((word & 1L) == 0) && increment()) { }
 		}
 		
 		/** 
@@ -64,22 +72,39 @@ public class IntegerBitSet implements Set<Integer> {
 		@Override
 		public Integer next() {
 			int v = id;
-			++id;
-			moveToNext();
+
+			// this will go outside collection (hasNext() == true) if no more elements
+			while (increment() && ((word & 1L) == 0)) { }
+
 			return v;
 		}
 		
 		/**
-		 * Iterates over bits until first "1" is found.
+		 * Moves to the next bit or the first bit of the next word if no more bits in the current word.
 		 */
-		private void moveToNext() {
-			for (; id < bitset.maxElement ;++id) {
-				if (bitset.contains(id)) {
-					return;
+		private boolean increment() {
+			word = word >>> 1;
+
+			if (word == 0) {
+				// no more bits in this word - can safely move to the next word
+				++wordId;
+				id = wordId * Long.SIZE;
+				// if there are more words
+				if (wordId < bitset.words.length) {
+					word = bitset.words[wordId];
 				}
+			} else {
+				// just increase the id
+				++id;
 			}
+
+			return id < bitset.maxElement;
 		}
 	}
+
+	static final int OFFSET_MASK = 63;
+
+	static final int ID_SHIFT = 6;
 	
 	/** Array of words for storing bits. */
 	private long[] words;
@@ -108,8 +133,8 @@ public class IntegerBitSet implements Set<Integer> {
 	 */
 	@Override
 	public boolean add(Integer v) {
-		int wordId = v / Long.SIZE;
-		int wordOffset = v % Long.SIZE;
+		int wordId = v >>> ID_SHIFT;
+		int wordOffset = v & OFFSET_MASK;
 		
 		words[wordId] |= 1L << wordOffset;
 		return true;
@@ -190,8 +215,8 @@ public class IntegerBitSet implements Set<Integer> {
 	@Override
 	public boolean contains(Object arg0) {
 		int v = (int)arg0;
-		int wordId = v / Long.SIZE;
-		int wordOffset = v % Long.SIZE;
+		int wordId = v >>> ID_SHIFT;
+		int wordOffset = v & OFFSET_MASK;
 		
 		return (words[wordId] & 1L << wordOffset) != 0;
 	}
@@ -252,9 +277,9 @@ public class IntegerBitSet implements Set<Integer> {
 	@Override
 	public boolean remove(Object arg0) {
 		int v = (int)arg0;
-		
-		int wordId = v / Long.SIZE;
-		int wordOffset = v % Long.SIZE;
+
+		int wordId = v >>> ID_SHIFT;
+		int wordOffset = v & OFFSET_MASK;
 		
 		words[wordId] &= ~(1L << wordOffset);
 		return true;
@@ -304,8 +329,8 @@ public class IntegerBitSet implements Set<Integer> {
 
 			// iterate over this elements
 			for (int i = 0; i < maxElement; ++i) {
-				int wordId = i / Long.SIZE;
-				int wordOffset = i % Long.SIZE;
+				int wordId = i >>> ID_SHIFT;
+				int wordOffset = i & OFFSET_MASK;
 
 				long val = words[wordId] & (1L << wordOffset);
 
