@@ -60,6 +60,7 @@ public class InductionParameters implements Serializable {
 
 	private int maxPassesCount = 1;
 	private boolean meanBasedRegression = false;
+	private boolean controlAprioriPrecision = true;
 
 	public IQualityMeasure getInductionMeasure() {return inductionMeasure;}
 	public void setInductionMeasure(IQualityMeasure inductionMeasure) {this.inductionMeasure = inductionMeasure;}
@@ -113,6 +114,9 @@ public class InductionParameters implements Serializable {
 
 	public boolean isMeanBasedRegression() { return meanBasedRegression; }
 	public void setMeanBasedRegression(boolean value) { this.meanBasedRegression = value; }
+
+	public boolean isControlAprioriPrecision() { return controlAprioriPrecision; }
+	public void setControlAprioriPrecision(boolean v) { controlAprioriPrecision = v; }
 
 	public List<Double> getMinimumCoveredAll_list() { return minimumCoveredAll_list; }
 	public void setMinimumCoveredAll_list(List<Double> minimumCovered) {this.minimumCoveredAll_list.addAll(minimumCovered);}

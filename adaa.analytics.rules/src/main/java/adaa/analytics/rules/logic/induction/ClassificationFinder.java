@@ -469,7 +469,10 @@ public class ClassificationFinder extends AbstractFinder {
 		Set<Integer> positives = rule.getCoveredPositives();
 		double P = rule.getWeighted_P();
 		double N = rule.getWeighted_N();
-		double apriori_prec = P / (P + N);
+
+		double apriori_prec = params.isControlAprioriPrecision()
+				? P / (P + N)
+				: Double.MIN_VALUE;
 
 		List<Future<ConditionEvaluation>> futures = new ArrayList<Future<ConditionEvaluation>>();
 		

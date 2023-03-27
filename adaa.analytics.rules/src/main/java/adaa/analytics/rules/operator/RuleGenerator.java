@@ -167,6 +167,8 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 
 	public static final String PARAMETER_MEAN_BASED_REGRESSION = "mean_based_regression";
 
+	public static final String PARAMETER_CONTROL_APRORI_PRECISION = "control_apriori_precision";
+
 	/**
 	 * Invokes base class constructor.
 	 * @param description Operator description.
@@ -216,6 +218,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 			params.setMaxPassesCount(getParameterAsInt(PARAMETER_MAX_PASSES_COUNT));
 			params.setBinaryContrastIncluded(getParameterAsBoolean(PARAMETER_INCLUDE_BINARY_CONTRAST));
 			params.setMeanBasedRegression(getParameterAsBoolean(PARAMETER_MEAN_BASED_REGRESSION));
+			params.setControlAprioriPrecision(getParameterAsBoolean(PARAMETER_CONTROL_APRORI_PRECISION));
 
 			String tmp = getParameterAsString(PARAMETER_MINCOV_ALL);
 			if (tmp.length() > 0) {
@@ -405,6 +408,9 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 
 		types.add(new ParameterTypeBoolean(PARAMETER_MEAN_BASED_REGRESSION, getParameterDescription(PARAMETER_MEAN_BASED_REGRESSION),
 				defaultParams.isMeanBasedRegression()));
+
+		types.add(new ParameterTypeBoolean(PARAMETER_CONTROL_APRORI_PRECISION, getParameterDescription(PARAMETER_CONTROL_APRORI_PRECISION),
+				defaultParams.isControlAprioriPrecision()));
 
 		return types;
     }

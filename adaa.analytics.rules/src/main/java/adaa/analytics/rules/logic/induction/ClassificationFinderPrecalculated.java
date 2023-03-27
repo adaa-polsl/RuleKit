@@ -146,7 +146,9 @@ public class ClassificationFinderPrecalculated extends ClassificationFinder {
 
         double classId = ((SingletonSet)rule.getConsequence().getValueSet()).getValue();
         Set<Integer> positives = rule.getCoveredPositives();
-        double apriori_prec = rule.getWeighted_P() / (rule.getWeighted_P() + rule.getWeighted_N());
+        double apriori_prec = params.isControlAprioriPrecision()
+                ? rule.getWeighted_P() / (rule.getWeighted_P() + rule.getWeighted_N())
+                : Double.MIN_VALUE;
 
         List<Future<ConditionEvaluation>> futures = new ArrayList<Future<ConditionEvaluation>>();
 
