@@ -14,10 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -47,7 +44,9 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 	 * Module for finding single classification rules.
 	 */
 	protected AbstractFinder finder;
-	
+
+	protected int numClassThreads = 1;
+
 	public ClassificationSnC(AbstractFinder finder, InductionParameters params) {
 		super(params);
 		this.finder = finder;
@@ -73,8 +72,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 
 		boolean weighted = (dataset.getAttributes().getWeight() != null);
 
-		int threadCount = Runtime.getRuntime().availableProcessors();
-		ExecutorService pool = Executors.newFixedThreadPool(threadCount);
+		ExecutorService pool = Executors.newFixedThreadPool(numClassThreads);
 		Semaphore mutex = new Semaphore(1);
 		AtomicInteger totalRules = new AtomicInteger(0);
 
@@ -82,13 +80,16 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 		finder.preprocess(dataset);
 
 		// array of futures, each consisting of ruleset and P value
-		List<Future<Pair<ClassificationRuleSet, Double>>> futures = new ArrayList<Future<Pair<ClassificationRuleSet, Double>>>();
+		Map<Integer, Future<Pair<ClassificationRuleSet, Double>>> futures = new HashMap<Integer, Future<Pair<ClassificationRuleSet, Double>>>();
 		
 		// iterate over all classes
 		for (int cid = 0; cid < mapping.size(); ++cid) {
 			final int classId = cid;
+
 			Future<Pair<ClassificationRuleSet, Double>> future = pool.submit( () -> {
 				Logger.log("Class " + classId + " started\n" , Level.FINE);
+
+				preprocessClass(dataset, classId);
 
 				ClassificationRuleSet ruleset = (ClassificationRuleSet) factory.create(dataset);
 
@@ -166,7 +167,10 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 							Example e = dataset.getExample(id);
 							uncovered_p += dataset.getAttributes().getWeight() == null ? 1.0 : e.getWeight();
 						}
-						
+
+						Logger.log("Uncovered positives" + uncovered_p + "\n", Level.FINER);
+
+
 						// stop if number of positive examples remaining is less than threshold
 						if (uncovered_p <= params.getMaximumUncoveredFraction() * weighted_P) {
 							carryOn = false;
@@ -196,7 +200,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 				return new Pair<ClassificationRuleSet, Double>(ruleset, weighted_P);
 			});
 			
-			futures.add(future);
+			futures.put(classId, future);
 		}
 
 		// add rulesets from all classes
@@ -204,14 +208,14 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 		
 		for (int classId = 0; classId < mapping.size(); ++classId) {
 			Pair<ClassificationRuleSet, Double> result;
+
 			try {
 				result = futures.get(classId).get();
 				ClassificationRuleSet partialSet = result.getFirst();
 				finalRuleset.getRules().addAll(partialSet.getRules());
 				finalRuleset.setGrowingTime( finalRuleset.getGrowingTime() + partialSet.getGrowingTime());
 				finalRuleset.setPruningTime( finalRuleset.getPruningTime() + partialSet.getPruningTime());
-				
-				
+
 				// set default class
 				if (result.getSecond() > defaultClassP) {
 					defaultClassP = result.getSecond();
@@ -229,5 +233,8 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 
 		return finalRuleset;
 	}
-	
+
+	public void preprocessClass(ExampleSet dataset, int classId) {
+
+	}
 }

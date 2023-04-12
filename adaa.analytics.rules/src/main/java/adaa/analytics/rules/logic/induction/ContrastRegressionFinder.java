@@ -94,8 +94,8 @@ public class ContrastRegressionFinder extends RegressionFinder implements IPenal
 
         AttributePenalty penalty = penalties.get(consequence);
         modifier = penalty;
-        observers.clear();
-        observers.add(penalty);
+        clearObservers();
+        addObserver(penalty);
 
         int cnds = super.grow(rule, dataset, uncovered);
         NegativeControlledMeasure ncm = (NegativeControlledMeasure)params.getPruningMeasure();
@@ -129,9 +129,7 @@ public class ContrastRegressionFinder extends RegressionFinder implements IPenal
         }
         ((ContrastRegressionRule)rule).setMeanLabel(sum / covered.size());
 
-        for (IFinderObserver o: observers) {
-            o.ruleReady(rule);
-        }
+        notifyRuleReady(rule);
     }
 
 

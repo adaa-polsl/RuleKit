@@ -16,6 +16,7 @@ package adaa.analytics.rules.logic.quality;
 
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 
+import org.apache.commons.math3.distribution.HypergeometricDistribution;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 
 import com.rapidminer.tools.container.Pair;
@@ -38,46 +39,36 @@ public class Hypergeometric extends StatisticalTest {
 	}
 	
 	public Pair<Double,Double> calculate(double p, double n, double P, double N) {
-			
-		int count = (int)(P + N);
-		int consequent = (int)P;
-	    int antecedentAndConsequent = (int)p;
-	    int antecedentButNotConsequent = (int)n;
-	    int notAntecedentButConsequent = (int)(P - p);
-	    
-	    int limit = Math.min(notAntecedentButConsequent, antecedentButNotConsequent);
 
-	    double pVal = 0.0;
-	    for (int k = 0; k <= limit; k++)
-	    {
-	        double lnP = this.LnP(antecedentAndConsequent + k, antecedentButNotConsequent - k, count, consequent);
-	        pVal += Math.exp(lnP);
+		int totalCount = (int)(P + N);
+		int successCount = (int)P;
+		int totalDrawn = (int)(p + n);
+	    int successDrawn = (int)p;
+
+		HypergeometricDistribution dist = new HypergeometricDistribution(totalCount, successCount, totalDrawn);
+		double pVal = dist.upperCumulativeProbability(successDrawn);
+
+		/*
+		double pVal = 0.0;
+	    for (int k = successDrawn; k <= Math.min(successCount, totalDrawn); k++) {
+			pVal += dist.probability(k);
 	    }
-
-	    double q = -Math.log(pVal);
-	    if (Double.isInfinite(q))
-	    {
-	        q = Double.MAX_VALUE;
-	    }
-
-	    assert(q >= -1.0 / 10000000000.0);
-	    assert(!Double.isNaN(q));
-	    
-	    Pair<Double,Double> out = new Pair<Double,Double>(q, pVal);
+		*/
+	    Pair<Double,Double> out = new Pair<Double,Double>(0.0, pVal);
 	    	  
 	    return out;
 	}
 	
-	
-	private double LnP(int antecedentAndConsequent, int antecedentButNotConsequent, int count, int consequent)
+	/*
+	private double pmf(int totalDrawn, int successDrawn, int totalCount, int successCount)
 	{
 	    double a = CombinatoricsUtils.binomialCoefficientLog(
-	        antecedentAndConsequent + antecedentButNotConsequent, antecedentAndConsequent);
+	        totalDrawn, successDrawn);
 	    
 	    double b = CombinatoricsUtils.binomialCoefficientLog(
-		    	count - antecedentAndConsequent - antecedentButNotConsequent, consequent - antecedentAndConsequent);
+		    	totalCount - totalDrawn, successCount - successDrawn);
 
-	    double c = CombinatoricsUtils.binomialCoefficientLog(count, consequent);
+	    double c = CombinatoricsUtils.binomialCoefficientLog(totalCount, successCount);
 	    
 	    assert(!Double.isInfinite(a));
 	    assert(!Double.isInfinite(b));
@@ -86,6 +77,7 @@ public class Hypergeometric extends StatisticalTest {
 
 	    return a + b - c;
 	}
+	*/
 
 	//@Override
 	public String getName() {

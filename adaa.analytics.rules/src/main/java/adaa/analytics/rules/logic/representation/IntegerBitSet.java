@@ -196,16 +196,29 @@ public class IntegerBitSet implements Set<Integer> {
 	}
 	
 	/**
-	 * Generates complement of the set (negates all bits). 
+	 * Generates complement of the set (negates all bits).
 	 */
 	public void negate() {
 		for (int i = 0; i < words.length - 1; ++i) {
 			words[i] = ~words[i];
 		}
-		
+
 		int rest = maxElement % Long.SIZE;
 		words[words.length - 1] = (~words[words.length - 1]) & (~(0L)) >>> (Long.SIZE - rest);
 	}
+
+	/**
+	 * Generates complement of the set (negates all bits).
+	 */
+	public void negate(IntegerBitSet output) {
+		for (int i = 0; i < words.length - 1; ++i) {
+			output.words[i] = ~words[i];
+		}
+
+		int rest = maxElement % Long.SIZE;
+		output.words[words.length - 1] = (~words[words.length - 1]) & (~(0L)) >>> (Long.SIZE - rest);
+	}
+
 
 	/**
 	 * Checks if the set contains a given integer.

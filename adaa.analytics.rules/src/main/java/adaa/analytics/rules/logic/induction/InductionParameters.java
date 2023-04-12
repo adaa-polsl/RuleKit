@@ -63,6 +63,8 @@ public class InductionParameters implements Serializable {
 	private boolean meanBasedRegression = false;
 	private boolean controlAprioriPrecision = true;
 
+	private boolean approximateInduction = false;
+
 	public IQualityMeasure getInductionMeasure() {return inductionMeasure;}
 	public void setInductionMeasure(IQualityMeasure inductionMeasure) {this.inductionMeasure = inductionMeasure;}
 
@@ -129,6 +131,9 @@ public class InductionParameters implements Serializable {
 	public boolean isControlAprioriPrecision() { return controlAprioriPrecision; }
 	public void setControlAprioriPrecision(boolean v) { controlAprioriPrecision = v; }
 
+	public boolean isApproximateInduction() { return approximateInduction; }
+	public void setApproximateInduction(boolean v) { approximateInduction = v; }
+
 	public List<Double> getMinimumCoveredAll_list() { return minimumCoveredAll_list; }
 	public void setMinimumCoveredAll_list(List<Double> minimumCovered) {this.minimumCoveredAll_list.addAll(minimumCovered);}
 
@@ -155,7 +160,8 @@ public class InductionParameters implements Serializable {
 				"penalty_saturation=" + penaltySaturation + "\n" +
 				"select_best_candidate=" + selectBestCandidate + "\n" +
 				"max_passes_count=" + maxPassesCount + "\n" +
-				"complementary_conditions=" + conditionComplementEnabled + "\n";
+				"complementary_conditions=" + conditionComplementEnabled + "\n" +
+				"approximate_induction=" + approximateInduction + "\n";
 
 	}
 

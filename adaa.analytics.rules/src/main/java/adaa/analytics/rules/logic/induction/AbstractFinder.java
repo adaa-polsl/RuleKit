@@ -54,7 +54,10 @@ public abstract class AbstractFinder implements AutoCloseable {
 
 	protected IQualityModifier modifier;
 
-	protected List<IFinderObserver> observers = new ArrayList<IFinderObserver>();
+	private List<IFinderObserver> observers = new ArrayList<IFinderObserver>();
+
+	public void addObserver(IFinderObserver o) { observers.add(o); }
+	public void clearObservers() { observers.clear(); }
 	
 	/**
 	 * Initializes induction parameters and thread pool.
@@ -96,9 +99,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 
 		Logger.log("AbstractFinder.grow()\n", Level.FINE);
 
-		for (IFinderObserver o: observers) {
-			o.growingStarted(rule);
-		}
+		notifyGrowingStarted(rule);
 
 		int initialConditionsCount = rule.getPremise().getSubconditions().size();
 		
@@ -123,9 +124,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 			if (condition != null) {
 				rule.getPremise().addSubcondition(condition);
 
-				for (IFinderObserver o: observers) {
-					o.conditionAdded(condition);
-				}
+				notifyConditionAdded(condition);
 
 				covering = new Covering();
 				rule.covers(dataset, covering, covering.positives, covering.negatives);
@@ -159,9 +158,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 		int addedConditionsCount = rule.getPremise().getSubconditions().size() - initialConditionsCount;
 		rule.setInducedContitionsCount(addedConditionsCount);
 
-		for (IFinderObserver o: observers) {
-			o.growingFinished(rule);
-		}
+		notifyGrowingFinished(rule);
 
 		return addedConditionsCount;
 	}
@@ -263,9 +260,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 				initialQuality = bestQuality;
 				rule.getPremise().removeSubcondition(toRemove);
 
-				for (IFinderObserver o: observers) {
-					o.conditionRemoved(toRemove);
-				}
+				notifyConditionRemoved(toRemove);
 
 				// stop climbing when only single condition remains
 				continueClimbing = rule.getPremise().getSubconditions().size() > 1;
@@ -296,9 +291,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 		final Rule rule,
 		final ExampleSet dataset) {
 
-		for (IFinderObserver o: observers) {
-			o.ruleReady(rule);
-		}
+		notifyRuleReady(rule);
 	}
 
 	/**
@@ -334,8 +327,8 @@ public abstract class AbstractFinder implements AutoCloseable {
 		}
 		return out;
 	}
-
-	double countAbsoluteMinimumCovered(double size, int ruleOrderNum, double uncoveredSize) {
+	
+		double countAbsoluteMinimumCovered(double size, int ruleOrderNum, double uncoveredSize) {
 		if (params.getMaxRuleCount()>1 && ruleOrderNum>-1) {
 			double sizeToCover = uncoveredSize * (1.0 - params.getMaximumUncoveredFraction());
 			int toGenerateRulesCount = params.getMaxRuleCount()- ruleOrderNum;
@@ -347,6 +340,36 @@ public abstract class AbstractFinder implements AutoCloseable {
 					params.getAbsoluteMinimumCovered(size),
 					Math.max(1.0, 0.2 * size));
 
+		}
+	}
+
+	protected void notifyGrowingStarted(Rule r) {
+		for (IFinderObserver o: observers) {
+			o.growingStarted(r);
+		}
+	}
+
+	protected void notifyGrowingFinished(Rule r) {
+		for (IFinderObserver o: observers) {
+			o.growingFinished(r);
+		}
+	}
+
+	protected void notifyConditionAdded(ConditionBase cnd) {
+		for (IFinderObserver o: observers) {
+			o.conditionAdded(cnd);
+		}
+	}
+
+	protected void notifyConditionRemoved(ConditionBase cnd) {
+		for (IFinderObserver o: observers) {
+			o.conditionRemoved(cnd);
+		}
+	}
+
+	protected void notifyRuleReady(Rule r) {
+		for (IFinderObserver o: observers) {
+			o.ruleReady(r);
 		}
 	}
 }

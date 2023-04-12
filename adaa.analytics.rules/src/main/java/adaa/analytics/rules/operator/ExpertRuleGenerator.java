@@ -315,6 +315,7 @@ public class ExpertRuleGenerator extends RuleGenerator {
 				snc = new RegressionExpertSnC((RegressionExpertFinder)finder, params, knowledge);
 			}
 
+			snc.setOperatorCommandProxy(operatorCommandProxy);
 			double beginTime = System.nanoTime();
 			model = snc.run(exampleSet);
 			RuleSetBase rs = (RuleSetBase)model;

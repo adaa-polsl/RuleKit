@@ -175,7 +175,10 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 
 	public static final String PARAMETER_CONTROL_APRORI_PRECISION = "control_apriori_precision";
 
+	public static final String PARAMETER_APPROXIMATE_INDUCTION = "approximate_induction";
+	
 	protected OperatorCommandProxy operatorCommandProxy;
+
 	/**
 	 * Invokes base class constructor.
 	 * @param description Operator description.
@@ -233,6 +236,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 			params.setBinaryContrastIncluded(getParameterAsBoolean(PARAMETER_INCLUDE_BINARY_CONTRAST));
 			params.setMeanBasedRegression(getParameterAsBoolean(PARAMETER_MEAN_BASED_REGRESSION));
 			params.setControlAprioriPrecision(getParameterAsBoolean(PARAMETER_CONTROL_APRORI_PRECISION));
+			params.setApproximateInduction(getParameterAsBoolean(PARAMETER_APPROXIMATE_INDUCTION));
 
 			String tmp = getParameterAsString(PARAMETER_MINCOV_ALL);
 			if (tmp.length() > 0) {
@@ -282,10 +286,20 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 				snc = new RegressionSnC((RegressionFinder) finder, params);
 			} else {
 				// classification problem
-				finder = contrastAttr != null
-						? new ContrastClassificationFinder(params)
-						: new ClassificationFinder(params);
-				snc = new ClassificationSnC((ClassificationFinder) finder, params);
+				if (contrastAttr != null) {
+					finder = new ContrastClassificationFinder(params);
+					snc = new ClassificationSnC((ClassificationFinder) finder, params);
+				} else {
+
+					if (params.isApproximateInduction()) {
+						finder = new ApproximateClassificationFinder(params);
+						snc = new ApproximateClassificationSnC((ClassificationFinder)finder, params);
+					} else {
+						finder =  new ClassificationFinder(params);
+						snc = new ClassificationSnC((ClassificationFinder) finder, params);
+					}
+				}
+
 			}
 
 			// overwrite snc for contrast sets
@@ -429,6 +443,9 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 
 		types.add(new ParameterTypeBoolean(PARAMETER_CONTROL_APRORI_PRECISION, getParameterDescription(PARAMETER_CONTROL_APRORI_PRECISION),
 				defaultParams.isControlAprioriPrecision()));
+
+		types.add(new ParameterTypeBoolean(PARAMETER_APPROXIMATE_INDUCTION, getParameterDescription(PARAMETER_APPROXIMATE_INDUCTION),
+				defaultParams.isApproximateInduction()));
 
 		return types;
     }

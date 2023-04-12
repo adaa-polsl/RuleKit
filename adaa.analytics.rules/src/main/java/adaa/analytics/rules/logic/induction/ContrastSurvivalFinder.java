@@ -88,8 +88,8 @@ public class ContrastSurvivalFinder extends SurvivalLogRankFinder implements IPe
 
         AttributePenalty penalty = penalties.get(consequence);
         modifier = penalty;
-        observers.clear();
-        observers.add(penalty);
+        clearObservers();
+        addObserver(penalty);
 
         int cnds = super.grow(rule, dataset, uncovered);
         NegativeControlledMeasure ncm = (NegativeControlledMeasure)params.getPruningMeasure();
@@ -120,9 +120,7 @@ public class ContrastSurvivalFinder extends SurvivalLogRankFinder implements IPe
         KaplanMeierEstimator kme = new KaplanMeierEstimator(dataset, covered);
         ((ContrastSurvivalRule)rule).setEstimator(kme);
 
-        for (IFinderObserver o: observers) {
-            o.ruleReady(rule);
-        }
+        notifyRuleReady(rule);
     }
 
 

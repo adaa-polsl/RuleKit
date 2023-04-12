@@ -48,6 +48,8 @@ public class ElementaryCondition extends ConditionBase {
 	
 	/** Gets {@link #valueSet}. */
 	public IValueSet getValueSet() { return valueSet; }
+	/** Sets {@link #valueSet}. */
+	public void setValueSet(IValueSet vs) { this.valueSet = vs; }
 	
 	/** Gets {@link #adjustable}. */
 	public boolean isAdjustable() { return adjustable; }
@@ -181,4 +183,9 @@ public class ElementaryCondition extends ConditionBase {
 		return attrs;
 	}
 
+	@Override
+	public ConditionBase clone() {
+		ElementaryCondition out = new ElementaryCondition(this.attribute, this.valueSet);
+		return out;
+	}
 }

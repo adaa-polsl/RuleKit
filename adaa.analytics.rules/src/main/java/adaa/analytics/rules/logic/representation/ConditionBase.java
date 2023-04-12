@@ -18,6 +18,8 @@ import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -57,7 +59,7 @@ public abstract class ConditionBase implements Cloneable, Serializable {
 	public Type getType() { return type; }
 	/** Sets {@link #type} */
 	public void setType(Type t) { type = t; }
-	
+
 	/**
 	 * Check whether the condition is prunable (non-FORCED and non-PREFERRED). 
 	 * @return Value indicating whether condition is prunable.
@@ -110,5 +112,7 @@ public abstract class ConditionBase implements Cloneable, Serializable {
 	 * @param set Input dataset.
 	 * @param outIndices Output set of indices covered by the condition.
 	 */
-	protected abstract void internalEvaluate(ExampleSet set,  Set<Integer> outIndices);	
+	protected abstract void internalEvaluate(ExampleSet set,  Set<Integer> outIndices);
+
+	public abstract ConditionBase clone();
 }

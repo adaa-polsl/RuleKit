@@ -14,6 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -49,11 +50,6 @@ public class ClassificationFinder extends AbstractFinder {
 	protected Map<Attribute, Map<Double, IntegerBitSet>> precalculatedCoveringsComplement;
 
 	/**
-	 * Map of precalculated attribute filters (time optimization).
-	 */
-	protected Map<Attribute, Set<Double>> precalculatedFilter;
-
-	/**
 	 * Initializes induction parameters.
 	 * @param params Induction parameters.
 	 */
@@ -67,6 +63,7 @@ public class ClassificationFinder extends AbstractFinder {
 	 * them as bit vectors in @see precalculatedCoverings field.
 	 * @param trainSet Training set.
 	 */
+	@Override
 	public void preprocess(ExampleSet trainSet) {
 	
 		// do nothing for weighted datasets
@@ -76,7 +73,6 @@ public class ClassificationFinder extends AbstractFinder {
 
 		precalculatedCoverings = new HashMap<Attribute, Map<Double, IntegerBitSet>>();
 		precalculatedCoveringsComplement = new HashMap<Attribute, Map<Double, IntegerBitSet>>();
-		precalculatedFilter = new HashMap<Attribute, Set<Double>>();
 		Attributes attributes = trainSet.getAttributes();
 
 		List<Future> futures = new ArrayList<Future>();
@@ -117,7 +113,6 @@ public class ClassificationFinder extends AbstractFinder {
 				synchronized (this) {
 					precalculatedCoverings.put(attr, attributeCovering);
 					precalculatedCoveringsComplement.put(attr, attributeCoveringComplement);
-					precalculatedFilter.put(attr, new TreeSet<Double>());
 				}
 			});
 
@@ -148,9 +143,7 @@ public class ClassificationFinder extends AbstractFinder {
 
 		Logger.log("ClassificationFinder.grow()\n", Level.FINE);
 
-		for (IFinderObserver o: observers) {
-			o.growingStarted(rule);
-		}
+		notifyGrowingStarted(rule);
 
 		int initialConditionsCount = rule.getPremise().getSubconditions().size();
 		
@@ -184,7 +177,7 @@ public class ClassificationFinder extends AbstractFinder {
 		do {
 			ElementaryCondition condition = induceCondition(
 					currentRule, dataset, uncovered, covered, allowedAttributes);
-			
+
 			if (condition != null) {
 
 				carryOn = tryAddCondition(currentRule, bestRule, condition, dataset, covered, uncovered, conditionCovered);
@@ -214,9 +207,7 @@ public class ClassificationFinder extends AbstractFinder {
 		int addedConditionsCount = rule.getPremise().getSubconditions().size() - initialConditionsCount;
 		rule.setInducedContitionsCount(addedConditionsCount);
 
-		for (IFinderObserver o: observers) {
-			o.growingFinished(rule);
-		}
+		notifyGrowingFinished(rule);
 
 		return addedConditionsCount;
 	}
@@ -390,9 +381,7 @@ public class ClassificationFinder extends AbstractFinder {
 				initialQuality = bestQuality;
 				removedConditions.add(toRemove);
 
-				for (IFinderObserver o: observers) {
-					o.conditionRemoved(rule.getPremise().getSubconditions().get(toRemove));
-				}
+				notifyConditionRemoved(rule.getPremise().getSubconditions().get(toRemove));
 
 				--conditionsLeft;
 				
@@ -437,7 +426,18 @@ public class ClassificationFinder extends AbstractFinder {
 		rule.setCoveredPositives(positives);
 		rule.setCoveredNegatives(negatives);
 
-		rule.updateWeightAndPValue(trainSet, ct, params.getVotingMeasure());
+		//rule.updateWeightAndPValue(trainSet, ct, params.getVotingMeasure());
+	}
+
+	public void postprocess(
+			final Rule rule,
+			final ExampleSet dataset) {
+
+		ContingencyTable ct = new ContingencyTable(
+				rule.getWeighted_p(), rule.getWeighted_n(), rule.getWeighted_P(), rule.getWeighted_N());
+		rule.updateWeightAndPValue(dataset, ct, params.getVotingMeasure());
+
+		super.postprocess(rule, dataset);
 	}
 
 	/**
@@ -459,7 +459,11 @@ public class ClassificationFinder extends AbstractFinder {
 		Set<Integer> coveredByRule, 
 		Set<Attribute> allowedAttributes,
 		Object... extraParams) {
-		
+
+		if (rule.getPremise().getSubconditions().size() == 3) {
+		//	return null;
+		}
+
 		if (allowedAttributes.size() == 0) {
 			return null;
 		}
@@ -478,6 +482,10 @@ public class ClassificationFinder extends AbstractFinder {
 		
 		// iterate over all allowed decision attributes
 		for (Attribute attr : allowedAttributes) {
+
+			if ((rule.getPremise().getSubconditions().size() == 2) && (!attr.getName().equals("input16"))) {
+			//	continue;
+			}
 
 			// consider attributes in parallel
 			Future<ConditionEvaluation> future = (Future<ConditionEvaluation>) pool.submit(() -> {
@@ -568,7 +576,7 @@ public class ClassificationFinder extends AbstractFinder {
 							if (quality > best.quality || (quality == best.quality && left_p > best.covered)) {
 								ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_le(midpoint));
 								if (checkCandidate(candidate, classId, left_p, left_n, toCover_left_p, P, uncoveredPositives.size(), rule.getRuleOrderNum())) {
-									Logger.log("\tCurrent best: " + candidate + " (p=" + left_p + ", n=" + left_n + ", new_p=" + (double) toCover_left_p + ", quality=" + quality + "\n", Level.FINEST);
+									//Logger.log("\tCurrent best: " + candidate + " (p=" + left_p + ", n=" + left_n + ", new_p=" + (double) toCover_left_p + ", quality=" + quality + "\n", Level.FINEST);
 									best.quality = quality;
 									best.covered = left_p;
 									best.condition = candidate;
@@ -585,7 +593,7 @@ public class ClassificationFinder extends AbstractFinder {
 							if (quality > best.quality || (quality == best.quality && right_p > best.covered)) {
 								ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_geq(midpoint));
 								if (checkCandidate(candidate, classId, right_p, right_n, toCover_right_p, P, uncoveredPositives.size(), rule.getRuleOrderNum())) {
-									Logger.log("\tCurrent best: " + candidate + " (p=" + right_p + ", n=" + right_n + ", new_p=" + (double) toCover_right_p + ", quality=" + quality + "\n", Level.FINEST);
+									//Logger.log("\tCurrent best: " + candidate + " (p=" + right_p + ", n=" + right_n + ", new_p=" + (double) toCover_right_p + ", quality=" + quality + "\n", Level.FINEST);
 									best.quality = quality;
 									best.covered = right_p;
 									best.condition = candidate;
@@ -638,7 +646,7 @@ public class ClassificationFinder extends AbstractFinder {
 								ElementaryCondition candidate =
 										new ElementaryCondition(attr.getName(), new SingletonSet((double) i, attr.getMapping().getValues()));
 								if (checkCandidate(candidate, classId, p[i], n[i], toCover_p[i], P, uncoveredPositives.size(), rule.getRuleOrderNum())) {
-									Logger.log("\tCurrent best: " + candidate + " (p=" + p[i] + ", n=" + n[i] + ", new_p=" + (double) toCover_p[i] + ", quality=" + quality + "\n", Level.FINEST);
+									//	Logger.log("\tCurrent best: " + candidate + " (p=" + p[i] + ", n=" + n[i] + ", new_p=" + (double) toCover_p[i] + ", quality=" + quality + "\n", Level.FINEST);
 									best.quality = quality;
 									best.covered = p[i];
 									best.condition = candidate;
@@ -674,7 +682,7 @@ public class ClassificationFinder extends AbstractFinder {
 									ElementaryCondition candidate =
 											new ElementaryCondition(attr.getName(), new SingletonSet((double) i, attr.getMapping().getValues()));
 									if (checkCandidate(candidate, classId, p, n, toCover_p, P, uncoveredPositives.size(), rule.getRuleOrderNum())) {
-										Logger.log("\tCurrent best: " + candidate + " (p=" + p + ", n=" + n + ", new_p=" + (double) toCover_p + ", quality=" + quality + "\n", Level.FINEST);
+										//	Logger.log("\tCurrent best: " + candidate + " (p=" + p + ", n=" + n + ", new_p=" + (double) toCover_p + ", quality=" + quality + "\n", Level.FINEST);
 										best.quality = quality;
 										best.covered = p;
 										best.condition = candidate;
@@ -703,7 +711,7 @@ public class ClassificationFinder extends AbstractFinder {
 									ElementaryCondition candidate =
 											new ElementaryCondition(attr.getName(), new SingletonSetComplement((double) i, attr.getMapping().getValues()));
 									if (checkCandidate(candidate, classId, p, n, toCover_p, P, uncoveredPositives.size(), rule.getRuleOrderNum())) {
-										Logger.log("\tCurrent best: " + candidate + " (p=" + p + ", n=" + n + ", new_p=" + (double) toCover_p + ", quality=" + quality + "\n", Level.FINEST);
+										//	Logger.log("\tCurrent best: " + candidate + " (p=" + p + ", n=" + n + ", new_p=" + (double) toCover_p + ", quality=" + quality + "\n", Level.FINEST);
 										best.quality = quality;
 										best.covered = p;
 										best.condition = candidate;
@@ -726,6 +734,9 @@ public class ClassificationFinder extends AbstractFinder {
 		try {
 			for (Future f : futures) {
 				ConditionEvaluation eval = (ConditionEvaluation)f.get();
+
+				Logger.log("\tAttribute best: " + eval.condition + ", quality=" + eval.quality + "\n", Level.FINEST);
+
 				if (best == null || eval.quality > best.quality || (eval.quality == best.quality && eval.covered > best.covered)) {
 					best = eval;
 				}
@@ -737,6 +748,9 @@ public class ClassificationFinder extends AbstractFinder {
 
 		if (best.condition != null) {
 			Attribute bestAttr = trainSet.getAttributes().get(((ElementaryCondition)best.condition).getAttribute());
+
+			Logger.log("\tFinal best: " + best.condition + ", quality=" + best.quality + "\n", Level.FINEST);
+
 			if (bestAttr.isNominal()) {
 				allowedAttributes.remove(bestAttr);
 			}
@@ -827,16 +841,16 @@ public class ClassificationFinder extends AbstractFinder {
 
 				currentRule.getPremise().getSubconditions().add(condition);
 
-				for (IFinderObserver o: observers) {
-					o.conditionAdded(condition);
-				}
+				notifyConditionAdded(condition);
 
 				covered.retainAll(conditionCovered);
 				currentRule.getCoveredPositives().retainAll(conditionCovered);
 				currentRule.getCoveredNegatives().retainAll(conditionCovered);
 				currentRule.setWeighted_p(ct.weighted_p);
 				currentRule.setWeighted_n(ct.weighted_n);
-				currentRule.updateWeightAndPValue(trainSet, ct, params.getVotingMeasure());
+				currentRule.setWeight(params.getVotingMeasure().calculate(trainSet, ct));
+
+				//currentRule.updateWeightAndPValue(trainSet, ct, params.getVotingMeasure());
 
 				if (bestRule != null && qualityAfter > qualityBefore) {
 					// quality increase

@@ -40,7 +40,7 @@ public class CompoundCondition extends ConditionBase {
 	
 	/** Gets {@link #subconditions}. */
 	public List<ConditionBase> getSubconditions() { return subconditions; }
-	
+
 	/**
 	 * Adds a subcondition.
 	 * @param cnd A subcondition to be added.
@@ -52,8 +52,7 @@ public class CompoundCondition extends ConditionBase {
 	 * @param cnd Subcondition to be removed.
 	 */
 	public void removeSubcondition(ConditionBase cnd) { subconditions.remove(cnd); }
-	
-	
+
 	public CompoundCondition() {
 		this.operator = LogicalOperator.CONJUNCTION;
 	}
@@ -209,6 +208,14 @@ public class CompoundCondition extends ConditionBase {
 		}
 		return atts;
 	}
-	
+
+	@Override
+	public ConditionBase clone() {
+		CompoundCondition out = new CompoundCondition();
+		out.subconditions = this.subconditions;
+		out.operator = this.operator;
+
+		return out;
+	}
 	
 }

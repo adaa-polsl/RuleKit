@@ -53,8 +53,8 @@ public class ContrastClassificationFinder extends ClassificationFinder implement
 
         AttributePenalty penalty = penalties.get(consequence);
         modifier = penalty;
-        observers.clear();
-        observers.add(penalty);
+        clearObservers();
+        addObserver(penalty);
 
         int cnds = super.grow(rule, dataset, uncovered);
         NegativeControlledMeasure ncm = (NegativeControlledMeasure)params.getPruningMeasure();
