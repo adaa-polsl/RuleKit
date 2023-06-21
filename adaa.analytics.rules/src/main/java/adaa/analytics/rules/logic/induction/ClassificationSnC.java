@@ -73,7 +73,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 
 		boolean weighted = (dataset.getAttributes().getWeight() != null);
 
-		int threadCount = 1;//Runtime.getRuntime().availableProcessors();
+		int threadCount = Runtime.getRuntime().availableProcessors();
 		ExecutorService pool = Executors.newFixedThreadPool(threadCount);
 		Semaphore mutex = new Semaphore(1);
 		AtomicInteger totalRules = new AtomicInteger(0);

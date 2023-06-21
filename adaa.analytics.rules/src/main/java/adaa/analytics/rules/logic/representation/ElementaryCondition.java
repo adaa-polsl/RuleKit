@@ -56,7 +56,7 @@ public class ElementaryCondition extends ConditionBase {
 	
 	/** Creates empty condition. */
 	protected ElementaryCondition() {
-		;
+		super();
 	}
 	
 	/**

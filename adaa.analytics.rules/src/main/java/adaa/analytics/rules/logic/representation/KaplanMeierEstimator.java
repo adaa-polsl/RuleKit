@@ -278,6 +278,38 @@ public class KaplanMeierEstimator implements Serializable {
         assert (p != Double.NaN);
         return p;
     }
+
+    public double getTimeForProbability(double probability) {
+		assert probability >= 0.0 && probability <= 1.0;
+		//SurvInfo tmpSurvInfo = new SurvInfo(1.0, probability);
+		int idx = Collections.binarySearch(survInfo, new SurvInfo(1.0, probability), 
+				new SurvInfoComparer(SurvInfoComparer.By.ProbabilityDesc));
+		Optional<SurvInfo> lastThisProbability = survInfo.
+				stream().
+				filter(i -> i.probability == probability).
+				reduce((first, second) -> second);
+		
+		if (idx >= 0) {			
+			return lastThisProbability.get().getTime();
+		}
+
+		// bitwise complement of the index of the next element that is larger than item
+		// or, if there is no larger element, the bitwise complement of Count
+		idx = ~idx;
+
+		int n = this.survInfo.size();
+		if (idx == n) {
+			return this.survInfo.get(n - 1).getTime();
+		}
+
+		if (idx == 0) {
+			return this.survInfo.get(idx).getTime();
+		}
+
+		double t = this.survInfo.get(idx).getTime();
+		assert (t != Double.NaN);
+		return t;
+	}
     
     /**
      * Gets number of events at given time point.

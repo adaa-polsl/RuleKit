@@ -39,9 +39,9 @@ import com.rapidminer5.operator.io.ArffExampleSource;
 
 import adaa.analytics.rules.utils.RapidMiner5;
 
-public class ArffFileLoader {
+public class ArffFileLoader extends ExamplesetFileLoader {
 
-	private static ExampleSet loadExampleSet(String filePath, String labelParameterName, String survivalTimeParameter) throws OperatorCreationException, OperatorException {
+	protected ExampleSet loadExampleSet(String filePath, String labelParameterName, String survivalTimeParameter) throws OperatorCreationException, OperatorException {
 		System.setProperty(PlatformUtilities.PROPERTY_RAPIDMINER_HOME, Paths.get("").toAbsolutePath().toString());
 		LogService.getRoot().setLevel(Level.OFF);
 		RapidMiner.setExecutionMode(RapidMiner.ExecutionMode.COMMAND_LINE);
@@ -79,12 +79,4 @@ public class ArffFileLoader {
 		return (ExampleSet)c.getElementAt(0);
 	}
 
-
-	public static ExampleSet load(String filePath, String labelParameterName, String survivalTimeParameter) throws OperatorException, OperatorCreationException {
-		return loadExampleSet(filePath, labelParameterName, survivalTimeParameter);
-	}
-
-	public static ExampleSet load(String filePath, String labelParameterName) throws OperatorCreationException, OperatorException {
-		return loadExampleSet(filePath, labelParameterName, null);
-	}
 }

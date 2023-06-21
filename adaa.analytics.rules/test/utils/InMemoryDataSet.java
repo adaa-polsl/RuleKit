@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
 import java.util.Map;
 
 public class InMemoryDataSet {
@@ -45,9 +46,9 @@ public class InMemoryDataSet {
 		return dataset;
 	}
 	
-	ExampleTable createExampleTable(List<Attribute> attributes, Iterable<Row> inputRows) {
+	ExampleTable createExampleTable(List<Attribute> attributes, Iterable<utils.Row> inputRows) {
         MemoryExampleTable table = new MemoryExampleTable(attributes);
-        DataRowFactory2 factory = DataRowFactory2.withFullStopDecimalSeparator(attributes);
+        utils.DataRowFactory2 factory = utils.DataRowFactory2.withFullStopDecimalSeparator(attributes);
         for(Iterable<String> row : inputRows){
             DataRow dataRow = factory.createRow(row);
             table.addDataRow(dataRow);

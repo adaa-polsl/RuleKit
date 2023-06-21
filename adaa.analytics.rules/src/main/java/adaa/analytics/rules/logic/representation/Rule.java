@@ -211,7 +211,7 @@ public abstract class Rule implements Serializable, Cloneable {
 	*  @param votingMeasure Measure used as weight.
 	 */
 	public abstract void updateWeightAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure);
-	
+
 	/**
 	 * Applies the rule on a specified example set.
 	 * @param set Example set.

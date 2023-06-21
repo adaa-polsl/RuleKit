@@ -15,6 +15,7 @@
 package adaa.analytics.rules.logic.induction;
 
 import com.rapidminer.example.table.NominalMapping;
+import org.renjin.invoke.codegen.ArgumentException;
 
 public class ClassPair {
 
@@ -28,6 +29,12 @@ public class ClassPair {
 		targetLabel = target;
 		sourceId = mapping.getIndex(source);
 		targetId = mapping.getIndex(target);
+		if (sourceId < 0) {
+			throw new ArgumentException("sourceId negative - check class name");
+		}
+		if (targetId < 0){
+			throw new ArgumentException("targetId negative - check class name");
+		}
 	}
 	
 	public String getSourceLabel() {

@@ -61,7 +61,7 @@ public class ClassificationFinder extends AbstractFinder {
 		super(params);
 		MissingValuesHandler.ignore = params.isIgnoreMissing();
 	}
-	
+
 	/**
 	 * If example set is unweighted, method precalculates conditions coverings and stores
 	 * them as bit vectors in @see precalculatedCoverings field.
@@ -315,7 +315,7 @@ public class ClassificationFinder extends AbstractFinder {
 
 					// only elementary conditions are prunable
 					String attr = ((ElementaryCondition)cnd).getAttribute();
-					
+
 					double p = 0;
 					double n = 0;
 					double new_p = 0;
@@ -342,7 +342,7 @@ public class ClassificationFinder extends AbstractFinder {
 						long posWord = filteredWord & labelWord;
 						long negWord = filteredWord & ~labelWord;
 						long uncovWord = uncoveredMask[wordId];
-						
+
 						if (weighting) {
 							// weighted - iterate over bits and sum weights
 							for (int wordOffset = 0; wordOffset < Long.SIZE; ++wordOffset) {

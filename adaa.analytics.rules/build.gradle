@@ -27,7 +27,7 @@ codeQuality {
 }
 
 sourceCompatibility = 1.8
-version = '1.5.2'
+version = '1.6.0'
 
 
 jar {
@@ -42,6 +42,7 @@ repositories {
     jcenter()
     maven { url 'https://maven.rapidminer.com/content/groups/public/' }
     maven { url "https://nexus.bedatadriven.com/content/groups/public" }
+    flatDir { dirs 'lib'}
 }
 
 
@@ -70,6 +71,7 @@ sourceSets {
 }
 
 dependencies {
+    compile 'commons-cli:commons-cli:1.4'
     compile group: 'com.rapidminer.studio', name: 'rapidminer-studio-core', version: '9.3.1'
     compile group: 'com.miglayout', name: 'miglayout-swing', version: '5.1'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
@@ -79,6 +81,7 @@ dependencies {
     compile group: 'org.renjin', name: 'renjin-script-engine', version:'0.9.2646'
     compile group: 'org.renjin', name: 'renjin-core', version:'0.9.2691'
     compile group: 'org.renjin', name: 'tools', version: '0.9.2691'
+    compile fileTree(include: ['*.jar'], dir: 'lib')
     testCompile group: 'junit', name: 'junit', version: '4.+'
 }
 
@@ -116,7 +119,27 @@ task rjar(type: Jar) {
       exclude ('**/*.DSA')
       exclude ('**/*.RSA')
     }
-    
+
+    with jar
+    zip64 true
+}
+
+task acrules(type: Jar) {
+    baseName = 'ac-rules'
+    classifier = 'all'
+    manifest {
+        attributes 'Implementation-Version': version
+        attributes 'Main-Class': 'main.ActionRulesConsole'
+    }
+
+    from {
+        configurations.compile.filter( {! (it.name =~ /.*\.pom/ )}).collect { it.isDirectory() ? it : zipTree(it) }
+    }{
+        exclude ('**/*.SF')
+        exclude ('**/*.DSA')
+        exclude ('**/*.RSA')
+    }
+
     with jar
     zip64 true
 }

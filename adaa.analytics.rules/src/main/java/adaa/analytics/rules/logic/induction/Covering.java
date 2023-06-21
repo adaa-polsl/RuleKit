@@ -35,12 +35,14 @@ public class Covering extends ContingencyTable{
 		super(p, n, P, N);
 	}
 
+
 	public Covering(ContingencyTable ct) {
 		super(ct.weighted_p, ct.weighted_n, ct.weighted_P, ct.weighted_N);
 		this.mean_y = ct.mean_y;
 		this.median_y = ct.median_y;
 		this.stddev_y = ct.stddev_y;
 	}
+
 
 	public Covering(ContingencyTable ct, Set<Integer> posIds, Set<Integer> negIds) {
 		this(ct);

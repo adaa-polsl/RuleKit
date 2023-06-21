@@ -117,7 +117,7 @@ public class RegressionRule extends Rule {
 		this.covers(set, cov, cov.positives, cov.negatives);
 		return cov;
 	}
-	
+
 	@Override
 	public void covers(ExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
 		SortedExampleSetEx ses = (set instanceof SortedExampleSetEx) ? (SortedExampleSetEx)set : null;

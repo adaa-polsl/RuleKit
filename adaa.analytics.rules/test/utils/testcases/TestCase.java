@@ -26,6 +26,7 @@ public class TestCase {
     private String labelAttribute;
     private String survivalTime;
     private String reportFilePath;
+    private ArffFileLoader arffFileLoader = new ArffFileLoader();
 
     private boolean usingExistingReportFile;
 
@@ -52,9 +53,9 @@ public class TestCase {
     public ExampleSet getExampleSet() throws OperatorException, OperatorCreationException {
         if (exampleSet == null) {
             if (survivalTime != null) {
-                this.exampleSet = ArffFileLoader.load(dataSetFilePath, labelAttribute, survivalTime);
+                this.exampleSet = arffFileLoader.load(dataSetFilePath, labelAttribute, survivalTime);
             } else {
-                this.exampleSet = ArffFileLoader.load(dataSetFilePath, labelAttribute);
+                this.exampleSet = arffFileLoader.load(dataSetFilePath, labelAttribute);
             }
         }
         return exampleSet;

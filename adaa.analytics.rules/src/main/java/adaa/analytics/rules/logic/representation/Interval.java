@@ -96,6 +96,9 @@ public class Interval implements IValueSet, Serializable {
 		this.right = right;
 		this.leftClosed = leftClosed;
 		this.rightClosed = rightClosed;
+		if (Double.compare(left, right) == 0 && !(leftClosed && rightClosed)) {
+			throw new IllegalArgumentException("Only valid interval where a = b is [a,b]");
+		}
 	}
 	
 	/**
@@ -161,10 +164,11 @@ public class Interval implements IValueSet, Serializable {
 			return true;
 		}
 		Interval ds = (set instanceof Interval) ? (Interval)set : null;
+
 		if (ds != null) {
 			if (this.right < ds.left || (this.right == ds.left && !ds.leftClosed) || 
 				this.left > ds.right || (this.left == ds.right && !ds.rightClosed)) {
-				return false;
+					return false;
 			} else {
 				return true;
 			}
@@ -187,11 +191,27 @@ public class Interval implements IValueSet, Serializable {
 			if (!this.intersects(other)) {
 				return null;
 			}
+
+			double newLeft = Math.max(this.left, other.left);
+			double newRight = Math.min(this.right, other.right);
+			boolean newLeftClosed = this.left < other.left ? other.leftClosed : this.leftClosed;
+			boolean newRightClosed = this.right > other.right ? other.rightClosed : this.rightClosed;
+
+			if (Double.compare(newLeft, newRight) == 0 ){
+				return new Interval(
+						newLeft,
+						newRight,
+						true,
+						true
+				);
+			}
+
 			return new Interval(
-				Math.max(this.left, other.left),
-				Math.min(this.right, other.right),
-				this.left < other.left ? other.leftClosed : this.leftClosed,
-				this.right > other.right ? other.rightClosed : this.rightClosed);
+				newLeft,
+				newRight,
+				newLeftClosed,
+				newRightClosed
+			);
 		} else {
 			return null;
 		}
@@ -227,6 +247,10 @@ public class Interval implements IValueSet, Serializable {
 		
 		if ( ival != null && this.intersects(ival) ) {
 			Interval intersection = (Interval) this.getIntersection(set);
+
+			if (this.equals(intersection)) {
+				return ret;
+			}
 			
 			if (intersection.left > this.left && intersection.right < this.right) {
 				ret.add(new Interval(this.left, intersection.left, this.leftClosed, true));
@@ -254,5 +278,12 @@ public class Interval implements IValueSet, Serializable {
 		return builder.toHashCode();
 	}
 
+	public String getLeftSign() {
+		return leftClosed ?  ">=" : ">";
+	}
+
+	public String getRightSign() {
+		return rightClosed ? "<=" : "<";
+	}
 	
 }

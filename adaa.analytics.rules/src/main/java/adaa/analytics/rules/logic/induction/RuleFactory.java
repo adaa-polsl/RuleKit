@@ -30,7 +30,8 @@ public class RuleFactory {
 	public static final int CONTRAST = 4;
 	public static final int CONTRAST_REGRESSION = 5;
 	public static final int CONTRAST_SURVIVAL = 6;
-	
+	public static final int ACTION = 7;
+	public static final int REGRESSION_ACTION = 8;
 	/**
 	 * Rule type (classification/regression/survival).
 	 */
@@ -99,6 +100,10 @@ public class RuleFactory {
 			return new ContrastRegressionRule(premise, consequence);
 		case CONTRAST_SURVIVAL:
 			return new ContrastSurvivalRule(premise, consequence);
+		case ACTION:
+			return new ActionRule();
+		case REGRESSION_ACTION:
+			return new RegressionActionRule(premise, (Action)consequence);
 		}
 		
 		return null;
@@ -123,6 +128,9 @@ public class RuleFactory {
 			return new ContrastRegressionRuleSet(set, isVoting, params, knowledge);
 		case CONTRAST_SURVIVAL:
 			return new ContrastSurvivalRuleSet(set, isVoting, params, knowledge);
+		case ACTION:
+		case REGRESSION_ACTION:
+			return new ActionRuleSet(set, isVoting, params, knowledge);
 		}
 		
 		return null;

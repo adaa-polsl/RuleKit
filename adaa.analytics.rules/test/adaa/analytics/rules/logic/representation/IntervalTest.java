@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import com.sun.source.tree.AssertTree;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -44,6 +45,21 @@ public class IntervalTest {
 		common = i1.getDifference(i2);
 		Assert.assertEquals(1, common.size());
 		Assert.assertEquals(common.get(0), new Interval(2.0, 5.0, true, true));
+	}
+
+	@Test
+	public void getDifference_special() {
+		Interval i1 = new Interval(1.0, 5.0, true, true);
+		Interval i2 = new Interval(2.0, 5.0, true, true);
+
+		List<IValueSet> i3 = i1.getDifference(i2);
+		List<IValueSet> i4 = i2.getDifference(i1);
+
+		assertTrue(i3.size() > 0);
+		assertTrue(i4.size() == 0);
+
+		IValueSet x = i1.getIntersection(i2);
+		IValueSet y = i2.getIntersection(i1);
 	}
 
 	@Test
@@ -96,5 +112,20 @@ public class IntervalTest {
 		// Then
 		assertEquals(i1, intersectionInterval1);
 		assertTrue(intersectionInterval1.equals(intersectionInterval2));
+	}
+
+	@Test
+	public void getIntersection_TheSameInterval() {
+		Interval i1 = new Interval(8.55, 8.55, true, true);
+		Interval i2 = new Interval(8.55, 8.55, true, true);
+
+		boolean doesIntersect = i1.intersects(i2);
+
+
+
+		Interval intersection = (Interval)i1.getIntersection(i2);
+
+		assertTrue(doesIntersect);
+		assertEquals(i1, intersection);
 	}
 }

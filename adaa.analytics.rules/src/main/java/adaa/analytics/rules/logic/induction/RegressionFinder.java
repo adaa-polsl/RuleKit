@@ -390,7 +390,7 @@ public class RegressionFinder extends AbstractFinder {
 		Rule newRule = (Rule) rule.clone();
 		newRule.setPremise(newPremise);
 
-		 
+
 		Covering cov = new Covering();
 		newRule.covers(dataset, cov, cov.positives, cov.negatives);
 
