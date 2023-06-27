@@ -55,7 +55,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 	protected IQualityModifier modifier;
 
 	protected List<IFinderObserver> observers = new ArrayList<IFinderObserver>();
-
+	
 	/**
 	 * Initializes induction parameters and thread pool.
 	 *
@@ -181,7 +181,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 		
 		Logger.log("AbstractFinder.prune()\n", Level.FINE);
 		boolean weighting = (trainSet.getAttributes().getWeight() != null);
-
+		
 		// check preconditions
 		if (rule.getWeighted_p() == Double.NaN || rule.getWeighted_p() == Double.NaN ||
 			rule.getWeighted_P() == Double.NaN || rule.getWeighted_N() == Double.NaN) {
@@ -244,7 +244,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 					new_p = positives.calculateIntersectionSize(localUncovered);
 					new_n = negatives.calculateIntersectionSize(localUncovered);
 				}
-
+				
 				double q = params.getPruningMeasure().calculate(trainSet, covering);
 				
 				if (cnd instanceof  ElementaryCondition) {
@@ -333,5 +333,20 @@ public abstract class AbstractFinder implements AutoCloseable {
 			out.add(dataset.getAttributes().get(s));
 		}
 		return out;
+	}
+
+	double countAbsoluteMinimumCovered(double size, int ruleOrderNum, double uncoveredSize) {
+		if (params.getMaxRuleCount()>1 && ruleOrderNum>-1) {
+			double sizeToCover = uncoveredSize * (1.0 - params.getMaximumUncoveredFraction());
+			int toGenerateRulesCount = params.getMaxRuleCount()- ruleOrderNum;
+			double fractionCurrentGeneration = 1.0 / (double) toGenerateRulesCount;
+			return fractionCurrentGeneration * sizeToCover;
+		}else
+		{
+			return Math.min(
+					params.getAbsoluteMinimumCovered(size),
+					Math.max(1.0, 0.2 * size));
+
+		}
 	}
 }

@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<experiment>
+	<parameter_sets>
+	
+		<parameter_set name="auto">
+			<param name="min_rule_covered">5</param>
+			<param name="max_rule_count">5</param>
+		</parameter_set>
+	</parameter_sets>
+	<datasets>
+	
+		<dataset>
+			<label>survival_status</label>
+			<survival_time>survival_time</survival_time>
+			<out_directory>./results-minimal/gbsg2</out_directory>		
+    
+			<training>  
+				 <report_file>training.log</report_file> 
+				 <train>
+					 <in_file>../data/gbsg2/gbsg2.arff</in_file>               	
+					 <model_file>gbsg2.mdl</model_file> 
+				 </train>
+				 
+				 
+			</training>
+    
+			<prediction>
+			
+				<performance_file>performance.csv</performance_file>  
+				<predict>
+					<model_file>gbsg2.mdl</model_file>      	
+					<test_file>../data/gbsg2/gbsg2.arff</test_file>            			
+					<predictions_file>gbsg2-pred.arff</predictions_file>  	  
+				</predict>
+				 
+			</prediction>
+	
+		</dataset>
+
+	</datasets>
+</experiment>

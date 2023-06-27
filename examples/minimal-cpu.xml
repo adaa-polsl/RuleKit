@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<experiment>
+	<parameter_sets>
+	
+		
+		<!--================================================================================================================-->
+	<parameter_set name="auto">
+			<param name="min_rule_covered">4</param>
+			<param name="max_rule_count">4</param>
+			<param name="induction_measure">RSS</param>
+			<param name="pruning_measure">RSS</param>
+			<param name="voting_measure">RSS</param>
+		</parameter_set>
+	
+	
+
+	</parameter_sets>
+
+	<datasets>
+
+		<dataset>
+			<label>class</label>
+			<out_directory>./results-minimal/cpu</out_directory>		
+			<training>  
+				<report_file>training-log.txt</report_file>      
+				 
+				<train>
+					 <in_file>../data/cpu/cpu.arff</in_file>               		
+					 <model_file>methane-train.mdl</model_file>  
+				 </train>
+				 
+			</training>
+    
+			<prediction>
+				<performance_file>performance.csv</performance_file>  
+				
+				<predict>
+					<model_file>methane-train.mdl</model_file>      	
+					<test_file>../data/cpu/cpu.arff</test_file>            			
+					<predictions_file>methane-test-pred.arff</predictions_file>   	
+				</predict>
+				
+				
+			</prediction>
+    
+		</dataset>
+
+	</datasets>
+</experiment>

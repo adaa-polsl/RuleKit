@@ -138,6 +138,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 					rule.setCoveredNegatives(new IntegerBitSet(dataset.size()));
 					rule.getCoveredPositives().addAll(positives);
 					rule.getCoveredNegatives().addAll(negatives);
+					rule.setRuleOrderNum(ruleset.getRules().size());
 
 					double t = System.nanoTime();
 					carryOn = (finder.grow(rule, dataset, uncoveredPositives) > 0);

@@ -61,7 +61,7 @@ public class ClassificationFinder extends AbstractFinder {
 		super(params);
 		MissingValuesHandler.ignore = params.isIgnoreMissing();
 	}
-
+	
 	/**
 	 * If example set is unweighted, method precalculates conditions coverings and stores
 	 * them as bit vectors in @see precalculatedCoverings field.
@@ -187,7 +187,7 @@ public class ClassificationFinder extends AbstractFinder {
 			
 			if (condition != null) {
 
-				carryOn = tryAddCondition(currentRule, bestRule, condition, dataset, covered, conditionCovered);
+				carryOn = tryAddCondition(currentRule, bestRule, condition, dataset, covered, uncovered, conditionCovered);
 
 				if (params.getMaxGrowingConditions() > 0) {
 					if (currentRule.getPremise().getSubconditions().size() - initialConditionsCount >=
@@ -315,7 +315,7 @@ public class ClassificationFinder extends AbstractFinder {
 
 					// only elementary conditions are prunable
 					String attr = ((ElementaryCondition)cnd).getAttribute();
-
+					
 					double p = 0;
 					double n = 0;
 					double new_p = 0;
@@ -342,7 +342,7 @@ public class ClassificationFinder extends AbstractFinder {
 						long posWord = filteredWord & labelWord;
 						long negWord = filteredWord & ~labelWord;
 						long uncovWord = uncoveredMask[wordId];
-
+						
 						if (weighting) {
 							// weighted - iterate over bits and sum weights
 							for (int wordOffset = 0; wordOffset < Long.SIZE; ++wordOffset) {
@@ -567,7 +567,7 @@ public class ClassificationFinder extends AbstractFinder {
 
 							if (quality > best.quality || (quality == best.quality && left_p > best.covered)) {
 								ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_le(midpoint));
-								if (checkCandidate(candidate, classId, left_p, left_n, toCover_left_p, P)) {
+								if (checkCandidate(candidate, classId, left_p, left_n, toCover_left_p, P, uncoveredPositives.size(), rule.getRuleOrderNum())) {
 									Logger.log("\tCurrent best: " + candidate + " (p=" + left_p + ", n=" + left_n + ", new_p=" + (double) toCover_left_p + ", quality=" + quality + "\n", Level.FINEST);
 									best.quality = quality;
 									best.covered = left_p;
@@ -584,7 +584,7 @@ public class ClassificationFinder extends AbstractFinder {
 
 							if (quality > best.quality || (quality == best.quality && right_p > best.covered)) {
 								ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_geq(midpoint));
-								if (checkCandidate(candidate, classId, right_p, right_n, toCover_right_p, P)) {
+								if (checkCandidate(candidate, classId, right_p, right_n, toCover_right_p, P, uncoveredPositives.size(), rule.getRuleOrderNum())) {
 									Logger.log("\tCurrent best: " + candidate + " (p=" + right_p + ", n=" + right_n + ", new_p=" + (double) toCover_right_p + ", quality=" + quality + "\n", Level.FINEST);
 									best.quality = quality;
 									best.covered = right_p;
@@ -637,7 +637,7 @@ public class ClassificationFinder extends AbstractFinder {
 							if ((quality > best.quality || (quality == best.quality && p[i] > best.covered)) && (toCover_p[i] > 0)) {
 								ElementaryCondition candidate =
 										new ElementaryCondition(attr.getName(), new SingletonSet((double) i, attr.getMapping().getValues()));
-								if (checkCandidate(candidate, classId, p[i], n[i], toCover_p[i], P)) {
+								if (checkCandidate(candidate, classId, p[i], n[i], toCover_p[i], P, uncoveredPositives.size(), rule.getRuleOrderNum())) {
 									Logger.log("\tCurrent best: " + candidate + " (p=" + p[i] + ", n=" + n[i] + ", new_p=" + (double) toCover_p[i] + ", quality=" + quality + "\n", Level.FINEST);
 									best.quality = quality;
 									best.covered = p[i];
@@ -673,7 +673,7 @@ public class ClassificationFinder extends AbstractFinder {
 										(quality == best.quality && (p > best.covered || best.opposite))) {
 									ElementaryCondition candidate =
 											new ElementaryCondition(attr.getName(), new SingletonSet((double) i, attr.getMapping().getValues()));
-									if (checkCandidate(candidate, classId, p, n, toCover_p, P)) {
+									if (checkCandidate(candidate, classId, p, n, toCover_p, P, uncoveredPositives.size(), rule.getRuleOrderNum())) {
 										Logger.log("\tCurrent best: " + candidate + " (p=" + p + ", n=" + n + ", new_p=" + (double) toCover_p + ", quality=" + quality + "\n", Level.FINEST);
 										best.quality = quality;
 										best.covered = p;
@@ -702,7 +702,7 @@ public class ClassificationFinder extends AbstractFinder {
 								if (quality > best.quality || (quality == best.quality && p > best.covered)) {
 									ElementaryCondition candidate =
 											new ElementaryCondition(attr.getName(), new SingletonSetComplement((double) i, attr.getMapping().getValues()));
-									if (checkCandidate(candidate, classId, p, n, toCover_p, P)) {
+									if (checkCandidate(candidate, classId, p, n, toCover_p, P, uncoveredPositives.size(), rule.getRuleOrderNum())) {
 										Logger.log("\tCurrent best: " + candidate + " (p=" + p + ", n=" + n + ", new_p=" + (double) toCover_p + ", quality=" + quality + "\n", Level.FINEST);
 										best.quality = quality;
 										best.covered = p;
@@ -762,6 +762,7 @@ public class ClassificationFinder extends AbstractFinder {
 		final ConditionBase condition, 
 		final ExampleSet trainSet,
 		final Set<Integer> covered,
+		final Set<Integer> uncovered,
 		final IntegerBitSet conditionCovered) {
 		
 		boolean carryOn = true;
@@ -789,9 +790,7 @@ public class ClassificationFinder extends AbstractFinder {
 			}
 			
 			// analyse stopping criteria
-			double adjustedMinCov = Math.min(
-					params.getAbsoluteMinimumCovered(ct.weighted_P),
-					Math.max(1.0, 0.2 * ct.weighted_P));
+			double adjustedMinCov = countAbsoluteMinimumCovered(ct.weighted_P, currentRule.getRuleOrderNum(), uncovered.size());
 
 			if (ct.weighted_p < adjustedMinCov) {
 				if (currentRule.getPremise().getSubconditions().size() == 0) {
@@ -869,15 +868,15 @@ public class ClassificationFinder extends AbstractFinder {
 	 * @param newlyCoveredPositives Number of newly covered positive examples after addition of the condition.
 	 * @return
 	 */
-	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double p, double n, double new_p, double P) {
-		double adjustedMinCov = Math.min(
-				params.getAbsoluteMinimumCovered(P),
-				Math.max(1.0, 0.2 * P));
-
+	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double p, double n, double new_p, double P,double uncoveredSize, int ruleOrderNum) {
+		double adjustedMinCov =
+				countAbsoluteMinimumCovered(P, ruleOrderNum, uncoveredSize);
 		if (new_p >= adjustedMinCov && p >= params.getAbsoluteMinimumCoveredAll(P)) {
 			return true;
 		} else {
 			return false;
 		}
 	}
+
+
 }

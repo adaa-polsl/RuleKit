@@ -179,7 +179,7 @@ public class RegressionFinder extends AbstractFinder {
 									ElementaryCondition candidate = new ElementaryCondition(attr.getName(),
 											(c == 0) ? Interval.create_le(midpoint) : Interval.create_geq(midpoint));
 
-									if (checkCandidate(candidate, p, n, new_p, new_n, P, N)) {
+									if (checkCandidate(candidate, p, n, new_p, new_n, P, N, uncovered.size(),rule.getRuleOrderNum())) {
 										Logger.log("\t\tCurrent best: " + candidate + " (p=" + p + ", n=" + n +
 												", new_p=" + (double) new_p + ", new_n="+  new_n +
 												", P=" + P + ", N=" + N +
@@ -390,7 +390,7 @@ public class RegressionFinder extends AbstractFinder {
 		Rule newRule = (Rule) rule.clone();
 		newRule.setPremise(newPremise);
 
-
+		 
 		Covering cov = new Covering();
 		newRule.covers(dataset, cov, cov.positives, cov.negatives);
 
@@ -410,7 +410,7 @@ public class RegressionFinder extends AbstractFinder {
 			}
 		}
 		
-		if (checkCoverage(cov.weighted_p, cov.weighted_n, new_p, new_n, cov.weighted_P, cov.weighted_N)) {
+		if (checkCoverage(cov.weighted_p, cov.weighted_n, new_p, new_n, cov.weighted_P, cov.weighted_N, uncovered.size(),rule.getRuleOrderNum())) {
 			double quality = params.getInductionMeasure().calculate(dataset, cov);
 
 			if (candidate instanceof  ElementaryCondition) {
@@ -444,13 +444,15 @@ public class RegressionFinder extends AbstractFinder {
 		return false;
 	}
 
-	protected boolean checkCandidate(ElementaryCondition cnd, double p, double n, double new_p, double new_n, double P, double N) {
-		return checkCoverage(p, n, new_p, new_n, P, N);
+	protected boolean checkCandidate(ElementaryCondition cnd, double p, double n, double new_p, double new_n, double P, double N,double uncoveredSize, int ruleOrderNum) {
+		return checkCoverage(p, n, new_p, new_n, P, N, uncoveredSize,  ruleOrderNum);
 	}
 
 
-	boolean checkCoverage(double p, double n, double new_p, double new_n, double P, double N) {
-		return ((new_p + new_n) >= params.getAbsoluteMinimumCovered(P + N)) &&
+	boolean checkCoverage(double p, double n, double new_p, double new_n, double P, double N,double uncoveredSize, int ruleOrderNum) {
+		double adjustedMinCov =
+				countAbsoluteMinimumCovered(P+N, ruleOrderNum, uncoveredSize);
+		return ((new_p + new_n) >= adjustedMinCov) &&
 				((p + n) >= params.getAbsoluteMinimumCoveredAll(P + N));
 	}
 

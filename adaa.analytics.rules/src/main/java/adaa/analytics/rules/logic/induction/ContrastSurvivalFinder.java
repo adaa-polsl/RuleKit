@@ -125,7 +125,7 @@ public class ContrastSurvivalFinder extends SurvivalLogRankFinder implements IPe
         }
     }
 
-    @Override
+
     boolean checkCoverage(double p, double n, double new_p, double new_n, double P, double N) {
                return ((new_p) >= params.getAbsoluteMinimumCovered(P)) &&
                 ((p) >= params.getAbsoluteMinimumCoveredAll(P));

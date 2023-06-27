@@ -43,6 +43,7 @@ public class InductionParameters implements Serializable {
 	/** Minimum number of previously uncovered examples that a new rule has to cover. */
 	private double minimumCovered = 5.0;
 	private double minimumCoveredAll = 0.0;
+	private int maxRuleCount = 0;
 	private double maximumUncoveredFraction = 0;
 	private boolean conditionComplementEnabled = false;
 
@@ -67,13 +68,23 @@ public class InductionParameters implements Serializable {
 
 	public IQualityMeasure getPruningMeasure() {return pruningMeasure;}
 	public void setPruningMeasure(IQualityMeasure pruningMeasure) {this.pruningMeasure = pruningMeasure;}
-	
+
 	public IQualityMeasure getVotingMeasure() {return votingMeasure;}
 	public void setVotingMeasure(IQualityMeasure pruningMeasure) {this.votingMeasure = pruningMeasure;}
 
 	public double getMinimumCovered() {return minimumCovered;}
-	public double getAbsoluteMinimumCovered(double size) { return minimumCovered * (minimumCovered >= 1 ? 1 : size); }
+	public double getAbsoluteMinimumCovered(double size) {
+		return minimumCovered * (minimumCovered >= 1 ? 1 : size);
+	}
 	public void setMinimumCovered(double minimumCovered) {this.minimumCovered = minimumCovered;}
+
+	public int getMaxRuleCount() {
+		return maxRuleCount;
+	}
+
+	public void setMaxRuleCount(int maxRuleCount) {
+		this.maxRuleCount = maxRuleCount;
+	}
 
 	public double getMinimumCoveredAll() {return minimumCoveredAll;}
 	public double getAbsoluteMinimumCoveredAll(double size) { return minimumCoveredAll * (minimumCoveredAll >= 1 ? 1 : size); }
@@ -134,6 +145,7 @@ public class InductionParameters implements Serializable {
 
 		return "minsupp_new=" + minimumCovered + "\n" +
 				mincov_all_desc + "\n" +
+				"max_rule_count=" + maxRuleCount + "\n" +
 				"max_neg2pos=" + (maxcovNegative == Double.MAX_VALUE ? "OFF" : maxcovNegative) + "\n" +
 				"max_uncovered_fraction=" + maximumUncoveredFraction + "\n" +
 				"induction_measure=" + inductionMeasure.getName() + "\n" +

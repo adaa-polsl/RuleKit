@@ -87,6 +87,12 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	public static final String PARAMETER_MINCOV_NEW = "minsupp_new";
 
 	/**
+	 * Max number of rules to generate - overrides min_cov setting
+	 * */
+	public static final String PARAMETER_MAX_RULE_COUNT = "max_rule_count";
+
+
+	/**
 	 * Number/fraction examples to be covered by a new rule.
 	 * (positive examples for classification problems).
 	 */
@@ -206,6 +212,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 
 			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MINCOV_NEW));
 			params.setMaxcovNegative(getParameterAsDouble(PARAMETER_MAXCOV_NEGATIVE));
+			params.setMaxRuleCount(getParameterAsInt(PARAMETER_MAX_RULE_COUNT));
 
 			params.setEnablePruning(getParameterAsBoolean(PARAMETER_ENABLE_PRUNING));
 			params.setIgnoreMissing(getParameterAsBoolean(PARAMETER_IGNORE_MISSING));
@@ -330,6 +337,9 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 
 		tmp = new ParameterTypeString(PARAMETER_MINCOV_ALL, getParameterDescription(PARAMETER_MINCOV_ALL), "");
 		types.add(tmp);
+
+		types.add(new ParameterTypeInt(PARAMETER_MAX_RULE_COUNT, getParameterDescription(PARAMETER_MAX_RULE_COUNT),
+				0, Integer.MAX_VALUE, defaultParams.getMaxRuleCount()));
 
 		types.add(new ParameterTypeDouble(PARAMETER_MAX_UNCOVERED_FRACTION, getParameterDescription(PARAMETER_MAX_UNCOVERED_FRACTION),
 				0, Double.MAX_VALUE, defaultParams.getMaximumUncoveredFraction()));

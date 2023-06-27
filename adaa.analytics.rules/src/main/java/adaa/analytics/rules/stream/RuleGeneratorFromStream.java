@@ -46,6 +46,8 @@ public class RuleGeneratorFromStream extends ExpertRuleGenerator {
 
 			params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
 			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MINCOV_NEW));
+			params.setMaxRuleCount(getParameterAsInt(PARAMETER_MAX_RULE_COUNT));
+
 			params.setEnablePruning(getParameterAsBoolean(PARAMETER_ENABLE_PRUNING));
 			params.setIgnoreMissing(getParameterAsBoolean(PARAMETER_IGNORE_MISSING));
 

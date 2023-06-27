@@ -63,7 +63,10 @@ public abstract class Rule implements Serializable, Cloneable {
 	
 	/** Rule significance. */
 	protected double pvalue = 1.0;
-	
+
+	/** Rule order number. */
+	protected int ruleOrderNum = -1;
+
 	/** Number of induced conditions. */
 	protected int inducedConditionsCount = 0;
 
@@ -112,7 +115,15 @@ public abstract class Rule implements Serializable, Cloneable {
 	public int getInducedConditionsCount() { return inducedConditionsCount;}
 	/** Sets {@link #inducedConditionsCount} */
 	public void setInducedContitionsCount(int v) { inducedConditionsCount = v; }
-	
+
+	public int getRuleOrderNum() {
+		return ruleOrderNum;
+	}
+
+	public void setRuleOrderNum(int ruleOrderNum) {
+		this.ruleOrderNum = ruleOrderNum;
+	}
+
 	/** Gets {@link #pvalue} */
 	public double getPValue() { return pvalue; }
 	/** Sets {@link #pvalue} */
@@ -157,9 +168,9 @@ public abstract class Rule implements Serializable, Cloneable {
 		this.weighted_n = ref.weighted_n;
 		this.weighted_P = ref.weighted_P;
 		this.weighted_N = ref.weighted_N;
-		
 		this.premise = ref.premise;
 		this.consequence = ref.consequence;
+		this.ruleOrderNum = ref.ruleOrderNum;
 	}
 	
 	/**
@@ -211,7 +222,7 @@ public abstract class Rule implements Serializable, Cloneable {
 	*  @param votingMeasure Measure used as weight.
 	 */
 	public abstract void updateWeightAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure);
-
+	
 	/**
 	 * Applies the rule on a specified example set.
 	 * @param set Example set.
@@ -384,5 +395,6 @@ public abstract class Rule implements Serializable, Cloneable {
 		coveredPositives = ref.coveredPositives;
 		coveredNegatives = ref.coveredNegatives;
 		inducedConditionsCount = ref.inducedConditionsCount;
+		ruleOrderNum = ref.ruleOrderNum;
 	}
 }

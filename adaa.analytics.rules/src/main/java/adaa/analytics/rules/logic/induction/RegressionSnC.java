@@ -88,6 +88,7 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 			rule.setCoveredPositives(new IntegerBitSet(dataset.size()));
 			rule.setCoveredNegatives(new IntegerBitSet(dataset.size()));
 			rule.getCoveredPositives().setAll();
+			rule.setRuleOrderNum(ruleset.getRules().size());
 
 			double t = System.nanoTime();
 			carryOn = (finder.grow(rule, ses, uncovered) > 0);

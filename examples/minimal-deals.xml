@@ -3,6 +3,7 @@
 	<parameter_sets>
 		<parameter_set name="mincov=8, Entropy_User_C2">
 			<param name="min_rule_covered">8</param>
+			<param name="max_rule_count">-1</param>
 			<param name="induction_measure">BinaryEntropy</param>
 			<param name="pruning_measure">UserDefined</param>
 			<param name="user_pruning_equation">2 * p / n</param>

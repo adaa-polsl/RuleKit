@@ -15,6 +15,9 @@ public class InductionParametersFactory {
                 case "min_rule_covered":
                     parameters.setMinimumCovered(Double.parseDouble((String) paramMap.get(key)));
                     break;
+                case "max_rule_count":
+                    parameters.setMaxRuleCount(Integer.parseInt((String) paramMap.get(key)));
+                    break;
                 case "max_rule_covered":
                     parameters.setMaximumUncoveredFraction(Double.parseDouble((String) paramMap.get(key)));
                     break;

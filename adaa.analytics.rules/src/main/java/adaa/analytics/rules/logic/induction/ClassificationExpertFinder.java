@@ -111,7 +111,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 				newCondition = induceCondition(
 						rule, dataset, mustBeCovered, covered, attr);
 				newCondition.setType(Type.FORCED);
-				tryAddCondition(rule, null, newCondition, dataset, covered, conditionCovered);
+				tryAddCondition(rule, null, newCondition, dataset, covered, uncoveredPositives, conditionCovered);
 				
 			} else {
 				// add condition as it is without verification
@@ -265,7 +265,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 				}
 				
 				if (bestCondition != null) {
-					carryOn = tryAddCondition(rule, null, bestCondition, dataset, covered, conditionCovered);
+					carryOn = tryAddCondition(rule, null, bestCondition, dataset, covered,uncoveredPositives, conditionCovered);
 					knowledge.getPreferredConditions((int)classId).remove(bestCondition);
 					
 					newlyCoveredPositives.retainAll(rule.getCoveredPositives());
@@ -298,7 +298,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 						
 			do {
 				ElementaryCondition condition = induceCondition(rule, dataset, uncoveredPositives, covered, localAllowed, rule.getCoveredPositives());
-				carryOn = tryAddCondition(rule, null, condition, dataset, covered, conditionCovered);
+				carryOn = tryAddCondition(rule, null, condition, dataset, covered,uncoveredPositives, conditionCovered);
 				// fixme: we are not sure if condition was added
 				if (carryOn) {
 					knowledge.getPreferredAttributes((int)classId).remove(condition.getAttribute());
@@ -335,9 +335,9 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 						rule, dataset, uncoveredPositives, covered, allowedAttributes, rule.getCoveredPositives());
 
 				if (params.getSelectBestCandidate()) {
-					carryOn = tryAddCondition(currentRule, rule, condition, dataset, covered, conditionCovered);
+					carryOn = tryAddCondition(currentRule, rule, condition, dataset, covered, uncoveredPositives, conditionCovered);
 				} else {
-					carryOn = tryAddCondition(rule, null, condition, dataset, covered, conditionCovered);
+					carryOn = tryAddCondition(rule, null, condition, dataset, covered, uncoveredPositives, conditionCovered);
 				}
 
 			} while (carryOn); 
@@ -359,9 +359,17 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 	 * @return
 	 */
 	@Override
-	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double p, double n, double new_p, double P) {
-		return super.checkCandidate(cnd, classId, p, n, new_p, P) &&
-			!knowledge.isForbidden(cnd.getAttribute(), cnd.getValueSet(), (int)classId);
+	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double p, double n, double new_p, double P,double uncoveredSize,  int ruleOrderNum) {
+		double adjustedMinCov =
+				Math.min(
+						params.getAbsoluteMinimumCovered(P),
+						Math.max(1.0, 0.2 * P));
+		if (new_p >= adjustedMinCov && p >= params.getAbsoluteMinimumCoveredAll(P)) {
+			return true &&
+					!knowledge.isForbidden(cnd.getAttribute(), cnd.getValueSet(), (int)classId);
+		} else {
+			return false;
+		}
 	}
 	
 	
