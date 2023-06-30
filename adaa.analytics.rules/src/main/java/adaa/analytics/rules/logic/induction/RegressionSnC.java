@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.operator.OperatorCommandProxy;
 import org.apache.commons.lang.StringUtils;
 
 import com.rapidminer.example.Attribute;
@@ -34,7 +35,7 @@ import com.rapidminer.example.set.SortedExampleSet;
 public class RegressionSnC extends AbstractSeparateAndConquer {
 
 	protected final RegressionFinder finder;
-	
+
 	public RegressionSnC(final RegressionFinder finder, final InductionParameters params) {
 		super(params);
 		this.finder = finder;
@@ -132,6 +133,14 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 					Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
 					Logger.log("\t" + (++totalRules) + " rules" , Level.INFO);
 				}
+
+				//report to operator command proxy
+				this.operatorCommandProxy.onNewRule(rule);
+				this.operatorCommandProxy.onProgressChange(dataset.size(), uncovered.size());
+			}
+
+			if (this.operatorCommandProxy.isRequestStop()) {
+				carryOn = false;
 			}
 		}
 

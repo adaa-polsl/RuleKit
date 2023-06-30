@@ -189,6 +189,14 @@ public class RegressionExpertSnC extends RegressionSnC {
 					Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
 					Logger.log("\t" + totalExpertRules + " expert rules, " + (++totalAutoRules) + " auto rules" , Level.INFO);
 				}
+
+				//report to operator command proxy
+				this.operatorCommandProxy.onNewRule(rule);
+				this.operatorCommandProxy.onProgressChange(dataset.size(), uncovered.size());
+			}
+
+			if (this.operatorCommandProxy.isRequestStop()) {
+				carryOn = false;
 			}
 		}
 		

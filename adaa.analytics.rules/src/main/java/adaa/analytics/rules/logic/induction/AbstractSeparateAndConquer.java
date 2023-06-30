@@ -15,6 +15,7 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.RuleSetBase;
+import adaa.analytics.rules.operator.OperatorCommandProxy;
 import com.rapidminer.example.ExampleSet;
 
 /***
@@ -26,6 +27,7 @@ import com.rapidminer.example.ExampleSet;
  */
 public abstract class AbstractSeparateAndConquer {
 
+	protected OperatorCommandProxy operatorCommandProxy;
 	/**
 	 * Induction parameters.
 	 */
@@ -35,7 +37,12 @@ public abstract class AbstractSeparateAndConquer {
 	 * Rule factory.
 	 */
 	protected RuleFactory factory;
-	
+
+
+	public void setOperatorCommandProxy(OperatorCommandProxy operatorCommandProxy) {
+		this.operatorCommandProxy = operatorCommandProxy;
+	}
+
 	/**
 	 * Sets induction parameters.
 	 * @param params Induction paremeters.

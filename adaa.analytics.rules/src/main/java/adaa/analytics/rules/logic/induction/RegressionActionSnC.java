@@ -108,6 +108,13 @@ public class RegressionActionSnC extends AbstractSeparateAndConquer {
                     Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
                     Logger.log("\t" + (++totalRules) + " rules" , Level.INFO);
                 }
+
+                //report to operator command proxy
+                this.operatorCommandProxy.onNewRule(rule);
+                this.operatorCommandProxy.onProgressChange(trainSet.size(), uncovered.size());
+            }
+            if (this.operatorCommandProxy.isRequestStop()) {
+                carryOn = false;
             }
         }
 

@@ -141,6 +141,13 @@ public class ActionSnC extends AbstractSeparateAndConquer {
 
 						unprunedRules.addRule(unpruned);
 					}
+
+					//report to operator command proxy
+					this.operatorCommandProxy.onNewRule(rule);
+					this.operatorCommandProxy.onProgressChange(dataset.size(), uncovered.size());
+				}
+				if (this.operatorCommandProxy.isRequestStop()) {
+					carryOn = false;
 				}
 			}
 			

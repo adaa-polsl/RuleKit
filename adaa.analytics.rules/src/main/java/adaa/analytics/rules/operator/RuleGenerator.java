@@ -175,12 +175,19 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 
 	public static final String PARAMETER_CONTROL_APRORI_PRECISION = "control_apriori_precision";
 
+	protected OperatorCommandProxy operatorCommandProxy;
 	/**
 	 * Invokes base class constructor.
 	 * @param description Operator description.
 	 */
 	public RuleGenerator(OperatorDescription description) {
-		super(description);	
+		super(description);
+		operatorCommandProxy = new OperatorCommandProxy();
+	}
+
+	public void addOperatorCommandProxy(ICommandProxyClient commandProxyClient)
+	{
+		operatorCommandProxy.addCommandProxyClient(commandProxyClient);
 	}
 
 	@Override
@@ -288,6 +295,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 				snc = new ContrastSnC(finder, params);
 			}
 
+			snc.setOperatorCommandProxy(operatorCommandProxy);
 			double beginTime = System.nanoTime();
 			RuleSetBase rs = snc.run(exampleSet);
 			rs.setTotalTime((System.nanoTime() - beginTime) / 1e9);

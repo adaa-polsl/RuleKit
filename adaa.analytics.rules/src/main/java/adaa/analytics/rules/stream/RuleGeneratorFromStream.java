@@ -69,12 +69,13 @@ public class RuleGeneratorFromStream extends ExpertRuleGenerator {
 				// regression problem
 				RegressionFinder finder = new RegressionFinder(params);
 				snc = new RegressionSnC(finder, params);
+
 			} else {
 				// classification problem
 				ClassificationFinder finder = new ClassificationFinder(params);
 				snc = new ClassificationSnC(finder, params);
 			}
-			
+			snc.setOperatorCommandProxy(operatorCommandProxy);
 			final int batchSize = getParameterAsInt(PARAMETER_BATCH_SIZE);
 			
 			//AbstractStreamAnalyzer analyzer = new ExpertStreamAnalyzer(snc, batchSize, params);

@@ -1,6 +1,7 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.operator.OperatorCommandProxy;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.set.AttributeValueFilter;

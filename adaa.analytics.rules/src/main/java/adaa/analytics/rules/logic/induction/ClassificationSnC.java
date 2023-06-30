@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.operator.OperatorCommandProxy;
 import org.apache.commons.lang.StringUtils;
 
 import com.rapidminer.example.Attribute;
@@ -46,7 +47,6 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 	 * Module for finding single classification rules.
 	 */
 	protected AbstractFinder finder;
-
 	
 	public ClassificationSnC(AbstractFinder finder, InductionParameters params) {
 		super(params);
@@ -183,6 +183,13 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 							Logger.log("\t" + totalRules.incrementAndGet() + " rules" , Level.INFO);
 							mutex.release(1);
 						}
+						//report to operator command proxy
+						this.operatorCommandProxy.onNewRule(rule);
+						this.operatorCommandProxy.onProgressChange(dataset.size(), uncovered.size());
+
+					}
+					if (this.operatorCommandProxy.isRequestStop()) {
+						carryOn = false;
 					}
 				}
 				
