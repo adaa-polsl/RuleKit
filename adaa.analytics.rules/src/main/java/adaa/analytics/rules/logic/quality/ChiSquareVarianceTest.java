@@ -14,7 +14,9 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.quality;
 
+import adaa.analytics.rules.logic.representation.Logger;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
+import java.util.logging.Level;
 
 import com.rapidminer.tools.container.Pair;
 
@@ -27,8 +29,9 @@ public class ChiSquareVarianceTest extends StatisticalTest {
 	
 	public Pair<Double,Double> calculateLower(double expectedDev, double sampleDev, int samplesize) {
 		double factor = sampleDev / expectedDev;
-		double T = ((double)(samplesize - 1)) * (factor * factor); 
-	
+		double T = ((double)(samplesize - 1)) * (factor * factor);
+
+		Logger.log("Sample size: " + samplesize + "\n", Level.FINER);
 		ChiSquaredDistribution chi = new ChiSquaredDistribution(samplesize - 1);
 		
 		return new Pair<Double, Double>(T, chi.cumulativeProbability(T)) ;

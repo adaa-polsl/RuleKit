@@ -74,7 +74,17 @@ public class RegressionRule extends Rule {
 	public void updateWeightAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure) {
 		ChiSquareVarianceTest test = new ChiSquareVarianceTest();
 		double expectedDev = Math.sqrt(trainSet.getStatistics(trainSet.getAttributes().getLabel(), Statistics.VARIANCE));
-		Pair<Double,Double> statsAndPVal = test.calculateLower(expectedDev, ct.stddev_y, (int)(ct.weighted_p + ct.weighted_n));
+
+		int sampleSize = (int)(ct.weighted_p + ct.weighted_n);
+
+		Pair<Double, Double> statsAndPVal;
+		if (sampleSize > 1) {
+			statsAndPVal = test.calculateLower(expectedDev, ct.stddev_y, sampleSize);
+		} else {
+			// one element sample will always have zero variance.
+			// value of test statistics is not used
+			statsAndPVal = new Pair<Double,Double>(0.0, 0.0);
+		}
 
 		this.weight = votingMeasure.calculate(trainSet, ct);
 		this.pvalue = statsAndPVal.getSecond();
