@@ -2,6 +2,7 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.operator.OperatorCommandProxy;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
 import org.junit.experimental.theories.DataPoints;
@@ -75,10 +76,12 @@ public class RegressionActionSnCTest {
 
         RegressionFinder regressionFinder = new RegressionFinder(params);
         RegressionSnC regressionSnC = new RegressionSnC(regressionFinder, params);
+        regressionSnC.setOperatorCommandProxy(new OperatorCommandProxy());
         RuleSetBase regressionRuleSet = regressionSnC.run(testCase.getExampleSet());
 
         RegressionActionFinder finder = new RegressionActionFinder(aParams);
         RegressionActionSnC snc = new RegressionActionSnC(finder, aParams);
+        snc.setOperatorCommandProxy(new OperatorCommandProxy());
         RuleSetBase ruleSet = snc.run(testCase.getExampleSet());
 
         for (Rule rule : ruleSet.getRules()){

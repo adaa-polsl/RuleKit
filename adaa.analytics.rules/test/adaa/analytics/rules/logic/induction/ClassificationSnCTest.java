@@ -1,6 +1,7 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.RuleSetBase;
+import adaa.analytics.rules.operator.OperatorCommandProxy;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
@@ -79,6 +80,7 @@ public class ClassificationSnCTest {
     public void runTestCase(@FromDataPoints("Test cases") TestCase testCase) throws OperatorException, OperatorCreationException, IOException {
         ClassificationFinder finder = new ClassificationFinder(testCase.getParameters());
         ClassificationSnC snc = new ClassificationSnC(finder, testCase.getParameters());
+        snc.setOperatorCommandProxy(new OperatorCommandProxy());
         RuleSetBase ruleSet = snc.run(testCase.getExampleSet());
 
         ExampleSet prediction = ruleSet.apply(testCase.getExampleSet());
