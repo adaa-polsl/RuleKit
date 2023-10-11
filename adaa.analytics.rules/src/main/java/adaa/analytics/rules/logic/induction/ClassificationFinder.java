@@ -460,10 +460,6 @@ public class ClassificationFinder extends AbstractFinder {
 		Set<Attribute> allowedAttributes,
 		Object... extraParams) {
 
-		if (rule.getPremise().getSubconditions().size() == 3) {
-		//	return null;
-		}
-
 		if (allowedAttributes.size() == 0) {
 			return null;
 		}
@@ -482,10 +478,6 @@ public class ClassificationFinder extends AbstractFinder {
 		
 		// iterate over all allowed decision attributes
 		for (Attribute attr : allowedAttributes) {
-
-			if ((rule.getPremise().getSubconditions().size() == 2) && (!attr.getName().equals("input16"))) {
-			//	continue;
-			}
 
 			// consider attributes in parallel
 			Future<ConditionEvaluation> future = (Future<ConditionEvaluation>) pool.submit(() -> {
@@ -515,7 +507,7 @@ public class ClassificationFinder extends AbstractFinder {
 					// get all distinctive values of attribute
 					for (int id : coveredByRule) {
 						DataRow dr = trainSet.getExample(id).getDataRow();
-						double val = dr.get(attr);
+						double val = dr.get(attr) + 0.0; // to eliminate -0.0
 
 						// exclude missing values from keypoints
 						if (Double.isNaN(val)) {
