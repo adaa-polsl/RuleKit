@@ -150,7 +150,7 @@ public class ExperimentalConsole {
             	RapidMiner.setExecutionMode(RapidMiner.ExecutionMode.COMMAND_LINE);
            
             	RapidMiner.init();
-                //System.in.read();
+             //   System.in.read();
             	execute(argList.get(0));
 
             } else {

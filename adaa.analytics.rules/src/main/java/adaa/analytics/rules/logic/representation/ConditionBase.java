@@ -14,6 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 
@@ -50,6 +51,9 @@ public abstract class ConditionBase implements Cloneable, Serializable {
 	/** Condition type. */
 	protected Type type = Type.NORMAL;
 
+	/** Optional integer bit set for storing condition coverage. */
+	protected IntegerBitSet covering = null;
+
 	/** Gets {@link #disabled} */
 	public boolean isDisabled() { return disabled; }
 	/** Sets {@link #disabled} */
@@ -59,6 +63,11 @@ public abstract class ConditionBase implements Cloneable, Serializable {
 	public Type getType() { return type; }
 	/** Sets {@link #type} */
 	public void setType(Type t) { type = t; }
+
+	/** Gets {@link #covering}. */
+	public IntegerBitSet getCovering() { return covering; }
+	/** Sets {@link #covering}. */
+	public void setCovering(IntegerBitSet c) { covering = c; }
 
 	/**
 	 * Check whether the condition is prunable (non-FORCED and non-PREFERRED). 

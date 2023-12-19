@@ -102,12 +102,18 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 			}
 			
 			covering.clear();
-			rule.covers(dataset, covering, covering.positives, covering.negatives);
+			IntegerBitSet positives = new IntegerBitSet(dataset.size());
+			IntegerBitSet negatives = new IntegerBitSet(dataset.size());
+			rule.covers(dataset, covering, positives, negatives);
+
+			// ugly
+			covering.positives = positives;
+			covering.negatives = negatives;
 			rule.setCoveringInformation(covering);
 
-			rule.getCoveredPositives().setAll(covering.positives);
-			rule.getCoveredNegatives().setAll(covering.negatives);
-			
+			rule.setCoveredNegatives(negatives);
+			rule.setCoveredPositives(positives);
+
 			rule.updateWeightAndPValue(dataset, covering, params.getVotingMeasure());
 		}
 	
@@ -124,13 +130,14 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 		boolean isRuleEmpty = rule.getPremise().getSubconditions().size() == 0;
 		
 		// get current covering
-
+		IntegerBitSet positives = new IntegerBitSet(dataset.size());
+		IntegerBitSet negatives = new IntegerBitSet(dataset.size());
 		Covering covering =  new Covering();
-		rule.covers(dataset, covering, covering.positives, covering.negatives);
+		rule.covers(dataset, covering, positives, negatives);
 
-		Set<Integer> covered = new HashSet<Integer>();
-		covered.addAll(covering.positives);
-		covered.addAll(covering.negatives);
+		IntegerBitSet covered = new IntegerBitSet(dataset.size());
+		covered.addAll(positives);
+		covered.addAll(negatives);
 		Set<Attribute> allowedAttributes = new TreeSet<Attribute>(new AttributeComparator());
 		
 		// add all attributes 
@@ -166,7 +173,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 						continue;
 					}
 
-					checkCandidate(dataset, rule, candidate, uncovered, bestEvaluation);
+					checkCandidate(dataset, rule, candidate, uncovered, covered, bestEvaluation);
 				}
 				
 				if (bestEvaluation.condition != null) {
@@ -180,7 +187,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 					rule.getPremise().addSubcondition(bestEvaluation.condition);
 					rule.setCoveringInformation(bestEvaluation.covering);
 
-					rule.updateWeightAndPValue(dataset, covering, params.getVotingMeasure());
+			//		rule.updateWeightAndPValue(dataset, covering, params.getVotingMeasure());
 
 					carryOn = true;
 					Logger.log("Preferred condition " + rule.getPremise().getSubconditions().size() + " added: " 
@@ -224,16 +231,16 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 
 					// update covering
 					covering.clear();
-					rule.covers(dataset, covering, covering.positives, covering.negatives);
+					positives.clear();
+					negatives.clear();
+					rule.covers(dataset, covering, positives, negatives);
 					covered.clear();
-					covered.addAll(covering.positives);
-					covered.addAll(covering.negatives);
+					covered.addAll(positives);
+					covered.addAll(negatives);
 
-					rule.getCoveredPositives().setAll(covering.positives);
-					rule.getCoveredNegatives().setAll(covering.negatives);
-
+					rule.setCoveredPositives(positives);
+					rule.setCoveredNegatives(negatives);
 					rule.setCoveringInformation(covering);
-					rule.updateWeightAndPValue(dataset, covering, params.getVotingMeasure());
 
 					Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
 							+ rule.toString() + "\n", Level.FINER);
@@ -282,7 +289,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 					rule.getCoveredNegatives().setAll(covering.negatives);
 
 					rule.setCoveringInformation(covering);
-					rule.updateWeightAndPValue(dataset, covering, params.getVotingMeasure());
+			//		rule.updateWeightAndPValue(dataset, covering, params.getVotingMeasure());
 					
 					Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
 							+ rule.toString() + "\n", Level.FINER);
@@ -293,9 +300,27 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 			} while (carryOn); 
 		}
 
+		covering.clear();
+		positives.clear();
+		negatives.clear();
+		rule.covers(dataset, covering, positives, negatives);
+
+		// ugly
+		covering.positives = positives;
+		covering.negatives = negatives;
+		rule.setCoveringInformation(covering);
+
+		rule.setCoveredNegatives(negatives);
+		rule.setCoveredPositives(positives);
+
 		// if rule has been successfully grown
 		int addedConditionsCount = rule.getPremise().getSubconditions().size() - initialConditionsCount;
 		rule.setInducedContitionsCount(addedConditionsCount);
+
+		if (addedConditionsCount > 0) {
+			rule.updateWeightAndPValue(dataset, covering, params.getVotingMeasure());
+		}
+
 		return addedConditionsCount;
 	}
 	
@@ -304,10 +329,11 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 			ExampleSet dataset, 
 			Rule rule,
 			ConditionBase candidate,
-			Set<Integer> uncovered, 
+			Set<Integer> uncovered,
+			Set<Integer> covered,
 			ConditionEvaluation currentBest) {
 
-		boolean ok = super.checkCandidate(dataset, rule, candidate, uncovered, currentBest);
+		boolean ok = super.checkCandidate(dataset, rule, candidate, uncovered, covered, currentBest);
 
 		// verify knowledge only on elementary conditions
 		if (ok && candidate instanceof  ElementaryCondition) {

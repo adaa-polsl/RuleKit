@@ -30,8 +30,8 @@ public class ActionFinder extends AbstractFinder {
 		classificationFinder = new ClassificationFinder(params);
 	}
 
-	public void preprocess(ExampleSet trainSet) {
-		classificationFinder.preprocess(trainSet);
+	public ExampleSet preprocess(ExampleSet trainSet) {
+		return classificationFinder.preprocess(trainSet);
 	}
 
 	private void log(String msg, Level level) {

@@ -32,8 +32,6 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
         }
     }
 
-    protected static final int MAX_BINS = 100;
-
     // Example description:
     // [0-31] - example id (32 bits)
     // [32-47] - block id  (16 bits)
@@ -73,7 +71,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
     }
 
     @Override
-    public void preprocess(ExampleSet dataset) {
+    public ExampleSet preprocess(ExampleSet dataset) {
         int n_examples = dataset.size();
         int n_attributes = dataset.getAttributes().size();
 
@@ -81,19 +79,28 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
         descriptions = new long[n_attributes][n_examples];
         mappings = new int[n_attributes][n_examples];
 
-        bins_positives = new int[n_attributes][MAX_BINS];
-        bins_negatives = new int[n_attributes][MAX_BINS];
-        bins_newPositives = new int[n_attributes][MAX_BINS];
-        bins_begins = new int[n_attributes][MAX_BINS];
+        bins_positives = new int[n_attributes][];
+        bins_negatives = new int[n_attributes][];
+        bins_newPositives = new int[n_attributes][];
+        bins_begins = new int[n_attributes][];
 
         ruleRanges = new int[n_attributes][2];
 
         for (Attribute attr: dataset.getAttributes()) {
             int ia = attr.getTableIndex();
+            int n_vals = attr.isNominal() ? attr.getMapping().size() : params.getApproximateBinsCount();
+
+            bins_positives[ia] = new int [n_vals];
+            bins_negatives[ia] = new int[n_vals];
+            bins_newPositives[ia] = new int[n_vals];
+            bins_begins[ia] = new int[n_vals];
 
             determineBins(dataset, attr, descriptions[ia], mappings[ia], bins_begins[ia], ruleRanges[ia]);
+
             arrayCopies.put("ruleRanges", (Object)Arrays.stream(ruleRanges).map(int[]::clone).toArray(int[][]::new));
         }
+
+        return dataset;
     }
 
     /**
@@ -293,12 +300,13 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
         int covered_n = 0;
         int covered_new_p = 0;
 
-        // use first attribute to establish number of covered elements
+        // use first  attribute to establish number of covered elements
         for (int bid = ruleRanges[0][0]; bid < ruleRanges[0][1]; ++bid) {
             covered_p += bins_positives[0][bid];
             covered_n += bins_negatives[0][bid];
             covered_new_p += bins_newPositives[0][bid];
         }
+
 
         // iterate over all allowed decision attributes
         for (Attribute attr : dataset.getAttributes()) {
@@ -462,7 +470,10 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
                 if (current != null && current.getAttribute() != null) {
                     Logger.log("\tAttribute best: " + current + ", quality=" + current.quality, Level.FINEST);
-                    updateMidpoint(dataset, current);
+                    Attribute attr = dataset.getAttributes().get(current.getAttribute());
+                    if (attr.isNumerical()) {
+                        updateMidpoint(dataset, current);
+                    }
                     Logger.log(", adjusted: " + current + "\n", Level.FINEST);
                 }
 
@@ -482,13 +493,13 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
                 return null; // empty condition - discard
             }
 
-            updateMidpoint(dataset, best);
-
-            Logger.log("\tFinal best: " + best + ", quality=" + best.quality + "\n", Level.FINEST);
-
-            if (bestAttr.isNominal()) {
+            if (bestAttr.isNumerical()) {
+                updateMidpoint(dataset, best);
+            } else {
                 allowedAttributes.remove(bestAttr);
             }
+
+            Logger.log("\tFinal best: " + best + ", quality=" + best.quality + "\n", Level.FINEST);
         }
 
 		return best;
@@ -508,7 +519,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
                 ruleRanges[aid][0] = blockId + 1;
                 ruleRanges[aid][1] = blockId;
             } else {
-                excludeExamplesFromArrays(trainSet, attr, ruleRanges[aid][0], candidate.blockId + 1);
+                excludeExamplesFromArrays(trainSet, attr, ruleRanges[aid][0], candidate.blockId);
                 excludeExamplesFromArrays(trainSet, attr, candidate.blockId + 1, ruleRanges[aid][1]);
                 ruleRanges[aid][0] = blockId;
                 ruleRanges[aid][1] = blockId + 1;
@@ -545,6 +556,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
             sortedIds[i] = i;
             vals[i] = dataset.getExample(i).getValue(attr);
         }
+
 
         /*
         class ValuesComparator implements IntComparator {
@@ -597,12 +609,12 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
             }
         }
 
-        PriorityQueue<Bin> bins = new PriorityQueue<Bin>(100, new SizeBinComparator());
-        PriorityQueue<Bin> finalBins = new PriorityQueue<Bin>(100, new IndexBinComparator());
+        PriorityQueue<Bin> bins = new PriorityQueue<Bin>(binsBegins.length, new SizeBinComparator());
+        PriorityQueue<Bin> finalBins = new PriorityQueue<Bin>(binsBegins.length, new IndexBinComparator());
 
         bins.add(new Bin(0, mappings.length));
 
-        while (bins.size() > 0 && (bins.size() + finalBins.size()) < MAX_BINS) {
+        while (bins.size() > 0 && (bins.size() + finalBins.size()) < binsBegins.length) {
             Bin b = bins.poll();
 
             int id = (b.end + b.begin) / 2;
@@ -611,9 +623,13 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
             // decide direction
             if (vals[b.begin] == midval) {
                 // go up
-                while (vals[id] == midval) { ++id; }
+                while (vals[id] == midval) {
+                    ++id;
+                }
             } else {
-                while (vals[id - 1] == midval) { --id; }
+                while (vals[id - 1] == midval) {
+                    --id;
+                }
             }
 
             Bin leftBin = new Bin(b.begin, id);
@@ -646,17 +662,16 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
                 descriptions[i] |= bid << OFFSET_BIN;
             }
 
-            binsBegins[(int)bid] = b.begin;
+            binsBegins[(int) bid] = b.begin;
             ++bid;
         }
 
         ruleRanges[0] = 0;
-        ruleRanges[1] = (int)bid;
-
-        // print bins
-        for (int i = 0; i < bid; ++i) {
+        ruleRanges[1] = (int) bid;
+      // print bins
+        for (int i = 0; i < ruleRanges[1]; ++i) {
             int lo = binsBegins[i];
-            int hi = (i == bid - 1) ? trainSet.size() : binsBegins[i+1] - 1;
+            int hi = (i == ruleRanges[1] - 1) ? trainSet.size() : binsBegins[i+1] - 1;
             Logger.log("[" + lo  + ", " + hi + "]:" + vals[lo] + "\n", Level.FINER);
         }
     }
@@ -664,6 +679,10 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
     protected void excludeExamplesFromArrays(ExampleSet dataset, Attribute attr, int binLo, int binHi) {
 
         Logger.log("Excluding examples: " + attr.getName() + " from [" + binLo + "," + binHi + "]\n", Level.FINER);
+
+        if (binLo == binHi) {
+            return;
+        }
 
         int n_examples = dataset.size();
         int src_row = attr.getTableIndex();
@@ -695,9 +714,11 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
             int dst_row = other.getTableIndex();
 
             // if nominal attribute was already used
+            /*
             if (other.isNominal() && Math.abs(ruleRanges[dst_row][1] - ruleRanges[dst_row][0]) == 1) {
                 continue;
             }
+             */
 
             Future<Object> future = pool.submit(() -> {
 
@@ -717,8 +738,14 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
                     int bid = (int) ((desc & MASK_BIN) >> OFFSET_BIN);
 
+                    boolean opposite = dst_ranges[0] > dst_ranges[1]; // this indicate nominal opposite condition
+                    int dst_bin_lo = Math.min(dst_ranges[0], dst_ranges[1]);
+                    int dst_bin_hi = Math.max(dst_ranges[0], dst_ranges[1]);
+
                     // update stats only in bins covered by the rule
-                    if (bid >= dst_ranges[0] && bid < dst_ranges[1] && ((desc & FLAG_COVERED) != 0)) {
+                    boolean in_range = (bid >= dst_bin_lo && bid < dst_bin_hi) || (opposite && (bid < dst_bin_lo || bid >= dst_bin_hi));
+
+                    if (in_range && ((desc & FLAG_COVERED) != 0)) {
 
                         if ((desc & FLAG_POSITIVE) != 0) {
                             --dst_positives[bid];
@@ -755,12 +782,16 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
         int n_examples = dataset.size();
 
+        int[][] copy_ranges = (int[][])arrayCopies.get("ruleRanges");
+
         for (Attribute attr: dataset.getAttributes()) {
             int attribute_id = attr.getTableIndex();
 
             Arrays.fill(bins_positives[attribute_id], 0);
             Arrays.fill(bins_negatives[attribute_id], 0);
             Arrays.fill(bins_newPositives[attribute_id], 0);
+            ruleRanges[attribute_id][0] = 0;
+            ruleRanges[attribute_id][1] = copy_ranges[attribute_id][1];
 
             long[] descriptions_row = descriptions[attribute_id];
             int[] mappings_row = mappings[attribute_id];
@@ -792,6 +823,9 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
             }
         }
 
+        // reset rule ranges
+
+
         Logger.log("Reset arrays for class " + targetLabel + "\n", Level.FINER);
         printArrays();
 
@@ -816,9 +850,13 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
             int bin_p = 0, bin_n = 0, bin_new_p = 0, bin_outside = 0;
 
-            for (int i = 0; i < MAX_BINS; ++i) {
+            boolean opposite = ruleRanges[attribute_id][0] > ruleRanges[attribute_id][1]; // this indicate nominal opposite condition
+            int lo = Math.min(ruleRanges[attribute_id][0], ruleRanges[attribute_id][1]);
+            int hi = Math.max(ruleRanges[attribute_id][0], ruleRanges[attribute_id][1]);
 
-                if (i >= ruleRanges[attribute_id][0] && i < ruleRanges[attribute_id][1]) {
+            for (int i = 0; i < bins_positives[attribute_id].length; ++i) {
+
+                if ((i >= lo &&  i < hi) || (opposite && (i < lo || i >= hi)) ) {
                     bin_p += bins_positives[attribute_id][i];
                     bin_n += bins_negatives[attribute_id][i];
                     bin_new_p += bins_newPositives[attribute_id][i];

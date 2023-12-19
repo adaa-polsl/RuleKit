@@ -16,16 +16,23 @@ package adaa.analytics.rules.logic.representation;
 
 import com.sun.jna.platform.win32.WinDef;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
 /**
  * Upper-bounded set of integers represented internally as a bit vector.
+ *
+ * NOTE: While class implements Serializable interface, serialization/deserialization methods do nothing!
+ *
  * @author Adam Gudys
  *
  */
-public class IntegerBitSet implements Set<Integer> {
+public class IntegerBitSet implements Set<Integer>, Serializable {
 
 	/**
 	 * Iterator for {@link #adaa.analytics.rules.logic.representation.IntegerBitSet}.
@@ -102,9 +109,9 @@ public class IntegerBitSet implements Set<Integer> {
 		}
 	}
 
-	static final int OFFSET_MASK = 63;
+	public static final int OFFSET_MASK = 63;
 
-	static final int ID_SHIFT = 6;
+	public static final int ID_SHIFT = 6;
 	
 	/** Array of words for storing bits. */
 	private long[] words;
@@ -114,6 +121,8 @@ public class IntegerBitSet implements Set<Integer> {
 	
 	/** Gets {@link #maxElement}. */
 	public int getMaxElement() { return maxElement; }
+
+	public long[] getRawTable() { return words; }
 	
 	/**
 	 * Allocates words array for storing bits.
@@ -124,6 +133,20 @@ public class IntegerBitSet implements Set<Integer> {
 		int wordsCount = (maxElement + Long.SIZE - 1) / Long.SIZE;
 		words = new long[wordsCount];
 		
+	}
+
+	/**
+	 * Allocates words array for storing bits.
+	 * @param maxElement Max element that can be stored in the set.
+	 */
+	public IntegerBitSet(int maxElement, boolean fill) {
+		this.maxElement = maxElement;
+		int wordsCount = (maxElement + Long.SIZE - 1) / Long.SIZE;
+		words = new long[wordsCount];
+
+		if (fill) {
+			this.setAll();
+		}
 	}
 	
 	/**
@@ -467,5 +490,13 @@ public class IntegerBitSet implements Set<Integer> {
 		}
 	
 		return true;
+	}
+
+	/** Empty deserialization method */
+	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+	}
+
+	/** Empty serialization method */
+	private void writeObject(ObjectOutputStream os) throws IOException {
 	}
 }

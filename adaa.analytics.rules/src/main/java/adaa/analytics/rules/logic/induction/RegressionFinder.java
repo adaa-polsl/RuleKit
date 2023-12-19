@@ -19,6 +19,7 @@ import adaa.analytics.rules.logic.representation.*;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.set.SortedExampleSet;
 
 import java.security.InvalidParameterException;
 import java.util.*;
@@ -36,6 +37,13 @@ public class RegressionFinder extends AbstractFinder {
 	public RegressionFinder(final InductionParameters params) {
 		super(params);
 		RegressionRule.setUseMean(params.isMeanBasedRegression());
+	}
+
+	@Override
+	public ExampleSet preprocess(ExampleSet trainSet) {
+		Attribute label = trainSet.getAttributes().getLabel();
+		SortedExampleSetEx ses = new SortedExampleSetEx(trainSet, label, SortedExampleSet.INCREASING);
+		return ses;
 	}
 
 	protected ElementaryCondition induceCondition_mean(
@@ -158,7 +166,7 @@ public class RegressionFinder extends AbstractFinder {
 								double new_n = stats[c].sum_new_w;
 								double new_p = 0;
 
-								// iterate over elements from the entire set
+								// iterate over elements from the positive range
 								for (int j = lo; j < hi; ++j) {
 									if (covs[c].contains(j)) {
 										double wj = set.weights[j];
@@ -223,13 +231,13 @@ public class RegressionFinder extends AbstractFinder {
 						// evaluate straight condition
 						ElementaryCondition candidate = new ElementaryCondition(
 								attr.getName(), new SingletonSet((double)i, attr.getMapping().getValues()));
-						checkCandidate(dataset, rule, candidate, uncovered, best);
+						checkCandidate(dataset, rule, candidate, uncovered, covered, best);
 
 						// evaluate complementary condition if enabled
 						if (params.isConditionComplementEnabled()) {
 							candidate = new ElementaryCondition(
 									attr.getName(), new SingletonSetComplement((double) i, attr.getMapping().getValues()));
-							checkCandidate(dataset, rule, candidate, uncovered, best);
+							checkCandidate(dataset, rule, candidate, uncovered, covered, best);
 						}
 					}
 				}
@@ -319,11 +327,11 @@ public class RegressionFinder extends AbstractFinder {
 						
 						// evaluate left-side condition a < v
 						ElementaryCondition candidate = new ElementaryCondition(attr.getName(), Interval.create_le(midpoint)); 
-						checkCandidate(dataset, rule, candidate, uncovered, best);
+						checkCandidate(dataset, rule, candidate, uncovered, covered, best);
 							
 						// evaluate right-side condition v <= a
 						candidate = new ElementaryCondition(attr.getName(), Interval.create_geq(midpoint)); 
-						checkCandidate(dataset, rule, candidate, uncovered, best);
+						checkCandidate(dataset, rule, candidate, uncovered, covered, best);
 					}
 				} else {
 					// try all possible conditions
@@ -331,13 +339,13 @@ public class RegressionFinder extends AbstractFinder {
 						// evaluate straight condition
 						ElementaryCondition candidate = new ElementaryCondition(
 								attr.getName(), new SingletonSet((double)i, attr.getMapping().getValues()));
-						checkCandidate(dataset, rule, candidate, uncovered, best);
+						checkCandidate(dataset, rule, candidate, uncovered, covered, best);
 
 						// evaluate complementary condition if enabled
 						if (params.isConditionComplementEnabled()) {
 							candidate = new ElementaryCondition(
 									attr.getName(), new SingletonSetComplement((double) i, attr.getMapping().getValues()));
-							checkCandidate(dataset, rule, candidate, uncovered, best);
+							checkCandidate(dataset, rule, candidate, uncovered, covered, best);
 						}
 					}
 				}
@@ -379,7 +387,8 @@ public class RegressionFinder extends AbstractFinder {
 			ExampleSet dataset, 
 			Rule rule,
 			ConditionBase candidate,
-			Set<Integer> uncovered, 
+			Set<Integer> uncovered,
+			Set<Integer> covered,
 			ConditionEvaluation currentBest) {
 
 		try {

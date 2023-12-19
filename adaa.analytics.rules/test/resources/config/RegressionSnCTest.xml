@@ -3,6 +3,7 @@
     <parameter_sets>
         <parameter_set name="auto">
             <param name="min_rule_covered">4</param>
+            <param name="mean_based_regression">false</param>
         </parameter_set>
     </parameter_sets>
     <datasets>

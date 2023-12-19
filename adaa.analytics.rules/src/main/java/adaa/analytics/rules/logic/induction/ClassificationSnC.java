@@ -93,9 +93,9 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 
 				ClassificationRuleSet ruleset = (ClassificationRuleSet) factory.create(dataset);
 
-				Set<Integer> positives = new IntegerBitSet(dataset.size());
-				Set<Integer> negatives = new IntegerBitSet(dataset.size());
-				Set<Integer> uncoveredPositives = new IntegerBitSet(dataset.size());
+				IntegerBitSet positives = new IntegerBitSet(dataset.size());
+				IntegerBitSet negatives = new IntegerBitSet(dataset.size());
+				IntegerBitSet uncoveredPositives = new IntegerBitSet(dataset.size());
 				Set<Integer> uncovered = new HashSet<Integer>();
 				
 				double weighted_P = 0;
@@ -140,6 +140,8 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 					rule.getCoveredPositives().addAll(positives);
 					rule.getCoveredNegatives().addAll(negatives);
 					rule.setRuleOrderNum(ruleset.getRules().size());
+
+					rule.getConsequence().setCovering(positives);
 
 					double t = System.nanoTime();
 					carryOn = (finder.grow(rule, dataset, uncoveredPositives) > 0);

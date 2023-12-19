@@ -75,6 +75,7 @@ public class ContrastRegressionFinder extends RegressionFinder implements IPenal
         params.setInductionMeasure(m);
         params.setPruningMeasure(new NegativeControlledMeasure(m, params.getMaxcovNegative()));
         params.setVotingMeasure(m);
+        params.setMeanBasedRegression(false);
     }
 
     /**

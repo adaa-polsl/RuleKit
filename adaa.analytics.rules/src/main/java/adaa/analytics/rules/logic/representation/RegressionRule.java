@@ -138,6 +138,7 @@ public class RegressionRule extends Rule {
 		//initially, everything as negatives
 		List<Integer> orderedNegatives = new ArrayList<Integer>(set.size());
 
+
 		for (int id = 0; id < set.size(); ++id) {
 			Example ex = set.getExample(id);
 

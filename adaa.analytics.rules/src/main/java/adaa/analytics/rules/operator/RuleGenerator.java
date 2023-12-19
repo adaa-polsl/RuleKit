@@ -176,6 +176,8 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	public static final String PARAMETER_CONTROL_APRORI_PRECISION = "control_apriori_precision";
 
 	public static final String PARAMETER_APPROXIMATE_INDUCTION = "approximate_induction";
+
+	public static final String PARAMETER_APPROXIMATE_BINS_COUNT = "approximate_bins_count";
 	
 	protected OperatorCommandProxy operatorCommandProxy;
 
@@ -237,6 +239,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 			params.setMeanBasedRegression(getParameterAsBoolean(PARAMETER_MEAN_BASED_REGRESSION));
 			params.setControlAprioriPrecision(getParameterAsBoolean(PARAMETER_CONTROL_APRORI_PRECISION));
 			params.setApproximateInduction(getParameterAsBoolean(PARAMETER_APPROXIMATE_INDUCTION));
+			params.setApproximateBinsCount(getParameterAsInt(PARAMETER_APPROXIMATE_BINS_COUNT));
 
 			String tmp = getParameterAsString(PARAMETER_MINCOV_ALL);
 			if (tmp.length() > 0) {
@@ -446,6 +449,9 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 
 		types.add(new ParameterTypeBoolean(PARAMETER_APPROXIMATE_INDUCTION, getParameterDescription(PARAMETER_APPROXIMATE_INDUCTION),
 				defaultParams.isApproximateInduction()));
+
+		types.add(new ParameterTypeInt(PARAMETER_APPROXIMATE_BINS_COUNT, getParameterDescription(PARAMETER_APPROXIMATE_BINS_COUNT),
+				0, 1000, defaultParams.getApproximateBinsCount()));
 
 		return types;
     }

@@ -16,8 +16,10 @@ package adaa.analytics.rules.logic.quality;
 
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
+import adaa.analytics.rules.logic.representation.IntegerBitSet;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 
+import adaa.analytics.rules.logic.representation.Logger;
 import com.rapidminer.example.ExampleSet;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
@@ -26,6 +28,8 @@ import com.rapidminer.tools.container.Pair;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.logging.Level;
 
 /**
  * Class representing log-rank test.
@@ -53,13 +57,13 @@ public class LogRank implements IQualityMeasure, Serializable {
 	public double calculate(ExampleSet dataset, ContingencyTable ct) {
 		Covering cov = (Covering)ct;
 
-		Set<Integer> coveredIndices = cov.positives; // in survival rules all examples are classified as positives
-		Set<Integer> uncoveredIndices = new HashSet<Integer>();
-		for (int i = 0; i < dataset.size(); ++i) {
-			if (!coveredIndices.contains(i)) {
-				uncoveredIndices.add(i);
-			}
+		IntegerBitSet coveredIndices = (IntegerBitSet) cov.positives; // in survival rules all examples are classified as positives
+		if (coveredIndices == null) {
+			assert false: "LogRank.calculate() requires IntegerBitSet as an argument";
 		}
+
+		IntegerBitSet uncoveredIndices = new IntegerBitSet(dataset.size());
+		coveredIndices.negate(uncoveredIndices);
 
 		KaplanMeierEstimator coveredEstimator = new KaplanMeierEstimator(dataset, coveredIndices);
 		KaplanMeierEstimator uncoveredEstimator = new KaplanMeierEstimator(dataset, uncoveredIndices);
@@ -72,34 +76,72 @@ public class LogRank implements IQualityMeasure, Serializable {
 	public Pair<Double,Double> compareEstimators(KaplanMeierEstimator kme1, KaplanMeierEstimator kme2) {
 		
 		Pair<Double,Double> res = new Pair<Double,Double>(0.0, 0.0);
-		
-		Set<Double> eventTimes = new HashSet<Double>();
-		eventTimes.addAll(kme1.getTimes());
-		eventTimes.addAll(kme2.getTimes());
-		
+
 		// fixme:
-		if (kme1.getTimes().size() == 0 || kme2.getTimes().size() == 0) {
+		if (kme1.filled == 0 || kme2.filled == 0) {
 			return res;
 		}
-		
-        double x = 0;
-        double y = 0;
-        for (double time : eventTimes) {
-            double m1 = kme1.getEventsCountAt(time);
-            double n1 = kme1.getRiskSetCountAt(time);
 
-            double m2 = kme2.getEventsCountAt(time);
-            double n2 = kme2.getRiskSetCountAt(time);
+		double x = 0;
+		double y = 0;
 
-            //Debug.WriteLine(string.Format("time={0}, m1={1} m2={2} n1={3} n2={4}", time, m1, m2, n1, n2));
+		int id1 = 0;
+		int id2 = 0;
 
-            double e2 = (n2 / (n1 + n2)) * (m1 + m2);
+		for (; id1 < kme1.filled; ++id1) {
+			double m1, n1, m2, n2;
 
-            x += m2 - e2;
+			for (; (id2 < kme2.filled) && (kme2.times[id2] < kme1.times[id1]); id2++) {
+				// point only in kme2
+				m1 = 0;
+				n1 = kme1.atRiskCounts[id1];
 
-            double n = n1 + n2;
-            y += (n1 * n2 * (m1 + m2) * (n - m1 - m2)) / (n * n * (n - 1));
-        }
+				m2 = kme2.eventsCounts[id2];
+				n2 = kme2.atRiskCounts[id2];
+
+				double e2 = (n2 / (n1 + n2)) * (m1 + m2);
+				x += m2 - e2;
+				double n = n1 + n2;
+				y += (n1 * n2 * (m1 + m2) * (n - m1 - m2)) / (n * n * (n - 1));
+			}
+
+			m1 = kme1.eventsCounts[id1];
+			n1 = kme1.atRiskCounts[id1];
+
+			if (id2 < kme2.filled && kme1.times[id1] == kme2.times[id2]) {
+				// point in both
+				m2 = kme2.eventsCounts[id2];
+				n2 = kme2.atRiskCounts[id2];
+				++id2;
+
+			} else {
+				// point only in kme1
+				m2 = 0;
+				n2 = kme2.atRiskCounts[Math.min(id2, kme2.filled - 1)];
+			}
+
+			double e2 = (n2 / (n1 + n2)) * (m1 + m2);
+			x += m2 - e2;
+			double n = n1 + n2;
+			y += (n1 * n2 * (m1 + m2) * (n - m1 - m2)) / (n * n * (n - 1));
+		}
+
+		//  remaining kme2 points
+		for (; id2 < kme2.filled; id2++) {
+			double m1, n1, m2, n2;
+
+			// point only in kme2
+			m1 = 0;
+			n1 = kme1.atRiskCounts[kme1.filled - 1];
+
+			m2 = kme2.eventsCounts[id2];
+			n2 = kme2.atRiskCounts[id2];
+
+			double e2 = (n2 / (n1 + n2)) * (m1 + m2);
+			x += m2 - e2;
+			double n = n1 + n2;
+			y += (n1 * n2 * (m1 + m2) * (n - m1 - m2)) / (n * n * (n - 1));
+		}
 
         res.setFirst((x * x) / y);
         res.setSecond(1.0 - dist.cumulativeProbability(res.getFirst()));

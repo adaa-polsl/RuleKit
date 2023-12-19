@@ -16,15 +16,16 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
-import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
+import adaa.analytics.rules.logic.representation.*;
 
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
+import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.set.SortedExampleSet;
 import com.rapidminer.tools.container.Pair;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * Class for growing and pruning log rank-based survival rules with user's knowledge.
@@ -36,6 +37,15 @@ public class SurvivalLogRankExpertFinder extends RegressionExpertFinder {
 
 	public SurvivalLogRankExpertFinder(InductionParameters params) {
 		super(params);
+		this.params.setMeanBasedRegression(false);
+	}
+
+	SurvivalLogRankFinder.Implementation implementation = new SurvivalLogRankFinder.Implementation();
+
+
+	@Override
+	public ExampleSet preprocess(ExampleSet trainSet) {
+		return implementation.preprocess(trainSet);
 	}
 
 	/**
@@ -50,9 +60,19 @@ public class SurvivalLogRankExpertFinder extends RegressionExpertFinder {
 			final Rule rule,
 			final ExampleSet dataset) {
 
-		Covering cov = rule.covers(dataset);
-		Set<Integer> covered = cov.positives;
-		KaplanMeierEstimator kme = new KaplanMeierEstimator(dataset, covered);
-		((SurvivalRule)rule).setEstimator(kme);
+		super.postprocess(rule, dataset);
+		implementation.postprocess(rule, dataset);
+	}
+
+	@Override
+	protected boolean checkCandidate(
+			ExampleSet dataset,
+			Rule rule,
+			ConditionBase candidate,
+			Set<Integer> uncovered,
+			Set<Integer> covered,
+			ConditionEvaluation currentBest) {
+
+		return implementation.checkCandidate(dataset, rule, candidate, uncovered, covered, currentBest, this);
 	}
 }

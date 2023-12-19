@@ -46,6 +46,9 @@ public class InductionParametersFactory {
                         throw new RuntimeException("Unknown name of classification pruning measure: " + paramMap.get(key));
                     }
                     break;
+                case "mean_based_regression":
+                    parameters.setMeanBasedRegression(paramMap.get(key).equals("true"));
+                    break;
             }
         }
         return parameters;

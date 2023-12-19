@@ -60,10 +60,11 @@ public class InductionParameters implements Serializable {
 	private List<Double> minimumCoveredAll_list = new ArrayList<Double>();
 
 	private int maxPassesCount = 1;
-	private boolean meanBasedRegression = false;
+	private boolean meanBasedRegression = true;
 	private boolean controlAprioriPrecision = true;
 
 	private boolean approximateInduction = false;
+	private int approximateBinsCount = 100;
 
 	public IQualityMeasure getInductionMeasure() {return inductionMeasure;}
 	public void setInductionMeasure(IQualityMeasure inductionMeasure) {this.inductionMeasure = inductionMeasure;}
@@ -134,6 +135,9 @@ public class InductionParameters implements Serializable {
 	public boolean isApproximateInduction() { return approximateInduction; }
 	public void setApproximateInduction(boolean v) { approximateInduction = v; }
 
+	public int getApproximateBinsCount() { return approximateBinsCount; }
+	public void setApproximateBinsCount(int v) { approximateBinsCount = v; }
+
 	public List<Double> getMinimumCoveredAll_list() { return minimumCoveredAll_list; }
 	public void setMinimumCoveredAll_list(List<Double> minimumCovered) {this.minimumCoveredAll_list.addAll(minimumCovered);}
 
@@ -161,7 +165,8 @@ public class InductionParameters implements Serializable {
 				"select_best_candidate=" + selectBestCandidate + "\n" +
 				"max_passes_count=" + maxPassesCount + "\n" +
 				"complementary_conditions=" + conditionComplementEnabled + "\n" +
-				"approximate_induction=" + approximateInduction + "\n";
+				"approximate_induction=" + approximateInduction + "\n" +
+				"approximate_bins_count=" + (approximateInduction ? approximateBinsCount : "OFF") + "\n";
 
 	}
 

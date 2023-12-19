@@ -81,8 +81,9 @@ public abstract class AbstractFinder implements AutoCloseable {
 	/**
 	 * Can be implemented by subclasses to perform some initial processing prior growing.
 	 * @param trainSet Training set.
+	 * @return Preprocessed training set.
 	 */
-	public void preprocess(ExampleSet trainSet) {}
+	public ExampleSet preprocess(ExampleSet trainSet) { return trainSet; }
 
 	/**
 	 * Adds elementary conditions to the rule premise until termination conditions are fulfilled.
@@ -104,11 +105,14 @@ public abstract class AbstractFinder implements AutoCloseable {
 		int initialConditionsCount = rule.getPremise().getSubconditions().size();
 		
 		// get current covering
-		Covering covering = new Covering();
-		rule.covers(dataset, covering, covering.positives, covering.negatives);
-		Set<Integer> covered = new HashSet<Integer>();
-		covered.addAll(covering.positives);
-		covered.addAll(covering.negatives);
+		ContingencyTable contingencyTable = new Covering();
+		IntegerBitSet positives = new IntegerBitSet(dataset.size());
+		IntegerBitSet negatives = new IntegerBitSet(dataset.size());
+		rule.covers(dataset, contingencyTable, positives, negatives);
+		//Set<Integer> covered = new HashSet<Integer>();
+		IntegerBitSet covered = new IntegerBitSet(dataset.size());
+		covered.addAll(positives);
+		covered.addAll(negatives);
 		Set<Attribute> allowedAttributes = new TreeSet<Attribute>(new AttributeComparator());
 		for (Attribute a: dataset.getAttributes()) {
 			allowedAttributes.add(a);
@@ -126,18 +130,23 @@ public abstract class AbstractFinder implements AutoCloseable {
 
 				notifyConditionAdded(condition);
 
-				covering = new Covering();
-				rule.covers(dataset, covering, covering.positives, covering.negatives);
-				covered.clear();
-				covered.addAll(covering.positives);
-				covered.addAll(covering.negatives);
+				//recalculate covering only when needed
+				if (condition.getCovering() != null) {
+					positives.retainAll(condition.getCovering());
+					negatives.retainAll(condition.getCovering());
+					covered.retainAll(condition.getCovering());
+				} else {
+					contingencyTable.clear();
+					positives.clear();
+					negatives.clear();
 
-				rule.setCoveringInformation(covering);
-				rule.getCoveredPositives().setAll(covering.positives);
-				rule.getCoveredNegatives().setAll(covering.negatives);
+					rule.covers(dataset, contingencyTable, positives, negatives);
+					covered.clear();
+					covered.addAll(positives);
+					covered.addAll(negatives);
+				}
 
-				rule.updateWeightAndPValue(dataset, covering, params.getVotingMeasure());
-				
+
 				Logger.log("Condition " + rule.getPremise().getSubconditions().size() + " added: " 
 						+ rule.toString() + ", weight=" + rule.getWeight() + "\n", Level.FINER);
 				
@@ -152,12 +161,25 @@ public abstract class AbstractFinder implements AutoCloseable {
 				carryOn = false;
 			}
 			
-		} while (carryOn); 
-		
+		} while (carryOn);
+
+		// ugly
+		Covering covering = new Covering();
+		covering.positives = positives;
+		covering.negatives = negatives;
+
+		rule.setCoveringInformation(covering);
+		rule.getCoveredPositives().setAll(positives);
+		rule.getCoveredNegatives().setAll(negatives);
+
 		// if rule has been successfully grown
 		int addedConditionsCount = rule.getPremise().getSubconditions().size() - initialConditionsCount;
-		rule.setInducedContitionsCount(addedConditionsCount);
 
+		if (addedConditionsCount > 0) {
+			rule.updateWeightAndPValue(dataset, covering, params.getVotingMeasure());
+		}
+
+		rule.setInducedContitionsCount(addedConditionsCount);
 		notifyGrowingFinished(rule);
 
 		return addedConditionsCount;

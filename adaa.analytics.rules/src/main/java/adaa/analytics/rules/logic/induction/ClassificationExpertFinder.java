@@ -111,7 +111,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 				newCondition = induceCondition(
 						rule, dataset, mustBeCovered, covered, attr);
 				newCondition.setType(Type.FORCED);
-				tryAddCondition(rule, null, newCondition, dataset, covered, uncoveredPositives, conditionCovered);
+				tryAddCondition(rule, null, newCondition, dataset, covered, uncoveredPositives);
 				
 			} else {
 				// add condition as it is without verification
@@ -265,7 +265,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 				}
 				
 				if (bestCondition != null) {
-					carryOn = tryAddCondition(rule, null, bestCondition, dataset, covered,uncoveredPositives, conditionCovered);
+					carryOn = tryAddCondition(rule, null, bestCondition, dataset, covered, uncoveredPositives);
 					knowledge.getPreferredConditions((int)classId).remove(bestCondition);
 					
 					newlyCoveredPositives.retainAll(rule.getCoveredPositives());
@@ -298,7 +298,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 						
 			do {
 				ElementaryCondition condition = induceCondition(rule, dataset, uncoveredPositives, covered, localAllowed, rule.getCoveredPositives());
-				carryOn = tryAddCondition(rule, null, condition, dataset, covered,uncoveredPositives, conditionCovered);
+				carryOn = tryAddCondition(rule, null, condition, dataset, covered,uncoveredPositives);
 				// fixme: we are not sure if condition was added
 				if (carryOn) {
 					knowledge.getPreferredAttributes((int)classId).remove(condition.getAttribute());
@@ -335,9 +335,9 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 						rule, dataset, uncoveredPositives, covered, allowedAttributes, rule.getCoveredPositives());
 
 				if (params.getSelectBestCandidate()) {
-					carryOn = tryAddCondition(currentRule, rule, condition, dataset, covered, uncoveredPositives, conditionCovered);
+					carryOn = tryAddCondition(currentRule, rule, condition, dataset, covered, uncoveredPositives);
 				} else {
-					carryOn = tryAddCondition(rule, null, condition, dataset, covered, uncoveredPositives, conditionCovered);
+					carryOn = tryAddCondition(rule, null, condition, dataset, covered, uncoveredPositives);
 				}
 
 			} while (carryOn); 

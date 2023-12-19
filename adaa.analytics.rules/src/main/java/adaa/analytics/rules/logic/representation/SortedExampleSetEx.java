@@ -16,6 +16,7 @@ public class SortedExampleSetEx extends SortedExampleSet {
     public double[] weights;
     public double[] labelsWeighted;
     public double[] totalWeightsBefore;
+    public double[] survivalTimes;
 
     public double meanLabel = 0;
 
@@ -47,6 +48,11 @@ public class SortedExampleSetEx extends SortedExampleSet {
         weights = new double[this.size()];
         totalWeightsBefore = new double[this.size() + 1];
 
+        Attribute survTime = this.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
+        if (survTime != null) {
+            survivalTimes = new double[this.size()];
+        }
+
         boolean weighted = getAttributes().getWeight() != null;
 
         for (Attribute a: this.getAttributes()) {
@@ -65,6 +71,10 @@ public class SortedExampleSetEx extends SortedExampleSet {
             labelsWeighted[i] = y * w;
             totalWeightsBefore[i] = sumWeights;
             meanLabel += y;
+
+            if (survTime != null) {
+                survivalTimes[i] = e.getValue(survTime);
+            }
 
             for (Attribute a: this.getAttributes()) {
                 if (!Double.isNaN(e.getValue(a))) {

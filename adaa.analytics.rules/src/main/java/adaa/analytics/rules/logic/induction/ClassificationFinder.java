@@ -14,15 +14,11 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 
-import adaa.analytics.rules.logic.quality.ClassificationMeasure;
-import adaa.analytics.rules.logic.quality.Hypergeometric;
-import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.representation.*;
 
 import com.rapidminer.example.Attribute;
@@ -30,7 +26,6 @@ import com.rapidminer.example.Attributes;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.table.DataRow;
-import com.rapidminer.tools.container.Pair;
 
 
 /**
@@ -64,11 +59,11 @@ public class ClassificationFinder extends AbstractFinder {
 	 * @param trainSet Training set.
 	 */
 	@Override
-	public void preprocess(ExampleSet trainSet) {
+	public ExampleSet preprocess(ExampleSet trainSet) {
 	
 		// do nothing for weighted datasets
 		if (trainSet.getAttributes().getWeight() != null) {
-			return;
+			return trainSet;
 		}
 
 		precalculatedCoverings = new HashMap<Attribute, Map<Double, IntegerBitSet>>();
@@ -126,6 +121,8 @@ public class ClassificationFinder extends AbstractFinder {
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
+
+		return trainSet;
 	}
 	
 	/**
@@ -152,9 +149,6 @@ public class ClassificationFinder extends AbstractFinder {
 		covered.addAll(rule.getCoveredPositives());
 		covered.addAll(rule.getCoveredNegatives());
 
-		// bit vectors for faster operations on coverings
-		IntegerBitSet conditionCovered = new IntegerBitSet(dataset.size());
-
 		Set<Attribute> allowedAttributes = new TreeSet<Attribute>(new AttributeComparator());
 		for (Attribute a: dataset.getAttributes()) {
 			allowedAttributes.add(a);
@@ -180,7 +174,7 @@ public class ClassificationFinder extends AbstractFinder {
 
 			if (condition != null) {
 
-				carryOn = tryAddCondition(currentRule, bestRule, condition, dataset, covered, uncovered, conditionCovered);
+				carryOn = tryAddCondition(currentRule, bestRule, condition, dataset, covered, uncovered);
 
 				if (params.getMaxGrowingConditions() > 0) {
 					if (currentRule.getPremise().getSubconditions().size() - initialConditionsCount >=
@@ -230,9 +224,9 @@ public class ClassificationFinder extends AbstractFinder {
 
 		int examplesCount = trainSet.size();
 		int conditionsCount = rule.getPremise().getSubconditions().size();
-		int maskLength = (trainSet.size() + Long.SIZE - 1) / Long.SIZE; 
-		long[] masks = new long[conditionsCount * maskLength]; 
-		long[] labelMask = new long[maskLength];
+		int maskLength = (trainSet.size() + Long.SIZE - 1) / Long.SIZE;
+	//	long[] masks = new long[conditionsCount * maskLength];
+		long[] labelMask = rule.getConsequence().getCovering().getRawTable();
 		long[] uncoveredMask = new long[maskLength];
 
 		double P = rule.getWeighted_P();
@@ -242,14 +236,28 @@ public class ClassificationFinder extends AbstractFinder {
 		int counter_p = 0;
 		int counter_new_p = 0;
 
+		// copy coverings from conditions into masks array
+		for (int m = 0; m < conditionsCount; ++m) {
+			ConditionBase cnd = rule.getPremise().getSubconditions().get(m);
+			long[] conditionWords = cnd.getCovering().getRawTable();
+
+			// count conditions
+			for (int i = 0; i < trainSet.size(); ++i) {
+				int wordId = i >>> IntegerBitSet.ID_SHIFT;
+				int wordOffset = i & IntegerBitSet.OFFSET_MASK;
+
+				if ((conditionWords[wordId] & (1L << wordOffset)) != 0) {
+					++conditionsPerExample[i];
+				}
+			}
+		}
+
 		for (int i = 0; i < trainSet.size(); ++i) {
-			Example e = trainSet.getExample(i);
-			int wordId = i / Long.SIZE;
-			int wordOffset = i % Long.SIZE;
+			int wordId = i >>> IntegerBitSet.ID_SHIFT;
+			int wordOffset = i & IntegerBitSet.OFFSET_MASK;
 
 			// is positive
-			if (rule.getConsequence().evaluate(e)) {
-				labelMask[wordId] |= 1L << wordOffset;
+			if ((labelMask[wordId] & (1L << wordOffset)) != 0) {
 				++counter_p;
 
 				// is uncovered
@@ -258,23 +266,14 @@ public class ClassificationFinder extends AbstractFinder {
 					++counter_new_p;
 				}
 			}
-
-			for (int m = 0; m < conditionsCount; ++m) {
-				ConditionBase cnd = rule.getPremise().getSubconditions().get(m);
-				if (cnd.evaluate(e)) {
-					masks[m * maskLength + wordId] |= 1L << wordOffset;
-					++conditionsPerExample[i];
-				}
-			}
 		}
-
 
 		IntegerBitSet removedConditions = new IntegerBitSet(conditionsCount);
 		int conditionsLeft = rule.getPremise().getSubconditions().size();
 
-		ContingencyTable ct = new ContingencyTable();
-		rule.covers(trainSet, ct);
-		double initialQuality = params.getPruningMeasure().calculate(trainSet, ct);
+		//ContingencyTable ct = new ContingencyTable();
+		//rule.covers(trainSet, ct);
+		double initialQuality = params.getPruningMeasure().calculate(trainSet, rule.getCoveringInformation());
 		initialQuality = modifier.modifyQuality(initialQuality, null, counter_p, counter_new_p);
 
 		boolean continueClimbing = true;
@@ -292,7 +291,7 @@ public class ClassificationFinder extends AbstractFinder {
 			for (int cid = 0; cid < conditionsCount; ++cid) {
 				final int fcid = cid;
 				Future<Double> f = pool.submit( () -> {
-					
+
 					ConditionBase cnd = (ConditionBase) rule.getPremise().getSubconditions().get(fcid);
 					// ignore already removed conditions
 					if (removedConditions.contains(fcid)) {
@@ -306,7 +305,8 @@ public class ClassificationFinder extends AbstractFinder {
 
 					// only elementary conditions are prunable
 					String attr = ((ElementaryCondition)cnd).getAttribute();
-					
+
+					long[] conditionWords = cnd.getCovering().getRawTable();
 					double p = 0;
 					double n = 0;
 					double new_p = 0;
@@ -315,7 +315,7 @@ public class ClassificationFinder extends AbstractFinder {
 					int id = 0;
 					for (int wordId = 0; wordId < maskLength; ++wordId) {
 					
-						long word = masks[fcid * maskLength + wordId];
+						long word = conditionWords[wordId];
 						long filteredWord = 0;
 						
 						for (int wordOffset = 0; wordOffset < Long.SIZE && id < examplesCount; ++wordOffset, ++id) {
@@ -381,14 +381,16 @@ public class ClassificationFinder extends AbstractFinder {
 				initialQuality = bestQuality;
 				removedConditions.add(toRemove);
 
-				notifyConditionRemoved(rule.getPremise().getSubconditions().get(toRemove));
+				ConditionBase cndToRemove = rule.getPremise().getSubconditions().get(toRemove);
+				notifyConditionRemoved(cndToRemove);
 
 				--conditionsLeft;
 				
 				// decrease counters for examples covered by removed condition
 				int id = 0;
+				long[] localWords = cndToRemove.getCovering().getRawTable();
 				for (int wordId = 0; wordId < maskLength; ++wordId) {
-					long word = masks[toRemove * maskLength + wordId];
+					long word = localWords[wordId];
 					for (int wordOffset = 0; wordOffset < Long.SIZE && id < examplesCount; ++wordOffset, ++id) {
 						
 						if ((word & (1L << wordOffset)) != 0) {
@@ -406,23 +408,35 @@ public class ClassificationFinder extends AbstractFinder {
 		}
 		
 		CompoundCondition prunedPremise = new CompoundCondition();
+
+		IntegerBitSet positives = rule.getConsequence().getCovering().clone();
+		IntegerBitSet negatives = new IntegerBitSet(trainSet.size());
+		positives.negate(negatives);
+
+		long[] positiveWords = positives.getRawTable();
+		long[] negativeWords = negatives.getRawTable();
 	
 		for (int cid = 0; cid < conditionsCount; ++cid) {
 			if (!removedConditions.contains(cid)) {
-				prunedPremise.addSubcondition(rule.getPremise().getSubconditions().get(cid));
+				ConditionBase cnd = rule.getPremise().getSubconditions().get(cid);
+				prunedPremise.addSubcondition(cnd);
+
+				long [] words = cnd.getCovering().getRawTable();
+
+				for (int wordId = 0; wordId < maskLength; ++wordId) {
+					positiveWords[wordId] &= words[wordId];
+					negativeWords[wordId] &= words[wordId];
+				}
 			}
 		}
 		
 		rule.setPremise(prunedPremise);
 
-		ct = new ContingencyTable();
-		IntegerBitSet positives = new IntegerBitSet(trainSet.size());
-		IntegerBitSet negatives = new IntegerBitSet(trainSet.size());
+		//ct = new ContingencyTable();
+		//rule.covers(trainSet, ct, positives, negatives);
 
-		rule.covers(trainSet, ct, positives, negatives);
-
-		rule.setWeighted_p(ct.weighted_p);
-		rule.setWeighted_n(ct.weighted_n);
+		rule.setWeighted_p(positives.size());
+		rule.setWeighted_n(negatives.size());
 		rule.setCoveredPositives(positives);
 		rule.setCoveredNegatives(negatives);
 
@@ -768,16 +782,16 @@ public class ClassificationFinder extends AbstractFinder {
 		final ConditionBase condition, 
 		final ExampleSet trainSet,
 		final Set<Integer> covered,
-		final Set<Integer> uncovered,
-		final IntegerBitSet conditionCovered) {
+		final Set<Integer> uncovered) {
 		
 		boolean carryOn = true;
 		boolean add = false;
 		ContingencyTable ct = new ContingencyTable();
 		
 		if (condition != null) {
-			conditionCovered.clear();
+			IntegerBitSet conditionCovered = new IntegerBitSet(trainSet.size());
 			condition.evaluate(trainSet, conditionCovered);
+			condition.setCovering(conditionCovered);
 
 			// calculate  quality before addition
 			ct.weighted_P = currentRule.getWeighted_P();

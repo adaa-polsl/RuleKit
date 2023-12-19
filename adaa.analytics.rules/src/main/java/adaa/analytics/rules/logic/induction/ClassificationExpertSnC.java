@@ -78,9 +78,9 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 		// iterate over all classes
 		for (int classId = 0; classId < mapping.size(); ++classId) {
 
-			Set<Integer> positives = new IntegerBitSet(dataset.size());
-			Set<Integer> negatives = new IntegerBitSet(dataset.size());
-			Set<Integer> uncoveredPositives = new IntegerBitSet(dataset.size());
+			IntegerBitSet positives = new IntegerBitSet(dataset.size());
+			IntegerBitSet negatives = new IntegerBitSet(dataset.size());
+			IntegerBitSet uncoveredPositives = new IntegerBitSet(dataset.size());
 			Set<Integer> uncovered = new HashSet<Integer>();
 			double weighted_P = 0;
 			double weighted_N = 0;
@@ -145,6 +145,8 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 				rule.setCoveredNegatives(new IntegerBitSet(dataset.size()));
 				rule.getCoveredPositives().addAll(positives);
 				rule.getCoveredNegatives().addAll(negatives);
+
+				rule.getConsequence().setCovering(positives);
 				
 				ClassificationExpertFinder erf = (ClassificationExpertFinder)finder;
 				
@@ -194,6 +196,8 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 				rule.setCoveredNegatives(new IntegerBitSet(dataset.size()));
 				rule.getCoveredPositives().addAll(positives);
 				rule.getCoveredNegatives().addAll(negatives);
+
+				rule.getConsequence().setCovering(positives);
 				
 				ClassificationExpertFinder erf = (ClassificationExpertFinder)finder;
 				erf.setKnowledge(classKnowledge);

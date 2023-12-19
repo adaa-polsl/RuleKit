@@ -47,25 +47,27 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 
 		Logger.log("RegressionSnC.run()\n", Level.FINE);
 
-		RuleSetBase ruleset = factory.create(dataset);
+		SortedExampleSetEx sortedDataset = (SortedExampleSetEx)finder.preprocess(dataset);
+		RuleSetBase ruleset = factory.create(sortedDataset);
 		Attribute label = dataset.getAttributes().getLabel();
-		SortedExampleSetEx ses = new SortedExampleSetEx(dataset, label, SortedExampleSet.INCREASING);
-		ses.recalculateAttributeStatistics(ses.getAttributes().getLabel());
+		//SortedExampleSetEx ses = new SortedExampleSetEx(dataset, label, SortedExampleSet.INCREASING);
+
+		sortedDataset.recalculateAttributeStatistics(sortedDataset.getAttributes().getLabel());
 			
 		if (factory.getType() == RuleFactory.REGRESSION) {
-			double median = ses.getExample(ses.size() / 2).getLabel();
+			double median = sortedDataset.getExample(sortedDataset.size() / 2).getLabel();
 			RegressionRuleSet tmp = (RegressionRuleSet)ruleset;
 			tmp.setDefaultValue(median); // use this even in mean-based variant
 		}
 		
-		Set<Integer> uncovered = new HashSet<Integer>();
-		//Set<Integer> uncovered = new IntegerBitSet(ses.size());
+		//Set<Integer> uncovered = new HashSet<Integer>();
+		Set<Integer> uncovered = new IntegerBitSet(sortedDataset.size());
 		double weighted_PN = 0;
 		// at the beginning rule set does not cover any examples
-		for (int id = 0; id < ses.size(); ++id) {
+		for (int id = 0; id < sortedDataset.size(); ++id) {
 			uncovered.add(id);
-			Example ex = ses.getExample(id);
-			double w = ses.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
+			Example ex = sortedDataset.getExample(id);
+			double w = sortedDataset.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
 			weighted_PN += w;
 		}
 		
@@ -92,21 +94,21 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 			rule.setRuleOrderNum(ruleset.getRules().size());
 
 			double t = System.nanoTime();
-			carryOn = (finder.grow(rule, ses, uncovered) > 0);
+			carryOn = (finder.grow(rule, sortedDataset, uncovered) > 0);
 			ruleset.setGrowingTime( ruleset.getGrowingTime() + (System.nanoTime() - t) / 1e9);
 			
 			if (carryOn) {
 				if (params.isPruningEnabled()) {
 					Logger.log("Before prunning: " + rule.toString() + "\n" , Level.FINE);
 					t = System.nanoTime();
-					finder.prune(rule, ses, uncovered);
+					finder.prune(rule, sortedDataset, uncovered);
 					ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 				}
 				Logger.log("Candidate rule: " + rule.toString() + "\n", Level.FINE);
 				Logger.log(".", Level.INFO);
 
 				Covering covering = new Covering();
-				rule.covers(ses, covering, covering.positives, covering.negatives);
+				rule.covers(sortedDataset, covering, covering.positives, covering.negatives);
 				
 				// remove covered examples
 				int previouslyUncovered = uncovered.size();
@@ -115,7 +117,7 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 				
 				uncovered_pn = 0;
 				for (int id : uncovered) {
-					Example e = dataset.getExample(id);
+					Example e = sortedDataset.getExample(id);
 					uncovered_pn += dataset.getAttributes().getWeight() == null ? 1.0 : e.getWeight();
 				}
 				
@@ -128,7 +130,7 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 				if (uncovered.size() == previouslyUncovered) {
 					carryOn = false; 
 				} else {
-					finder.postprocess(rule, ses);
+					finder.postprocess(rule, sortedDataset);
 					ruleset.addRule(rule);
 					Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
 					Logger.log("\t" + (++totalRules) + " rules" , Level.INFO);

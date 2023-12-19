@@ -20,6 +20,7 @@ import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 
 import java.io.Serializable;
+import java.security.InvalidParameterException;
 import java.util.*;
 
 /**
@@ -33,89 +34,59 @@ public class KaplanMeierEstimator implements Serializable {
 	private static final long serialVersionUID = -6949465091584014494L;
 	
 	/** Array of survival estimator points */
-	protected ArrayList<SurvInfo> survInfo = new ArrayList<SurvInfo>();
-	
-	/**
+	//protected ArrayList<SurvInfo> survInfo = new ArrayList<SurvInfo>();
+
+    public static final int NotAssigned = Integer.MIN_VALUE;
+
+    public double[] times;
+    public int[] eventsCounts;
+    public int[] censoredCounts;
+    public int[] atRiskCounts;
+    public double[] probabilities;
+
+    public int filled = 0;
+
+
+    /**
 	 * Adds a new time point to the estimator.
 	 * @param time Survival time.
 	 * @param probability Survival probability.
 	 */
+    /*
 	public void addSurvInfo(double time, double probability) {
 		survInfo.add(new SurvInfo(time, probability));
 	}
-	
+	*/
+
 	/**
 	 * Creates empty instance.
 	 */
 	public KaplanMeierEstimator() {}
-	
+
 	/**
 	 * Generates survival estimator function from survival data.
 	 * @param data Example set with attribute of {@link adaa.analytics.rules.logic.representation.SurvivalRule#SURVIVAL_TIME_ROLE}.
 	 */
     public KaplanMeierEstimator(ExampleSet data) {
-    	Attribute survTime = data.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE); 
-		Attribute survStat = data.getAttributes().getLabel();
-		
-		this.survInfo.ensureCapacity(data.size());
-        SurvInfo info[] = new SurvInfo[data.size()];	
-        	
-        int j = 0;
-        for (Example e : data) {
-        	double t = e.getValue(survTime);
-        	boolean isCensored = (e.getValue(survStat) == 0);
-        	
-        	int eventsCount = isCensored ? 0 : 1;
-        	info[j] = new SurvInfo(t, eventsCount, 1 - eventsCount);
-        	++j;
-        }
-        
-        Arrays.sort(info, new SurvInfoComparer(SurvInfoComparer.By.TimeAsc));
-        assert info[0].getTime() <= info[info.length - 1].getTime();
-        int atRiskCount = data.size();
-
-        int idx = 0;
-        while (idx < info.length) {
-            double t = info[idx].getTime();
-            int startIdx = idx;
-            
-            while (idx < info.length && info[idx].getTime() == t) {
-                idx++;
-            }
-
-            int eventsAtTimeCount = 0;
-            int censoredAtTimeCount = 0;
-            for (int i = startIdx; i < idx; i++) {
-                if (info[i].getEventsCount() == 1) {
-                    eventsAtTimeCount++;
-                } else {
-                    assert (info[i].getCensoredCount() == 1);
-                    censoredAtTimeCount++;                       
-                }
-            }
-
-            SurvInfo si = new SurvInfo(t, eventsAtTimeCount, censoredAtTimeCount);
-            si.setAtRiskCount(atRiskCount);
-
-            this.survInfo.add(si);
-
-            atRiskCount -= eventsAtTimeCount;
-            atRiskCount -= censoredAtTimeCount;
-        }
-
-        this.calculateProbability();
+        this(data, new IntegerBitSet(data.size(), true));
     }
-    
+
     /**
      * Converts estimator to the text.
      * @return Estimator in the text form.
      */
     public String save() {
     	StringBuilder sb = new StringBuilder();
+    	/*
     	sb.append(survInfo.size() + ":");
     	for (SurvInfo si: survInfo) {
     		sb.append(si.time + " " + si.probability + " " );
     	}
+    	 */
+        sb.append(filled + ":");
+        for (int i = 0; i < filled; ++i) {
+            sb.append(times[i] + " " + probabilities[i] + " " );
+        }
     	return sb.toString();
     }
     
@@ -125,14 +96,21 @@ public class KaplanMeierEstimator implements Serializable {
      */
     public void load(String s) {
     	int idx = s.indexOf(':');
-    	int count = Integer.parseInt(s.substring(0, idx));
+    	filled = Integer.parseInt(s.substring(0, idx));
     	s = s.substring(idx + 1);
-    	
+
+        String[] numbers = s.split(" ");
+        int num_idx = 0;
+
+       this.reserve(filled);
+
+        Arrays.fill(atRiskCounts, NotAssigned);
+        Arrays.fill(censoredCounts, NotAssigned);
+        Arrays.fill(eventsCounts, NotAssigned);
+
+    	/*
     	survInfo = new ArrayList<SurvInfo>(count);
-    	
-    	String[] numbers = s.split(" ");
-    	int num_idx = 0;
-    	
+
     	for (int i = 0; i < count; ++i) {
     		
     		survInfo.add(new SurvInfo(
@@ -140,6 +118,12 @@ public class KaplanMeierEstimator implements Serializable {
 				Double.parseDouble(numbers[num_idx++])
 			));
     	}
+    	*/
+
+        for (int i = 0; i < filled; ++i) {
+            times[i] = Double.parseDouble(numbers[num_idx++]);
+            probabilities[i] = Double.parseDouble(numbers[num_idx++]);
+        }
     }
     
     /**
@@ -148,57 +132,72 @@ public class KaplanMeierEstimator implements Serializable {
 	 * @param indices Indices of the examples to be taken into account when building the estimator. 
 	 */
     public KaplanMeierEstimator(ExampleSet data, Set<Integer> indices) {
-		Attribute survTime = data.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE); 
-		Attribute survStat = data.getAttributes().getLabel();
-		
-		this.survInfo.ensureCapacity(indices.size());
-        SurvInfo[] info = new SurvInfo[indices.size()];	
-        
-        int j = 0;
-        for (int id : indices) {
-        	Example e = data.getExample(id);
-        	double t = e.getValue(survTime);
-        	boolean isCensored = (e.getValue(survStat) == 0);
-        	
-        	int eventsCount = isCensored ? 0 : 1;
-        	info[j] = new SurvInfo(t, eventsCount, 1 - eventsCount);
-        	++j;
+
+        SortedExampleSetEx set = (data instanceof SortedExampleSetEx) ? (SortedExampleSetEx)data : null;
+        if (set == null) {
+            throw new InvalidParameterException("RegressionRules support only ListedExampleSet example sets");
         }
-        
-        Arrays.sort(info, new SurvInfoComparer(SurvInfoComparer.By.TimeAsc));
-        assert info[0].getTime() <= info[info.length - 1].getTime();
+
+		this.reserve(indices.size());
+
+        Arrays.fill(atRiskCounts, NotAssigned);
+        Arrays.fill(censoredCounts, NotAssigned);
+        Arrays.fill(eventsCounts, NotAssigned);
+        Arrays.fill(probabilities, NotAssigned);
+
         int atRiskCount = indices.size();
 
-        int idx = 0;
-        while (idx < info.length) {
-            double t = info[idx].getTime();
-            int startIdx = idx;
-            
-            while (idx < info.length && info[idx].getTime() == t) {
-                idx++;
+        Iterator<Integer> it = indices.iterator();
+        int i = 0;
+
+        int eventsAtTimeCount = 0;
+        int censoredAtTimeCount = 0;
+        double prev_t = -1;
+
+        while (it.hasNext()) {
+            int id = it.next();
+            double t = set.survivalTimes[id];
+
+            // time point has changed - add surv info
+            if (t != prev_t && prev_t > 0) {
+                times[filled] = prev_t;
+                eventsCounts[filled] = eventsAtTimeCount;
+                censoredCounts[filled] = censoredAtTimeCount;
+                atRiskCounts[filled] = atRiskCount;
+
+                ++filled;
+
+                atRiskCount -= eventsAtTimeCount + censoredAtTimeCount;
+
+                eventsAtTimeCount = 0;
+                censoredAtTimeCount = 0;
             }
 
-            int eventsAtTimeCount = 0;
-            int censoredAtTimeCount = 0;
-            for (int i = startIdx; i < idx; i++) {
-                if (info[i].getEventsCount() == 1) {
-                    eventsAtTimeCount++;
-                } else {
-                    assert (info[i].getCensoredCount() == 1);
-                    censoredAtTimeCount++;                       
-                }
+            if (set.labels[id] == 1) {
+                ++eventsAtTimeCount;
+            } else {
+                ++censoredAtTimeCount;
             }
 
-            SurvInfo si = new SurvInfo(t, eventsAtTimeCount, censoredAtTimeCount);
-            si.setAtRiskCount(atRiskCount);
-
-            this.survInfo.add(si);
-
-            atRiskCount -= eventsAtTimeCount;
-            atRiskCount -= censoredAtTimeCount;
+            prev_t = t;
         }
 
+        times[filled] = prev_t;
+        eventsCounts[filled] = eventsAtTimeCount;
+        censoredCounts[filled] = censoredAtTimeCount;
+        atRiskCounts[filled] = atRiskCount;
+
+        ++filled;
+
         this.calculateProbability();
+    }
+
+    protected void reserve(int size) {
+        times = new double[size];
+        atRiskCounts = new int[size];
+        censoredCounts = new int[size];
+        eventsCounts = new int[size];
+        probabilities = new double[size];
     }
     
     /**
@@ -212,26 +211,27 @@ public class KaplanMeierEstimator implements Serializable {
         for (KaplanMeierEstimator e : estimators) {
             uniqueTime.addAll(e.getTimes());
         }
-        
-        double[] time = new double[uniqueTime.size()];
-        double[] probabilities = new double[uniqueTime.size()];
-        
-        // average probabilities for all time points
-        Iterator<Double> t = uniqueTime.iterator();
-        for (int i = 0; i < time.length; ++i) {
-        	time[i] = t.next();
-        	double p = 0;
-        	for (KaplanMeierEstimator e: estimators) {
-        		p+= e.getProbabilityAt(time[i]);
-        		
-        	}
-        	probabilities[i] = p / estimators.length;
-        }
-        
+
         // get averaged estimator
         KaplanMeierEstimator avgKm = new KaplanMeierEstimator();
-        for (int i = 0; i < time.length; i++) {
-            avgKm.addSurvInfo(time[i], probabilities[i]);
+        avgKm.reserve(uniqueTime.size());
+        avgKm.filled = uniqueTime.size();
+
+        Arrays.fill(avgKm.atRiskCounts, NotAssigned);
+        Arrays.fill(avgKm.censoredCounts, NotAssigned);
+        Arrays.fill(avgKm.eventsCounts, NotAssigned);
+
+        // average probabilities for all time points
+        Iterator<Double> it= uniqueTime.iterator();
+        for (int i = 0; i < avgKm.times.length; ++i) {
+        	double t = it.next();
+            double p = 0;
+
+        	for (KaplanMeierEstimator e: estimators) {
+        		p += e.getProbabilityAt(t);
+        	}
+            avgKm.times[i] = t;
+            avgKm.probabilities[i] = p / estimators.length;
         }
 
         return avgKm;
@@ -242,11 +242,17 @@ public class KaplanMeierEstimator implements Serializable {
      * @return Array of time points.
      */
     public ArrayList<Double> getTimes() {            
-    	ArrayList<Double> times = new ArrayList<Double>(survInfo.size());
+    	/*
+        ArrayList<Double> times = new ArrayList<Double>(survInfo.size());
     	for (SurvInfo si : survInfo) {
             times.add(si.getTime());
         }
-    	return times;
+    	 */
+        ArrayList<Double> out = new ArrayList<Double>();
+        for (int i = 0; i < filled; ++i) {
+            out.add(times[i]);
+        }
+    	return out;
     }
     
     /**
@@ -255,75 +261,41 @@ public class KaplanMeierEstimator implements Serializable {
      * @return Survival probability.
      */
     public double getProbabilityAt(double time) {
-        int idx = Collections.binarySearch(survInfo, new SurvInfo(time), new SurvInfoComparer(SurvInfoComparer.By.TimeAsc));
-    	
+
+        int idx = Arrays.binarySearch(times, 0, filled, time);
+
         if (idx >= 0) {
-            return this.survInfo.get(idx).getProbability();
+            return probabilities[idx];
         }
 
-        // bitwise complement of the index of the next element that is larger than item
-        // or, if there is no larger element, the bitwise complement of Count
         idx = ~idx;
 
-        int n = this.survInfo.size();
-        if (idx == n) {
-            return this.survInfo.get(n - 1).getProbability();
+        if (idx == filled) {
+            return probabilities[filled - 1];
         }
 
         if (idx == 0) {
             return 1.0;
         }
 
-        double p = this.survInfo.get(idx - 1).getProbability();
+        double p = probabilities[idx - 1];
         assert (p != Double.NaN);
         return p;
     }
 
-    public double getTimeForProbability(double probability) {
-		assert probability >= 0.0 && probability <= 1.0;
-		//SurvInfo tmpSurvInfo = new SurvInfo(1.0, probability);
-		int idx = Collections.binarySearch(survInfo, new SurvInfo(1.0, probability), 
-				new SurvInfoComparer(SurvInfoComparer.By.ProbabilityDesc));
-		Optional<SurvInfo> lastThisProbability = survInfo.
-				stream().
-				filter(i -> i.probability == probability).
-				reduce((first, second) -> second);
-		
-		if (idx >= 0) {			
-			return lastThisProbability.get().getTime();
-		}
 
-		// bitwise complement of the index of the next element that is larger than item
-		// or, if there is no larger element, the bitwise complement of Count
-		idx = ~idx;
-
-		int n = this.survInfo.size();
-		if (idx == n) {
-			return this.survInfo.get(n - 1).getTime();
-		}
-
-		if (idx == 0) {
-			return this.survInfo.get(idx).getTime();
-		}
-
-		double t = this.survInfo.get(idx).getTime();
-		assert (t != Double.NaN);
-		return t;
-	}
-    
     /**
      * Gets number of events at given time point.
      * @param time Time.
      * @return Number of events.
      */
     public int getEventsCountAt(double time) {
-    	 int idx = Collections.binarySearch(survInfo, new SurvInfo(time), new SurvInfoComparer(SurvInfoComparer.By.TimeAsc));
-     	
-         if (idx >= 0) {
-             return this.survInfo.get(idx).getEventsCount();
-         }
+        int idx = Arrays.binarySearch(times, 0, filled, time);
+        if (idx >= 0) {
+            return eventsCounts[idx];
+        }
          
-         return 0;
+        return 0;
     }
     	
     /**
@@ -332,22 +304,16 @@ public class KaplanMeierEstimator implements Serializable {
      * @return Risk.
      */
     public int getRiskSetCountAt(double time) {
-    	 int idx = Collections.binarySearch(survInfo, new SurvInfo(time), new SurvInfoComparer(SurvInfoComparer.By.TimeAsc));
-      	
-         if (idx >= 0) {
-             return this.survInfo.get(idx).getAtRiskCount();
-         }
-   	
-        // bitwise complement of the index of the next element that is larger than item
-        // or, if there is no larger element, the bitwise complement of Count
-        idx = ~idx;
+        int idx = Arrays.binarySearch(times, 0, filled, time);
 
-        int n = this.survInfo.size();
-        if (idx == n) {
-            return this.survInfo.get(n - 1).getAtRiskCount();
+        if (idx < 0) {
+            idx = ~idx;
+            if (idx == filled) {
+              --idx;
+            }
         }
 
-        return this.survInfo.get(idx).getAtRiskCount();
+        return atRiskCounts[idx];
     }
     
     /**
@@ -355,14 +321,16 @@ public class KaplanMeierEstimator implements Serializable {
      * @return Reversed estimator.
      */
     public KaplanMeierEstimator reverse() {
-    	KaplanMeierEstimator revKm = new KaplanMeierEstimator();
-    	for (int i = 0; i < this.survInfo.size(); i++) {
-    		SurvInfo si = this.survInfo.get(i);
-    		SurvInfo revSi = new SurvInfo(si.getTime(), si.getCensoredCount(), si.getEventsCount());
-            revSi.setAtRiskCount(si.getAtRiskCount());    
+    	 KaplanMeierEstimator revKm = new KaplanMeierEstimator();
 
-    		revKm.survInfo.add(revSi);
-    	}
+         revKm.filled = filled;
+         revKm.probabilities = probabilities.clone();
+         revKm.times = times.clone();
+         revKm.atRiskCounts = atRiskCounts.clone();
+         // switch places
+         revKm.censoredCounts = eventsCounts.clone();
+         revKm.eventsCounts = censoredCounts.clone();
+
          revKm.calculateProbability();
          return revKm;
     }
@@ -371,21 +339,15 @@ public class KaplanMeierEstimator implements Serializable {
      * Fills the probabilities in K-M estimator.
      */
     protected void calculateProbability() {
-        
-    	//Debug.Assert(new HashSet<double>(this.survInfo.Select(s => s.Time)).Count == this.survInfo.Count);
-        
-        for (int i = 0; i < this.survInfo.size(); i++) {
-            SurvInfo si = this.survInfo.get(i);
-            
-            assert (int)si.getProbability() == SurvInfo.NotAssigned;
-
-            si.setProbability((si.getAtRiskCount() - si.getEventsCount()) / ((double)si.getAtRiskCount()));
+        for (int i = 0; i < filled; i++) {
+        //    assert probabilities[i] == SurvInfo.NotAssigned;
+            probabilities[i] = (atRiskCounts[i] - eventsCounts[i]) / (double)atRiskCounts[i];
             if (i > 0) {
-                si.setProbability(si.getProbability() * this.survInfo.get(i - 1).getProbability());
+                probabilities[i] *= probabilities[i-1];
             }
 
-           assert si.getProbability() >= 0 && si.getProbability() <= 1;
-        }           
+        //    assert probabilities[i] >= 0 && probabilities[i] <= 1;
+        }
     }
     
     /**

@@ -53,25 +53,28 @@ public class RegressionExpertSnC extends RegressionSnC {
 		Logger.log("RegressionExpertSnC.run()\n", Level.FINE);
 		double beginTime;
 		beginTime = System.nanoTime();
-		
-		RuleSetBase ruleset = factory.create(dataset);
+
+		SortedExampleSetEx sortedDataset = (SortedExampleSetEx)finder.preprocess(dataset);
+		RuleSetBase ruleset = factory.create(sortedDataset);
 		Attribute label = dataset.getAttributes().getLabel();
-		SortedExampleSet ses = new SortedExampleSetEx(dataset, label, SortedExampleSet.INCREASING);
-		ses.recalculateAttributeStatistics(ses.getAttributes().getLabel());
+		//SortedExampleSet ses = new SortedExampleSetEx(dataset, label, SortedExampleSet.INCREASING);
+
+		sortedDataset.recalculateAttributeStatistics(sortedDataset.getAttributes().getLabel());
 		
 		if (factory.getType() == RuleFactory.REGRESSION) {
-			double median = ses.getExample(ses.size() / 2).getLabel();
+			double median = sortedDataset.getExample(sortedDataset.size() / 2).getLabel();
 			RegressionRuleSet tmp = (RegressionRuleSet)ruleset;
 			tmp.setDefaultValue(median);
 		}
 		
-		Set<Integer> uncovered = new HashSet<Integer>();
+		//Set<Integer> uncovered = new HashSet<Integer>();
+		Set<Integer> uncovered = new IntegerBitSet(dataset.size());
 		double weighted_PN = 0;
 		// at the beginning rule set does not cover any examples
-		for (int id = 0; id < ses.size(); ++id) {
+		for (int id = 0; id < sortedDataset.size(); ++id) {
 			uncovered.add(id);
-			Example ex = ses.getExample(id);
-			double w = ses.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
+			Example ex = sortedDataset.getExample(id);
+			double w = sortedDataset.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
 			weighted_PN += w;
 		}
 		
@@ -97,17 +100,17 @@ public class RegressionExpertSnC extends RegressionSnC {
 			rule.setCoveredNegatives(new IntegerBitSet(dataset.size()));
 			rule.getCoveredPositives().setAll();
 
-			erf.adjust(rule, dataset, uncovered);
+			erf.adjust(rule, sortedDataset, uncovered);
 
 			Logger.log("Expert rule: " + rule.toString() + "\n", Level.FINE);
 			double t = System.nanoTime();
-			finder.grow(rule, ses, uncovered);
+			finder.grow(rule, sortedDataset, uncovered);
 			ruleset.setGrowingTime( ruleset.getGrowingTime() + (System.nanoTime() - t) / 1e9);
 						
 			if (params.isPruningEnabled()) {
 				Logger.log("Before prunning: " + rule.toString() + "\n" , Level.FINE);
 				t = System.nanoTime();
-				finder.prune(rule, ses, uncovered);
+				finder.prune(rule, sortedDataset, uncovered);
 				ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 			}
 			Logger.log("Candidate rule: " + rule.toString() + "\n", Level.FINE);
@@ -115,7 +118,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 			Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
 			Logger.log("\t" + totalExpertRules + " expert rules, " + (++totalAutoRules) + " auto rules" , Level.INFO);
 
-			finder.postprocess(rule, ses);
+			finder.postprocess(rule, sortedDataset);
 			ruleset.addRule(rule);
 
 			// remove examples covered by the rule and update statistics
@@ -123,8 +126,8 @@ public class RegressionExpertSnC extends RegressionSnC {
 			uncovered.removeAll(rule.getCoveredNegatives());
 			uncovered_pn = 0;
 			for (int id : uncovered) {
-				Example e = ses.getExample(id);
-				uncovered_pn += ses.getAttributes().getWeight() == null ? 1.0 : e.getWeight();
+				Example e = sortedDataset.getExample(id);
+				uncovered_pn += sortedDataset.getAttributes().getWeight() == null ? 1.0 : e.getWeight();
 			}
 		}
 		
@@ -151,14 +154,14 @@ public class RegressionExpertSnC extends RegressionSnC {
 			rule.getCoveredPositives().setAll();
 
 			double t = System.nanoTime();
-			carryOn = (finder.grow(rule, ses, uncovered) > 0);
+			carryOn = (finder.grow(rule, sortedDataset, uncovered) > 0);
 			ruleset.setGrowingTime( ruleset.getGrowingTime() + (System.nanoTime() - t) / 1e9);
 			
 			if (carryOn) {
 				if (params.isPruningEnabled()) {
 					Logger.log("Before prunning: " + rule.toString() + "\n" , Level.FINE);
 					t = System.nanoTime();
-					finder.prune(rule, ses, uncovered);
+					finder.prune(rule, sortedDataset, uncovered);
 					ruleset.setPruningTime( ruleset.getPruningTime() + (System.nanoTime() - t) / 1e9);
 				}
 				Logger.log("Candidate rule: " + rule.toString() + "\n", Level.FINE);
@@ -171,8 +174,8 @@ public class RegressionExpertSnC extends RegressionSnC {
 				
 				uncovered_pn = 0;
 				for (int id : uncovered) {
-					Example e = ses.getExample(id);
-					uncovered_pn += ses.getAttributes().getWeight() == null ? 1.0 : e.getWeight();
+					Example e = sortedDataset.getExample(id);
+					uncovered_pn += sortedDataset.getAttributes().getWeight() == null ? 1.0 : e.getWeight();
 				}
 				
 				// stop if number of examples remaining is less than threshold
@@ -184,7 +187,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 				if (uncovered.size() == previouslyUncovered) {
 					carryOn = false; 
 				} else {
-					finder.postprocess(rule, ses);
+					finder.postprocess(rule, sortedDataset);
 					ruleset.addRule(rule);
 					Logger.log( "\r" + StringUtils.repeat("\t", 10) + "\r", Level.INFO);
 					Logger.log("\t" + totalExpertRules + " expert rules, " + (++totalAutoRules) + " auto rules" , Level.INFO);

@@ -16,16 +16,17 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
-import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
+import adaa.analytics.rules.logic.representation.*;
 
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
+import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.set.SortedExampleSet;
 import com.rapidminer.tools.container.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * Class for growing and pruning log rank-based survival rules.
@@ -35,9 +36,112 @@ import java.util.Set;
  */
 public class SurvivalLogRankFinder extends RegressionFinder{
 
+	public static class Implementation {
+		public ExampleSet preprocess(ExampleSet trainSet) {
+			Attribute survTime = trainSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
+			SortedExampleSetEx ses = new SortedExampleSetEx(trainSet, survTime, SortedExampleSet.INCREASING);
+			return ses;
+		}
+
+		public void postprocess(
+				final Rule rule,
+				final ExampleSet dataset) {
+
+			KaplanMeierEstimator kme = new KaplanMeierEstimator(dataset, rule.getCoveredPositives());
+			((SurvivalRule)rule).setEstimator(kme);
+		}
+
+		protected boolean checkCandidate(
+				ExampleSet dataset,
+				Rule rule,
+				ConditionBase candidate,
+				Set<Integer> uncovered,
+				Set<Integer> covered,
+				ConditionEvaluation currentBest,
+				RegressionFinder finder) {
+
+			try {
+
+				IntegerBitSet conditionCovered = new IntegerBitSet(dataset.size());
+				candidate.evaluate(dataset, conditionCovered);
+
+				IntegerBitSet ruleCovered = conditionCovered.clone();
+				ruleCovered.retainAll(covered);
+
+				double p = 0;
+				double new_p = 0;
+
+				if (dataset.getAttributes().getWeight() == null) {
+					// unweighted examples
+					p = conditionCovered.calculateIntersectionSize((IntegerBitSet) covered);
+					new_p = conditionCovered.calculateIntersectionSize((IntegerBitSet) uncovered, (IntegerBitSet) covered);
+
+				} else {
+					// calculate weights of newly covered examples
+					for (int id : conditionCovered) {
+						if (covered.contains(id)) {
+							double w = dataset.getExample(id).getWeight();
+							p += w;
+							if (uncovered.contains(id)) {
+								new_p += w;
+							}
+						}
+					}
+				}
+
+				if (finder.checkCoverage(p, 0, new_p, 0, dataset.size(), 0, uncovered.size(), rule.getRuleOrderNum())) {
+					Covering cov = new Covering();
+					cov.positives = ruleCovered;
+					cov.weighted_p = p;
+
+					double quality = finder.params.getInductionMeasure().calculate(dataset, cov);
+
+					if (candidate instanceof ElementaryCondition) {
+						ElementaryCondition ec = (ElementaryCondition) candidate;
+						quality = finder.modifier.modifyQuality(quality, ec.getAttribute(), cov.weighted_p, new_p);
+					}
+
+					if (quality > currentBest.quality ||
+							(quality == currentBest.quality && (new_p > currentBest.covered || currentBest.opposite))) {
+
+						Logger.log("\t\tCurrent best: " + candidate + " (p=" + cov.weighted_p +
+								", new_p=" + (double) new_p +
+								", P=" + cov.weighted_P +
+								", mean_y=" + cov.mean_y + ", mean_y2=" + cov.mean_y2 + ", stddev_y=" + cov.stddev_y +
+								", quality=" + quality + "\n", Level.FINEST);
+
+						candidate.setCovering(conditionCovered);
+
+						currentBest.quality = quality;
+						currentBest.condition = candidate;
+						currentBest.covered = new_p;
+						currentBest.covering = cov;
+						currentBest.opposite = (candidate instanceof ElementaryCondition) &&
+								(((ElementaryCondition) candidate).getValueSet() instanceof SingletonSetComplement);
+
+						//rule.setWeight(quality);
+						return true;
+					}
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return false;
+		}
+	}
+
+	private Implementation implementation = new Implementation();
+
 	public SurvivalLogRankFinder(InductionParameters params) {
 		super(params);
+		this.params.setMeanBasedRegression(false);
 		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public ExampleSet preprocess(ExampleSet trainSet) {
+		return implementation.preprocess(trainSet);
 	}
 
 	/**
@@ -53,10 +157,18 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 			final ExampleSet dataset) {
 
 		super.postprocess(rule, dataset);
+		implementation.postprocess(rule, dataset);
+	}
 
-		Covering cov = rule.covers(dataset);
-		Set<Integer> covered = cov.positives;
-		KaplanMeierEstimator kme = new KaplanMeierEstimator(dataset, covered);
-		((SurvivalRule)rule).setEstimator(kme);
+	@Override
+	protected boolean checkCandidate(
+			ExampleSet dataset,
+			Rule rule,
+			ConditionBase candidate,
+			Set<Integer> uncovered,
+			Set<Integer> covered,
+			ConditionEvaluation currentBest) {
+
+		return implementation.checkCandidate(dataset, rule, candidate, uncovered, covered, currentBest, this);
 	}
 }
