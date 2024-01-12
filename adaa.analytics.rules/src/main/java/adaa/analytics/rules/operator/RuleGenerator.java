@@ -215,42 +215,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		Model model = null;
 		
 		try {
-			InductionParameters params = new InductionParameters();
-			params.setInductionMeasure(createMeasure(MeasureDestination.INDUCTION, new ClassificationMeasure(ClassificationMeasure.Correlation)));
-			params.setPruningMeasure(createMeasure(MeasureDestination.PRUNING, params.getInductionMeasure())); 
-			params.setVotingMeasure(createMeasure(MeasureDestination.VOTING, params.getInductionMeasure()));
-			
-			params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
-
-			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MINCOV_NEW));
-			params.setMaxcovNegative(getParameterAsDouble(PARAMETER_MAXCOV_NEGATIVE));
-			params.setMaxRuleCount(getParameterAsInt(PARAMETER_MAX_RULE_COUNT));
-
-			params.setEnablePruning(getParameterAsBoolean(PARAMETER_ENABLE_PRUNING));
-			params.setIgnoreMissing(getParameterAsBoolean(PARAMETER_IGNORE_MISSING));
-			params.setMaxGrowingConditions(getParameterAsDouble(PARAMETER_MAX_GROWING));
-			params.setSelectBestCandidate(getParameterAsBoolean(PARAMETER_SELECT_BEST_CANDIDATE));
-			params.setConditionComplementEnabled(getParameterAsBoolean(PARAMETER_COMPLEMENTARY_CONDITIONS));
-
-			params.setPenaltyStrength(getParameterAsDouble(PARAMETER_PENALTY_STRENGTH));
-			params.setPenaltySaturation(getParameterAsDouble(PARAMETER_PENALTY_SATURATION));
-			params.setMaxPassesCount(getParameterAsInt(PARAMETER_MAX_PASSES_COUNT));
-			params.setBinaryContrastIncluded(getParameterAsBoolean(PARAMETER_INCLUDE_BINARY_CONTRAST));
-			params.setMeanBasedRegression(getParameterAsBoolean(PARAMETER_MEAN_BASED_REGRESSION));
-			params.setControlAprioriPrecision(getParameterAsBoolean(PARAMETER_CONTROL_APRORI_PRECISION));
-			params.setApproximateInduction(getParameterAsBoolean(PARAMETER_APPROXIMATE_INDUCTION));
-			params.setApproximateBinsCount(getParameterAsInt(PARAMETER_APPROXIMATE_BINS_COUNT));
-
-			String tmp = getParameterAsString(PARAMETER_MINCOV_ALL);
-			if (tmp.length() > 0) {
-				List<Double> mincovs = Arrays.stream(tmp.split(" +")).map(Double::parseDouble).collect(Collectors.toList());
-
-				if (mincovs.size() == 1) {
-					params.setMinimumCoveredAll(mincovs.get(0));
-				} else {
-					params.setMinimumCoveredAll_list(mincovs);
-				}
-			}
+			InductionParameters params = fillParameters();
 
 			AbstractSeparateAndConquer snc;
 			AbstractFinder finder;
@@ -542,5 +507,46 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 			pv.addCriterion(new EstimatedPerformance("fraction_0.05_FWER_significant", rs.calculateSignificanceFWER(0.05).fraction, 1, false));
 		}
 		return pv;
+	 }
+
+	 protected InductionParameters fillParameters() throws OperatorException, IllegalAccessException {
+		 InductionParameters params = new InductionParameters();
+		 params.setInductionMeasure(createMeasure(MeasureDestination.INDUCTION, new ClassificationMeasure(ClassificationMeasure.Correlation)));
+		 params.setPruningMeasure(createMeasure(MeasureDestination.PRUNING, params.getInductionMeasure()));
+		 params.setVotingMeasure(createMeasure(MeasureDestination.VOTING, params.getInductionMeasure()));
+
+		 params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
+
+		 params.setMinimumCovered(getParameterAsDouble(PARAMETER_MINCOV_NEW));
+		 params.setMaxcovNegative(getParameterAsDouble(PARAMETER_MAXCOV_NEGATIVE));
+		 params.setMaxRuleCount(getParameterAsInt(PARAMETER_MAX_RULE_COUNT));
+
+		 params.setEnablePruning(getParameterAsBoolean(PARAMETER_ENABLE_PRUNING));
+		 params.setIgnoreMissing(getParameterAsBoolean(PARAMETER_IGNORE_MISSING));
+		 params.setMaxGrowingConditions(getParameterAsDouble(PARAMETER_MAX_GROWING));
+		 params.setSelectBestCandidate(getParameterAsBoolean(PARAMETER_SELECT_BEST_CANDIDATE));
+		 params.setConditionComplementEnabled(getParameterAsBoolean(PARAMETER_COMPLEMENTARY_CONDITIONS));
+
+		 params.setPenaltyStrength(getParameterAsDouble(PARAMETER_PENALTY_STRENGTH));
+		 params.setPenaltySaturation(getParameterAsDouble(PARAMETER_PENALTY_SATURATION));
+		 params.setMaxPassesCount(getParameterAsInt(PARAMETER_MAX_PASSES_COUNT));
+		 params.setBinaryContrastIncluded(getParameterAsBoolean(PARAMETER_INCLUDE_BINARY_CONTRAST));
+		 params.setMeanBasedRegression(getParameterAsBoolean(PARAMETER_MEAN_BASED_REGRESSION));
+		 params.setControlAprioriPrecision(getParameterAsBoolean(PARAMETER_CONTROL_APRORI_PRECISION));
+		 params.setApproximateInduction(getParameterAsBoolean(PARAMETER_APPROXIMATE_INDUCTION));
+		 params.setApproximateBinsCount(getParameterAsInt(PARAMETER_APPROXIMATE_BINS_COUNT));
+
+		 String tmp = getParameterAsString(PARAMETER_MINCOV_ALL);
+		 if (tmp.length() > 0) {
+			 List<Double> mincovs = Arrays.stream(tmp.split(" +")).map(Double::parseDouble).collect(Collectors.toList());
+
+			 if (mincovs.size() == 1) {
+				 params.setMinimumCoveredAll(mincovs.get(0));
+			 } else {
+				 params.setMinimumCoveredAll_list(mincovs);
+			 }
+		 }
+
+		 return params;
 	 }
 }
