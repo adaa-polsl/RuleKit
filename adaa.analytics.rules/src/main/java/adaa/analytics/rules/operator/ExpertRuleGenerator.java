@@ -267,33 +267,7 @@ public class ExpertRuleGenerator extends RuleGenerator {
 			knowledge.setPreferredConditionsPerRule(getParameterAsInt(PARAMETER_PREFERRED_CONDITIONS_PER_RULE));
 			knowledge.setPreferredAttributesPerRule(getParameterAsInt(PARAMETER_PREFERRED_ATTRIBUTES_PER_RULE));
 			
-			InductionParameters params = new InductionParameters();
-			params.setInductionMeasure(createMeasure(MeasureDestination.INDUCTION, new ClassificationMeasure(ClassificationMeasure.Correlation)));
-			params.setPruningMeasure(createMeasure(MeasureDestination.PRUNING, params.getInductionMeasure()));
-			params.setVotingMeasure(createMeasure(MeasureDestination.VOTING, params.getInductionMeasure()));
-
-			params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
-
-			params.setMinimumCovered(getParameterAsDouble(PARAMETER_MINCOV_NEW));
-			params.setMaxcovNegative(getParameterAsDouble(PARAMETER_MAXCOV_NEGATIVE));
-			params.setMaxRuleCount(getParameterAsInt(PARAMETER_MAX_RULE_COUNT));
-
-			params.setEnablePruning(getParameterAsBoolean(PARAMETER_ENABLE_PRUNING));
-			params.setIgnoreMissing(getParameterAsBoolean(PARAMETER_IGNORE_MISSING));
-			params.setMaxGrowingConditions(getParameterAsDouble(PARAMETER_MAX_GROWING));
-			params.setSelectBestCandidate(getParameterAsBoolean(PARAMETER_SELECT_BEST_CANDIDATE));
-			params.setConditionComplementEnabled(getParameterAsBoolean(PARAMETER_COMPLEMENTARY_CONDITIONS));
-
-			String tmp = getParameterAsString(PARAMETER_MINCOV_ALL);
-			if (tmp.length() > 0) {
-				List<Double> mincovs = Arrays.stream(tmp.split(" +")).map(Double::parseDouble).collect(Collectors.toList());
-
-				if (mincovs.size() == 1) {
-					params.setMinimumCoveredAll(mincovs.get(0));
-				} else {
-					params.setMinimumCoveredAll_list(mincovs);
-				}
-			}
+			InductionParameters params = fillParameters();
 
 			AbstractFinder finder = null;
 			AbstractSeparateAndConquer snc = null;
