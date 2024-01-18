@@ -22,7 +22,7 @@ public class DatasetConfiguration {
 
     public String label;
 
-    public Map<String, String> options = new HashMap<>();
+    private Map<String, String> options = new HashMap<>();
 
     public String outDirectory;
 
@@ -121,5 +121,41 @@ public class DatasetConfiguration {
             ret.add(dc);
         }
         return ret;
+    }
+
+    public boolean hasOptionParameter(String param)
+    {
+        return options.containsKey(param);
+    }
+
+    public String getOptionParameter(String param)
+    {
+        return options.get(param);
+    }
+
+    public List<String[]> generateRoles()
+    {
+        List<String[]> roles = new ArrayList<>();
+
+        // add custom roles to mask ignored attributes
+        if (options.containsKey("ignore")) {
+            String[] attrs = options.get("ignore").split(",");
+            int i = 0;
+            for (String a : attrs) {
+                roles.add(new String[]{a, "ignored_" + i});
+                ++i;
+            }
+        }
+
+        // survival dataset - set proper role
+        if (options.containsKey(SurvivalRule.SURVIVAL_TIME_ROLE)) {
+            roles.add(new String[]{options.get(SurvivalRule.SURVIVAL_TIME_ROLE), SurvivalRule.SURVIVAL_TIME_ROLE});
+        }
+
+        if (options.containsKey(Attributes.WEIGHT_NAME)) {
+            roles.add(new String[]{options.get(Attributes.WEIGHT_NAME), Attributes.WEIGHT_NAME});
+        }
+
+        return roles;
     }
 }

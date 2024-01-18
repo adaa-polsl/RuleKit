@@ -18,11 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,26 +30,18 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import adaa.analytics.rules.experiments.config.*;
-import adaa.analytics.rules.logic.representation.ContrastRule;
-import adaa.analytics.rules.operator.RuleGenerator;
 import adaa.analytics.rules.utils.VersionService;
 
 import org.apache.commons.cli.*;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import adaa.analytics.rules.experiments.TrainTestValidationExperiment;
 import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
-import adaa.analytics.rules.operator.ExpertRuleGenerator;
 
 import com.rapidminer.RapidMiner;
-import com.rapidminer.example.Attributes;
 import com.rapidminer.tools.LogService;
 import com.rapidminer.tools.PlatformUtilities;
-import com.sun.tools.javac.util.Pair;
 
 /**
  * Console used in batch mode.
@@ -91,7 +79,7 @@ public class ExperimentalConsole {
             Logger.log("Loading XML experiment file: " + configFile, Level.INFO);
 
             //Paramset
-            List<ParamSetWrapper> paramSets = ParamSetWrapper.readParamSetWrapper(doc);
+            List<ParamSetWrapper> paramSets = ParamSetWrapper.readParamSets(doc);
 
             // Dataset
             List<DatasetConfiguration> datasetConfigurationList = DatasetConfiguration.readConfigurations(doc);
@@ -170,7 +158,7 @@ public class ExperimentalConsole {
             // create experiments for all params sets
             for (ParamSetWrapper wrapper : paramSets) {
 
-                String outDirPath = dc.outDirectory + "/" + wrapper.name;
+                String outDirPath = dc.outDirectory + "/" + wrapper.getName();
 
                 //noinspection ResultOfMethodCallIgnored
                 new File(outDirPath).mkdirs();
