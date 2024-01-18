@@ -15,11 +15,9 @@
 package adaa.analytics.rules.operator;
 
 import adaa.analytics.rules.logic.induction.*;
-import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.ConditionBase.Type;
-import adaa.analytics.rules.operator.gui.ExpertWizard.ExpertWizardCreator;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.Model;
@@ -31,12 +29,10 @@ import com.rapidminer.parameter.conditions.BooleanParameterCondition;
 import com.rapidminer.parameter.conditions.ParameterCondition;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * An ExpertRuleGenerator is an operator that extends RuleGenerator by providing user 
@@ -131,14 +127,7 @@ public class ExpertRuleGenerator extends RuleGenerator {
 		ParameterType type = new ParameterTypeBoolean(PARAMETER_USE_EXPERT, getParameterDescription(PARAMETER_USE_EXPERT), false);
 		types.add(type);
 		ParameterCondition enableExpertCondition = new BooleanParameterCondition(this, PARAMETER_USE_EXPERT, true, true);
-		
-		// add expert parameters only when enabled
-		type = new ParameterTypeConfiguration(ExpertWizardCreator.class, this);
-		type.setExpert(false);
-		type.setKey(PARAMETER_EXPERT_CONFIG);
-		type.registerDependencyCondition(enableExpertCondition);
-		types.add(type);
-		
+
 		type = new ParameterTypeList(PARAMETER_EXPERT_RULES, getParameterDescription(PARAMETER_EXPERT_RULES),
 				   new ParameterTypeString(PARAMETER_EXPORT_KEY, getParameterDescription(PARAMETER_EXPORT_KEY)),
 				   new ParameterTypeString(PARAMETER_EXPORT_VALUE, getParameterDescription(PARAMETER_EXPORT_VALUE)));

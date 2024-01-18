@@ -1,20 +1,23 @@
 /*******************************************************************************
  * Copyright (C) 2019 RuleKit Development Team
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Affero General Public License as published by the Free Software Foundation, either version 3
  * of the License, or (at your option) any later version.
- *  
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  *  Affero General Public License for more details.
- *  
+ *
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
 package adaa.analytics.rules.experiments;
 
-import adaa.analytics.rules.consoles.ExperimentalConsole;
+import adaa.analytics.rules.experiments.config.DatasetConfiguration;
+import adaa.analytics.rules.experiments.config.ParamSetWrapper;
+import adaa.analytics.rules.experiments.config.PredictElement;
+import adaa.analytics.rules.experiments.config.TrainElement;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.operator.ChangeAttributeRoleAndAnnotate;
 import adaa.analytics.rules.operator.ExpertRuleGenerator;
@@ -22,6 +25,7 @@ import adaa.analytics.rules.operator.RuleGenerator;
 import adaa.analytics.rules.operator.RulePerformanceEvaluator;
 import adaa.analytics.rules.utils.RapidMiner5;
 
+import adaa.analytics.rules.utils.VersionService;
 import com.rapidminer.example.Attributes;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.*;
@@ -35,13 +39,13 @@ import com.rapidminer5.operator.io.ArffExampleSource;
 import com.rapidminer5.operator.io.ModelWriter;
 import com.rapidminer5.operator.io.ModelLoader;
 import com.rapidminer.operator.performance.AbstractPerformanceEvaluator;
-import com.sun.tools.javac.util.Pair;
 
 import org.apache.commons.lang.StringUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -51,7 +55,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-public class TrainTestValidationExperiment implements Runnable{
+public class TrainTestValidationExperiment implements Runnable {
 
     public static final String RULES_SIGNIFICANT_FIGURES = "rules_significant_figures";
 
@@ -105,9 +109,9 @@ public class TrainTestValidationExperiment implements Runnable{
             evaluator.getOutputPorts().getPortByName("performance").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(1));
 
             // configure role setter
-            roleSetter.setParameter(ChangeAttributeRole.PARAMETER_NAME, labelAttribute);
+            roleSetter.setParameter(ChangeAttributeRole.PARAMETER_NAME, datasetConfiguration.label);
             roleSetter.setParameter(ChangeAttributeRole.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
-            roleSetter2.setParameter(ChangeAttributeRole.PARAMETER_NAME, labelAttribute);
+            roleSetter2.setParameter(ChangeAttributeRole.PARAMETER_NAME, datasetConfiguration.label);
             roleSetter2.setParameter(ChangeAttributeRole.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
 
             modelWriter.setParameter(ModelWriter.PARAMETER_OUTPUT_TYPE, "2");
@@ -152,9 +156,9 @@ public class TrainTestValidationExperiment implements Runnable{
 
             evaluator.getOutputPorts().getPortByName("performance").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(1));
             evaluator.getOutputPorts().getPortByName("example set").connectTo(writeArff.getInputPorts().getPortByName("input"));
- 			writeArff.getOutputPorts().getPortByName("through").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(2));
+            writeArff.getOutputPorts().getPortByName("through").connectTo(process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(2));
 
-            roleSetter.setParameter(ChangeAttributeRole.PARAMETER_NAME, labelAttribute);
+            roleSetter.setParameter(ChangeAttributeRole.PARAMETER_NAME, datasetConfiguration.label);
             roleSetter.setParameter(ChangeAttributeRole.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
 
         }
@@ -168,34 +172,24 @@ public class TrainTestValidationExperiment implements Runnable{
     protected SynchronizedReport testingReport;
 
     private final String outDirPath;
-    private final String labelAttribute;
-    private final List<ExperimentalConsole.TrainElement> trainElements;
-    private final List<ExperimentalConsole.PredictElement> predictElements;
 
-    private Pair<String,Map<String,Object>> paramSet;
-    private Map<String, String> options;
-    
-    private boolean isVerbose = false;
-    
-    public void setVerbose(boolean v) { isVerbose = v; }
-    public boolean getVerbose() { return isVerbose; }
-    
-    public TrainTestValidationExperiment(SynchronizedReport trainingReport, SynchronizedReport testingReport, SynchronizedReport predictionPerformance,
-                                         String labelAttribute, Map<String, String> options, Pair<String,Map<String, Object>> paramSet,
-                                         String outDirPath, List<ExperimentalConsole.TrainElement> trainElements,
-                                         List<ExperimentalConsole.PredictElement> predictElements){
+    private DatasetConfiguration datasetConfiguration;
+    private ParamSetWrapper paramSet;
+
+    private boolean logsVerbose = false;
+
+    public TrainTestValidationExperiment(DatasetConfiguration datasetConfiguration, ParamSetWrapper paramSet,
+                                         String outDirPath, boolean verbose) throws IOException {
+        VersionService versionService = new VersionService();
+        performanceTable = new SynchronizedReport(outDirPath, datasetConfiguration.predictionPerformanceFilePath, versionService.getSimpleHeader());
+        trainingReport = new SynchronizedReport(outDirPath, datasetConfiguration.trainingReportFilePath, versionService.getHeader());
+        testingReport = new SynchronizedReport(outDirPath, datasetConfiguration.testingReportFilePath, versionService.getHeader());
 
         File f = new File(outDirPath);
         this.outDirPath = f.isAbsolute() ? outDirPath : (System.getProperty("user.dir") + "/" + outDirPath);
-        this.labelAttribute = labelAttribute;
-        this.trainElements = trainElements;
-        this.predictElements = predictElements;
-        this.options = options;
+        this.datasetConfiguration = datasetConfiguration;
         this.paramSet = paramSet;
-
-        this.performanceTable = predictionPerformance;
-        this.testingReport = testingReport;
-        this.trainingReport = trainingReport;
+        this.logsVerbose = verbose;
     }
 
     @Override
@@ -203,44 +197,44 @@ public class TrainTestValidationExperiment implements Runnable{
 
         try {
 
-            TrainProcessWrapper train =  new TrainProcessWrapper();
+            TrainProcessWrapper train = new TrainProcessWrapper();
             TestProcessWrapper test = new TestProcessWrapper();
 
             List<String[]> roles = new ArrayList<>();
 
             // add custom roles to mask ignored attributes
-            if (options.containsKey("ignore")) {
-                String[] attrs = options.get("ignore").split(",");
+            if (datasetConfiguration.options.containsKey("ignore")) {
+                String[] attrs = datasetConfiguration.options.get("ignore").split(",");
                 int i = 0;
-                for (String a: attrs) {
+                for (String a : attrs) {
                     roles.add(new String[]{a, "ignored_" + i});
                     ++i;
                 }
             }
 
             // survival dataset - set proper role
-            if (options.containsKey(SurvivalRule.SURVIVAL_TIME_ROLE)) {
-                roles.add(new String[]{options.get(SurvivalRule.SURVIVAL_TIME_ROLE), SurvivalRule.SURVIVAL_TIME_ROLE});
+            if (datasetConfiguration.options.containsKey(SurvivalRule.SURVIVAL_TIME_ROLE)) {
+                roles.add(new String[]{datasetConfiguration.options.get(SurvivalRule.SURVIVAL_TIME_ROLE), SurvivalRule.SURVIVAL_TIME_ROLE});
             }
 
-            if (options.containsKey(Attributes.WEIGHT_NAME)) {
-                roles.add(new String[]{options.get(Attributes.WEIGHT_NAME), Attributes.WEIGHT_NAME});
+            if (datasetConfiguration.options.containsKey(Attributes.WEIGHT_NAME)) {
+                roles.add(new String[]{datasetConfiguration.options.get(Attributes.WEIGHT_NAME), Attributes.WEIGHT_NAME});
             }
 
-            if (options.containsKey(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
-                String contrastAttr = options.get(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+            if (datasetConfiguration.options.containsKey(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
+                String contrastAttr = datasetConfiguration.options.get(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
 
-                 // use annotation for storing contrast attribute info
-                 train.roleSetter.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_NAME, ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
-                 train.roleSetter.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_VALUE, contrastAttr);
-                 train.roleSetter2.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_NAME, ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
-                 train.roleSetter2.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_VALUE, contrastAttr);
-                 test.roleSetter.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_NAME, ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
-                 test.roleSetter.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_VALUE, contrastAttr);
+                // use annotation for storing contrast attribute info
+                train.roleSetter.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_NAME, ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+                train.roleSetter.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_VALUE, contrastAttr);
+                train.roleSetter2.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_NAME, ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+                train.roleSetter2.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_VALUE, contrastAttr);
+                test.roleSetter.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_NAME, ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+                test.roleSetter.setParameter(ChangeAttributeRoleAndAnnotate.PARAMETER_ANNOTATION_VALUE, contrastAttr);
 
-                 train.evaluator.setEnabled(false);
-                 test.evaluator.setEnabled(false);
-                 test.writeArff.setEnabled(false);
+                train.evaluator.setEnabled(false);
+                test.evaluator.setEnabled(false);
+                test.writeArff.setEnabled(false);
             }
 
             if (roles.size() > 0) {
@@ -250,10 +244,10 @@ public class TrainTestValidationExperiment implements Runnable{
             }
 
             // set rule generator parameters
-        	Logger.log("\nPARAMETER SET: " + paramSet.fst + "\n", Level.INFO);
-            Map<String, Object> params = paramSet.snd;
+            Logger.log("\nPARAMETER SET: " + paramSet.name + "\n", Level.INFO);
+            Map<String, Object> params = paramSet.map;
 
-            if(params.containsKey(RULES_SIGNIFICANT_FIGURES)) {
+            if (params.containsKey(RULES_SIGNIFICANT_FIGURES)) {
                 int numberOfRulesSignificantFigures = (int) params.get(RULES_SIGNIFICANT_FIGURES);
                 params.remove(RULES_SIGNIFICANT_FIGURES);
                 DoubleFormatter.configure(numberOfRulesSignificantFigures);
@@ -261,31 +255,32 @@ public class TrainTestValidationExperiment implements Runnable{
                 DoubleFormatter.defaultConfigure();
             }
 
-            for (String key: params.keySet()) {
+            for (String key : params.keySet()) {
                 Object o = params.get(key);
 
                 boolean paramOk = train.ruleGenerator.getParameters().getKeys().contains(key);
-                
-                if (paramOk)   
-	                if (o instanceof String) {
-	                    train.ruleGenerator.setParameter(key, (String)o);
-	                } else if (o instanceof List) {
-	                    train.ruleGenerator.setListParameter(key, (List<String[]>)o);
-	                } else {
-                    throw new InvalidParameterException("Invalid paramter type: " + key);
-                } else {
-                	throw new UndefinedParameterError(key, "Undefined parameter: " + key);
+
+                if (paramOk)
+                    if (o instanceof String) {
+                        train.ruleGenerator.setParameter(key, (String) o);
+                    } else if (o instanceof List) {
+                        train.ruleGenerator.setListParameter(key, (List<String[]>) o);
+                    } else {
+                        throw new InvalidParameterException("Invalid paramter type: " + key);
+                    }
+                else {
+                    throw new UndefinedParameterError(key, "Undefined parameter: " + key);
                 }
             }
 
             DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss");
 
             // Train process
-            if (trainElements.size() > 0) {
+            if (datasetConfiguration.trainElements.size() > 0) {
                 Logger.log("TRAINING\n"
-            		+ "Log file: " + trainingReport.getFile() + "\n",  Level.INFO);
+                        + "Log file: " + trainingReport.getFile() + "\n", Level.INFO);
 
-                for(ExperimentalConsole.TrainElement te : trainElements) {
+                for (TrainElement te : datasetConfiguration.trainElements) {
                     Logger.log("Building model " + te.modelFile + " from dataset " + te.inFile + "\n", Level.INFO);
                     File f = new File(te.modelFile);
                     String modelFilePath = f.isAbsolute() ? te.modelFile : (outDirPath + "/" + te.modelFile);
@@ -306,18 +301,18 @@ public class TrainTestValidationExperiment implements Runnable{
 
                     PerformanceVector performance;
 
-                if (te.modelCsvFile != null) {
-                    RuleSetBase model = (RuleSetBase)objs[0];
-                    f = new File(te.modelCsvFile);
-                    String csvFilePath = f.isAbsolute() ? te.modelCsvFile : (outDirPath + "/" + te.modelCsvFile);
+                    if (te.modelCsvFile != null) {
+                        RuleSetBase model = (RuleSetBase) objs[0];
+                        f = new File(te.modelCsvFile);
+                        String csvFilePath = f.isAbsolute() ? te.modelCsvFile : (outDirPath + "/" + te.modelCsvFile);
 
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(csvFilePath));
-                    writer.write(model.toTable());
-                    writer.close();
-                }
+                        BufferedWriter writer = new BufferedWriter(new FileWriter(csvFilePath));
+                        writer.write(model.toTable());
+                        writer.close();
+                    }
 
                     // training report
-                if (trainingReport != null) {
+                    if (trainingReport != null) {
                         StringBuilder sb = new StringBuilder();
                         sb.append(StringUtils.repeat("=", 80));
                         sb.append("\n");
@@ -348,17 +343,17 @@ public class TrainTestValidationExperiment implements Runnable{
                         }
 
                         sb.append("\n\n");
-                    trainingReport.append(sb.toString());
+                        trainingReport.append(sb.toString());
                         Logger.log(" [OK]\n", Level.INFO);
                     }
                 }
             }
 
             // Test process
-            if (predictElements.size() > 0) {
+            if (datasetConfiguration.predictElements.size() > 0) {
                 Logger.log("PREDICTION\n"
-            		+ "Performance file: " + performanceTable.getFile() + "\n", Level.INFO);
-            for(ExperimentalConsole.PredictElement pe : predictElements) {
+                        + "Performance file: " + performanceTable.getFile() + "\n", Level.INFO);
+                for (PredictElement pe : datasetConfiguration.predictElements) {
                     Logger.log("Applying model " + pe.modelFile + " on " + pe.testFile + ", saving predictions in " + pe.testFile, Level.INFO);
                     Date begin = new Date();
                     String dateString = dateFormat.format(begin);
@@ -388,21 +383,21 @@ public class TrainTestValidationExperiment implements Runnable{
                     IOContainer out = test.process.run();
                     IOObject[] objs = out.getIOObjects();
                     long t2 = System.nanoTime();
-                    double elapsedSec = (double)(t2 - t1) / 1e9;
+                    double elapsedSec = (double) (t2 - t1) / 1e9;
 
-					// Testing report
-	                if (testingReport != null) {
-	                    ExampleSet predictions = (ExampleSet)objs[2];
-	                    if (predictions.getAnnotations().containsKey(RuleSetBase.ANNOTATION_TEST_REPORT)) {
-	                        testingReport.append("================================================================================\n");
-	                        testingReport.append(testFileName + "\n");
-	                        testingReport.append(predictions.getAnnotations().get(RuleSetBase.ANNOTATION_TEST_REPORT));
-	                        testingReport.append("\n\n");
-	                    }
-	                }
+                    // Testing report
+                    if (testingReport != null) {
+                        ExampleSet predictions = (ExampleSet) objs[2];
+                        if (predictions.getAnnotations().containsKey(RuleSetBase.ANNOTATION_TEST_REPORT)) {
+                            testingReport.append("================================================================================\n");
+                            testingReport.append(testFileName + "\n");
+                            testingReport.append(predictions.getAnnotations().get(RuleSetBase.ANNOTATION_TEST_REPORT));
+                            testingReport.append("\n\n");
+                        }
+                    }
 
                     // Performance log
-                if(performanceTable != null){
+                    if (performanceTable != null) {
 
                         RuleSetBase model = (RuleSetBase) objs[0];
                         PerformanceVector performance = RuleGenerator.recalculatePerformance(model);
@@ -433,19 +428,19 @@ public class TrainTestValidationExperiment implements Runnable{
                         }
 
                         String configString = "Parameters: " + model.getParams().toString().replace("\n", "; ");
-                    performanceTable.add(new String[] { configString, performanceHeader.toString()}, row.toString());
+                        performanceTable.add(new String[]{configString, performanceHeader.toString()}, row.toString());
                     }
 
                     Logger.log(" [OK]\n", Level.INFO);
                 }
             }
-        }  catch (Exception e) {
-           if (isVerbose) {
-        	   e.printStackTrace();
-           } else {
-        	   Logger.log(e.getMessage() + "\n", Level.SEVERE);
-           }
-        	
+        } catch (Exception e) {
+            if (logsVerbose) {
+                e.printStackTrace();
+            } else {
+                Logger.log(e.getMessage() + "\n", Level.SEVERE);
+            }
+
         }
     }
 }

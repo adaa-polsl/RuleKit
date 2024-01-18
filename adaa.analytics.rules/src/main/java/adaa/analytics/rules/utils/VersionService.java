@@ -42,4 +42,16 @@ public class VersionService {
             return "no commit date";
         }
     }
+
+    public String getSimpleHeader() {
+        String version = getVersion();
+        String commitHash = getCommitHash();
+        String commitDate = getCommitDate();
+        return "RuleKit " + version + " (build " + commitHash + " " + commitDate + ")\n";
+    }
+
+    public String getHeader() {
+        return getSimpleHeader() + "    RuleKit Development Team (c) 2019\n\n";
+    }
+
 }

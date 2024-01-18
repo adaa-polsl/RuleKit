@@ -39,18 +39,6 @@
           </operator>
           
 
-<!--
-
-            <operator>
-                <key>rule_translator</key>
-                <class>adaa.analytics.rules.operator.RuleTranslator</class>
-            </operator>
-            <operator>
-                <key>rdata_reader</key>
-                <class>adaa.analytics.rules.operator.RDataExampleSource</class>
-            </operator>
-  -->       
-          	  
 		  
         </group>
 		   

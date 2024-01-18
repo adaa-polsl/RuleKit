@@ -1,0 +1,85 @@
+package adaa.analytics.rules.experiments.config;
+
+import adaa.analytics.rules.experiments.TrainTestValidationExperiment;
+import adaa.analytics.rules.logic.representation.Logger;
+import adaa.analytics.rules.operator.ExpertRuleGenerator;
+import adaa.analytics.rules.operator.RuleGenerator;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.logging.Level;
+
+public class ParamSetWrapper {
+    /**
+     * Name of the parameter set
+     */
+    public String name;
+
+    /**
+     * Mapping between parameter names and their values.
+     */
+    public final Map<String, Object> map = new TreeMap<>();
+
+    public static List<ParamSetWrapper> readParamSetWrapper(Document doc) {
+        String lineSeparator = System.getProperty("line.separator");
+        List<ParamSetWrapper> paramSets = new ArrayList<>();
+        NodeList paramSetNodes = doc.getElementsByTagName("parameter_set");
+
+        for (int setId = 0; setId < paramSetNodes.getLength(); setId++) {
+            ParamSetWrapper wrapper = new ParamSetWrapper();
+            Element setNode = (Element) paramSetNodes.item(setId);
+            wrapper.name = setNode.getAttribute("name");
+            Logger.log("Reading parameter set " + setNode.getAttribute("name") + lineSeparator, Level.FINE);
+            NodeList paramNodes = setNode.getElementsByTagName("param");
+
+            for (int paramId = 0; paramId < paramNodes.getLength(); ++paramId) {
+                Element paramNode = (Element) paramNodes.item(paramId);
+                String name = paramNode.getAttribute("name");
+
+                // backward compatibility
+                if (name.equals("min_rule_covered") || name.equals("mincov_new")) {
+                    name = RuleGenerator.PARAMETER_MINCOV_NEW;
+                }
+
+                String[] expertParamNames = new String[]{ExpertRuleGenerator.PARAMETER_EXPERT_RULES, ExpertRuleGenerator.PARAMETER_EXPERT_PREFERRED_CONDITIONS, ExpertRuleGenerator.PARAMETER_EXPERT_FORBIDDEN_CONDITIONS};
+
+                if (name.equals(TrainTestValidationExperiment.RULES_SIGNIFICANT_FIGURES)) {
+                    String value = paramNode.getTextContent();
+                    wrapper.map.put(name, Integer.parseInt(value));
+                    continue;
+                }
+
+                // parse expert rules/conditions
+                boolean paramProcessed = false;
+                for (String expertParamName : expertParamNames) {
+                    if (name.equals(expertParamName)) {
+                        List<String[]> expertRules = new ArrayList<>();
+                        NodeList ruleNodes = paramNode.getElementsByTagName("entry");
+
+                        for (int ruleId = 0; ruleId < ruleNodes.getLength(); ++ruleId) {
+                            Element ruleNode = (Element) ruleNodes.item(ruleId);
+                            String ruleName = ruleNode.getAttribute("name");
+                            String ruleContent = ruleNode.getTextContent();
+                            expertRules.add(new String[]{ruleName, ruleContent});
+                        }
+                        wrapper.map.put(expertParamName, expertRules);
+                        paramProcessed = true;
+                    }
+                }
+
+                if (!paramProcessed) {
+                    String value = paramNode.getTextContent();
+                    wrapper.map.put(name, value);
+                }
+            }
+
+            paramSets.add(wrapper);
+        }
+        return paramSets;
+    }
+}

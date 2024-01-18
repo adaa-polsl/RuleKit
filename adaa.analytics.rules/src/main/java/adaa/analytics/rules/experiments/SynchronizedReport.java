@@ -25,33 +25,35 @@ public class SynchronizedReport {
 	protected String file;
 	
 	public String getFile() { return file; }
-	
-	public SynchronizedReport(String name) throws UnsupportedEncodingException, FileNotFoundException {
-    	file = name;
-		writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(name), "utf-8"));
-	}
 
-	public SynchronizedReport(String name, String header) throws IOException {
-		file = name;
-		writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(name), "utf-8"));
-		writer.write(header);
+
+	public SynchronizedReport(String dirPath, String filePath, String header) throws IOException {
+		if (filePath!=null && !filePath.isEmpty()) {
+			file = dirPath + "/" + filePath;
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "utf-8"));
+			writer.write(header);
+		}
 	}
 	
 	
 	public synchronized void append(String text) throws IOException {
-		writer.write(text);
-		writer.flush();
+		if (writer!=null) {
+			writer.write(text);
+			writer.flush();
+		}
 	}
 	
 	public synchronized void add(String[] headers, String row) throws IOException {
-		if (empty == true) {
-			for (String h: headers) {
-				writer.write(h + "\n");
+		if (writer!=null) {
+			if (empty == true) {
+				for (String h : headers) {
+					writer.write(h + "\n");
+				}
+				empty = false;
 			}
-			empty = false;
+
+			writer.write(row + "\n");
+			writer.flush();
 		}
-		
-		writer.write(row + "\n");
-		writer.flush();
 	}
 }
