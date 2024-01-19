@@ -142,7 +142,8 @@ public abstract class RuleSetBase extends PredictionModel {
 	public double calculateConditionsCount() {
 		double cnt = 0;
 		for (Rule r : rules) {
-			cnt += r.getPremise().getSubconditions().size();
+			cnt += r.getPremise().getAttributes().size();
+			//cnt += r.getPremise().getSubconditions().size();
 		}
 		return cnt / rules.size();
 	}
