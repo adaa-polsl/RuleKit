@@ -3,7 +3,6 @@ package adaa.analytics.rules.experiments.config;
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
-import com.rapidminer.example.Attributes;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -15,6 +14,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 public class DatasetConfiguration {
+    private static final String WEIGHT_NAME = "weight";
     public String testingReportFilePath;
     public String trainingReportFilePath;
 
@@ -51,9 +51,9 @@ public class DatasetConfiguration {
             options.put(ContrastRule.CONTRAST_ATTRIBUTE_ROLE, val);
         }
 
-        if (node.getElementsByTagName(Attributes.WEIGHT_NAME).getLength() > 0) {
-            String val = node.getElementsByTagName(Attributes.WEIGHT_NAME).item(0).getTextContent();
-            options.put(Attributes.WEIGHT_NAME, val);
+        if (node.getElementsByTagName(WEIGHT_NAME).getLength() > 0) {
+            String val = node.getElementsByTagName(WEIGHT_NAME).item(0).getTextContent();
+            options.put(WEIGHT_NAME, val);
         }
 
         Logger.log("Out directory " + outDirectory + lineSeparator +
@@ -152,8 +152,8 @@ public class DatasetConfiguration {
             roles.add(new String[]{options.get(SurvivalRule.SURVIVAL_TIME_ROLE), SurvivalRule.SURVIVAL_TIME_ROLE});
         }
 
-        if (options.containsKey(Attributes.WEIGHT_NAME)) {
-            roles.add(new String[]{options.get(Attributes.WEIGHT_NAME), Attributes.WEIGHT_NAME});
+        if (options.containsKey(WEIGHT_NAME)) {
+            roles.add(new String[]{options.get(WEIGHT_NAME), WEIGHT_NAME});
         }
 
         return roles;
