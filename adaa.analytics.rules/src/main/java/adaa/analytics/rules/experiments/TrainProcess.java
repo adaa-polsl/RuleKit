@@ -15,7 +15,6 @@ import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.performance.PerformanceVector;
-import com.rapidminer5.operator.io.ModelWriter;
 import org.apache.commons.lang.StringUtils;
 import utils.ArffFileLoader;
 
@@ -29,7 +28,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 public class TrainProcess {
-    private ModelWriter modelWriter = null;
     private RoleConfigurator roleConfigurator;
     private ExpertRuleGenerator ruleGenerator = null;
     private RulePerformanceEvaluator evaluator;
@@ -54,14 +52,11 @@ public class TrainProcess {
 
         evaluator = new RulePerformanceEvaluator(new OperatorDescription(
                 "", "", RulePerformanceEvaluator.class, null, "", null));
-        modelWriter = new ModelWriter(new OperatorDescription(
-                "", "", ModelWriter.class, null, "", null));
         ruleGenerator = new ExpertRuleGenerator(new OperatorDescription(
                 "", "", ExpertRuleGenerator.class, null, "", null));
 
         // configure role setter
         roleConfigurator = new RoleConfigurator(datasetConfiguration.label);
-        modelWriter.setParameter(ModelWriter.PARAMETER_OUTPUT_TYPE, "2");
 
         List<String[]> roles = datasetConfiguration.generateRoles();
 
@@ -120,10 +115,8 @@ public class TrainProcess {
                 ExampleSet sourceEs = new ArffFileLoader().load(inFilePath, datasetConfiguration.label);
                 roleConfigurator.apply(sourceEs);
 
-                modelWriter.setParameter(ModelWriter.PARAMETER_MODEL_FILE, modelFilePath);
-
                 Model learnedModel = ruleGenerator.learn(sourceEs);
-                modelWriter.write(learnedModel);
+                ModelFileInOut.write(learnedModel, modelFilePath);
 
                 generateModelReport(te, (RuleSetBase) learnedModel);
 

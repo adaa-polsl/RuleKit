@@ -12,7 +12,6 @@ import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.*;
 import com.rapidminer.operator.performance.AbstractPerformanceEvaluator;
 import com.rapidminer.operator.performance.PerformanceVector;
-import com.rapidminer5.operator.io.ModelLoader;
 import utils.ArffFileLoader;
 import utils.ArffFileWriter;
 
@@ -27,8 +26,6 @@ import java.util.logging.Level;
 
 public class TestProcess {
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss");
-
-    private ModelLoader modelLoader = null;
 
     private RoleConfigurator roleConfigurator;
 
@@ -60,8 +57,6 @@ public class TestProcess {
 
         evaluator = new RulePerformanceEvaluator(new OperatorDescription(
                 "", "", RulePerformanceEvaluator.class, null, "", null));
-        modelLoader = new ModelLoader(new OperatorDescription(
-                "", "", ModelLoader.class, null, "", null));
         roleConfigurator = new RoleConfigurator(datasetConfiguration.label);
 
         List<String[]> roles = datasetConfiguration.generateRoles();
@@ -80,7 +75,7 @@ public class TestProcess {
         }
     }
 
-    public void executeProcess() throws OperatorException, IOException, OperatorCreationException {
+    public void executeProcess() throws OperatorException, IOException, OperatorCreationException, ClassNotFoundException {
 
         // Test process
         if (datasetConfiguration.predictElements.size() > 0) {
@@ -102,12 +97,11 @@ public class TestProcess {
 
                 Logger.log("Test params: \n   Model file path:       " + modelFilePath + "\n" + "   Predictions file path: " + predictionsFilePath + "\n" + "   Test file path:        " + testFilePath + "\n", Level.FINE);
 
-                modelLoader.setParameter(ModelLoader.PARAMETER_MODEL_FILE, modelFilePath);
 
                 long t1 = System.nanoTime();
                 ExampleSet testEs = new ArffFileLoader().load(testFilePath, datasetConfiguration.label);
                 roleConfigurator.apply(testEs);
-                Model model = modelLoader.read();
+                Model model = ModelFileInOut.read(modelFilePath);
                 ExampleSet appliedEs = model.apply(testEs);
 
                 PerformanceVector pv = evaluator.doWork(appliedEs);
