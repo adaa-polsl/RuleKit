@@ -145,11 +145,7 @@ public class RulePerformanceEvaluator extends AbstractPerformanceEvaluator {
 		new CriterionClassWrapper(IntegratedBrierScore.class)
 	};
 	
-	
-	protected ClassificationMetaCondition classificationMetaCondition = new ClassificationMetaCondition(this);
-	protected RegressionMetaCondition regressionMetaCondition = new RegressionMetaCondition(this);
-	protected SurvivalMetaCondition survivalMetaCondition = new SurvivalMetaCondition(this);
-	
+
 	protected ArrayList<ArrayList<String>> criteriaNames;
 			
 	protected ExampleSet testSet;

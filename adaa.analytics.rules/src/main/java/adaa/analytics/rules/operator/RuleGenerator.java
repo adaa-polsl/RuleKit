@@ -69,11 +69,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 	 * Parameter condition fulfilled for regression problems.
 	 */
 	protected RegressionMetaCondition regressionMetaCondition = new RegressionMetaCondition(this);
-	
-	/**
-	 * Parameter condition fulfilled for survival problems.
-	 */
-	protected SurvivalMetaCondition survivalMetaCondition = new SurvivalMetaCondition(this);
+
 	
 	/**
 	 * Performance vector for storing model characteristics. Updated every time the operator is run.
@@ -348,7 +344,6 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 		ParameterCondition measuresCondition = new OrParameterCondition(this, false,
 				classificationMetaCondition,
 				regressionMetaCondition);
-//				new BooleanParameterCondition(this, PARAMETER_LOGRANK_SURVIVAL, false, false)
 		
 		tmp = new ParameterTypeStringCategory(
 				PARAMETER_INDUCTION_MEASURE, getParameterDescription(PARAMETER_INDUCTION_MEASURE),

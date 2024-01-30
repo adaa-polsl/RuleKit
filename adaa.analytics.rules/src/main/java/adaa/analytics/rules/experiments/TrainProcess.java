@@ -8,12 +8,12 @@ import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.operator.ExpertRuleGenerator;
 import adaa.analytics.rules.operator.RuleGenerator;
-import adaa.analytics.rules.operator.RulePerformanceEvaluator;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.Model;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
+import com.rapidminer.operator.performance.PerformanceCriterion;
 import com.rapidminer.operator.performance.PerformanceVector;
 import org.apache.commons.lang.StringUtils;
 import utils.ArffFileLoader;
@@ -30,7 +30,6 @@ import java.util.logging.Level;
 public class TrainProcess {
     private RoleConfigurator roleConfigurator;
     private ExpertRuleGenerator ruleGenerator = null;
-    private RulePerformanceEvaluator evaluator;
 
     private DatasetConfiguration datasetConfiguration;
 
@@ -50,8 +49,6 @@ public class TrainProcess {
 
     public void configure() throws  OperatorCreationException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
 
-        evaluator = new RulePerformanceEvaluator(new OperatorDescription(
-                "", "", RulePerformanceEvaluator.class, null, "", null));
         ruleGenerator = new ExpertRuleGenerator(new OperatorDescription(
                 "", "", ExpertRuleGenerator.class, null, "", null));
 
@@ -65,7 +62,6 @@ public class TrainProcess {
 
             // use annotation for storing contrast attribute info
             roleConfigurator.configureContrast(contrastAttr);
-            evaluator.setEnabled(false);
         }
 
         if (roles.size() > 0) {
@@ -118,29 +114,33 @@ public class TrainProcess {
                 Model learnedModel = ruleGenerator.learn(sourceEs);
                 ModelFileInOut.write(learnedModel, modelFilePath);
 
-                generateModelReport(te, (RuleSetBase) learnedModel);
+                writeModelToCsv(te.modelCsvFile, (RuleSetBase) learnedModel);
 
                 ExampleSet appliedEs = learnedModel.apply(sourceEs);
-                PerformanceVector pv = evaluator.doWork(appliedEs);
+                reportModelCharacteristic(learnedModel,  trainFileName);
 
+                PerformanceVector pv = null;
+                if (!datasetConfiguration.hasOptionParameter(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
+                    RulePerformanceCounter rpc = new RulePerformanceCounter(appliedEs);
+                    rpc.countValues();
+                    reportTrainingPerformance(rpc.getResult());
+                }
 
-                generateTrainingReport(learnedModel, pv, trainFileName);
-
+                Logger.log(" [OK]\n", Level.INFO);
             }
         }
     }
 
-    private void generateModelReport(TrainElement te, RuleSetBase model) throws IOException {
-        if (te.modelCsvFile != null) {
-            File f = new File(te.modelCsvFile);
-            String csvFilePath = f.isAbsolute() ? te.modelCsvFile : (outDirPath + "/" + te.modelCsvFile);
+    private void writeModelToCsv(String modelCsvFile, RuleSetBase model) throws IOException {
+        if (modelCsvFile != null) {
+            File f = new File(modelCsvFile);
+            String csvFilePath = f.isAbsolute() ? modelCsvFile : (outDirPath + "/" + modelCsvFile);
             BufferedWriter writer = new BufferedWriter(new FileWriter(csvFilePath));
             writer.write(model.toTable());
             writer.close();
         }
     }
-
-    private void generateTrainingReport(Model model , PerformanceVector trainingSetPerformance, String trainFileName) throws IOException {
+    private void reportModelCharacteristic(Model model , String trainFileName) throws IOException {
         // training report
         StringBuilder sb = new StringBuilder();
         sb.append(StringUtils.repeat("=", 80));
@@ -158,19 +158,20 @@ public class TrainProcess {
             sb.append(name).append(": ").append(avg).append("\n");
         }
 
-        if (trainingSetPerformance != null) {
-            // if evaluator is enabled
-            sb.append("\nTraining set performance:\n");
-            // add performance
-            for (String name : trainingSetPerformance.getCriteriaNames()) {
-                double avg = trainingSetPerformance.getCriterion(name).getAverage();
-                sb.append(name).append(": ").append(avg).append("\n");
-            }
-        }
-
-        sb.append("\n\n");
         trainingReport.append(sb.toString());
-        Logger.log(" [OK]\n", Level.INFO);
-
     }
+
+    private void reportTrainingPerformance(List<PerformanceCriterion> performanceData) throws IOException {
+        // training report
+        StringBuilder sb = new StringBuilder();
+        // if evaluator is enabled
+        sb.append("\nTraining set performance:\n");
+        // add performance
+        for (PerformanceCriterion pc : performanceData) {
+            double avg = pc.getAverage();
+            sb.append(pc.getName()).append(": ").append(avg).append("\n");
+        }
+        trainingReport.append(sb.toString());
+    }
+
 }

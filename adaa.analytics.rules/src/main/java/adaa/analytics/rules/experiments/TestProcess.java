@@ -7,10 +7,9 @@ import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.operator.RuleGenerator;
-import adaa.analytics.rules.operator.RulePerformanceEvaluator;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.*;
-import com.rapidminer.operator.performance.AbstractPerformanceEvaluator;
+import com.rapidminer.operator.performance.PerformanceCriterion;
 import com.rapidminer.operator.performance.PerformanceVector;
 import utils.ArffFileLoader;
 import utils.ArffFileWriter;
@@ -28,10 +27,6 @@ public class TestProcess {
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss");
 
     private RoleConfigurator roleConfigurator;
-
-    private AbstractPerformanceEvaluator evaluator;
-
-
 
     private DatasetConfiguration datasetConfiguration;
 
@@ -55,8 +50,6 @@ public class TestProcess {
 
     public void configure() throws OperatorCreationException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
 
-        evaluator = new RulePerformanceEvaluator(new OperatorDescription(
-                "", "", RulePerformanceEvaluator.class, null, "", null));
         roleConfigurator = new RoleConfigurator(datasetConfiguration.label);
 
         List<String[]> roles = datasetConfiguration.generateRoles();
@@ -66,8 +59,6 @@ public class TestProcess {
 
             // use annotation for storing contrast attribute info
             roleConfigurator.configureContrast(contrastAttr);
-
-            evaluator.setEnabled(false);
         }
 
         if (roles.size() > 0) {
@@ -104,14 +95,19 @@ public class TestProcess {
                 Model model = ModelFileInOut.read(modelFilePath);
                 ExampleSet appliedEs = model.apply(testEs);
 
-                PerformanceVector pv = evaluator.doWork(appliedEs);
+                List<PerformanceCriterion> pv = null;
+                if (!datasetConfiguration.hasOptionParameter(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
+                    RulePerformanceCounter rpc = new RulePerformanceCounter(appliedEs);
+                    rpc.countValues();
+                    pv = rpc.getResult();
+                }
                 ArffFileWriter.write(appliedEs,predictionsFilePath);
 
                 long t2 = System.nanoTime();
                 double elapsedSec = (double) (t2 - t1) / 1e9;
 
-                // Testing report
-                generateTestReport(appliedEs, testFileName);
+                // Testing report annotation header
+                generateAnnotationHeader(appliedEs, testFileName);
 
                 // Performance log
                 generatePerformanceReport((RuleSetBase) model, pv, testFileName, dateString, elapsedSec);
@@ -121,7 +117,7 @@ public class TestProcess {
         }
     }
 
-    private void generateTestReport(ExampleSet predictions, String testFileName) throws IOException {
+    private void generateAnnotationHeader(ExampleSet predictions, String testFileName) throws IOException {
         if (predictions.getAnnotations().containsKey(RuleSetBase.ANNOTATION_TEST_REPORT)) {
             testingReport.append("================================================================================\n");
             testingReport.append(testFileName + "\n");
@@ -131,16 +127,8 @@ public class TestProcess {
 
     }
 
-    private void generatePerformanceReport(RuleSetBase model, PerformanceVector testPerformance, String testFileName, String dateString, double elapsedSec) throws IOException {
+    private void generatePerformanceReport(RuleSetBase model, List<PerformanceCriterion> performanceData, String testFileName, String dateString, double elapsedSec) throws IOException {
         PerformanceVector performance = RuleGenerator.recalculatePerformance(model);
-
-        // if evaluator is enabled
-        if (testPerformance != null) {
-            for (String name : testPerformance.getCriteriaNames()) {
-                performance.addCriterion(testPerformance.getCriterion(name));
-            }
-        }
-        String[] columns = performance.getCriteriaNames();
 
         Logger.log(performance + "\n", Level.FINE);
 
@@ -148,13 +136,23 @@ public class TestProcess {
         StringBuilder performanceHeader = new StringBuilder("Dataset, time started, elapsed[s], ");
         StringBuilder row = new StringBuilder(testFileName + "," + dateString + "," + elapsedSec + ",");
 
-        for (String name : columns) {
+        for (String name : performance.getCriteriaNames()) {
             performanceHeader.append(name).append(",");
+        }
+        if (performanceData != null) {
+            for(PerformanceCriterion pc: performanceData){
+                performanceHeader.append(pc.getName()).append(",");
+            }
         }
 
         for (String name : performance.getCriteriaNames()) {
             double avg = performance.getCriterion(name).getAverage();
             row.append(avg).append(", ");
+        }
+        if (performanceData != null) {
+            for(PerformanceCriterion pc: performanceData){
+                row.append(pc.getAverage()).append(", ");
+            }
         }
 
         String configString = "Parameters: " + model.getParams().toString().replace("\n", "; ");
