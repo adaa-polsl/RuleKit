@@ -12,14 +12,11 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
-package adaa.analytics.rules.logic.quality;
+package adaa.analytics.rules.logic.performance;
 
 import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
-import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.performance.MeasuredPerformance;
-import com.rapidminer.tools.math.Averagable;
 
 import java.util.BitSet;
 
@@ -48,7 +45,7 @@ public class ClassificationRulesPerformance extends MeasuredPerformance {
 	}
 	
 	 @Override
-	 public void startCounting(ExampleSet testSet, boolean useExampleWeights) throws OperatorException {
+	 public void startCounting(ExampleSet testSet, boolean useExampleWeights)  {
 		 
 		 int conflictCount = 0;
 		 int negativeConflictCount = 0;
@@ -112,26 +109,7 @@ public class ClassificationRulesPerformance extends MeasuredPerformance {
 	
 	@Override
 	public void countExample(Example example) {
-		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public String getDescription() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getExampleCount() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getFitness() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	@Override
@@ -151,16 +129,6 @@ public class ClassificationRulesPerformance extends MeasuredPerformance {
 		return value;
 	}
 
-	@Override
-	public double getMikroVariance() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
-	@Override
-	protected void buildSingleAverage(Averagable averagable) {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

@@ -3,13 +3,14 @@ package adaa.analytics.rules.experiments;
 import adaa.analytics.rules.experiments.config.DatasetConfiguration;
 import adaa.analytics.rules.experiments.config.ParamSetWrapper;
 import adaa.analytics.rules.experiments.config.PredictElement;
+import adaa.analytics.rules.logic.performance.RulePerformanceCounter;
+import adaa.analytics.rules.logic.performance.MeasuredPerformance;
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.operator.RuleGenerator;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.*;
-import com.rapidminer.operator.performance.PerformanceCriterion;
 import com.rapidminer.operator.performance.PerformanceVector;
 import utils.ArffFileLoader;
 import utils.ArffFileWriter;
@@ -95,7 +96,7 @@ public class TestProcess {
                 Model model = ModelFileInOut.read(modelFilePath);
                 ExampleSet appliedEs = model.apply(testEs);
 
-                List<PerformanceCriterion> pv = null;
+                List<MeasuredPerformance> pv = null;
                 if (!datasetConfiguration.hasOptionParameter(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
                     RulePerformanceCounter rpc = new RulePerformanceCounter(appliedEs);
                     rpc.countValues();
@@ -127,7 +128,7 @@ public class TestProcess {
 
     }
 
-    private void generatePerformanceReport(RuleSetBase model, List<PerformanceCriterion> performanceData, String testFileName, String dateString, double elapsedSec) throws IOException {
+    private void generatePerformanceReport(RuleSetBase model, List<MeasuredPerformance> performanceData, String testFileName, String dateString, double elapsedSec) throws IOException {
         PerformanceVector performance = RuleGenerator.recalculatePerformance(model);
 
         Logger.log(performance + "\n", Level.FINE);
@@ -140,7 +141,7 @@ public class TestProcess {
             performanceHeader.append(name).append(",");
         }
         if (performanceData != null) {
-            for(PerformanceCriterion pc: performanceData){
+            for(MeasuredPerformance pc: performanceData){
                 performanceHeader.append(pc.getName()).append(",");
             }
         }
@@ -150,7 +151,7 @@ public class TestProcess {
             row.append(avg).append(", ");
         }
         if (performanceData != null) {
-            for(PerformanceCriterion pc: performanceData){
+            for(MeasuredPerformance pc: performanceData){
                 row.append(pc.getAverage()).append(", ");
             }
         }

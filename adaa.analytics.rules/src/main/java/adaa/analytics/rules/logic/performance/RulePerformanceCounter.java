@@ -1,16 +1,15 @@
-package adaa.analytics.rules.experiments;
+package adaa.analytics.rules.logic.performance;
 
-import adaa.analytics.rules.logic.quality.ClassificationRulesPerformance;
-import adaa.analytics.rules.logic.quality.ExtendedBinaryPerformance;
-import adaa.analytics.rules.logic.quality.IntegratedBrierScore;
+import adaa.analytics.rules.logic.performance.binary.BinaryClassificationPerformance;
+import adaa.analytics.rules.logic.performance.binary.ExtendedBinaryPerformance;
+import adaa.analytics.rules.logic.performance.simple.*;
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.Statistics;
-import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.performance.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -18,7 +17,7 @@ import java.util.List;
 
 public class RulePerformanceCounter {
 
-    private static final PerformanceCriterion[] MULTICLASS_CRITERIA_CLASSES = {
+    private static final MeasuredPerformance[] MULTICLASS_CRITERIA_CLASSES = {
             new MultiClassificationPerformance(MultiClassificationPerformance.ACCURACY),
             new MultiClassificationPerformance(MultiClassificationPerformance.ERROR),
             new MultiClassificationPerformance(MultiClassificationPerformance.KAPPA),
@@ -32,7 +31,7 @@ public class RulePerformanceCounter {
             new LogisticLoss()
     };
 
-    private static final PerformanceCriterion[] BINARY_CRITERIA_CLASSES = {
+    private static final MeasuredPerformance[] BINARY_CRITERIA_CLASSES = {
             new BinaryClassificationPerformance(BinaryClassificationPerformance.PRECISION),
             new BinaryClassificationPerformance(BinaryClassificationPerformance.SENSITIVITY),
             new BinaryClassificationPerformance(BinaryClassificationPerformance.SPECIFICITY),
@@ -49,7 +48,7 @@ public class RulePerformanceCounter {
             new BinaryClassificationPerformance(BinaryClassificationPerformance.TRUE_NEGATIVE),
     };
 
-    private static final PerformanceCriterion[] REGRESSION_CRITERIA_CLASSES = {
+    private static final MeasuredPerformance[] REGRESSION_CRITERIA_CLASSES = {
             new AbsoluteError(),
             new RelativeError(),
             new LenientRelativeError(),
@@ -62,11 +61,11 @@ public class RulePerformanceCounter {
             new SquaredCorrelationCriterion()
     };
 
-    private static final PerformanceCriterion[] SURVIVAL_CRITERIA_CLASSES = {
+    private static final MeasuredPerformance[] SURVIVAL_CRITERIA_CLASSES = {
             new IntegratedBrierScore()
     };
 
-    private List<PerformanceCriterion> choosedCriterion = new ArrayList<>();
+    private List<MeasuredPerformance> choosedCriterion = new ArrayList<>();
 
     private ExampleSet testSet;
 
@@ -99,7 +98,7 @@ public class RulePerformanceCounter {
 
     }
 
-    public void countValues() throws OperatorException {
+    public void countValues() {
         Attribute weightAttribute = testSet.getAttributes().getWeight();
         if (weightAttribute != null) {
             if (!weightAttribute.isNumerical()) {
@@ -114,13 +113,10 @@ public class RulePerformanceCounter {
         }
 
         // initialize all criteria
-        for (PerformanceCriterion c : choosedCriterion) {
+        for (MeasuredPerformance c : choosedCriterion) {
 
-            if (!(c instanceof MeasuredPerformance)) {
-                throw new IllegalStateException("Onl;y MeasurePerformance criterion allowed");
-            }
             // init all criteria
-            ((MeasuredPerformance) c).startCounting(testSet, true);
+            c.startCounting(testSet, true);
         }
 
         Iterator<Example> exampleIterator = testSet.iterator();
@@ -131,15 +127,13 @@ public class RulePerformanceCounter {
                 continue;
             }
 
-            for (PerformanceCriterion criterion: choosedCriterion) {
-                if (criterion instanceof MeasuredPerformance) {
-                    ((MeasuredPerformance) criterion).countExample(example);
-                }
+            for (MeasuredPerformance criterion: choosedCriterion) {
+                     criterion.countExample(example);
             }
         }
     }
 
-    public List<PerformanceCriterion> getResult()
+    public List<MeasuredPerformance> getResult()
     {
         return choosedCriterion;
     }

@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
-package adaa.analytics.rules.logic.quality;
+package adaa.analytics.rules.logic.performance;
 
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
@@ -20,9 +20,6 @@ import adaa.analytics.rules.logic.representation.SurvivalRuleSet;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
-import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.performance.MeasuredPerformance;
-import com.rapidminer.tools.math.Averagable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -35,7 +32,6 @@ import java.util.List;
  */
 public class IntegratedBrierScore extends MeasuredPerformance {
 
-	private static final long serialVersionUID = 8509874136756469476L;
 	
 	protected double score;
 	 
@@ -44,7 +40,7 @@ public class IntegratedBrierScore extends MeasuredPerformance {
 	 }
 	 
 	 @Override
-	 public void startCounting(ExampleSet testSet, boolean useExampleWeights) throws OperatorException {
+	 public void startCounting(ExampleSet testSet, boolean useExampleWeights) {
 		 	 
 		Attribute survTime = testSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE); 
 		Attribute survStat = testSet.getAttributes().getLabel();
@@ -132,23 +128,6 @@ public class IntegratedBrierScore extends MeasuredPerformance {
 	}
 
 	@Override
-	public String getDescription() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public double getExampleCount() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getFitness() {
-		return getAverage();
-	}
-
-	@Override
 	public String getName() {
 		return "integrated_brier_score";
 	}
@@ -158,16 +137,6 @@ public class IntegratedBrierScore extends MeasuredPerformance {
 		return score;
 	}
 
-	@Override
-	public double getMikroVariance() {
-		return Double.NaN;
-	}
-
-	@Override
-	protected void buildSingleAverage(Averagable averagable) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	private class SurvInfo {
         

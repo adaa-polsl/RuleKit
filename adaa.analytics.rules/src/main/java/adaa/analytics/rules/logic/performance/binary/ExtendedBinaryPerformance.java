@@ -12,9 +12,10 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
-package adaa.analytics.rules.logic.quality;
+package adaa.analytics.rules.logic.performance.binary;
 
-import com.rapidminer.operator.performance.BinaryClassificationPerformance;
+
+import adaa.analytics.rules.logic.performance.binary.BinaryClassificationPerformance;
 
 /**
  * Class gathering additional performance measures for binary classification models (e.g., geometric mean of sensitivity
@@ -22,9 +23,7 @@ import com.rapidminer.operator.performance.BinaryClassificationPerformance;
  *
  * @author Adam Gudys
  */
-public class ExtendedBinaryPerformance extends BinaryClassificationPerformance{
-
-	private static final long serialVersionUID = 791171007065379124L;
+public class ExtendedBinaryPerformance extends BinaryClassificationPerformance {
 
 	private static final int N = 0;
 
@@ -63,9 +62,5 @@ public class ExtendedBinaryPerformance extends BinaryClassificationPerformance{
 		return "geometric_mean";
 	}
 
-	@Override
-	public String getDescription() {
-		return "Geometric mean of sensitivity ans specificity";
-	} 
 	
 }

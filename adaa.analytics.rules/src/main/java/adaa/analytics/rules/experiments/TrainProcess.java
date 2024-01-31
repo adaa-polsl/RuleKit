@@ -3,6 +3,8 @@ package adaa.analytics.rules.experiments;
 import adaa.analytics.rules.experiments.config.DatasetConfiguration;
 import adaa.analytics.rules.experiments.config.ParamSetWrapper;
 import adaa.analytics.rules.experiments.config.TrainElement;
+import adaa.analytics.rules.logic.performance.RulePerformanceCounter;
+import adaa.analytics.rules.logic.performance.MeasuredPerformance;
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
@@ -13,7 +15,6 @@ import com.rapidminer.operator.Model;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.performance.PerformanceCriterion;
 import com.rapidminer.operator.performance.PerformanceVector;
 import org.apache.commons.lang.StringUtils;
 import utils.ArffFileLoader;
@@ -161,13 +162,13 @@ public class TrainProcess {
         trainingReport.append(sb.toString());
     }
 
-    private void reportTrainingPerformance(List<PerformanceCriterion> performanceData) throws IOException {
+    private void reportTrainingPerformance(List<MeasuredPerformance> performanceData) throws IOException {
         // training report
         StringBuilder sb = new StringBuilder();
         // if evaluator is enabled
         sb.append("\nTraining set performance:\n");
         // add performance
-        for (PerformanceCriterion pc : performanceData) {
+        for (MeasuredPerformance pc : performanceData) {
             double avg = pc.getAverage();
             sb.append(pc.getName()).append(": ").append(avg).append("\n");
         }
