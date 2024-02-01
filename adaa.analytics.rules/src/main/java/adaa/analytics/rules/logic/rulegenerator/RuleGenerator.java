@@ -14,16 +14,8 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.rulegenerator;
 
-import adaa.analytics.rules.logic.performance.MeasuredPerformance;
-import adaa.analytics.rules.logic.performance.RecountedPerformance;
-import adaa.analytics.rules.logic.representation.ContrastIndicators;
-import adaa.analytics.rules.logic.representation.ContrastRuleSet;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import com.rapidminer.example.ExampleSet;
-import com.rapidminer.operator.Model;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The basic RuleKit learner operator. It enables inducing classification, regression,

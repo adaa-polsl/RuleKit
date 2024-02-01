@@ -16,10 +16,11 @@ package adaa.analytics.rules.logic.rulegenerator;
 
 import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.quality.LogRank;
-import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.logic.representation.ContrastRule;
+import adaa.analytics.rules.logic.representation.RuleSetBase;
+import adaa.analytics.rules.logic.representation.SurvivalRule;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
-import com.rapidminer.operator.Model;
 
 /**
  * The basic RuleKit learner operator. It enables inducing classification, regression,

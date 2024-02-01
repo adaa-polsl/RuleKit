@@ -20,7 +20,6 @@ import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.ConditionBase.Type;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
-import com.rapidminer.operator.Model;
 import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 
 import java.util.ArrayList;
