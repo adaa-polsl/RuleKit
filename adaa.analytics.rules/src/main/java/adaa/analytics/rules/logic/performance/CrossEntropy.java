@@ -73,7 +73,7 @@ public class CrossEntropy extends MeasuredPerformance {
 	public void countExample(Example example) {}
 
 	@Override
-	public double getMikroAverage() {
+	public double getAverage() {
 		return value / counter;
 	}
 

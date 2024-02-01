@@ -1,14 +1,14 @@
-package adaa.analytics.rules.experiments;
+package adaa.analytics.rules.consoles;
 
-import adaa.analytics.rules.experiments.config.DatasetConfiguration;
-import adaa.analytics.rules.experiments.config.ParamSetWrapper;
-import adaa.analytics.rules.experiments.config.PredictElement;
+import adaa.analytics.rules.consoles.config.DatasetConfiguration;
+import adaa.analytics.rules.consoles.config.ParamSetWrapper;
+import adaa.analytics.rules.consoles.config.PredictElement;
 import adaa.analytics.rules.logic.performance.RulePerformanceCounter;
 import adaa.analytics.rules.logic.performance.MeasuredPerformance;
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
-import adaa.analytics.rules.operator.RuleGenerator;
+import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.*;
 import com.rapidminer.operator.performance.PerformanceVector;
@@ -129,27 +129,28 @@ public class TestProcess {
     }
 
     private void generatePerformanceReport(RuleSetBase model, List<MeasuredPerformance> performanceData, String testFileName, String dateString, double elapsedSec) throws IOException {
-        PerformanceVector performance = RuleGenerator.recalculatePerformance(model);
+        List<MeasuredPerformance> performance = RulePerformanceCounter.recalculatePerformance(model);
 
-        Logger.log(performance + "\n", Level.FINE);
+        Logger.log(MeasuredPerformance.toString(performance) + "\n", Level.FINE);
 
         // generate headers
         StringBuilder performanceHeader = new StringBuilder("Dataset, time started, elapsed[s], ");
         StringBuilder row = new StringBuilder(testFileName + "," + dateString + "," + elapsedSec + ",");
 
-        for (String name : performance.getCriteriaNames()) {
-            performanceHeader.append(name).append(",");
+        for(MeasuredPerformance pc: performance){
+            performanceHeader.append(pc.getName()).append(",");
         }
+
         if (performanceData != null) {
             for(MeasuredPerformance pc: performanceData){
                 performanceHeader.append(pc.getName()).append(",");
             }
         }
 
-        for (String name : performance.getCriteriaNames()) {
-            double avg = performance.getCriterion(name).getAverage();
-            row.append(avg).append(", ");
+        for(MeasuredPerformance pc: performance){
+            row.append(pc.getAverage()).append(", ");
         }
+
         if (performanceData != null) {
             for(MeasuredPerformance pc: performanceData){
                 row.append(pc.getAverage()).append(", ");

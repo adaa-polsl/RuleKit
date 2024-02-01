@@ -1,4 +1,4 @@
-package adaa.analytics.rules.experiments;
+package adaa.analytics.rules.consoles;
 
 import com.rapidminer.operator.Model;
 import com.rapidminer.operator.OperatorException;

@@ -18,24 +18,35 @@
 */
 package adaa.analytics.rules.logic.performance;
 
-/**
- * Computes the square of the empirical corellation coefficient 'r' between label and prediction.
- * Eith P=prediction, L=label, V=Variance, Cov=Covariance we calculate r by: <br>
- * Cov(L,P) / sqrt(V(L)*V(P)). Uses the calculation of the superclass.
- * 
- * @author Ingo Mierswa ingomierswa Exp $
- */
-public class SquaredCorrelationCriterion extends CorrelationCriterion {
+
+import com.rapidminer.example.Example;
+
+public class RecountedPerformance extends MeasuredPerformance{
+
+	private String name;
+
+	private double value;
+
+
+	public RecountedPerformance(String name, double value) {
+		this.name = name;
+		this.value = value;
+	}
 
 
 	@Override
-	public double getAverage() {
-		double r = super.getAverage();
-		return r * r;
+	public final double getAverage() {
+		return value;
+	}
+
+	@Override
+	public void countExample(Example example) {
 	}
 
 	@Override
 	public String getName() {
-		return "squared_correlation";
+		return name;
 	}
+
+
 }

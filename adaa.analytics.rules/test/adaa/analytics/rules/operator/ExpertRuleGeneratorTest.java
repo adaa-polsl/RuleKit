@@ -14,18 +14,17 @@
  ******************************************************************************/
 package adaa.analytics.rules.operator;
 
+import adaa.analytics.rules.consoles.RoleConfigurator;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
+import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
+import adaa.analytics.rules.logic.rulegenerator.RuleGeneratorParams;
 import adaa.analytics.rules.utils.RapidMiner5;
 import com.rapidminer.RapidMiner;
 import com.rapidminer.example.Attributes;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.example.set.SplittedExampleSet;
-import com.rapidminer.operator.IOContainer;
-import com.rapidminer.operator.IOObject;
-import com.rapidminer.operator.OperatorCreationException;
-import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.learner.AbstractLearner;
+import com.rapidminer.operator.*;
 import com.rapidminer.operator.preprocessing.filter.ChangeAttributeRole;
 import com.rapidminer.tools.LogService;
 import com.rapidminer.tools.OperatorService;
@@ -76,35 +75,21 @@ public class ExpertRuleGeneratorTest {
 
     private ClassificationRuleSet trainModel(ExampleSet exampleSet) throws OperatorCreationException, OperatorException {
 
-        ChangeAttributeRole trainRoleSetter = OperatorService.createOperator(ChangeAttributeRole.class);
-        AbstractLearner ruleGenerator = RapidMiner5.createOperator(ExpertRuleGenerator.class);
+        RoleConfigurator roleConfigurator = new RoleConfigurator(LABEL_ATTRIBUTE);
+        RuleGenerator ruleGenerator = new RuleGenerator(true);
 
-        com.rapidminer.Process process = new com.rapidminer.Process();
-        process.getRootOperator().getSubprocess(0).addOperator(trainRoleSetter);
-        process.getRootOperator().getSubprocess(0).addOperator(ruleGenerator);
+        roleConfigurator.apply(exampleSet);
 
-        trainRoleSetter.getOutputPorts().getPortByName("example set output").connectTo(ruleGenerator.getInputPorts().getPortByName("training set"));
-        ruleGenerator.getOutputPorts().getPortByName("model").connectTo(
-                process.getRootOperator().getSubprocess(0).getInnerSinks().getPortByIndex(0));
-
-        process.getRootOperator().getSubprocess(0).getInnerSources().getPortByIndex(0).connectTo(trainRoleSetter.getInputPorts().getPortByName("example set input"));
-
-        trainRoleSetter.setParameter(ChangeAttributeRole.PARAMETER_NAME, LABEL_ATTRIBUTE);
-        trainRoleSetter.setParameter(ChangeAttributeRole.PARAMETER_TARGET_ROLE, Attributes.LABEL_NAME);
-
-        ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_MINCOV_NEW, "8");
-        ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_INDUCTION_MEASURE, ClassificationMeasure.getName(ClassificationMeasure.BinaryEntropy));
-        ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_PRUNING_MEASURE, ClassificationMeasure.getName(ClassificationMeasure.BinaryEntropy));
+        ruleGenerator.getRuleGeneratorParams().setParameter(RuleGeneratorParams.PARAMETER_MINCOV_NEW, "8");
+        ruleGenerator.getRuleGeneratorParams().setParameter(RuleGeneratorParams.PARAMETER_INDUCTION_MEASURE, ClassificationMeasure.getName(ClassificationMeasure.BinaryEntropy));
+        ruleGenerator.getRuleGeneratorParams().setParameter(RuleGeneratorParams.PARAMETER_PRUNING_MEASURE, ClassificationMeasure.getName(ClassificationMeasure.BinaryEntropy));
         //ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_PRUNING_MEASURE, ClassificationMeasure.getName(ClassificationMeasure.UserDefined));
         //ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_USER_PRUNING_EQUATION, "2 * p / n");
-        ruleGenerator.setParameter(ExpertRuleGenerator.PARAMETER_VOTING_MEASURE, ClassificationMeasure.getName(ClassificationMeasure.C2));
+        ruleGenerator.getRuleGeneratorParams().setParameter(RuleGeneratorParams.PARAMETER_VOTING_MEASURE, ClassificationMeasure.getName(ClassificationMeasure.C2));
 
-        IOContainer ioInput = new IOContainer(exampleSet);
-        IOContainer out = process.run(ioInput);
+        Model m = ruleGenerator.learn(exampleSet);
 
-        IOObject[] objects = out.getIOObjects();
-
-        return (ClassificationRuleSet) objects[0];
+        return (ClassificationRuleSet) m;
     }
 
     private void assertRulesSetsEquals(ClassificationRuleSet expected, ClassificationRuleSet actual) {

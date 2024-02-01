@@ -86,7 +86,7 @@ public class CorrelationCriterion extends MeasuredPerformance {
 		}
 	}
 	@Override
-	public double getMikroAverage() {
+	public double getAverage() {
 		double divider = Math.sqrt(exampleCount * sumLabelSqr - sumLabel * sumLabel)
 				* Math.sqrt(exampleCount * sumPredictSqr - sumPredict * sumPredict);
 		double r = (exampleCount * sumLabelPredict - sumLabel * sumPredict) / divider;

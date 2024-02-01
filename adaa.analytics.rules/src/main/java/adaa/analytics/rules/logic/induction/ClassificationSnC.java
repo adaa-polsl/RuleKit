@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.representation.*;
-import adaa.analytics.rules.operator.OperatorCommandProxy;
 import org.apache.commons.lang.StringUtils;
 
 import com.rapidminer.example.Attribute;

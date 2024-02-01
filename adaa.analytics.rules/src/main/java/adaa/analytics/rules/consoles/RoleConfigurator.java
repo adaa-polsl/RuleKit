@@ -1,4 +1,4 @@
-package adaa.analytics.rules.experiments;
+package adaa.analytics.rules.consoles;
 
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import com.rapidminer.example.Attribute;

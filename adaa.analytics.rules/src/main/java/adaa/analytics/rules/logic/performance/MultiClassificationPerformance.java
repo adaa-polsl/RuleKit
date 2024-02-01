@@ -140,7 +140,7 @@ public class MultiClassificationPerformance extends MeasuredPerformance {
 
 	/** Returns either the accuracy or the classification error. */
 	@Override
-	public double getMikroAverage() {
+	public double getAverage() {
 		double diagonal = 0, total = 0;
 		for (int i = 0; i < counter.length; i++) {
 			diagonal += counter[i][i];

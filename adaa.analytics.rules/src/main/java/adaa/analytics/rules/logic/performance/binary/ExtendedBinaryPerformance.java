@@ -30,7 +30,7 @@ public class ExtendedBinaryPerformance extends BinaryClassificationPerformance {
 	private static final int P = 1;
 
 	@Override
-	public double getMikroAverage() {
+	public double getAverage() {
 		double x = 0.0d, y = 0.0d;
 		
 		double[][] counter = getCounter();	

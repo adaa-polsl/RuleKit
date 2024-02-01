@@ -1,9 +1,8 @@
-package adaa.analytics.rules.experiments.config;
+package adaa.analytics.rules.consoles.config;
 
 import adaa.analytics.rules.logic.representation.DoubleFormatter;
 import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.operator.ExpertRuleGenerator;
-import adaa.analytics.rules.operator.RuleGenerator;
+import adaa.analytics.rules.logic.rulegenerator.RuleGeneratorParams;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -51,10 +50,10 @@ public class ParamSetWrapper {
 
             // backward compatibility
             if (name.equals("min_rule_covered") || name.equals("mincov_new")) {
-                name = RuleGenerator.PARAMETER_MINCOV_NEW;
+                name = RuleGeneratorParams.PARAMETER_MINCOV_NEW;
             }
 
-            String[] expertParamNames = new String[]{ExpertRuleGenerator.PARAMETER_EXPERT_RULES, ExpertRuleGenerator.PARAMETER_EXPERT_PREFERRED_CONDITIONS, ExpertRuleGenerator.PARAMETER_EXPERT_FORBIDDEN_CONDITIONS};
+            String[] expertParamNames = new String[]{RuleGeneratorParams.PARAMETER_EXPERT_RULES, RuleGeneratorParams.PARAMETER_EXPERT_PREFERRED_CONDITIONS, RuleGeneratorParams.PARAMETER_EXPERT_FORBIDDEN_CONDITIONS};
 
             if (name.equals(RULES_SIGNIFICANT_FIGURES)) {
                 String value = paramNode.getTextContent();

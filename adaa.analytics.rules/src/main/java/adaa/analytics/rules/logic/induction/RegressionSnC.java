@@ -14,18 +14,15 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.representation.*;
-import adaa.analytics.rules.operator.OperatorCommandProxy;
 import org.apache.commons.lang.StringUtils;
 
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.SortedExampleSet;
 
 /**
  * Separate'n'conquer algorithm for generating regression rule sets.

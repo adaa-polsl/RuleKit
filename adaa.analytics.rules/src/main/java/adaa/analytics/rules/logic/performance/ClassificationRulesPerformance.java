@@ -125,7 +125,7 @@ public class ClassificationRulesPerformance extends MeasuredPerformance {
 	}
 
 	@Override
-	public double getMikroAverage() {
+	public double getAverage() {
 		return value;
 	}
 

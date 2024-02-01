@@ -1,7 +1,7 @@
 package utils.config;
 
 import adaa.analytics.rules.logic.representation.SurvivalRule;
-import adaa.analytics.rules.operator.ExpertRuleGenerator;
+import adaa.analytics.rules.logic.rulegenerator.RuleGeneratorParams;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -31,9 +31,9 @@ public class TestConfigParser {
     private static final String ENTRY_KEY = "entry";
 
     private static final List<String> EXPERTS_RULES_PARAMETERS_NAMES = Arrays.asList(
-            ExpertRuleGenerator.PARAMETER_EXPERT_RULES,
-            ExpertRuleGenerator.PARAMETER_EXPERT_PREFERRED_CONDITIONS,
-            ExpertRuleGenerator.PARAMETER_EXPERT_FORBIDDEN_CONDITIONS);
+            RuleGeneratorParams.PARAMETER_EXPERT_RULES,
+            RuleGeneratorParams.PARAMETER_EXPERT_PREFERRED_CONDITIONS,
+            RuleGeneratorParams.PARAMETER_EXPERT_FORBIDDEN_CONDITIONS);
 
     private Document document;
 

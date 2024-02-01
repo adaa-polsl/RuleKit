@@ -16,7 +16,6 @@ package adaa.analytics.rules.consoles;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -29,19 +28,17 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import adaa.analytics.rules.experiments.config.*;
+import adaa.analytics.rules.consoles.config.*;
 import adaa.analytics.rules.utils.VersionService;
 
 import org.apache.commons.cli.*;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import adaa.analytics.rules.experiments.TrainTestValidationExperiment;
 import adaa.analytics.rules.logic.representation.Logger;
 
 import com.rapidminer.RapidMiner;
 import com.rapidminer.tools.LogService;
-import com.rapidminer.tools.PlatformUtilities;
 
 /**
  * Console used in batch mode.
@@ -73,7 +70,6 @@ public class ExperimentalConsole {
     public void initializeAndRun() {
         try {
             initLogs();
-            initRapidMiner();
 
             Document doc = readXmlDocument(this.configFile);
             Logger.log("Loading XML experiment file: " + configFile, Level.INFO);
@@ -129,12 +125,6 @@ public class ExperimentalConsole {
             formatter.printHelp("java -jar RuleKit.jar", options);
             return false;
         }
-    }
-
-    private void initRapidMiner() {
-        System.setProperty(PlatformUtilities.PROPERTY_RAPIDMINER_HOME, Paths.get("").toAbsolutePath().toString());
-        RapidMiner.setExecutionMode(RapidMiner.ExecutionMode.COMMAND_LINE);
-        RapidMiner.init();
     }
 
     private void initLogs() {

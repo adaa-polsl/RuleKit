@@ -385,7 +385,7 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
     }
 
 
-    public void createUserMeasure(String userMeasure) throws OperatorException {
+    public void createUserMeasure(String userMeasure) {
 
         InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("adaa/analytics/rules/resources/UserMeasureTemplate.txt");
         InputStreamReader reader = new InputStreamReader(resourceAsStream);
@@ -394,7 +394,7 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
         String javaCode = "";
         String className = "adaa.analytics.rules.logic.quality.UserMeasure";
         if (resourceAsStream == null) {
-            throw new OperatorException("File 'UserMeasureTemplate.txt' doesn't exist.");
+            throw new IllegalStateException("File 'UserMeasureTemplate.txt' doesn't exist.");
         }
         try {
             BufferedReader in = new BufferedReader(reader);
@@ -409,7 +409,7 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
             javaCode = s.replaceAll("(equation)", userMeasure);
         } catch (IOException e) {
             e.printStackTrace();
-            throw new OperatorException("Couldn't open file with user defined induction measure. " + e.getMessage());
+            throw new IllegalStateException("Couldn't open file with user defined induction measure. " + e.getMessage());
         }
         double result = 0;
         try {
@@ -418,10 +418,10 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
             this.userMeasure = measure;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
-            throw new OperatorException("Error while compiling UserMeasure class. " + e.getMessage());
+            throw new IllegalStateException("Error while compiling UserMeasure class. " + e.getMessage());
         } catch (ExceptionInInitializerError e) {
             if (e.getCause().getClass().getName().contains("AccessControlException")) {
-                throw new OperatorException("Exception: java.security.AccessControlException occurred in 'RuleKit Generator'. " +
+                throw new IllegalStateException("Exception: java.security.AccessControlException occurred in 'RuleKit Generator'. " +
                         "Induction measure: 'UserDefined' is not supported for unsigned plugin. "+
                         "Please choose different induction measure. " +
                         "Read more: https://docs.rapidminer.com/latest/developers/security/",e);

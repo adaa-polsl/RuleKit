@@ -1,4 +1,4 @@
-package adaa.analytics.rules.experiments.config;
+package adaa.analytics.rules.consoles.config;
 
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.Logger;

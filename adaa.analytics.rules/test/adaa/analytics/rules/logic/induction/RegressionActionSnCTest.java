@@ -1,8 +1,7 @@
 package adaa.analytics.rules.logic.induction;
 
-import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.*;
-import adaa.analytics.rules.operator.OperatorCommandProxy;
+import adaa.analytics.rules.logic.rulegenerator.OperatorCommandProxy;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
 import org.junit.experimental.theories.DataPoints;
@@ -10,7 +9,6 @@ import org.junit.experimental.theories.FromDataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
-import utils.RuleSetComparator;
 import utils.TestResourcePathFactory;
 import utils.config.TestConfig;
 import utils.config.TestConfigParser;
@@ -25,7 +23,6 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.Assert.*;
 @RunWith(Theories.class)
 public class RegressionActionSnCTest {
     private static final String CLASS_NAME = RegressionActionSnCTest.class.getSimpleName();

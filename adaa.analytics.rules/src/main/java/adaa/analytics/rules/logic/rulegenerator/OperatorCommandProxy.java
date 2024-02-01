@@ -1,7 +1,5 @@
-package adaa.analytics.rules.operator;
+package adaa.analytics.rules.logic.rulegenerator;
 
-import adaa.analytics.rules.logic.induction.IFinderObserver;
-import adaa.analytics.rules.logic.representation.ConditionBase;
 import adaa.analytics.rules.logic.representation.Rule;
 
 import java.util.ArrayList;
@@ -9,29 +7,29 @@ import java.util.List;
 
 public class OperatorCommandProxy {
 
-    private List<ICommandProxyClient> commandProxyList = new ArrayList<>();
+    private List<ICommandListener> commandListenerList = new ArrayList<>();
 
     public void onNewRule(Rule r) {
-        for (ICommandProxyClient commandProxyClient: commandProxyList) {
+        for (ICommandListener commandProxyClient: commandListenerList) {
             commandProxyClient.onNewRule(r);
         }
     }
 
-    public void addCommandProxyClient(ICommandProxyClient commandProxyClient)
+    public void addCommandListener(ICommandListener commandListener)
     {
-        commandProxyList.add(commandProxyClient);
+        commandListenerList.add(commandListener);
     }
 
     public void onProgressChange(int totalRules, int uncoveredRules)
     {
-        for (ICommandProxyClient commandProxyClient: commandProxyList) {
+        for (ICommandListener commandProxyClient: commandListenerList) {
             commandProxyClient.onProgress(totalRules,  uncoveredRules);
         }
     }
 
     public boolean isRequestStop()
     {
-        for (ICommandProxyClient commandProxyClient: commandProxyList) {
+        for (ICommandListener commandProxyClient: commandListenerList) {
             if (commandProxyClient.isRequestStop())
                 return true;
         }

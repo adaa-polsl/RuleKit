@@ -1,19 +1,17 @@
-package adaa.analytics.rules.experiments;
+package adaa.analytics.rules.consoles;
 
-import adaa.analytics.rules.experiments.config.DatasetConfiguration;
-import adaa.analytics.rules.experiments.config.ParamSetWrapper;
-import adaa.analytics.rules.experiments.config.TrainElement;
+import adaa.analytics.rules.consoles.config.DatasetConfiguration;
+import adaa.analytics.rules.consoles.config.ParamSetWrapper;
+import adaa.analytics.rules.consoles.config.TrainElement;
 import adaa.analytics.rules.logic.performance.RulePerformanceCounter;
 import adaa.analytics.rules.logic.performance.MeasuredPerformance;
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
-import adaa.analytics.rules.operator.ExpertRuleGenerator;
-import adaa.analytics.rules.operator.RuleGenerator;
+import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.Model;
 import com.rapidminer.operator.OperatorCreationException;
-import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.performance.PerformanceVector;
 import org.apache.commons.lang.StringUtils;
@@ -30,7 +28,7 @@ import java.util.logging.Level;
 
 public class TrainProcess {
     private RoleConfigurator roleConfigurator;
-    private ExpertRuleGenerator ruleGenerator = null;
+    private RuleGenerator ruleGenerator = null;
 
     private DatasetConfiguration datasetConfiguration;
 
@@ -50,8 +48,7 @@ public class TrainProcess {
 
     public void configure() throws  OperatorCreationException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
 
-        ruleGenerator = new ExpertRuleGenerator(new OperatorDescription(
-                "", "", ExpertRuleGenerator.class, null, "", null));
+        ruleGenerator = new RuleGenerator();
 
         // configure role setter
         roleConfigurator = new RoleConfigurator(datasetConfiguration.label);
@@ -71,13 +68,13 @@ public class TrainProcess {
 
         for (String key : paramSetWrapper.listKeys()) {
             Object o = paramSetWrapper.getParam(key);
-            boolean paramOk = ruleGenerator.getParameters().getKeys().contains(key);
+            boolean paramOk = ruleGenerator.getRuleGeneratorParams().contains(key);
 
             if (paramOk)
                 if (o instanceof String) {
-                    ruleGenerator.setParameter(key, (String) o);
+                    ruleGenerator.getRuleGeneratorParams().setParameter(key, (String) o);
                 } else if (o instanceof List) {
-                    ruleGenerator.setListParameter(key, (List<String[]>) o);
+                    ruleGenerator.getRuleGeneratorParams().setListParameter(key, (List<String[]>) o);
                 } else {
                     throw new InvalidParameterException("Invalid paramter type: " + key);
                 }
@@ -153,10 +150,9 @@ public class TrainProcess {
         sb.append("\nModel characteristics:\n");
 
         RuleSetBase ruleModel = (RuleSetBase) model;
-        PerformanceVector performance = RuleGenerator.recalculatePerformance(ruleModel);
-        for (String name : performance.getCriteriaNames()) {
-            double avg = performance.getCriterion(name).getAverage();
-            sb.append(name).append(": ").append(avg).append("\n");
+        List<MeasuredPerformance> performance = RulePerformanceCounter.recalculatePerformance(ruleModel);
+        for (MeasuredPerformance mp: performance) {
+            sb.append(mp.getName()).append(": ").append(mp.getAverage()).append("\n");
         }
 
         trainingReport.append(sb.toString());

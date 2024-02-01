@@ -168,7 +168,7 @@ public class BinaryClassificationPerformance extends MeasuredPerformance {
 	}
 
 	@Override
-	public double getMikroAverage() {
+	public double getAverage() {
 		double x = 0.0d, y = 0.0d;
 		switch (type) {
 			case PRECISION:

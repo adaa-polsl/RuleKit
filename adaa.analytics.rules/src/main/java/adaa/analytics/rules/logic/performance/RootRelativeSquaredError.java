@@ -112,7 +112,7 @@ public class RootRelativeSquaredError extends MeasuredPerformance {
 	}
 
 	@Override
-	public double getMikroAverage() {
+	public double getAverage() {
 		return Math.sqrt(deviationSum / relativeSum);
 	}
 }

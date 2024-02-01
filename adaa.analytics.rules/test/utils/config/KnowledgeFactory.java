@@ -1,7 +1,7 @@
 package utils.config;
 
 import adaa.analytics.rules.logic.representation.*;
-import adaa.analytics.rules.operator.ExpertRuleGenerator;
+import adaa.analytics.rules.logic.rulegenerator.RuleGeneratorParams;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
@@ -107,13 +107,13 @@ public class KnowledgeFactory {
 
         for (String key : parameters.keySet()) {
             switch (key) {
-                case ExpertRuleGenerator.PARAMETER_EXPERT_RULES:
+                case RuleGeneratorParams.PARAMETER_EXPERT_RULES:
                     rules = makeExpertRules((List<String[]>) parameters.get(key));
                     break;
-                case ExpertRuleGenerator.PARAMETER_EXPERT_PREFERRED_CONDITIONS:
+                case RuleGeneratorParams.PARAMETER_EXPERT_PREFERRED_CONDITIONS:
                     preferredConditions = makePreferredConditions((List<String[]>) parameters.get(key));
                     break;
-                case ExpertRuleGenerator.PARAMETER_EXPERT_FORBIDDEN_CONDITIONS:
+                case RuleGeneratorParams.PARAMETER_EXPERT_FORBIDDEN_CONDITIONS:
                     forbiddenConditions = makeForbiddenConditions((List<String[]>) parameters.get(key));
                     break;
             }

@@ -74,7 +74,7 @@ public class LogisticLoss extends MeasuredPerformance {
 	public void countExample(Example example) {}
 
 	@Override
-	public double getMikroAverage() {
+	public double getAverage() {
 		return this.loss / counter;
 	}
 

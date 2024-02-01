@@ -106,7 +106,7 @@ public abstract class SimpleCriterion extends MeasuredPerformance {
 	}
 
 	@Override
-	public double getMikroAverage() {
+	public double getAverage() {
 		return transform(sum / exampleCount);
 	}
 

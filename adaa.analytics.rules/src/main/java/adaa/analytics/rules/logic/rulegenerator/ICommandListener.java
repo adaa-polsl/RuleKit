@@ -1,8 +1,8 @@
-package adaa.analytics.rules.operator;
+package adaa.analytics.rules.logic.rulegenerator;
 
 import adaa.analytics.rules.logic.representation.Rule;
 
-public interface ICommandProxyClient {
+public interface ICommandListener {
 
     public void onNewRule(Rule r);
 

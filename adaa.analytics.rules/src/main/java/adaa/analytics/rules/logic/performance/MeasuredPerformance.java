@@ -20,24 +20,15 @@ package adaa.analytics.rules.logic.performance;
 
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.tools.Tools;
+import com.rapidminer.tools.math.Averagable;
+
+import java.util.List;
 
 
 public abstract class MeasuredPerformance {
 
-	/** The averages are summed up each time buildAverage is called. */
-	private double meanSum;
-
-	/** The squared averages are summed up each time buildAverage is called. */
-	private double meanSquaredSum;
-
-	/** Counts the number of times, build average was executed. */
-	private int averageCount;
-
-
 	public MeasuredPerformance() {
-		this.meanSum = Double.NaN;
-		this.meanSquaredSum = Double.NaN;
-		this.averageCount = 0;
 	}
 	/**
 	 * Returns the name of this averagable. The returned string should only contain lowercase
@@ -47,33 +38,10 @@ public abstract class MeasuredPerformance {
 	public abstract String getName();
 
 	/**
-	 * This method returns the macro average if it was defined and the micro average (the current
-	 * value) otherwise. This method should be used instead of {@link #getMikroAverage()} for
-	 * optimization purposes, i.e. by methods like <code>getFitness()</code> of performance
-	 * criteria.
-	 */
-	public final double getAverage() {
-		double average = Double.NaN;
-		if (averageCount > 0) {
-			average = getMakroAverage();
-		}
-		if (Double.isNaN(average)) {
-			average = getMikroAverage();
-		}
-		return average;
-	}
-
-	/**
 	 * Returns the (current) value of the averagable (the average itself).
 	 */
-	public abstract double getMikroAverage();
+	public abstract double getAverage();
 
-	/**
-	 * Returns the average value of all performance criteria average by using the
-	 */
-	public final double getMakroAverage() {
-		return meanSum / averageCount;
-	}
 
 	/** Counts a single example, e.g. by summing up errors. */
 	public abstract void countExample(Example example);
@@ -82,4 +50,13 @@ public abstract class MeasuredPerformance {
 	/** Initializes the criterion. The default implementation does nothing. */
 	public void startCounting(ExampleSet set, boolean useExampleWeights)  {}
 
+	public static String toString(List<MeasuredPerformance> list) {
+		StringBuffer result = new StringBuffer(Tools.getLineSeparator() + "Performance [");
+		for (MeasuredPerformance mp :list) {
+			result.append(Tools.getLineSeparator() + "-----");
+			result.append(mp.getName()+": "+mp.getAverage());
+		}
+		result.append(Tools.getLineSeparator() + "]");
+		return result.toString();
+	}
 }

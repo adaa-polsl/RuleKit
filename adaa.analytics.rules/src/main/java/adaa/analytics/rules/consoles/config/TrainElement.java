@@ -1,4 +1,4 @@
-package adaa.analytics.rules.experiments.config;
+package adaa.analytics.rules.consoles.config;
 
 import org.w3c.dom.Element;
 

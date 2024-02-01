@@ -12,10 +12,10 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
-package adaa.analytics.rules.experiments;
+package adaa.analytics.rules.consoles;
 
-import adaa.analytics.rules.experiments.config.DatasetConfiguration;
-import adaa.analytics.rules.experiments.config.ParamSetWrapper;
+import adaa.analytics.rules.consoles.config.DatasetConfiguration;
+import adaa.analytics.rules.consoles.config.ParamSetWrapper;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.utils.VersionService;
 

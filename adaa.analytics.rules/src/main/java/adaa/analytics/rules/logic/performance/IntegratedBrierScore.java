@@ -133,7 +133,7 @@ public class IntegratedBrierScore extends MeasuredPerformance {
 	}
 
 	@Override
-	public double getMikroAverage() {
+	public double getAverage() {
 		return score;
 	}
 

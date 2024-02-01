@@ -62,7 +62,7 @@ public class Margin extends MeasuredPerformance {
 	public void countExample(Example example) {}
 
 	@Override
-	public double getMikroAverage() {
+	public double getAverage() {
 		return margin / counter;
 	}
 

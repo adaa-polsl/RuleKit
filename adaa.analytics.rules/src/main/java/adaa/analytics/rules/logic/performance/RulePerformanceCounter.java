@@ -3,8 +3,7 @@ package adaa.analytics.rules.logic.performance;
 import adaa.analytics.rules.logic.performance.binary.BinaryClassificationPerformance;
 import adaa.analytics.rules.logic.performance.binary.ExtendedBinaryPerformance;
 import adaa.analytics.rules.logic.performance.simple.*;
-import adaa.analytics.rules.logic.representation.ContrastRule;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
+import adaa.analytics.rules.logic.representation.*;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.Example;
 import com.rapidminer.example.ExampleSet;
@@ -136,6 +135,55 @@ public class RulePerformanceCounter {
     public List<MeasuredPerformance> getResult()
     {
         return choosedCriterion;
+    }
+
+
+    /**
+     * Calculates rule model characteristics.
+     *
+     * @param rs Rule set to be investigated.
+     * @return Performance vector with model characteristics.
+     */
+    public static List<MeasuredPerformance> recalculatePerformance(RuleSetBase rs) {
+        List<MeasuredPerformance> ret = new ArrayList<>();
+        ret.add(new RecountedPerformance("time_total_s", rs.getTotalTime()));
+
+        ret.add(new RecountedPerformance("time_growing_s", rs.getGrowingTime()));
+        ret.add(new RecountedPerformance("time_pruning_s", rs.getPruningTime()));
+        ret.add(new RecountedPerformance("#rules", rs.getRules().size()));
+        ret.add(new RecountedPerformance("#conditions_per_rule", rs.calculateConditionsCount()));
+        ret.add(new RecountedPerformance("#induced_conditions_per_rule", rs.calculateInducedCondtionsCount()));
+
+
+
+        if (rs instanceof ContrastRuleSet) {
+            ContrastRuleSet crs = (ContrastRuleSet) rs;
+
+            ContrastIndicators indicators = crs.calculateAvgContrastIndicators();
+
+            for (String k : indicators.values.keySet()) {
+                ret.add(new RecountedPerformance(k, indicators.get(k)));
+            }
+
+            double[] stats = crs.calculateAttributeStats();
+            ret.add(new RecountedPerformance("attribute_occurence", stats[0]));
+            ret.add(new RecountedPerformance("redundancy", stats[1]));
+            ret.add(new RecountedPerformance("total_duplicates", crs.getTotalDuplicates()));
+        } else {
+            ret.add(new RecountedPerformance("avg_rule_coverage", rs.calculateAvgRuleCoverage()));
+            ret.add(new RecountedPerformance("avg_rule_precision", rs.calculateAvgRulePrecision()));
+            ret.add(new RecountedPerformance("avg_rule_quality", rs.calculateAvgRuleQuality()));
+
+
+            ret.add(new RecountedPerformance("avg_pvalue", rs.calculateSignificance(0.05).p));
+            ret.add(new RecountedPerformance("avg_FDR_pvalue", rs.calculateSignificanceFDR(0.05).p));
+            ret.add(new RecountedPerformance("avg_FWER_pvalue", rs.calculateSignificanceFWER(0.05).p));
+
+            ret.add(new RecountedPerformance("fraction_0.05_significant", rs.calculateSignificance(0.05).fraction));
+            ret.add(new RecountedPerformance("fraction_0.05_FDR_significant", rs.calculateSignificanceFDR(0.05).fraction));
+            ret.add(new RecountedPerformance("fraction_0.05_FWER_significant", rs.calculateSignificanceFWER(0.05).fraction));
+        }
+        return ret;
     }
 
 }
