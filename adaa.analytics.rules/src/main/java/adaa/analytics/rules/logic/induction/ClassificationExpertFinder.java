@@ -79,7 +79,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 		HashSet<Integer> covered = new HashSet<Integer>();
 		
 		// bit vectors for faster operations on coverings
-		IntegerBitSet conditionCovered = new IntegerBitSet(dataset.size());
+
 		covered.addAll(rule.getCoveredPositives());
 		covered.addAll(rule.getCoveredNegatives());
 		
@@ -112,9 +112,10 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 				
 			} else {
 				// add condition as it is without verification
-				conditionCovered.clear();
-				newCondition = (ElementaryCondition) SerializationUtils.clone(ec);
+				IntegerBitSet conditionCovered = new IntegerBitSet(dataset.size());
+				newCondition = SerializationUtils.clone(ec);
 				newCondition.evaluate(dataset, conditionCovered);
+				newCondition.setCovering(conditionCovered);
 
 				rule.getPremise().addSubcondition(newCondition);
 
@@ -352,7 +353,6 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 	 * 
 	 * @param cnd Candidate condition.
 	 * @param classId Class identifier.
-	 * @param newlyCoveredPositives Number of newly covered positive examples after addition of the condition.
 	 * @return
 	 */
 	@Override
