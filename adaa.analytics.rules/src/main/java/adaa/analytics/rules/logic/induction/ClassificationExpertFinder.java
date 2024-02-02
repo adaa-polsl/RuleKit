@@ -82,7 +82,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 		HashSet<Integer> covered = new HashSet<Integer>();
 		
 		// bit vectors for faster operations on coverings
-		IntegerBitSet conditionCovered = new IntegerBitSet(dataset.size());
+
 		covered.addAll(rule.getCoveredPositives());
 		covered.addAll(rule.getCoveredNegatives());
 		
@@ -115,9 +115,10 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 				
 			} else {
 				// add condition as it is without verification
-				conditionCovered.clear();
+				IntegerBitSet conditionCovered = new IntegerBitSet(dataset.size());
 				newCondition = (ElementaryCondition)SerializationUtils.clone(ec);
 				newCondition.evaluate(dataset, conditionCovered);
+				newCondition.setCovering(conditionCovered);
 
 				rule.getPremise().addSubcondition(newCondition);
 

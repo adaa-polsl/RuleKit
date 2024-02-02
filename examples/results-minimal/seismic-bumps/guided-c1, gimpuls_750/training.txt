@@ -1,11 +1,25 @@
+RuleKit 1.7.2 (build 285a386370722e48197980d470192a1c60b9d064 19.01.2024)
+    RuleKit Development Team (c) 2019
+
 ================================================================================
 seismic-bumps-train-minimal.arff
 
 Params:
-min_rule_covered=8.0
+minsupp_new=8.0
+minsupp_all=0.0
+max_rule_count=0
+max_neg2pos=OFF
+max_uncovered_fraction=0.0
 induction_measure=BinaryEntropy
 pruning_measure=BinaryEntropy
 voting_measure=C2
+penalty_strength=0.0
+penalty_saturation=0.0
+select_best_candidate=false
+max_passes_count=1
+complementary_conditions=false
+approximate_induction=false
+approximate_bins_count=OFF
 
 Knowledge:
 extendUsingPreferred=false
@@ -18,9 +32,9 @@ preferredAttributesPerRule=2147483647
 
 Expert rules:
 	Class 0
-		IF [[gimpuls = (-inf, 750.0)]] THEN class = {0}
+		IF [[gimpuls = (-inf, 750)]] THEN class = {0}
 	Class 1
-		IF [[gimpuls = <750.0, inf)]] THEN class = {1}
+		IF [[gimpuls = <750, inf)]] THEN class = {1}
 Preferred conditions:
 	Class 0
 	Class 1
@@ -35,26 +49,66 @@ Forbidden attributes:
 	Class 1
 
 Rules:
-r1: IF [[gimpuls = (-inf, 750.0)]] THEN class = {0} (p=152.0, n=7.0, P=187.0, N=13.0, weight=0.2924916371087293, pval=0.02885904680389575)
-r2: IF  THEN class = {1} (p=13.0, n=187.0, P=13.0, N=187.0, weight=0.0, pval=1.0)
+r1: IF [[gimpuls = (-inf, 750)]] THEN class = {0} (p=152.0, n=7.0, P=187.0, N=13.0, weight=0.2924916371087293, pval=0.028859046803895647)
+r2: IF [[gimpuls = <750, inf)]] THEN class = {1} (p=6.0, n=35.0, P=13.0, N=187.0, weight=0.06357415898305425, pval=0.028859046803895626)
+
+Attribute ranking (by count):
+seismic: 0
+seismoacoustic: 0
+shift: 0
+genergy: 0
+goenergy: 0
+goimpuls: 0
+ghazard: 0
+nbumps: 0
+nbumps2: 0
+nbumps3: 0
+nbumps4: 0
+nbumps5: 0
+nbumps6: 0
+nbumps7: 0
+nbumps89: 0
+senergy: 0
+maxenergy: 0
+gimpuls: 2
+
+Attribute ranking (by weight):
+seismic: 0.0
+seismoacoustic: 0.0
+shift: 0.0
+genergy: 0.0
+goenergy: 0.0
+goimpuls: 0.0
+ghazard: 0.0
+nbumps: 0.0
+nbumps2: 0.0
+nbumps3: 0.0
+nbumps4: 0.0
+nbumps5: 0.0
+nbumps6: 0.0
+nbumps7: 0.0
+nbumps89: 0.0
+senergy: 0.0
+maxenergy: 0.0
+gimpuls: 0.3560657960917835
 
 Coverage of training examples by rules (1-based):
-1*,2;2*;1*,2;2*;1*,2;2*;1*,2;2*;1*,2;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;2*;2*;1*,2;1*,2;1*,2;1*,2;2*;1*,2;1*,2;2*;2*;1*,2;1*,2;1*,2;1*,2;2*;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;1*,2;2*;2*;2*;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;1*,2;1*,2;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;2*;1*,2;1*,2;1*,2;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;2*;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;2*;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;1*,2;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;1*,2;1*,2;1*,2;1*,2;1*,2;1*,2;2*;1*,2;1*,2
+1*;2*;1*;2*;1*;2*;1*;2*;1*;2*;1*;1*;1*;1*;1*;1*;1*;2*;2*;2*;1*;1*;1*;1*;2*;1*;1*;2*;2*;1*;1*;1*;1*;2*;2*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;2*;1*;2*;2*;2*;2*;1*;1*;1*;1*;1*;1*;2*;1*;1*;2*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;2*;2*;1*;1*;1*;2*;1*;1*;1*;1*;1*;1*;1*;1*;2*;2*;2*;1*;1*;1*;1*;1*;1*;1*;2*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;2*;2*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;2*;1*;1*;1*;1*;1*;1*;1*;1*;1*;2*;2*;2*;1*;1*;1*;1*;1*;1*;1*;1*;1*;2*;2*;1*;1*;1*;1*;1*;1*;1*;1*;2*;1*;2*;1*;1*;1*;1*;1*;1*;1*;2*;2*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;1*;2*;1*;1*;1*;1*;1*;1*;2*;1*;1*
 
 Model characteristics:
-time_total_s: 0.005184855
-time_growing_s: 4.888059999999999E-4
-time_pruning_s: 9.42973E-4
+time_total_s: 0.0308703
+time_growing_s: 6.494999999999999E-4
+time_pruning_s: 0.0015751
 #rules: 2.0
-#conditions_per_rule: 0.5
+#conditions_per_rule: 1.0
 #induced_conditions_per_rule: 0.0
-avg_rule_coverage: 0.8975
-avg_rule_precision: 0.5104874213836478
-avg_rule_quality: 0.14624581855436464
-avg_pvalue: 0.5144295234019479
-avg_FDR_pvalue: 0.5288590468038957
-avg_FWER_pvalue: 0.5288590468038957
-fraction_0.05_significant: 0.5
+avg_rule_coverage: 0.5
+avg_rule_precision: 0.5511581530909648
+avg_rule_quality: 0.17803289804589176
+avg_pvalue: 0.028859046803895637
+avg_FDR_pvalue: 0.04328857020584345
+avg_FWER_pvalue: 0.04328857020584345
+fraction_0.05_significant: 1.0
 fraction_0.05_FDR_significant: 0.0
 fraction_0.05_FWER_significant: 0.0
 
@@ -63,13 +117,13 @@ accuracy: 0.79
 classification_error: 0.20999999999999996
 kappa: 0.13704540784877747
 balanced_accuracy: 0.637186343068696
-#rules_per_example: 1.795
-#voting_conflicts: 159.0
-#negative_voting_conflicts: 7.0
+#rules_per_example: 1.0
+#voting_conflicts: 0.0
+#negative_voting_conflicts: 0.0
 cross-entropy: Infinity
 margin: 0.0
-soft_margin_loss: 1.0
-logistic_loss: 0.6931471805599465
+soft_margin_loss: 0.21
+logistic_loss: 0.3930376410569839
 precision: 0.14634146341463414
 sensitivity: 0.46153846153846156
 specificity: 0.8128342245989305
