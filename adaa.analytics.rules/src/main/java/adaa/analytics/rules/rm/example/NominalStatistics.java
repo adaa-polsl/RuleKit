@@ -1,5 +1,7 @@
 package adaa.analytics.rules.rm.example;
 
+import adaa.analytics.rules.rm.example.set.AbstractExampleSet;
+
 import java.util.Arrays;
 import java.util.logging.Level;
 
@@ -10,6 +12,7 @@ public class NominalStatistics implements IStatistics {
     private long[] scores;
 
     public NominalStatistics() {
+        AbstractExampleSet asd;
     }
 
     private NominalStatistics(NominalStatistics other) {
@@ -63,7 +66,7 @@ public class NominalStatistics implements IStatistics {
                 return (double)this.getValueCount(attribute, parameter);
             } else {
                 // @TODO Logi
-//                LogService.getRoot().log(Level.WARNING, "com.rapidminer.example.NominalStatistics.calculating_statistics_count_for_attribute_error", attribute.getName());
+//                LogService.getRoot().log(Level.WARNING, "adaa.analytics.rules.rm.example.NominalStatistics.calculating_statistics_count_for_attribute_error", attribute.getName());
                 return Double.NaN;
             }
         } else if ("least".equals(name)) {
@@ -80,7 +83,7 @@ public class NominalStatistics implements IStatistics {
             return (double)least;
         } else {
             // @TODO Logi
-//            LogService.getRoot().log(Level.WARNING, "com.rapidminer.example.NominalStatistics.calculating_statistics_unknown_type_error", name);
+//            LogService.getRoot().log(Level.WARNING, "adaa.analytics.rules.rm.example.NominalStatistics.calculating_statistics_unknown_type_error", name);
             return Double.NaN;
         }
     }

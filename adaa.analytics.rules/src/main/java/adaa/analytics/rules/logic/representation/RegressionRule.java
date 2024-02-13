@@ -18,10 +18,10 @@ import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.quality.ChiSquareVarianceTest;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.Statistics;
-import com.rapidminer.tools.container.Pair;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.IStatistics;
+import adaa.analytics.rules.rm.tools.container.Pair;
 
 import java.security.InvalidParameterException;
 import java.util.*;
@@ -71,9 +71,9 @@ public class RegressionRule extends Rule {
 	 *  @param votingMeasure Measure used as weight.
 	 */
 	@Override
-	public void updateWeightAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure) {
+	public void updateWeightAndPValue(IExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure) {
 		ChiSquareVarianceTest test = new ChiSquareVarianceTest();
-		double expectedDev = Math.sqrt(trainSet.getStatistics(trainSet.getAttributes().getLabel(), Statistics.VARIANCE));
+		double expectedDev = Math.sqrt(trainSet.getStatistics(trainSet.getAttributes().getLabel(), IStatistics.VARIANCE));
 
 		int sampleSize = (int)(ct.weighted_p + ct.weighted_n);
 
@@ -108,7 +108,7 @@ public class RegressionRule extends Rule {
 	 * @return Information about covering.
 	 */
 	@Override
-	public Covering covers(ExampleSet set, Set<Integer> filterIds) {
+	public Covering covers(IExampleSet set, Set<Integer> filterIds) {
 		return covers(set);
 	}
 
@@ -119,7 +119,7 @@ public class RegressionRule extends Rule {
 	 * @return Information about covering.
 	 */
 	@Override
-	public Covering covers(ExampleSet set) {
+	public Covering covers(IExampleSet set) {
 		//assert false: "Obsolete method in RegressionRule: Covering covers(ExampleSet set)";
 		//return null;
 
@@ -129,7 +129,7 @@ public class RegressionRule extends Rule {
 	}
 
 	@Override
-	public void covers(ExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
+	public void covers(IExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
 		SortedExampleSetEx ses = (set instanceof SortedExampleSetEx) ? (SortedExampleSetEx)set : null;
 		if (ses == null) {
 			throw new InvalidParameterException("RegressionRules support only ListedExampleSet example sets");

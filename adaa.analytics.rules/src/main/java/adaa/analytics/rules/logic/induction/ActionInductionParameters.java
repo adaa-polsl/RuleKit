@@ -1,6 +1,6 @@
 package adaa.analytics.rules.logic.induction;
 
-import com.rapidminer.example.table.NominalMapping;
+import adaa.analytics.rules.rm.example.table.INominalMapping;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,7 +61,7 @@ public class ActionInductionParameters extends InductionParameters {
 		transitions.put(source, target);
 	}
 	
-	public List<ClassPair> generateClassPairs(NominalMapping mapping) {
+	public List<ClassPair> generateClassPairs(INominalMapping mapping) {
 		List<ClassPair> pairs = new ArrayList<ClassPair>();
 
 		Supplier<Stream<String>> s = () -> mapping.getValues().stream();

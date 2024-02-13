@@ -1,8 +1,8 @@
 package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.logic.induction.ActionCovering;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,11 +13,11 @@ import java.util.stream.Stream;
 
 public class RuleSerializer {
 
-	protected ExampleSet set;
+	protected IExampleSet set;
 	protected char sep;
 	protected String nullString;
 	
-	public RuleSerializer(ExampleSet dataset, char seperator, String nullIndicator) {
+	public RuleSerializer(IExampleSet dataset, char seperator, String nullIndicator) {
 		set = dataset;
 		sep = seperator;
 		nullString = nullIndicator;
@@ -65,7 +65,7 @@ public class RuleSerializer {
 	private String generateHeader() {
 		StringBuilderBuilder builder = new StringBuilderBuilder(new StringBuilder(), sep);
 		
-		Iterator<Attribute> iter = set.getAttributes().allAttributes();
+		Iterator<IAttribute> iter = set.getAttributes().allAttributes();
 		
 		builder.append("id")
 			.append("pl")
@@ -79,7 +79,7 @@ public class RuleSerializer {
 		
 		while (iter.hasNext()) {
 			
-			Attribute atr = iter.next();
+			IAttribute atr = iter.next();
 			
 			builder
 				.append(atr.getName() + "_L");
@@ -118,12 +118,12 @@ public class RuleSerializer {
 			.append(cov.weighted_P_right)
 			.append(cov.weighted_N_right);
 		
-		Iterator<Attribute> iter = set.getAttributes().allAttributes();
+		Iterator<IAttribute> iter = set.getAttributes().allAttributes();
 		List<Action> conds = (new CompressedCompoundCondition(rule.getPremise())).getSubconditions().stream().map(Action.class::cast).collect(Collectors.toList());
 		
 		while (iter.hasNext()) {
 			
-			Attribute atr = iter.next();
+			IAttribute atr = iter.next();
 			
 			Stream<Action> s = conds.stream().filter(x -> x.getAttribute().equals(atr.getName()));
 			

@@ -1,21 +1,13 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
-import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.quality.NegativeControlledMeasure;
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.NominalMapping;
-import com.rapidminer.tools.container.Pair;
-import org.apache.commons.math3.stat.inference.MannWhitneyUTest;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.io.Serializable;
 import java.security.InvalidParameterException;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 public class ContrastRegressionFinder extends RegressionFinder implements IPenalizedFinder {
 
@@ -30,7 +22,7 @@ public class ContrastRegressionFinder extends RegressionFinder implements IPenal
         }
 
         @Override
-        public double calculate(ExampleSet dataset, ContingencyTable ct) {
+        public double calculate(IExampleSet dataset, ContingencyTable ct) {
 
             ContrastRegressionExampleSet cer = (dataset instanceof ContrastExampleSet) ? (ContrastRegressionExampleSet)dataset : null;
             if (cer == null) {
@@ -88,7 +80,7 @@ public class ContrastRegressionFinder extends RegressionFinder implements IPenal
      */
     public int grow(
             final Rule rule,
-            final ExampleSet dataset,
+            final IExampleSet dataset,
             final Set<Integer> uncovered) {
 
         int consequence = (int)(((SingletonSet)rule.getConsequence().getValueSet()).getValue());
@@ -116,7 +108,7 @@ public class ContrastRegressionFinder extends RegressionFinder implements IPenal
     @Override
     public void postprocess(
             final Rule rule,
-            final ExampleSet dataset) {
+            final IExampleSet dataset) {
 
         IntegerBitSet covered = new IntegerBitSet(dataset.size());
         IntegerBitSet  negatives = new IntegerBitSet(dataset.size());

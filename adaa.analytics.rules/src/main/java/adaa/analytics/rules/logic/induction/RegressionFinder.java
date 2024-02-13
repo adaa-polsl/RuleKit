@@ -16,10 +16,10 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.*;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.SortedExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.set.SortedExampleSet;
 
 import java.security.InvalidParameterException;
 import java.util.*;
@@ -40,18 +40,18 @@ public class RegressionFinder extends AbstractFinder {
 	}
 
 	@Override
-	public ExampleSet preprocess(ExampleSet trainSet) {
-		Attribute label = trainSet.getAttributes().getLabel();
+	public IExampleSet preprocess(IExampleSet trainSet) {
+		IAttribute label = trainSet.getAttributes().getLabel();
 		SortedExampleSetEx ses = new SortedExampleSetEx(trainSet, label, SortedExampleSet.INCREASING);
 		return ses;
 	}
 
 	protected ElementaryCondition induceCondition_mean(
 			final Rule rule,
-			final ExampleSet dataset,
+			final IExampleSet dataset,
 			final Set<Integer> uncovered,
 			final Set<Integer> covered,
-			final Set<Attribute> allowedAttributes,
+			final Set<IAttribute> allowedAttributes,
 			Object... extraParams) {
 
 		SortedExampleSetEx set = (dataset instanceof SortedExampleSetEx) ? (SortedExampleSetEx)dataset : null;
@@ -63,7 +63,7 @@ public class RegressionFinder extends AbstractFinder {
 		List<Future<ConditionEvaluation>> futures = new ArrayList<Future<ConditionEvaluation>>();
 
 		// iterate over all possible decision attributes
-		for (Attribute attr : allowedAttributes) {
+		for (IAttribute attr : allowedAttributes) {
 
 			// consider attributes in parallel
 			Future<ConditionEvaluation> future = (Future<ConditionEvaluation>) pool.submit(() -> {
@@ -265,7 +265,7 @@ public class RegressionFinder extends AbstractFinder {
 		}
 
 		if (best.condition != null) {
-			Attribute bestAttr = dataset.getAttributes().get(((ElementaryCondition)best.condition).getAttribute());
+			IAttribute bestAttr = dataset.getAttributes().get(((ElementaryCondition)best.condition).getAttribute());
 			if (bestAttr.isNominal()) {
 				allowedAttributes.remove(bestAttr);
 			}
@@ -278,10 +278,10 @@ public class RegressionFinder extends AbstractFinder {
 	@Override
 	protected ElementaryCondition induceCondition(
 		final Rule rule,
-		final ExampleSet dataset,
+		final IExampleSet dataset,
 		final Set<Integer> uncovered, 
 		final Set<Integer> covered, 
-		final Set<Attribute> allowedAttributes,
+		final Set<IAttribute> allowedAttributes,
 		Object... extraParams) {
 		
 		if (allowedAttributes.size() == 0) {
@@ -294,7 +294,7 @@ public class RegressionFinder extends AbstractFinder {
 		List<Future<ConditionEvaluation>> futures = new ArrayList<Future<ConditionEvaluation>>();
 				
 		// iterate over all possible decision attributes
-		for (Attribute attr : allowedAttributes) {
+		for (IAttribute attr : allowedAttributes) {
 			
 			// consider attributes in parallel
 			Future<ConditionEvaluation> future = (Future<ConditionEvaluation>) pool.submit(() -> {
@@ -373,7 +373,7 @@ public class RegressionFinder extends AbstractFinder {
 		}
 
 		if (best.condition != null) {
-			Attribute bestAttr = dataset.getAttributes().get(((ElementaryCondition)best.condition).getAttribute());
+			IAttribute bestAttr = dataset.getAttributes().get(((ElementaryCondition)best.condition).getAttribute());
 			if (bestAttr.isNominal()) {
 				allowedAttributes.remove(bestAttr);
 			}
@@ -384,7 +384,7 @@ public class RegressionFinder extends AbstractFinder {
 
 	
 	protected boolean checkCandidate(
-			ExampleSet dataset, 
+			IExampleSet dataset,
 			Rule rule,
 			ConditionBase candidate,
 			Set<Integer> uncovered,

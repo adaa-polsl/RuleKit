@@ -1,13 +1,12 @@
 package adaa.analytics.rules.logic.representation;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.Statistics;
-import com.rapidminer.example.set.AttributeValueFilterSingleCondition;
-import com.rapidminer.example.set.ConditionedExampleSet;
-import com.rapidminer.example.set.SimpleExampleSet;
-import com.rapidminer.example.table.NominalMapping;
-import com.rapidminer.operator.tools.ExpressionEvaluationException;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.IStatistics;
+import adaa.analytics.rules.rm.example.set.AttributeValueFilterSingleCondition;
+import adaa.analytics.rules.rm.example.set.ConditionedExampleSet;
+import adaa.analytics.rules.rm.example.set.SimpleExampleSet;
+import adaa.analytics.rules.rm.example.table.INominalMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,28 +29,32 @@ public class ContrastRegressionExampleSet extends ContrastExampleSet {
         super(exampleSet);
 
         String averageName = (exampleSet.getAttributes().getWeight() != null)
-                ? Statistics.AVERAGE_WEIGHTED : Statistics.AVERAGE;
+                ? IStatistics.AVERAGE_WEIGHTED : IStatistics.AVERAGE;
 
         // establish training  estimator
-        Attribute label = exampleSet.getAttributes().getLabel();
+        IAttribute label = exampleSet.getAttributes().getLabel();
         exampleSet.recalculateAttributeStatistics(label);
         trainingEstimator = exampleSet.getStatistics(label, averageName);
 
         // establish contrast groups  estimator
         try {
-            NominalMapping mapping = contrastAttribute.getMapping();
+            INominalMapping mapping = contrastAttribute.getMapping();
 
             for (int i = 0; i < mapping.size(); ++i) {
                 AttributeValueFilterSingleCondition cnd = new AttributeValueFilterSingleCondition(
                         contrastAttribute, AttributeValueFilterSingleCondition.EQUALS, mapping.mapIndex(i));
 
-                ExampleSet conditionedSet = new ConditionedExampleSet(exampleSet,cnd);
+                IExampleSet conditionedSet = new ConditionedExampleSet(exampleSet,cnd);
                 conditionedSet.recalculateAttributeStatistics(label);
                 groupEstimators.add(conditionedSet.getStatistics(label, averageName));
             }
 
-        } catch (ExpressionEvaluationException e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
+//        catch (ExpressionEvaluationException e) {
+//            e.printStackTrace();
+//        }
     }
 }

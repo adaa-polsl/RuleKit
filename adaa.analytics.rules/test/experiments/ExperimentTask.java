@@ -4,9 +4,9 @@ import adaa.analytics.rules.logic.actions.recommendations.ClassificationRecommen
 import adaa.analytics.rules.logic.actions.recommendations.RecommendationTask;
 import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 public class ExperimentTask {
     public static class ExampleSetEvaluation {
@@ -17,9 +17,9 @@ public class ExperimentTask {
         public int targetExamplesCount;
         public int correctSourcePredictions;
         public int correctTargetPredictions;
-        public ExampleSetEvaluation(ExampleSet exampleSet, FileDescription dataFileDesc) {
-            Attribute label = exampleSet.getAttributes().getLabel();
-            Attribute pred = exampleSet.getAttributes().getPredictedLabel();
+        public ExampleSetEvaluation(IExampleSet exampleSet, FileDescription dataFileDesc) {
+            IAttribute label = exampleSet.getAttributes().getLabel();
+            IAttribute pred = exampleSet.getAttributes().getPredictedLabel();
             int sourceId = label.getMapping().getIndex(dataFileDesc.getSourceClass());
             int targetId = label.getMapping().getIndex(dataFileDesc.getTargetClass());
             correctTargetPredictions = 0;
@@ -69,8 +69,8 @@ public class ExperimentTask {
         return new ActionInductionParameters(findingParameters);
     }
 
-    public RecommendationTask getRecommendationTask(ActionInductionParameters params, FileDescription file, ExampleSet set, ClassificationMeasure measure) {
-        Attribute label = set.getAttributes().getLabel();
+    public RecommendationTask getRecommendationTask(ActionInductionParameters params, FileDescription file, IExampleSet set, ClassificationMeasure measure) {
+        IAttribute label = set.getAttributes().getLabel();
         int sourceId = label.getMapping().getIndex(file.getSourceClass());
         int targetId = label.getMapping().getIndex(file.getTargetClass());
         return new ClassificationRecommendationTask(params.isPruningEnabled(), false, measure, sourceId, targetId);

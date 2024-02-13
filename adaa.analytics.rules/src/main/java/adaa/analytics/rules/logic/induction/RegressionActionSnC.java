@@ -1,10 +1,10 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.SortedExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.set.SortedExampleSet;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.HashSet;
@@ -23,13 +23,13 @@ public class RegressionActionSnC extends AbstractSeparateAndConquer {
     }
 
     @Override
-    public RuleSetBase run(ExampleSet trainSet) {
+    public RuleSetBase run(IExampleSet trainSet) {
         Logger.log("RegressionSnC.run()\n", Level.FINE);
         double beginTime;
         beginTime = System.nanoTime();
 
         RuleSetBase ruleset = factory.create(trainSet);
-        Attribute label = trainSet.getAttributes().getLabel();
+        IAttribute label = trainSet.getAttributes().getLabel();
         SortedExampleSet ses = new SortedExampleSet(trainSet, label, SortedExampleSet.INCREASING);
         ses.recalculateAttributeStatistics(ses.getAttributes().getLabel());
 

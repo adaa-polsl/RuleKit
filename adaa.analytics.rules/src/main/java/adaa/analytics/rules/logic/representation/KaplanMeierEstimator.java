@@ -14,10 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
-
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.io.Serializable;
 import java.security.InvalidParameterException;
@@ -67,7 +64,7 @@ public class KaplanMeierEstimator implements Serializable {
 	 * Generates survival estimator function from survival data.
 	 * @param data Example set with attribute of {@link adaa.analytics.rules.logic.representation.SurvivalRule#SURVIVAL_TIME_ROLE}.
 	 */
-    public KaplanMeierEstimator(ExampleSet data) {
+    public KaplanMeierEstimator(IExampleSet data) {
         this(data, new IntegerBitSet(data.size(), true));
     }
 
@@ -131,7 +128,7 @@ public class KaplanMeierEstimator implements Serializable {
 	 * @param data Example set with attribute of {@link adaa.analytics.rules.logic.representation.SurvivalRule#SURVIVAL_TIME_ROLE}.
 	 * @param indices Indices of the examples to be taken into account when building the estimator. 
 	 */
-    public KaplanMeierEstimator(ExampleSet data, Set<Integer> indices) {
+    public KaplanMeierEstimator(IExampleSet data, Set<Integer> indices) {
 
         SortedExampleSetEx set = (data instanceof SortedExampleSetEx) ? (SortedExampleSetEx)data : null;
         if (set == null) {

@@ -2,17 +2,11 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import org.apache.commons.math.stat.descriptive.rank.Median;
-import org.apache.commons.math.stat.inference.TTest;
-import org.apache.commons.math.stat.inference.TTestImpl;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -32,7 +26,7 @@ public class RegressionActionFinder extends ActionFinder {
         this.params = params;
     }
 
-    List<ElementaryCondition> getAllNominalConditions(Attribute attribute) {
+    List<ElementaryCondition> getAllNominalConditions(IAttribute attribute) {
         List<ElementaryCondition> ret = new ArrayList<>(attribute.getMapping().size());
         //consider all values
         for (int i = 0; i < attribute.getMapping().size(); i++) {
@@ -43,7 +37,7 @@ public class RegressionActionFinder extends ActionFinder {
         return ret;
     }
 
-    List<ElementaryCondition> getAllNumericalConditions(Attribute attribute, ExampleSet trainSet, Set<Integer> coveredByRule) {
+    List<ElementaryCondition> getAllNumericalConditions(IAttribute attribute, IExampleSet trainSet, Set<Integer> coveredByRule) {
         Map<Double, List<Integer>> values2ids = new TreeMap<>();
 
         // get all distinctive values of attribute
@@ -93,7 +87,7 @@ public class RegressionActionFinder extends ActionFinder {
     }
 
     @Override
-    protected ElementaryCondition induceCondition(Rule rule, ExampleSet trainSet, Set<Integer> uncoveredByRuleset, Set<Integer> coveredByRule, Set<Attribute> allowedAttributes, Object... extraParams) {
+    protected ElementaryCondition induceCondition(Rule rule, IExampleSet trainSet, Set<Integer> uncoveredByRuleset, Set<Integer> coveredByRule, Set<IAttribute> allowedAttributes, Object... extraParams) {
 
         if (allowedAttributes.size() == 0)
             return null;
@@ -108,7 +102,7 @@ public class RegressionActionFinder extends ActionFinder {
         RegressionFinder regressionFinder = new RegressionFinder(this.params);
         ElementaryCondition bestForSource = regressionFinder.induceCondition(sourceRule, trainSet, uncoveredByRuleset, coveredByRule, allowedAttributes, extraParams);
 
-        Attribute bestAttr = null;
+        IAttribute bestAttr = null;
         if (bestForSource != null) {
             bestAttr = trainSet.getAttributes().get(bestForSource.getAttribute());
             if (bestAttr.isNominal()) {
@@ -229,7 +223,7 @@ public class RegressionActionFinder extends ActionFinder {
 
 
     @Override
-    public void prune(Rule rule_, ExampleSet trainSet, Set<Integer> uncoveredPositives) {
+    public void prune(Rule rule_, IExampleSet trainSet, Set<Integer> uncoveredPositives) {
         RegressionActionRule rar = (RegressionActionRule) rule_;
 
         if (rar == null)

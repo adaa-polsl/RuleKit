@@ -1,21 +1,13 @@
 package adaa.analytics.rules.logic.representation;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.AttributeValueFilterSingleCondition;
-import com.rapidminer.example.set.ConditionedExampleSet;
-import com.rapidminer.example.set.SimpleExampleSet;
-import com.rapidminer.example.table.NominalMapping;
-import com.rapidminer.operator.tools.ExpressionEvaluationException;
-
-import java.util.ArrayList;
-import java.util.List;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.set.SimpleExampleSet;
 
 public class ContrastExampleSet extends SimpleExampleSet {
 
-    protected Attribute contrastAttribute;
+    protected IAttribute contrastAttribute;
 
-    public Attribute getContrastAttribute() { return contrastAttribute; }
+    public IAttribute getContrastAttribute() { return contrastAttribute; }
 
     public ContrastExampleSet(SimpleExampleSet exampleSet) {
         super(exampleSet);

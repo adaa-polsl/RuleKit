@@ -15,22 +15,18 @@
 package adaa.analytics.rules.logic.induction;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.rm.example.table.INominalMapping;
+import adaa.analytics.rules.rm.tools.container.Pair;
 import org.apache.commons.lang.StringUtils;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.NominalMapping;
-import com.rapidminer.tools.container.Pair;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 /**
  * Separate'n'conquer algorithm for generating classification rule sets.
@@ -57,17 +53,17 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 	 * @param dataset Training data set.
 	 * @return Rule set.
 	 */
-	public RuleSetBase run(ExampleSet dataset) {
+	public RuleSetBase run(IExampleSet dataset) {
 		Logger.log("ClassificationSnC.run()\n", Level.FINE);
 
 		ClassificationRuleSet finalRuleset = (ClassificationRuleSet) factory.create(dataset);
 
 		// use contrast attribute if specified
-		final Attribute outputAttr = (dataset.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE) == null)
+		final IAttribute outputAttr = (dataset.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE) == null)
 				? dataset.getAttributes().getLabel()
 				: dataset.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
 
-		NominalMapping mapping = outputAttr.getMapping();
+		INominalMapping mapping = outputAttr.getMapping();
 
 		boolean weighted = (dataset.getAttributes().getWeight() != null);
 
@@ -235,7 +231,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 		return finalRuleset;
 	}
 
-	public void preprocessClass(ExampleSet dataset, int classId) {
+	public void preprocessClass(IExampleSet dataset, int classId) {
 
 	}
 }

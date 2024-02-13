@@ -9,7 +9,7 @@ import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.operator.Model;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
@@ -106,7 +106,7 @@ public class TrainProcess {
                 Logger.log("Train params: \n   Model file path: " + modelFilePath + "\n" +
                         "   Input file path: " + inFilePath + "\n", Level.FINE);
 
-                ExampleSet sourceEs = new ArffFileLoader().load(inFilePath, datasetConfiguration.label);
+                IExampleSet sourceEs = new ArffFileLoader().load(inFilePath, datasetConfiguration.label);
                 roleConfigurator.apply(sourceEs);
 
                 Model learnedModel = ruleGenerator.learn(sourceEs);
@@ -114,7 +114,7 @@ public class TrainProcess {
 
                 writeModelToCsv(te.modelCsvFile, (RuleSetBase) learnedModel);
 
-                ExampleSet appliedEs = learnedModel.apply(sourceEs);
+                IExampleSet appliedEs = learnedModel.apply(sourceEs);
                 reportModelCharacteristic(learnedModel,  trainFileName);
 
                 PerformanceVector pv = null;

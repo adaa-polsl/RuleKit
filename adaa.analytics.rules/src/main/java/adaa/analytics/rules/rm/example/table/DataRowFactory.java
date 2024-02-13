@@ -173,7 +173,7 @@ public class DataRowFactory {
                 str = str.replace(decimalPointCharacter, '.');
                 return Double.parseDouble(str);
             } catch (NumberFormatException var3) {
-//                LogService.getRoot().log(Level.SEVERE, "com.rapidminer.example.table.DataRowFactory.datarowfactory_is_not_a_valid_number", str);
+//                LogService.getRoot().log(Level.SEVERE, "adaa.analytics.rules.rm.example.table.DataRowFactory.datarowfactory_is_not_a_valid_number", str);
                 return Double.NaN;
             }
         }

@@ -16,14 +16,13 @@ package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.RemappedExampleSet;
-import com.rapidminer.example.table.AttributeFactory;
-import com.rapidminer.example.table.ExampleTable;
-import com.rapidminer.operator.OperatorException;
-import com.rapidminer.tools.Ontology;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.set.RemappedExampleSet;
+import adaa.analytics.rules.rm.example.table.AttributeFactory;
+import adaa.analytics.rules.rm.example.table.IExampleTable;
+import adaa.analytics.rules.rm.tools.Ontology;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +59,7 @@ public class SurvivalRuleSet extends RuleSetBase {
 	 * @param params Induction parameters.
 	 * @param knowledge User's knowledge.
 	 */
-	public SurvivalRuleSet(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
+	public SurvivalRuleSet(IExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
 		super(exampleSet, isVoting, params, knowledge);
 		
 		trainingEstimator = new KaplanMeierEstimator(exampleSet);
@@ -110,11 +109,11 @@ public class SurvivalRuleSet extends RuleSetBase {
 	 * @throws OperatorException
 	 */
 	@Override
-	public ExampleSet apply(ExampleSet exampleSet) throws OperatorException {
-		ExampleSet mappedExampleSet = new RemappedExampleSet(exampleSet, getTrainingHeader(), false);
+	public IExampleSet apply(IExampleSet exampleSet) throws OperatorException {
+		IExampleSet mappedExampleSet = new RemappedExampleSet(exampleSet, getTrainingHeader(), false);
         checkCompatibility(mappedExampleSet);
-		Attribute predictedLabel = createPredictionAttributes(mappedExampleSet, getLabel());
-		ExampleSet result = performPrediction(mappedExampleSet, predictedLabel);
+		IAttribute predictedLabel = createPredictionAttributes(mappedExampleSet, getLabel());
+		IExampleSet result = performPrediction(mappedExampleSet, predictedLabel);
 		
 		// Copy in order to avoid RemappedExampleSets wrapped around each other accumulating over time
 		//copyPredictedLabel(result, exampleSet);
@@ -134,11 +133,11 @@ public class SurvivalRuleSet extends RuleSetBase {
 	 * @return Output label attribute.
 	 */
 	@Override
-	protected Attribute createPredictionAttributes(ExampleSet exampleSet, Attribute label) {
-		Attribute predictedLabel = super.createPredictionAttributes(exampleSet, label);
+	protected IAttribute createPredictionAttributes(IExampleSet exampleSet, IAttribute label) {
+		IAttribute predictedLabel = super.createPredictionAttributes(exampleSet, label);
 		
-		ExampleTable table = exampleSet.getExampleTable();
-		Attribute attr = AttributeFactory.createAttribute(ATTRIBUTE_ESTIMATOR, Ontology.STRING);
+		IExampleTable table = exampleSet.getExampleTable();
+		IAttribute attr = AttributeFactory.createAttribute(ATTRIBUTE_ESTIMATOR, Ontology.STRING);
 		table.addAttribute(attr);
 		exampleSet.getAttributes().setSpecialAttribute(attr, attr.getName());
 		

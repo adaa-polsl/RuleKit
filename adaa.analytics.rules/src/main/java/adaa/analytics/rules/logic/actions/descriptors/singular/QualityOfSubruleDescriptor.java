@@ -6,7 +6,7 @@ import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.ActionRule;
 import adaa.analytics.rules.logic.representation.ClassificationRule;
 import adaa.analytics.rules.logic.representation.Rule;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 public class QualityOfSubruleDescriptor extends ActionRuleDescriptorBase<Double> {
 
@@ -17,9 +17,9 @@ public class QualityOfSubruleDescriptor extends ActionRuleDescriptorBase<Double>
 
     protected RuleSide ruleSide;
     protected ClassificationMeasure qualityFunc;
-    protected ExampleSet exampleSet;
+    protected IExampleSet exampleSet;
 
-    public QualityOfSubruleDescriptor(RuleSide sideOfRule, ClassificationMeasure measure, ExampleSet examples){
+    public QualityOfSubruleDescriptor(RuleSide sideOfRule, ClassificationMeasure measure, IExampleSet examples){
         ruleSide = sideOfRule;
         qualityFunc = measure;
         exampleSet = examples;

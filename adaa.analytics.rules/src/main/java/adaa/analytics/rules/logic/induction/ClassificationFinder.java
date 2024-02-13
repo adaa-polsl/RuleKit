@@ -21,11 +21,11 @@ import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.representation.*;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Attributes;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.DataRow;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IAttributes;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.table.DataRow;
 
 
 /**
@@ -40,9 +40,9 @@ public class ClassificationFinder extends AbstractFinder {
 	 * Map of precalculated coverings (time optimization).
 	 * For each attribute there is a set of distinctive values. For each value there is a bit vector of examples covered.
 	 */
-	protected Map<Attribute, Map<Double, IntegerBitSet>> precalculatedCoverings;
+	protected Map<IAttribute, Map<Double, IntegerBitSet>> precalculatedCoverings;
 
-	protected Map<Attribute, Map<Double, IntegerBitSet>> precalculatedCoveringsComplement;
+	protected Map<IAttribute, Map<Double, IntegerBitSet>> precalculatedCoveringsComplement;
 
 	/**
 	 * Initializes induction parameters.
@@ -59,21 +59,21 @@ public class ClassificationFinder extends AbstractFinder {
 	 * @param trainSet Training set.
 	 */
 	@Override
-	public ExampleSet preprocess(ExampleSet trainSet) {
+	public IExampleSet preprocess(IExampleSet trainSet) {
 	
 		// do nothing for weighted datasets
 		if (trainSet.getAttributes().getWeight() != null) {
 			return trainSet;
 		}
 
-		precalculatedCoverings = new HashMap<Attribute, Map<Double, IntegerBitSet>>();
-		precalculatedCoveringsComplement = new HashMap<Attribute, Map<Double, IntegerBitSet>>();
-		Attributes attributes = trainSet.getAttributes();
+		precalculatedCoverings = new HashMap<IAttribute, Map<Double, IntegerBitSet>>();
+		precalculatedCoveringsComplement = new HashMap<IAttribute, Map<Double, IntegerBitSet>>();
+		IAttributes attributes = trainSet.getAttributes();
 
 		List<Future> futures = new ArrayList<Future>();
 
 		// iterate over all allowed decision attributes
-		for (Attribute attr : attributes) {
+		for (IAttribute attr : attributes) {
 
 			Future f = pool.submit( () -> {
 				Map<Double, IntegerBitSet> attributeCovering = new TreeMap<Double, IntegerBitSet>();
@@ -135,7 +135,7 @@ public class ClassificationFinder extends AbstractFinder {
 	 */
 	public int grow(
 		final Rule rule,
-		final ExampleSet dataset,
+		final IExampleSet dataset,
 		final Set<Integer> uncovered) {
 
 		Logger.log("ClassificationFinder.grow()\n", Level.FINE);
@@ -149,8 +149,8 @@ public class ClassificationFinder extends AbstractFinder {
 		covered.addAll(rule.getCoveredPositives());
 		covered.addAll(rule.getCoveredNegatives());
 
-		Set<Attribute> allowedAttributes = new TreeSet<Attribute>(new AttributeComparator());
-		for (Attribute a: dataset.getAttributes()) {
+		Set<IAttribute> allowedAttributes = new TreeSet<IAttribute>(new AttributeComparator());
+		for (IAttribute a: dataset.getAttributes()) {
 			allowedAttributes.add(a);
 		}
 		
@@ -213,7 +213,7 @@ public class ClassificationFinder extends AbstractFinder {
 	 * @param trainSet Training set. 
 	 * @return Updated covering object.
 	 */
-	public void prune(final Rule rule, final ExampleSet trainSet, final Set<Integer> uncovered) {
+	public void prune(final Rule rule, final IExampleSet trainSet, final Set<Integer> uncovered) {
 		Logger.log("ClassificationFinder.prune()\n", Level.FINE);
 		
 		// check preconditions
@@ -445,7 +445,7 @@ public class ClassificationFinder extends AbstractFinder {
 
 	public void postprocess(
 			final Rule rule,
-			final ExampleSet dataset) {
+			final IExampleSet dataset) {
 
 		ContingencyTable ct = new ContingencyTable(
 				rule.getWeighted_p(), rule.getWeighted_n(), rule.getWeighted_P(), rule.getWeighted_N());
@@ -468,10 +468,10 @@ public class ClassificationFinder extends AbstractFinder {
 	@Override
 	protected ElementaryCondition induceCondition(
 		Rule rule,
-		ExampleSet trainSet,
+		IExampleSet trainSet,
 		Set<Integer> uncoveredPositives,
 		Set<Integer> coveredByRule, 
-		Set<Attribute> allowedAttributes,
+		Set<IAttribute> allowedAttributes,
 		Object... extraParams) {
 
 		if (allowedAttributes.size() == 0) {
@@ -479,7 +479,7 @@ public class ClassificationFinder extends AbstractFinder {
 		}
 
 		double classId = ((SingletonSet)rule.getConsequence().getValueSet()).getValue();
-		Attribute weightAttr = trainSet.getAttributes().getWeight();
+		IAttribute weightAttr = trainSet.getAttributes().getWeight();
 		Set<Integer> positives = rule.getCoveredPositives();
 		double P = rule.getWeighted_P();
 		double N = rule.getWeighted_N();
@@ -491,7 +491,7 @@ public class ClassificationFinder extends AbstractFinder {
 		List<Future<ConditionEvaluation>> futures = new ArrayList<Future<ConditionEvaluation>>();
 		
 		// iterate over all allowed decision attributes
-		for (Attribute attr : allowedAttributes) {
+		for (IAttribute attr : allowedAttributes) {
 
 			// consider attributes in parallel
 			Future<ConditionEvaluation> future = (Future<ConditionEvaluation>) pool.submit(() -> {
@@ -753,7 +753,7 @@ public class ClassificationFinder extends AbstractFinder {
 		}
 
 		if (best.condition != null) {
-			Attribute bestAttr = trainSet.getAttributes().get(((ElementaryCondition)best.condition).getAttribute());
+			IAttribute bestAttr = trainSet.getAttributes().get(((ElementaryCondition)best.condition).getAttribute());
 
 			Logger.log("\tFinal best: " + best.condition + ", quality=" + best.quality + "\n", Level.FINEST);
 
@@ -780,7 +780,7 @@ public class ClassificationFinder extends AbstractFinder {
 		final Rule currentRule,
 		final Rule bestRule,
 		final ConditionBase condition, 
-		final ExampleSet trainSet,
+		final IExampleSet trainSet,
 		final Set<Integer> covered,
 		final Set<Integer> uncovered) {
 		

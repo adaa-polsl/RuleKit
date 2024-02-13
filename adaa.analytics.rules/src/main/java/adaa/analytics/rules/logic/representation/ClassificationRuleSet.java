@@ -16,14 +16,14 @@ package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.RemappedExampleSet;
-import com.rapidminer.example.table.AttributeFactory;
-import com.rapidminer.example.table.ExampleTable;
-import com.rapidminer.operator.OperatorException;
-import com.rapidminer.tools.Ontology;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.set.RemappedExampleSet;
+import adaa.analytics.rules.rm.example.table.AttributeFactory;
+import adaa.analytics.rules.rm.example.table.IExampleTable;
+import adaa.analytics.rules.rm.operator.OperatorException;
+import adaa.analytics.rules.rm.tools.Ontology;
 
 import java.util.List;
 
@@ -76,7 +76,7 @@ public class ClassificationRuleSet extends RuleSetBase {
      * @param params     Induction parameters.
      * @param knowledge  User's knowledge.
      */
-    public ClassificationRuleSet(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
+    public ClassificationRuleSet(IExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
         super(exampleSet, isVoting, params, knowledge);
         // TODO Auto-generated constructor stub
     }
@@ -89,8 +89,8 @@ public class ClassificationRuleSet extends RuleSetBase {
      * @throws OperatorException
      */
     @Override
-    public double predict(Example example) throws OperatorException {
-        Attribute label = example.getAttributes().getLabel();
+    public double predict(Example example) {
+        IAttribute label = example.getAttributes().getLabel();
         assert (label.isNominal());
         int result = defaultClass;
 
@@ -143,7 +143,7 @@ public class ClassificationRuleSet extends RuleSetBase {
 
     private void calculateConfidence(Example example, double[] votes, double votesSum, int result) {
 
-        Attribute label = example.getAttributes().getLabel();
+        IAttribute label = example.getAttributes().getLabel();
         List<String> labelValues = label.getMapping().getValues();
         int i = 0;
         for (String labelValue : labelValues) {
@@ -166,11 +166,11 @@ public class ClassificationRuleSet extends RuleSetBase {
      * @throws OperatorException
      */
     @Override
-    public ExampleSet apply(ExampleSet exampleSet) throws OperatorException {
-        ExampleSet mappedExampleSet = new RemappedExampleSet(exampleSet, getTrainingHeader(), false);
+    public IExampleSet apply(IExampleSet exampleSet) throws OperatorException {
+        IExampleSet mappedExampleSet = new RemappedExampleSet(exampleSet, getTrainingHeader(), false);
         checkCompatibility(mappedExampleSet);
-        Attribute predictedLabel = createPredictionAttributes(mappedExampleSet, getLabel());
-        ExampleSet result = performPrediction(mappedExampleSet, predictedLabel);
+        IAttribute predictedLabel = createPredictionAttributes(mappedExampleSet, getLabel());
+        IExampleSet result = performPrediction(mappedExampleSet, predictedLabel);
 
         // generate testing report
         if (exampleSet.getAttributes().getLabel() != null) {
@@ -220,11 +220,11 @@ public class ClassificationRuleSet extends RuleSetBase {
      * @return Output label attribute.
      */
     @Override
-    protected Attribute createPredictionAttributes(ExampleSet exampleSet, Attribute label) {
-        Attribute predictedLabel = super.createPredictionAttributes(exampleSet, label);
+    protected IAttribute createPredictionAttributes(IExampleSet exampleSet, IAttribute label) {
+        IAttribute predictedLabel = super.createPredictionAttributes(exampleSet, label);
 
-        ExampleTable table = exampleSet.getExampleTable();
-        Attribute attr = AttributeFactory.createAttribute(ATTRIBUTE_VOTING_RESULTS_WEIGHTS, Ontology.STRING);
+        IExampleTable table = exampleSet.getExampleTable();
+        IAttribute attr = AttributeFactory.createAttribute(ATTRIBUTE_VOTING_RESULTS_WEIGHTS, Ontology.STRING);
         table.addAttribute(attr);
         exampleSet.getAttributes().setSpecialAttribute(attr, attr.getName());
 

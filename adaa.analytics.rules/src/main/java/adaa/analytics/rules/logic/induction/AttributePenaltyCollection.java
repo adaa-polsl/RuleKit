@@ -1,9 +1,9 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.ContrastRule;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.NominalMapping;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.table.INominalMapping;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -22,15 +22,15 @@ public class AttributePenaltyCollection {
         return penalties.get(i);
     }
 
-    public void init(ExampleSet trainSet) {
+    public void init(IExampleSet trainSet) {
         penalties.clear();
 
         // each group requires its own penalty object
-        final Attribute outputAttr = (trainSet.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE) == null)
+        final IAttribute outputAttr = (trainSet.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE) == null)
                 ? trainSet.getAttributes().getLabel()
                 : trainSet.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
 
-        NominalMapping mapping = outputAttr.getMapping();
+        INominalMapping mapping = outputAttr.getMapping();
 
         for (int i = 0; i < mapping.size(); ++i) {
             // first covering - create penalty object

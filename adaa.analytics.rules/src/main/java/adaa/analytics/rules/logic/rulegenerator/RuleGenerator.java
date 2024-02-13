@@ -15,7 +15,7 @@
 package adaa.analytics.rules.logic.rulegenerator;
 
 import adaa.analytics.rules.logic.representation.RuleSetBase;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 /**
  * The basic RuleKit learner operator. It enables inducing classification, regression,
@@ -49,7 +49,7 @@ public class RuleGenerator {
         operatorCommandProxy.addCommandListener(commandListener);
     }
 
-    public RuleSetBase learn(ExampleSet exampleSet) {
+    public RuleSetBase learn(IExampleSet exampleSet) {
         RuleSetBase m;
         // do not use expert knowledge in when option is not set
         if (useExpert) {

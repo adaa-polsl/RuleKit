@@ -1,6 +1,7 @@
 package adaa.analytics.rules.rm.example.table;
 
 import adaa.analytics.rules.rm.example.*;
+import adaa.analytics.rules.rm.operator.Annotations;
 import adaa.analytics.rules.rm.tools.Ontology;
 
 import java.io.IOException;
@@ -17,7 +18,7 @@ public abstract class AbstractAttribute implements IAttribute {
     private final List<IAttributeTransformation> transformations = new ArrayList();
     private List<IStatistics> statistics = new LinkedList();
     private String constructionDescription = null;
-//    private Annotations annotations = new Annotations();
+    private Annotations annotations = new Annotations();
 
     protected AbstractAttribute(AbstractAttribute attribute) {
         this.attributeDescription = attribute.attributeDescription;
@@ -55,9 +56,9 @@ public abstract class AbstractAttribute implements IAttribute {
             this.owners = new LinkedList();
         }
 
-//        if (this.annotations == null) {
-//            this.annotations = new Annotations();
-//        }
+        if (this.annotations == null) {
+            this.annotations = new Annotations();
+        }
 
     }
 
@@ -225,7 +226,7 @@ public abstract class AbstractAttribute implements IAttribute {
         return result.toString();
     }
 
-//    public Annotations getAnnotations() {
-//        return this.annotations;
-//    }
+    public Annotations getAnnotations() {
+        return this.annotations;
+    }
 }

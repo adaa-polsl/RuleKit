@@ -1,11 +1,10 @@
 package adaa.analytics.rules.logic.representation;
 
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.AttributeValueFilterSingleCondition;
-import com.rapidminer.example.set.ConditionedExampleSet;
-import com.rapidminer.example.set.SimpleExampleSet;
-import com.rapidminer.example.table.NominalMapping;
-import com.rapidminer.operator.tools.ExpressionEvaluationException;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.set.AttributeValueFilterSingleCondition;
+import adaa.analytics.rules.rm.example.set.ConditionedExampleSet;
+import adaa.analytics.rules.rm.example.set.SimpleExampleSet;
+import adaa.analytics.rules.rm.example.table.INominalMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,18 +31,21 @@ public class ContrastSurvivalExampleSet extends ContrastExampleSet {
 
         // establish contrast groups survival estimator
         try {
-            NominalMapping mapping = contrastAttribute.getMapping();
+            INominalMapping mapping = contrastAttribute.getMapping();
 
             for (int i = 0; i < mapping.size(); ++i) {
                 AttributeValueFilterSingleCondition cnd = new AttributeValueFilterSingleCondition(
                         contrastAttribute, AttributeValueFilterSingleCondition.EQUALS, mapping.mapIndex(i));
 
-                ExampleSet conditionedSet = new ConditionedExampleSet(exampleSet,cnd);
+                IExampleSet conditionedSet = new ConditionedExampleSet(exampleSet,cnd);
                 groupEstimators.add(new KaplanMeierEstimator(conditionedSet));
             }
 
-        } catch (ExpressionEvaluationException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+//        catch (ExpressionEvaluationException e) {
+//            e.printStackTrace();
+//        }
     }
 }

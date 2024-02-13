@@ -6,12 +6,12 @@ import adaa.analytics.rules.logic.actions.recommendations.ClassificationRecommen
 import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.ActionRuleSet;
+import adaa.analytics.rules.rm.example.set.AttributeValueFilterSingleCondition;
+import adaa.analytics.rules.rm.example.set.ConditionedExampleSet;
+import adaa.analytics.rules.rm.example.set.ICondition;
+import adaa.analytics.rules.rm.example.table.INominalMapping;
 import com.rapidminer.RapidMiner;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.AttributeValueFilterSingleCondition;
-import com.rapidminer.example.set.Condition;
-import com.rapidminer.example.set.ConditionedExampleSet;
-import com.rapidminer.example.table.NominalMapping;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
 import org.apache.commons.cli.*;
@@ -176,7 +176,7 @@ public class ActionRulesConsole {
         return cmd.getOptionValue(LABEL_OPT_NAME, "class");
     }
 
-    private static String getSourceClassname(CommandLine cmd, ExampleSet examples) {
+    private static String getSourceClassname(CommandLine cmd, IExampleSet examples) {
         String read = cmd.getOptionValue(SOURCE_OPT_NAME);
         if (!examples.getAttributes().getLabel().getMapping().getValues().contains(read)) {
             throw new ArgumentException("The requested source class name: " + read + " was not found in train set examples.");
@@ -184,11 +184,11 @@ public class ActionRulesConsole {
         return read;
     }
 
-    private static String getTargetClassname(CommandLine cmd, ExampleSet examples) {
+    private static String getTargetClassname(CommandLine cmd, IExampleSet examples) {
         String read = cmd.getOptionValue(TARGET_OPT_NAME);
 
         if (read == null) {
-            NominalMapping mapping = examples.getAttributes().getLabel().getMapping();
+            INominalMapping mapping = examples.getAttributes().getLabel().getMapping();
             if (mapping.size() > 2) throw new ArgumentException("The exampleset contains more then two class. Target class have to be specified");
             String source = getSourceClassname(cmd, examples);
             for (String value : mapping.getValues()) {
@@ -202,8 +202,8 @@ public class ActionRulesConsole {
         return read;
     }
 
-    private static ExampleSet loadExampleSet(String fileName, String labelName)  {
-        ExampleSet set = null;
+    private static IExampleSet loadExampleSet(String fileName, String labelName)  {
+        IExampleSet set = null;
         ExamplesetFileLoader loader = null;
         if (fileName.endsWith(".arff")) {
             loader = new ArffFileLoader();
@@ -246,8 +246,8 @@ public class ActionRulesConsole {
         ClassificationMeasure measure = getMeasureName(cmdParams);
         int mincov = getMincov(cmdParams);
 
-        ExampleSet trainSet = loadExampleSet(getTrainFilename(cmdParams), getClassname(cmdParams));
-        ExampleSet testSet = loadExampleSet(getTestFilename(cmdParams), getClassname(cmdParams));
+        IExampleSet trainSet = loadExampleSet(getTrainFilename(cmdParams), getClassname(cmdParams));
+        IExampleSet testSet = loadExampleSet(getTestFilename(cmdParams), getClassname(cmdParams));
 
         String source = getSourceClassname(cmdParams, trainSet);
         String target = getTargetClassname(cmdParams, trainSet);
@@ -287,18 +287,18 @@ public class ActionRulesConsole {
         ActionMetaTable metaTable = new OptimizedActionMetaTable(distribution, params.getStableAttributes());
 
         //To run recommendations, we will extract source class examples only
-        Condition cnd = new AttributeValueFilterSingleCondition(testSet.getAttributes().getLabel(), AttributeValueFilterSingleCondition.EQUALS, source);
-        ExampleSet sourceExamplesInTestSet  = mutator.materializeExamples(new ConditionedExampleSet(testSet, cnd));
+        ICondition cnd = new AttributeValueFilterSingleCondition(testSet.getAttributes().getLabel(), AttributeValueFilterSingleCondition.EQUALS, source);
+        IExampleSet sourceExamplesInTestSet  = mutator.materializeExamples(new ConditionedExampleSet(testSet, cnd));
 
         // Mutate source test example according to action rules
-        ExampleSet testSetMutatedByActionRules = mutator.mutateExamples(sourceExamplesInTestSet, rulesOnTrain, trainSet, target);
+        IExampleSet testSetMutatedByActionRules = mutator.mutateExamples(sourceExamplesInTestSet, rulesOnTrain, trainSet, target);
 
 
         //Mutate source test examples using recommendation method
         //create container for used recommendations to be presented later
         ActionRuleSet recommendations = new ActionRuleSet(sourceExamplesInTestSet, true, params, null);
 
-        ExampleSet testSetMutatedByRecommendations = mutator.mutateExamples(sourceExamplesInTestSet, metaTable, source, target, recommendations, trainSet, crt);
+        IExampleSet testSetMutatedByRecommendations = mutator.mutateExamples(sourceExamplesInTestSet, metaTable, source, target, recommendations, trainSet, crt);
 
         // Write results, using train file name as a basis
 

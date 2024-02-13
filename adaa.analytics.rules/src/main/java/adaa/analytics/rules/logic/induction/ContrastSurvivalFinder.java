@@ -4,8 +4,8 @@ import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.quality.NegativeControlledMeasure;
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.tools.container.Pair;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.tools.container.Pair;
 
 import java.io.Serializable;
 import java.security.InvalidParameterException;
@@ -25,7 +25,7 @@ public class ContrastSurvivalFinder extends SurvivalLogRankFinder implements IPe
         }
 
         @Override
-        public double calculate(ExampleSet dataset, ContingencyTable ct) {
+        public double calculate(IExampleSet dataset, ContingencyTable ct) {
 
             ContrastSurvivalExampleSet ces = (dataset instanceof ContrastExampleSet) ? (ContrastSurvivalExampleSet)dataset : null;
             if (ces == null) {
@@ -81,7 +81,7 @@ public class ContrastSurvivalFinder extends SurvivalLogRankFinder implements IPe
      */
     public int grow(
             final Rule rule,
-            final ExampleSet dataset,
+            final IExampleSet dataset,
             final Set<Integer> uncovered) {
 
         int consequence = (int)(((SingletonSet)rule.getConsequence().getValueSet()).getValue());
@@ -109,7 +109,7 @@ public class ContrastSurvivalFinder extends SurvivalLogRankFinder implements IPe
     @Override
     public void postprocess(
             final Rule rule,
-            final ExampleSet dataset) {
+            final IExampleSet dataset) {
 
         IntegerBitSet covered = new IntegerBitSet(dataset.size());
         IntegerBitSet  negatives = new IntegerBitSet(dataset.size());

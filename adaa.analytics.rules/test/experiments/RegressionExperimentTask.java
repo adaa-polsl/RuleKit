@@ -4,8 +4,8 @@ import adaa.analytics.rules.logic.actions.recommendations.RecommendationTask;
 import adaa.analytics.rules.logic.actions.recommendations.RegressionRecommendationTask;
 import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import org.apache.commons.lang.math.DoubleRange;
 import org.apache.commons.lang.math.Range;
 
@@ -17,7 +17,7 @@ public class RegressionExperimentTask extends ExperimentTask {
         private double MSE;
         private int wellPredictedCount = 0;
 
-        public RegressionExampleSetEvaluation(ExampleSet exampleSet) {
+        public RegressionExampleSetEvaluation(IExampleSet exampleSet) {
             final int n = exampleSet.size();
             double[] labelValues = new double[n];
 
@@ -79,7 +79,7 @@ public class RegressionExperimentTask extends ExperimentTask {
         return new RegressionActionInductionParameters(findingParameters);
     }
 
-    public RecommendationTask getRecommendationTask(ActionInductionParameters params, FileDescription file, ExampleSet set, ClassificationMeasure measure) {
+    public RecommendationTask getRecommendationTask(ActionInductionParameters params, FileDescription file, IExampleSet set, ClassificationMeasure measure) {
 
         return new RegressionRecommendationTask(params.isPruningEnabled(), false, measure, RegressionActionInductionParameters.RegressionOrder.ANY);
 

@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.induction.RuleFactory;
@@ -17,9 +17,9 @@ import adaa.analytics.rules.logic.representation.SingletonSet;
 
 public class InMemoryActionRuleRepository {
 
-	protected ExampleSet set;
+	protected IExampleSet set;
 	
-	public InMemoryActionRuleRepository(ExampleSet set) {
+	public InMemoryActionRuleRepository(IExampleSet set) {
 		this.set = set;
 	}
 	

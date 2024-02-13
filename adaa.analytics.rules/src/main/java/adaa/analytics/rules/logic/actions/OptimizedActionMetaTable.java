@@ -4,8 +4,8 @@ import adaa.analytics.rules.logic.actions.recommendations.ClassificationRecommen
 import adaa.analytics.rules.logic.actions.recommendations.RecommendationTask;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.Logger;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -59,7 +59,7 @@ public class OptimizedActionMetaTable extends ActionMetaTable {
         metaValuesByAttributeLocal.forEach((String x, Set<MetaValue> y) -> y.removeIf(z -> z.contains(ex)));
 
         while(true) {
-            Iterator<Attribute> it = trainSet.getAttributes().allAttributes();
+            Iterator<IAttribute> it = trainSet.getAttributes().allAttributes();
 
             it.forEachRemaining(x -> {
                         if (x.equals(trainSet.getAttributes().getLabel())) {

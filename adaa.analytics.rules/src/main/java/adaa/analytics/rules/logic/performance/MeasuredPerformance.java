@@ -18,10 +18,9 @@
 */
 package adaa.analytics.rules.logic.performance;
 
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.tools.Tools;
-import com.rapidminer.tools.math.Averagable;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.tools.Tools;
 
 import java.util.List;
 
@@ -48,7 +47,7 @@ public abstract class MeasuredPerformance {
 
 
 	/** Initializes the criterion. The default implementation does nothing. */
-	public void startCounting(ExampleSet set, boolean useExampleWeights)  {}
+	public void startCounting(IExampleSet set, boolean useExampleWeights)  {}
 
 	public static String toString(List<MeasuredPerformance> list) {
 		StringBuffer result = new StringBuffer(Tools.getLineSeparator() + "Performance [");

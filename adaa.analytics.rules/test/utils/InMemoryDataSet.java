@@ -14,12 +14,13 @@
  ******************************************************************************/
 package utils;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Attributes;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.DataRow;
-import com.rapidminer.example.table.ExampleTable;
-import com.rapidminer.example.table.MemoryExampleTable;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IAttributes;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.table.DataRow;
+import adaa.analytics.rules.rm.example.table.IExampleTable;
+import adaa.analytics.rules.rm.example.table.MemoryExampleTable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,22 +32,22 @@ import java.util.Map;
 
 public class InMemoryDataSet {
 
-	protected ExampleSet dataset;
+	protected IExampleSet dataset;
 	protected List<String> inputData;
 	
-	public InMemoryDataSet(List<Attribute> attributes, List<String> data) {
+	public InMemoryDataSet(List<IAttribute> attributes, List<String> data) {
 		inputData = data;
-        Map<Attribute, String> roles = createRoles(attributes);
+        Map<IAttribute, String> roles = createRoles(attributes);
 
-        ExampleTable table = createExampleTable(attributes, inputRows());
+        IExampleTable table = createExampleTable(attributes, inputRows());
         dataset = table.createExampleSet(roles);
 	}
 	
-	public ExampleSet getExampleSet() {
+	public IExampleSet getExampleSet() {
 		return dataset;
 	}
 	
-	ExampleTable createExampleTable(List<Attribute> attributes, Iterable<utils.Row> inputRows) {
+	IExampleTable createExampleTable(List<IAttribute> attributes, Iterable<utils.Row> inputRows) {
         MemoryExampleTable table = new MemoryExampleTable(attributes);
         utils.DataRowFactory2 factory = utils.DataRowFactory2.withFullStopDecimalSeparator(attributes);
         for(Iterable<String> row : inputRows){
@@ -94,9 +95,9 @@ public class InMemoryDataSet {
 	        };
 	    }
 
-	 Map<Attribute, String> createRoles(List<Attribute> attributes){
-		 	Map<Attribute, String> map = new HashMap<Attribute, String>();
-		 	map.put(attributes.get(0), Attributes.LABEL_NAME);
+	 Map<IAttribute, String> createRoles(List<IAttribute> attributes){
+		 	Map<IAttribute, String> map = new HashMap<IAttribute, String>();
+		 	map.put(attributes.get(0), IAttributes.LABEL_NAME);
 	        return Collections.unmodifiableMap(map);
 	    }
 

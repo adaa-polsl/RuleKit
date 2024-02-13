@@ -6,10 +6,10 @@ import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.induction.RegressionActionInductionParameters;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.SortedExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.set.SortedExampleSet;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,24 +39,24 @@ public class RegressionRecommendationTask extends RecommendationTask {
     }
 
     @Override
-    public IValueSet getSourceValue(Attribute label) {
+    public IValueSet getSourceValue(IAttribute label) {
         return new SingletonSet(sourceExample.getLabel(), null);
     }
 
     @Override
-    public IValueSet getTargetValue(Attribute label) {
+    public IValueSet getTargetValue(IAttribute label) {
         RegressionRule r = metaPremise2Rule(finalMetaexample, label);
         r.setCoveringInformation(r.covers(trainingSet));
         return new SingletonSet(r.getConsequenceValue(), null);
     }
 
     @Override
-    public ExampleSet preprocessExamples(ExampleSet examples) {
+    public IExampleSet preprocessExamples(IExampleSet examples) {
         trainingSet = new SortedExampleSet(examples, examples.getAttributes().getLabel(), SortedExampleSet.INCREASING);
         return trainingSet;
     }
 
-    private RegressionRule metaPremise2Rule(MetaExample me, Attribute label) {
+    private RegressionRule metaPremise2Rule(MetaExample me, IAttribute label) {
         CompoundCondition cc = new CompoundCondition();
 
         me.toPremise().forEach((String attr, ElementaryCondition ec) -> cc.addSubcondition(ec));
@@ -65,7 +65,7 @@ public class RegressionRecommendationTask extends RecommendationTask {
     }
 
     @Override
-    public double rankMetaPremise(MetaExample metaPremise, ExampleSet examples) {
+    public double rankMetaPremise(MetaExample metaPremise, IExampleSet examples) {
 
         Covering covering = new Covering();
 
@@ -81,7 +81,7 @@ public class RegressionRecommendationTask extends RecommendationTask {
     }
 
     @Override
-    public MetaValue getBestMetaValue(Set<String> allowedAttributes, Map<String, Set<MetaValue>> metaValuesByAttribute, MetaExample contra, ExampleSet examples) {
+    public MetaValue getBestMetaValue(Set<String> allowedAttributes, Map<String, Set<MetaValue>> metaValuesByAttribute, MetaExample contra, IExampleSet examples) {
         double best_quality = Double.NEGATIVE_INFINITY;
 
         Stream<Map.Entry<String, Set<MetaValue>>> allowed =

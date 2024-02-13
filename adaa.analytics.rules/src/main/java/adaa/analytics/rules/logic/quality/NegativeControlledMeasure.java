@@ -1,8 +1,7 @@
 package adaa.analytics.rules.logic.quality;
 
 import adaa.analytics.rules.logic.induction.ContingencyTable;
-import com.rapidminer.example.ExampleSet;
-import org.apache.lucene.search.IndexOrDocValuesQuery;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.io.Serializable;
 
@@ -34,7 +33,7 @@ public class NegativeControlledMeasure implements IQualityMeasure, Serializable 
     }
 
     @Override
-    public double calculate(ExampleSet dataset, ContingencyTable ct) {
+    public double calculate(IExampleSet dataset, ContingencyTable ct) {
        if (verifyNegativeCoverage(ct)) {
            return internalMeasure.calculate(dataset, ct);
        } else {

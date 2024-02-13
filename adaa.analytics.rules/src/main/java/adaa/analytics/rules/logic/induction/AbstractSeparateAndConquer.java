@@ -16,7 +16,7 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.OperatorCommandProxy;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 /***
  * Abstract base class for all separate and conquer algorithms for induction of rule-based models
@@ -56,5 +56,5 @@ public abstract class AbstractSeparateAndConquer {
 	 * @param trainSet Training set.
 	 * @return Rule-based model.
 	 */
-	public abstract RuleSetBase run(final ExampleSet trainSet);
+	public abstract RuleSetBase run(final IExampleSet trainSet);
 }

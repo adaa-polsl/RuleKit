@@ -1,12 +1,7 @@
 package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.AttributeValueFilterSingleCondition;
-import com.rapidminer.example.set.ConditionedExampleSet;
-import com.rapidminer.example.table.NominalMapping;
-import com.rapidminer.operator.tools.ExpressionEvaluationException;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -36,7 +31,7 @@ public class ContrastRegressionRuleSet extends ContrastRuleSet {
      * @param params     Induction parameters.
      * @param knowledge  User's knowledge.
      */
-    public ContrastRegressionRuleSet(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
+    public ContrastRegressionRuleSet(IExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
         super(exampleSet, isVoting, params, knowledge);
 
         ContrastRegressionExampleSet cer = (exampleSet instanceof ContrastExampleSet) ? (ContrastRegressionExampleSet)exampleSet : null;

@@ -4,7 +4,7 @@ import adaa.analytics.rules.logic.representation.SurvivalRule;
 import com.rapidminer.Process;
 import com.rapidminer.RapidMiner;
 import com.rapidminer.example.Attributes;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.operator.IOContainer;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
@@ -23,17 +23,17 @@ import java.util.List;
 import java.util.logging.Level;
 
 public abstract class ExamplesetFileLoader {
-    protected  abstract  ExampleSet loadExampleSet(String filePath, String labelParameterName, String survivalTimeParameter) throws OperatorCreationException, OperatorException;
+    protected  abstract  IExampleSet loadExampleSet(String filePath, String labelParameterName, String survivalTimeParameter) throws OperatorCreationException, OperatorException;
 
-    public ExampleSet load(String filePath, String labelParameterName, String survivalTimeParameter) throws OperatorException, OperatorCreationException {
+    public IExampleSet load(String filePath, String labelParameterName, String survivalTimeParameter) throws OperatorException, OperatorCreationException {
         return loadExampleSet(filePath, labelParameterName, survivalTimeParameter);
     }
 
-    public ExampleSet load(String filePath, String labelParameterName) throws OperatorCreationException, OperatorException {
+    public IExampleSet load(String filePath, String labelParameterName) throws OperatorCreationException, OperatorException {
         return loadExampleSet(filePath, labelParameterName, null);
     }
 
-    public  ExampleSet load(Path filePath, String labelParameterName) throws OperatorException, OperatorCreationException {
+    public  IExampleSet load(Path filePath, String labelParameterName) throws OperatorException, OperatorCreationException {
         return loadExampleSet(filePath.toString(), labelParameterName, null);
     }
 }

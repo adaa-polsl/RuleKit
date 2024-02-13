@@ -16,10 +16,8 @@ package adaa.analytics.rules.logic.quality;
 
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 
+import adaa.analytics.rules.rm.tools.container.Pair;
 import org.apache.commons.math3.distribution.HypergeometricDistribution;
-import org.apache.commons.math3.util.CombinatoricsUtils;
-
-import com.rapidminer.tools.container.Pair;
 
 /**
  * Class representing a hypergeometric statistical test.

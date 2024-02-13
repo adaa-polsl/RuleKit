@@ -5,7 +5,7 @@ import adaa.analytics.rules.logic.actions.DefaultActionInductionRangeStrategy;
 import adaa.analytics.rules.logic.actions.ExclusiveOnlyActionInductionRangeStrategy;
 import adaa.analytics.rules.logic.actions.NotIntersectingActionInductionRangeStrategy;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 public class ActionFindingParameters {
 	
@@ -22,7 +22,7 @@ public class ActionFindingParameters {
 		return this.rangeStrategy;
 	}
 	
-	public ActionInductionRangeStrategy getRangeStrategy(ElementaryCondition pattern, ExampleSet dataset) {
+	public ActionInductionRangeStrategy getRangeStrategy(ElementaryCondition pattern, IExampleSet dataset) {
 		switch(rangeStrategy) {
 		case ALL: return new DefaultActionInductionRangeStrategy(pattern, dataset);
 		case EXCLUSIVE_ONLY: return new ExclusiveOnlyActionInductionRangeStrategy(pattern, dataset);

@@ -18,10 +18,10 @@
 */
 package adaa.analytics.rules.logic.performance;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.tools.Ontology;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.tools.Ontology;
 
 import java.util.*;
 
@@ -62,13 +62,13 @@ public class MultiClassificationPerformance extends MeasuredPerformance {
 	private Map<String, Integer> classNameMap = new HashMap<String, Integer>();
 
 	/** The currently used label attribute. */
-	private Attribute labelAttribute;
+	private IAttribute labelAttribute;
 
 	/** The currently used predicted label attribute. */
-	private Attribute predictedLabelAttribute;
+	private IAttribute predictedLabelAttribute;
 
 	/** The weight attribute. Might be null. */
-	private Attribute weightAttribute;
+	private IAttribute weightAttribute;
 
 	/** The type of this performance: accuracy or classification error. */
 	private int type = ACCURACY;
@@ -82,7 +82,7 @@ public class MultiClassificationPerformance extends MeasuredPerformance {
 
 	/** Initializes the criterion and sets the label. */
 	@Override
-	public void startCounting(ExampleSet eSet, boolean useExampleWeights) {
+	public void startCounting(IExampleSet eSet, boolean useExampleWeights) {
 		hasNominalLabels(eSet, "calculation of classification performance criteria");
 
 		this.labelAttribute = eSet.getAttributes().getLabel();
@@ -115,12 +115,12 @@ public class MultiClassificationPerformance extends MeasuredPerformance {
 		}
 	}
 
-	private void hasNominalLabels(ExampleSet es, String algorithm)  {
+	private void hasNominalLabels(IExampleSet es, String algorithm)  {
 
 		if (es.getAttributes().getLabel() == null) {
 			throw new IllegalStateException("Label is null");
 		}
-		Attribute a = es.getAttributes().getLabel();
+		IAttribute a = es.getAttributes().getLabel();
 		if (!Ontology.ATTRIBUTE_VALUE_TYPE.isA(a.getValueType(), Ontology.NOMINAL)) {
 			throw new IllegalStateException("Error in atributes: "+a.getName()+" "+algorithm);
 		}

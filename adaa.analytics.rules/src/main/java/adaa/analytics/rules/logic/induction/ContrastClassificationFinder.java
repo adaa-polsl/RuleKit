@@ -1,18 +1,11 @@
 package adaa.analytics.rules.logic.induction;
 
-import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.NegativeControlledMeasure;
-import adaa.analytics.rules.logic.representation.ContrastRule;
-import adaa.analytics.rules.logic.representation.MultiSet;
 import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.SingletonSet;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.NominalMapping;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 public class ContrastClassificationFinder extends ClassificationFinder implements IPenalizedFinder {
 
@@ -46,7 +39,7 @@ public class ContrastClassificationFinder extends ClassificationFinder implement
     @Override
     public int grow(
             final Rule rule,
-            final ExampleSet dataset,
+            final IExampleSet dataset,
             final Set<Integer> uncovered) {
 
         int consequence = (int)(((SingletonSet)rule.getConsequence().getValueSet()).getValue());

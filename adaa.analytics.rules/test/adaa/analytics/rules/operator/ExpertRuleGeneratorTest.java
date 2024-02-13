@@ -21,7 +21,7 @@ import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
 import adaa.analytics.rules.logic.rulegenerator.RuleGeneratorParams;
 import adaa.analytics.rules.utils.RapidMiner5;
 import com.rapidminer.RapidMiner;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.example.set.SplittedExampleSet;
 import com.rapidminer.operator.*;
 import com.rapidminer.tools.LogService;
@@ -51,7 +51,7 @@ public class ExpertRuleGeneratorTest {
         RapidMiner.init();
     }
 
-    private ExampleSet getExampleSet(String filePath) throws OperatorCreationException, OperatorException {
+    private IExampleSet getExampleSet(String filePath) throws OperatorCreationException, OperatorException {
 
 
         ArffExampleSource trainArff = RapidMiner5.createOperator(ArffExampleSource.class);
@@ -67,10 +67,10 @@ public class ExpertRuleGeneratorTest {
         IOContainer out = process.run();
         IOObject[] objects = out.getIOObjects();
 
-        return  (ExampleSet) objects[0];
+        return  (IExampleSet) objects[0];
     }
 
-    private ClassificationRuleSet trainModel(ExampleSet exampleSet) throws OperatorCreationException, OperatorException {
+    private ClassificationRuleSet trainModel(IExampleSet exampleSet) throws OperatorCreationException, OperatorException {
 
         RoleConfigurator roleConfigurator = new RoleConfigurator(LABEL_ATTRIBUTE);
         RuleGenerator ruleGenerator = new RuleGenerator(true);
@@ -106,8 +106,8 @@ public class ExpertRuleGeneratorTest {
 
         Path trainFilePath = TestResourcePathFactory.get(TRAIN_DEALS_FILE);
         Path doubledFilePath = TestResourcePathFactory.get(TRAIN_DEALS_DOUBLED_FILE);
-        ExampleSet exampleSet = getExampleSet(trainFilePath.toString());
-        ExampleSet doubledExampleSet = getExampleSet(doubledFilePath.toString());
+        IExampleSet exampleSet = getExampleSet(trainFilePath.toString());
+        IExampleSet doubledExampleSet = getExampleSet(doubledFilePath.toString());
         SplittedExampleSet splittedExampleSet = new SplittedExampleSet(doubledExampleSet, 0.5, SplittedExampleSet.LINEAR_SAMPLING, false, 0);
 
         ClassificationRuleSet ruleSet = this.trainModel(exampleSet);

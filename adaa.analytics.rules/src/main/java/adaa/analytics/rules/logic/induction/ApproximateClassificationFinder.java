@@ -1,20 +1,13 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import org.apache.lucene.search.FieldComparator;
-import org.jetbrains.annotations.NotNull;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
-
-//import it.unimi.dsi.fastutil.ints.IntArrays;
-//import it.unimi.dsi.fastutil.ints.IntComparator;
 
 public class ApproximateClassificationFinder extends ClassificationFinder {
 
@@ -57,7 +50,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
     protected int[][] ruleRanges;
 
-    protected ExampleSet trainSet;
+    protected IExampleSet trainSet;
 
     Map<String, Object> arrayCopies = new HashMap<String,Object>();
 
@@ -71,7 +64,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
     }
 
     @Override
-    public ExampleSet preprocess(ExampleSet dataset) {
+    public IExampleSet preprocess(IExampleSet dataset) {
         int n_examples = dataset.size();
         int n_attributes = dataset.getAttributes().size();
 
@@ -86,7 +79,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
         ruleRanges = new int[n_attributes][2];
 
-        for (Attribute attr: dataset.getAttributes()) {
+        for (IAttribute attr: dataset.getAttributes()) {
             int ia = attr.getTableIndex();
             int n_vals = attr.isNominal() ? attr.getMapping().size() : params.getApproximateBinsCount();
 
@@ -112,7 +105,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
     @Override
     public void prune(
             final Rule rule,
-            final ExampleSet dataset,
+            final IExampleSet dataset,
             final Set<Integer> uncovered)
     {
         super.prune(rule, dataset, uncovered);
@@ -126,7 +119,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
         // reset all arrays using the coverage
         int n_examples = dataset.size();
 
-        for (Attribute attr: dataset.getAttributes()) {
+        for (IAttribute attr: dataset.getAttributes()) {
             int attribute_id = attr.getTableIndex();
 
             ruleRanges[attribute_id][0] = 0;
@@ -174,7 +167,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
         for (ConditionBase sub : rule.getPremise().getSubconditions()) {
             ConditionCandidate cnd = (ConditionCandidate)sub;
 
-            Attribute attr = dataset.getAttributes().get(cnd.getAttribute());
+            IAttribute attr = dataset.getAttributes().get(cnd.getAttribute());
             int aid = attr.getTableIndex();
 
             if (attr.isNominal()) {
@@ -210,7 +203,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
      */
     public void postprocess(
             final Rule rule,
-            final ExampleSet dataset) {
+            final IExampleSet dataset) {
 
         // restore original arrays (preserve only covered flags)
         int[][] copy_positives = (int[][])arrayCopies.get("bins_positives");
@@ -268,10 +261,10 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
     @Override
     protected ElementaryCondition induceCondition(
             Rule rule,
-            ExampleSet dataset,
+            IExampleSet dataset,
             Set<Integer> uncoveredPositives,
             Set<Integer> coveredByRule,
-            Set<Attribute> allowedAttributes,
+            Set<IAttribute> allowedAttributes,
             Object... extraParams) {
 
 
@@ -284,7 +277,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
         }
 
         double classId = ((SingletonSet) rule.getConsequence().getValueSet()).getValue();
-        Attribute weightAttr = dataset.getAttributes().getWeight();
+        IAttribute weightAttr = dataset.getAttributes().getWeight();
         Set<Integer> positives = rule.getCoveredPositives();
         double P = rule.getWeighted_P();
         double N = rule.getWeighted_N();
@@ -309,7 +302,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
 
         // iterate over all allowed decision attributes
-        for (Attribute attr : dataset.getAttributes()) {
+        for (IAttribute attr : dataset.getAttributes()) {
 
             if (!allowedAttributes.contains(attr)) {
                 continue;
@@ -470,7 +463,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
                 if (current != null && current.getAttribute() != null) {
                     Logger.log("\tAttribute best: " + current + ", quality=" + current.quality, Level.FINEST);
-                    Attribute attr = dataset.getAttributes().get(current.getAttribute());
+                    IAttribute attr = dataset.getAttributes().get(current.getAttribute());
                     if (attr.isNumerical()) {
                         updateMidpoint(dataset, current);
                     }
@@ -487,7 +480,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
         }
 
         if (best != null) {
-            Attribute bestAttr = dataset.getAttributes().get(best.getAttribute());
+            IAttribute bestAttr = dataset.getAttributes().get(best.getAttribute());
 
             if (bestAttr == null) {
                 return null; // empty condition - discard
@@ -508,7 +501,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
     protected void notifyConditionAdded(ConditionBase cnd) {
         ConditionCandidate candidate = (ConditionCandidate)cnd;
-        Attribute attr =  trainSet.getAttributes().get(candidate.getAttribute());
+        IAttribute attr =  trainSet.getAttributes().get(candidate.getAttribute());
 
         int aid = attr.getTableIndex();
         int blockId = candidate.blockId;
@@ -540,7 +533,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
         super.notifyConditionAdded(cnd);
     }
 
-    protected void determineBins(ExampleSet dataset, Attribute attr,
+    protected void determineBins(IExampleSet dataset, IAttribute attr,
                                  long[] descriptions,
                                  int[] mappings,
                                  int[] binsBegins,
@@ -676,7 +669,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
         }
     }
 
-    protected void excludeExamplesFromArrays(ExampleSet dataset, Attribute attr, int binLo, int binHi) {
+    protected void excludeExamplesFromArrays(IExampleSet dataset, IAttribute attr, int binLo, int binHi) {
 
         Logger.log("Excluding examples: " + attr.getName() + " from [" + binLo + "," + binHi + "]\n", Level.FINER);
 
@@ -705,7 +698,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
             src_descriptions[i] &= ~FLAG_COVERED; // remove from covered
         }
 
-        for (Attribute other : dataset.getAttributes() ) {
+        for (IAttribute other : dataset.getAttributes() ) {
 
             if (other == attr) {
                 continue;
@@ -778,13 +771,13 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
     }
 
 
-    protected void resetArrays(ExampleSet dataset, int targetLabel) {
+    protected void resetArrays(IExampleSet dataset, int targetLabel) {
 
         int n_examples = dataset.size();
 
         int[][] copy_ranges = (int[][])arrayCopies.get("ruleRanges");
 
-        for (Attribute attr: dataset.getAttributes()) {
+        for (IAttribute attr: dataset.getAttributes()) {
             int attribute_id = attr.getTableIndex();
 
             Arrays.fill(bins_positives[attribute_id], 0);
@@ -845,7 +838,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
         int prev_pn = -1;
         boolean ok = true;
 
-        for (Attribute attr: trainSet.getAttributes()) {
+        for (IAttribute attr: trainSet.getAttributes()) {
             int attribute_id = attr.getTableIndex();
 
             int bin_p = 0, bin_n = 0, bin_new_p = 0, bin_outside = 0;
@@ -913,8 +906,8 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
        */
     }
 
-    protected void updateMidpoint(ExampleSet dataset, ConditionCandidate candidate) {
-        Attribute bestAttr = dataset.getAttributes().get(candidate.getAttribute());
+    protected void updateMidpoint(IExampleSet dataset, ConditionCandidate candidate) {
+        IAttribute bestAttr = dataset.getAttributes().get(candidate.getAttribute());
 
 
         // alter midpoint

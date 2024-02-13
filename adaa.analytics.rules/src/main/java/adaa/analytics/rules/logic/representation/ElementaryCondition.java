@@ -14,12 +14,9 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.DataRow;
-import com.rapidminer.example.table.DataRowReader;
-import com.rapidminer.example.table.ExampleTable;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -89,9 +86,9 @@ public class ElementaryCondition extends ConditionBase {
 	 * @param outIndices Output set of indices covered by the condition.
 	 */
 	@Override
-	protected void internalEvaluate(ExampleSet set,  Set<Integer> outIndices) {
+	protected void internalEvaluate(IExampleSet set, Set<Integer> outIndices) {
 
-		Attribute a = set.getAttributes().get(attribute);
+		IAttribute a = set.getAttributes().get(attribute);
 
 		/* The following code does not work for SplittedExampleSet
 		ExampleTable tab = set.getExampleTable();

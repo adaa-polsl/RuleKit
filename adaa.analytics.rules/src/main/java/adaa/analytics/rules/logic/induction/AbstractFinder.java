@@ -19,15 +19,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
-import adaa.analytics.rules.logic.quality.ClassificationMeasure;
-import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.IQualityModifier;
 import adaa.analytics.rules.logic.quality.NoneQualityModifier;
 import adaa.analytics.rules.logic.representation.*;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.tools.container.Pair;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 /**
  * Abstract base class for growing and pruning procedures for all types of rules (classification, regression, survival).
@@ -83,7 +80,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 	 * @param trainSet Training set.
 	 * @return Preprocessed training set.
 	 */
-	public ExampleSet preprocess(ExampleSet trainSet) { return trainSet; }
+	public IExampleSet preprocess(IExampleSet trainSet) { return trainSet; }
 
 	/**
 	 * Adds elementary conditions to the rule premise until termination conditions are fulfilled.
@@ -95,7 +92,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 	 */
 	public int grow(
 		final Rule rule,
-		final ExampleSet dataset,
+		final IExampleSet dataset,
 		final Set<Integer> uncovered) {
 
 		Logger.log("AbstractFinder.grow()\n", Level.FINE);
@@ -113,8 +110,8 @@ public abstract class AbstractFinder implements AutoCloseable {
 		IntegerBitSet covered = new IntegerBitSet(dataset.size());
 		covered.addAll(positives);
 		covered.addAll(negatives);
-		Set<Attribute> allowedAttributes = new TreeSet<Attribute>(new AttributeComparator());
-		for (Attribute a: dataset.getAttributes()) {
+		Set<IAttribute> allowedAttributes = new TreeSet<IAttribute>(new AttributeComparator());
+		for (IAttribute a: dataset.getAttributes()) {
 			allowedAttributes.add(a);
 		}
 		
@@ -195,7 +192,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 	 */
 	public void prune(
 			final Rule rule,
-			final ExampleSet trainSet,
+			final IExampleSet trainSet,
 			final Set<Integer> uncovered) {
 		
 		Logger.log("AbstractFinder.prune()\n", Level.FINE);
@@ -311,7 +308,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 	 */
 	public void postprocess(
 		final Rule rule,
-		final ExampleSet dataset) {
+		final IExampleSet dataset) {
 
 		notifyRuleReady(rule);
 	}
@@ -329,10 +326,10 @@ public abstract class AbstractFinder implements AutoCloseable {
 	 */
 	protected abstract ElementaryCondition induceCondition(
 		final Rule rule,
-		final ExampleSet trainSet,
+		final IExampleSet trainSet,
 		final Set<Integer> uncoveredByRuleset,
 		final Set<Integer> coveredByRule, 
-		final Set<Attribute> allowedAttributes,
+		final Set<IAttribute> allowedAttributes,
 		Object... extraParams);
 	
 	/**
@@ -342,8 +339,8 @@ public abstract class AbstractFinder implements AutoCloseable {
 	 * @param dataset Training set.
 	 * @return Set of attributes.
 	 */
-	protected Set<Attribute> names2attributes(Set<String> names, ExampleSet dataset) {
-		Set<Attribute> out = new HashSet<Attribute>();
+	protected Set<IAttribute> names2attributes(Set<String> names, IExampleSet dataset) {
+		Set<IAttribute> out = new HashSet<IAttribute>();
 		for (String s : names) {
 			out.add(dataset.getAttributes().get(s));
 		}

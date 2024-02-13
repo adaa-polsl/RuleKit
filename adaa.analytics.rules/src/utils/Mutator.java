@@ -5,10 +5,10 @@ import adaa.analytics.rules.logic.actions.MetaAnalysisResult;
 import adaa.analytics.rules.logic.actions.recommendations.RecommendationTask;
 import adaa.analytics.rules.logic.actions.recommendations.RegressionRecommendationTask;
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IAttribute;
 import com.rapidminer.RapidMiner;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.example.set.AttributeValueFilter;
 import com.rapidminer.example.set.ConditionedExampleSet;
 import com.rapidminer.operator.OperatorCreationException;
@@ -34,22 +34,22 @@ public class Mutator {
         materializer = OperatorService.createOperator(MaterializeDataInMemory.class);
     }
 
-    public ExampleSet materializeExamples(ExampleSet set) throws OperatorException {
+    public IExampleSet materializeExamples(IExampleSet set) throws OperatorException {
         return  materializer.apply(set);
     }
 
-    private void mutateNominalAttribute(Example toBeMutated, Attribute mutatedAttribute, Action suggestedMutation) {
+    private void mutateNominalAttribute(Example toBeMutated, IAttribute mutatedAttribute, Action suggestedMutation) {
         if (suggestedMutation.getActionNil()) return;
         double newValue = ((SingletonSet) suggestedMutation.getRightValue()).getValue();
 
         toBeMutated.setValue(mutatedAttribute, newValue);
     }
 
-    private void mutateNumericalAttribute(Example toBeMutated, Attribute mutatedAttribute, Action suggestedMutation, ExampleSet trainSet, String targetClassName) {
+    private void mutateNumericalAttribute(Example toBeMutated, IAttribute mutatedAttribute, Action suggestedMutation, IExampleSet trainSet, String targetClassName) {
         Interval proposedInterval = ((Interval) suggestedMutation.getRightValue());
         if (proposedInterval == null)
             return;
-        Attribute classAtr = trainSet.getAttributes().getLabel();
+        IAttribute classAtr = trainSet.getAttributes().getLabel();
         ConditionedExampleSet filtered = null;
 
         AttributeValueFilter condition = new AttributeValueFilter(
@@ -74,7 +74,7 @@ public class Mutator {
         toBeMutated.setValue(mutatedAttribute, newValue);
     }
 
-    private void mutateNumericalAttributeInRegression(Example toBeMutated, Attribute mutatedAttribute, Action suggestedMutation, ExampleSet trainSet) {
+    private void mutateNumericalAttributeInRegression(Example toBeMutated, IAttribute mutatedAttribute, Action suggestedMutation, IExampleSet trainSet) {
         Interval proposedInterval = ((Interval) suggestedMutation.getRightValue());
         if (proposedInterval == null)
             return;
@@ -102,8 +102,8 @@ public class Mutator {
         toBeMutated.setValue(mutatedAttribute, newValue);
     }
 
-    public ExampleSet mutateExamples(ExampleSet toBeMutated, ActionMetaTable regressionMetaTable, ActionRuleSet usedRecommendations, ExampleSet trainSet, RegressionRecommendationTask task) throws OperatorException {
-        ExampleSet result = materializer.apply(toBeMutated);
+    public IExampleSet mutateExamples(IExampleSet toBeMutated, ActionMetaTable regressionMetaTable, ActionRuleSet usedRecommendations, IExampleSet trainSet, RegressionRecommendationTask task) throws OperatorException {
+        IExampleSet result = materializer.apply(toBeMutated);
         if (result.getAttributes().getPredictedLabel() != null) {
             result.getAttributes().remove(result.getAttributes().getPredictedLabel());
         }
@@ -125,9 +125,9 @@ public class Mutator {
         return result;
     }
 
-    public ExampleSet mutateExamples(ExampleSet splitted, ActionMetaTable metaTable, String sourceClass, String targetClass, ActionRuleSet usedRecommendations, ExampleSet trainSet, RecommendationTask task) throws OperatorException {
+    public IExampleSet mutateExamples(IExampleSet splitted, ActionMetaTable metaTable, String sourceClass, String targetClass, ActionRuleSet usedRecommendations, IExampleSet trainSet, RecommendationTask task) throws OperatorException {
 
-        ExampleSet result = materializer.apply(splitted);
+        IExampleSet result = materializer.apply(splitted);
         if (result.getAttributes().getPredictedLabel() != null) {
             result.getAttributes().remove(result.getAttributes().getPredictedLabel());
         }
@@ -159,11 +159,11 @@ public class Mutator {
         return result;
     }
 
-    private void mutateExampleInClassification(String targetClass, ExampleSet trainSet, ExampleSet result, Example current, ActionRule asRule) {
+    private void mutateExampleInClassification(String targetClass, IExampleSet trainSet, IExampleSet result, Example current, ActionRule asRule) {
         for (ConditionBase cond : asRule.getPremise().getSubconditions()) {
             Action action = (Action) cond;
 
-            Attribute attributeToMutate = result.getAttributes().get(action.getAttribute());
+            IAttribute attributeToMutate = result.getAttributes().get(action.getAttribute());
             if (attributeToMutate.isNominal()) {
                 mutateNominalAttribute(current, attributeToMutate, action);
             } else {
@@ -191,9 +191,9 @@ public class Mutator {
         return applicableRules.get(applicableRules.size() - 1);
     }
 
-    public ExampleSet mutateExamples(ExampleSet splitted, ActionRuleSet ruleSet, ExampleSet trainSet, String targetClassName) throws OperatorException {
+    public IExampleSet mutateExamples(IExampleSet splitted, ActionRuleSet ruleSet, IExampleSet trainSet, String targetClassName) throws OperatorException {
         //ExampleSet result = new ExampleSet();
-        ExampleSet result = materializer.apply(splitted);
+        IExampleSet result = materializer.apply(splitted);
 
         if (result.getAttributes().getPredictedLabel() != null) {
             result.getAttributes().remove(result.getAttributes().getPredictedLabel());
@@ -219,8 +219,8 @@ public class Mutator {
         return result;
     }
 
-    public ExampleSet mutateExamples(ExampleSet mutableExamples, ActionRuleSet regActionRules, ExampleSet trainSet) throws OperatorException {
-        ExampleSet result = materializer.apply(mutableExamples);
+    public IExampleSet mutateExamples(IExampleSet mutableExamples, ActionRuleSet regActionRules, IExampleSet trainSet) throws OperatorException {
+        IExampleSet result = materializer.apply(mutableExamples);
 
         if (result.getAttributes().getPredictedLabel() != null) {
             result.getAttributes().remove(result.getAttributes().getPredictedLabel());
@@ -249,11 +249,11 @@ public class Mutator {
         return result;
     }
 
-    private void mutateExampleForRegression(ExampleSet trainSet, ExampleSet result, Example current, ActionRule toApply) {
+    private void mutateExampleForRegression(IExampleSet trainSet, IExampleSet result, Example current, ActionRule toApply) {
         for (ConditionBase cond : toApply.getPremise().getSubconditions()) {
             Action action = (Action) cond;
 
-            Attribute attributeToMutate = result.getAttributes().get(action.getAttribute());
+            IAttribute attributeToMutate = result.getAttributes().get(action.getAttribute());
             if (attributeToMutate.isNominal()) {
                 mutateNominalAttribute(current, attributeToMutate, action);
             } else {

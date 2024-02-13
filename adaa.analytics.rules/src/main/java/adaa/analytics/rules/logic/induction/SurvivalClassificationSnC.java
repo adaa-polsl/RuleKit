@@ -16,12 +16,12 @@ package adaa.analytics.rules.logic.induction;
 
 
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Attributes;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.*;
-import com.rapidminer.tools.Ontology;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IAttributes;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.table.*;
+import adaa.analytics.rules.rm.tools.Ontology;
 
 import java.util.*;
 
@@ -39,12 +39,12 @@ public class SurvivalClassificationSnC extends ClassificationSnC {
 	}
 
 	@Override
-	public RuleSetBase run(ExampleSet trainSet) {
+	public RuleSetBase run(IExampleSet trainSet) {
 	
 		SurvivalRuleSet survSet = new SurvivalRuleSet(trainSet, true, params, null);
 		
-		Attribute survTime = trainSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
-		Attribute survStat = trainSet.getAttributes().getLabel();
+		IAttribute survTime = trainSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
+		IAttribute survStat = trainSet.getAttributes().getLabel();
 	
 		// get Tmax (max time for censored observations
 		double Tmax = 0;
@@ -56,14 +56,14 @@ public class SurvivalClassificationSnC extends ClassificationSnC {
 		double STmax = survSet.getTrainingEstimator().getProbabilityAt(Tmax);
 		
 		// prepare classification dataset
-		Attributes survivalAttributes = (Attributes) trainSet.getAttributes().clone();
+		IAttributes survivalAttributes = (IAttributes) trainSet.getAttributes().clone();
 		survivalAttributes.remove(survivalAttributes.findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE));
 		survivalAttributes.remove(survivalAttributes.getLabel());
-		
-		Attribute survivalWeight = AttributeFactory.createAttribute("survivalWeight", Ontology.NUMERICAL);
-		
-		Attribute label = AttributeFactory.createAttribute("survivalStatus", Ontology.BINOMINAL);
-		NominalMapping mp = new BinominalMapping();
+
+		IAttribute survivalWeight = AttributeFactory.createAttribute("survivalWeight", Ontology.NUMERICAL);
+
+		IAttribute label = AttributeFactory.createAttribute("survivalStatus", Ontology.BINOMINAL);
+		INominalMapping mp = new BinominalMapping();
 		mp.setMapping("not_survived", 0);
 		mp.setMapping("survived", 1);
 		label.setMapping(mp);
@@ -71,16 +71,16 @@ public class SurvivalClassificationSnC extends ClassificationSnC {
 		survivalAttributes.setWeight(survivalWeight);
 		survivalAttributes.setLabel(label);
 		
-		List<Attribute> lst = new ArrayList<Attribute>();
-		Iterator<Attribute> it = survivalAttributes.allAttributes();
+		List<IAttribute> lst = new ArrayList<IAttribute>();
+		Iterator<IAttribute> it = survivalAttributes.allAttributes();
 		
 		while (it.hasNext()) {
-			Attribute a = it.next();
+			IAttribute a = it.next();
 			lst.add(a);
 		}
 	
 		MemoryExampleTable table = new MemoryExampleTable(lst);
-		ExampleSet transformed = table.createExampleSet(label, survivalWeight, null);
+		IExampleSet transformed = table.createExampleSet(label, survivalWeight, null);
 
 		for (Example example : trainSet) {
 			
@@ -94,10 +94,10 @@ public class SurvivalClassificationSnC extends ClassificationSnC {
 			}
 			
 			// fill conditional attributes
-			for (Attribute a: table.getAttributes()) {
+			for (IAttribute a: table.getAttributes()) {
 				if (a != label && a != survivalWeight) {
 					// get corresponding attribute from training table
-					Attribute ta = trainSet.getAttributes().get(a.getName());
+					IAttribute ta = trainSet.getAttributes().get(a.getName());
 					positive.set(a, example.getValue(ta));
 					if (negative != null) { 
 						negative.set(a, example.getValue(ta));

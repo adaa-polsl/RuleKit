@@ -17,7 +17,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import com.rapidminer.RapidMiner;
 import com.rapidminer.RapidMiner.ExitMode;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
 import adaa.analytics.rules.logic.induction.ActionFindingParameters.RangeUsageStrategy;
@@ -37,7 +37,7 @@ public class ActionTests {
 	protected String testFile;
 	protected String outputFileName;
 	protected com.rapidminer.Process process;
-	protected ExampleSet exampleSet;
+	protected IExampleSet exampleSet;
 	protected String labelParameter;
 	protected int sourceId;
 	protected int targetId;
@@ -156,11 +156,11 @@ public class ActionTests {
 		}
 	}
 
-	protected ExampleSet parseArffFile() throws OperatorException, OperatorCreationException {
+	protected IExampleSet parseArffFile() throws OperatorException, OperatorCreationException {
 		return arffFileLoader.load(Paths.get(testDirectory, testFile), labelParameter);
 	}
 
-	protected void dumpData(ExampleSet exampleSet, ActionRuleSet actions) throws IOException {
+	protected void dumpData(IExampleSet exampleSet, ActionRuleSet actions) throws IOException {
 		File arffFile = Paths.get(testDirectory, getOutputFileName()).toFile();
 		
 		List<CompressedCompoundCondition> premises = new ArrayList<>();

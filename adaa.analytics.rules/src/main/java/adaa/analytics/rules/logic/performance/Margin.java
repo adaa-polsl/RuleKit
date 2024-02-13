@@ -18,9 +18,9 @@
 */
 package adaa.analytics.rules.logic.performance;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.Iterator;
 
@@ -43,12 +43,12 @@ public class Margin extends MeasuredPerformance {
 
 	/** Calculates the margin. */
 	@Override
-	public void startCounting(ExampleSet exampleSet, boolean useExampleWeights) {
+	public void startCounting(IExampleSet exampleSet, boolean useExampleWeights) {
 		super.startCounting(exampleSet, useExampleWeights);
 		// compute margin
 		Iterator<Example> reader = exampleSet.iterator();
 		this.margin = 1.0d;
-		Attribute labelAttr = exampleSet.getAttributes().getLabel();
+		IAttribute labelAttr = exampleSet.getAttributes().getLabel();
 		while (reader.hasNext()) {
 			Example example = reader.next();
 			String trueLabel = example.getNominalValue(labelAttr);

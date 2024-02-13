@@ -2,15 +2,7 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.NominalMapping;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 public class BackwardActionSnC extends ActionSnC {
 
@@ -22,7 +14,7 @@ public class BackwardActionSnC extends ActionSnC {
     }
 
     @Override
-    public RuleSetBase run(ExampleSet dataset) {
+    public RuleSetBase run(IExampleSet dataset) {
 
         ActionRuleSet ruleset = (ActionRuleSet)super.run(dataset);
 

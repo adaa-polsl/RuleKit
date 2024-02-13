@@ -4,10 +4,10 @@ import adaa.analytics.rules.logic.performance.binary.BinaryClassificationPerform
 import adaa.analytics.rules.logic.performance.binary.ExtendedBinaryPerformance;
 import adaa.analytics.rules.logic.performance.simple.*;
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.Statistics;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.IStatistics;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,9 +66,9 @@ public class RulePerformanceCounter {
 
     private List<MeasuredPerformance> choosedCriterion = new ArrayList<>();
 
-    private ExampleSet testSet;
+    private IExampleSet testSet;
 
-    public RulePerformanceCounter(ExampleSet testSet)
+    public RulePerformanceCounter(IExampleSet testSet)
     {
         this.testSet = testSet;
         prepareCriteriaNames();
@@ -76,7 +76,7 @@ public class RulePerformanceCounter {
 
     private void prepareCriteriaNames()
     {
-        Attribute label = testSet.getAttributes().getLabel();
+        IAttribute label = testSet.getAttributes().getLabel();
 
         if (testSet.getAnnotations().containsKey(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
             throw new IllegalStateException("Operator does not evaluate contrast sets.");
@@ -98,14 +98,14 @@ public class RulePerformanceCounter {
     }
 
     public void countValues() {
-        Attribute weightAttribute = testSet.getAttributes().getWeight();
+        IAttribute weightAttribute = testSet.getAttributes().getWeight();
         if (weightAttribute != null) {
             if (!weightAttribute.isNumerical()) {
                 throw new IllegalStateException("Error in weight value of example set - non numerical");
             }
 
             testSet.recalculateAttributeStatistics(weightAttribute);
-            double minimum = testSet.getStatistics(weightAttribute, Statistics.MINIMUM);
+            double minimum = testSet.getStatistics(weightAttribute, IStatistics.MINIMUM);
             if (Double.isNaN(minimum) || minimum < 0.0d) {
                 throw new IllegalStateException("Error in weight value of example set - nan or negative");
             }

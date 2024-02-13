@@ -39,7 +39,7 @@ public class MinMaxStatistics implements IStatistics {
             return this.maximum;
         } else {
             // @TODO Loger
-//            LogService.getRoot().log(Level.WARNING, "com.rapidminer.example.MinMaxStatistics.calculating_statistics_error", name);
+//            LogService.getRoot().log(Level.WARNING, "adaa.analytics.rules.rm.example.MinMaxStatistics.calculating_statistics_error", name);
             return Double.NaN;
         }
     }

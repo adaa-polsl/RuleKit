@@ -5,7 +5,7 @@ import adaa.analytics.rules.utils.RapidMiner5;
 import com.rapidminer.Process;
 import com.rapidminer.RapidMiner;
 import com.rapidminer.example.Attributes;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.operator.IOContainer;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
@@ -25,7 +25,7 @@ import java.util.logging.Level;
 
 public class CsvFileLoader extends ExamplesetFileLoader {
 
-    protected  ExampleSet loadExampleSet(String filePath, String labelParameterName, String survivalTimeParameter) throws OperatorCreationException, OperatorException {
+    protected  IExampleSet loadExampleSet(String filePath, String labelParameterName, String survivalTimeParameter) throws OperatorCreationException, OperatorException {
         System.setProperty(PlatformUtilities.PROPERTY_RAPIDMINER_HOME, Paths.get("").toAbsolutePath().toString());
         LogService.getRoot().setLevel(Level.OFF);
         RapidMiner.setExecutionMode(RapidMiner.ExecutionMode.COMMAND_LINE);
@@ -60,7 +60,7 @@ public class CsvFileLoader extends ExamplesetFileLoader {
 
         IOContainer c = process.run();
 
-        return (ExampleSet)c.getElementAt(0);
+        return (IExampleSet)c.getElementAt(0);
     }
 
 }

@@ -18,10 +18,10 @@
 */
 package adaa.analytics.rules.logic.performance;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.tools.math.MathFunctions;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.tools.math.MathFunctions;
 
 import java.util.Iterator;
 
@@ -44,13 +44,13 @@ public class CrossEntropy extends MeasuredPerformance {
 
 	/** Calculates the margin. */
 	@Override
-	public void startCounting(ExampleSet exampleSet, boolean useExampleWeights) {
+	public void startCounting(IExampleSet exampleSet, boolean useExampleWeights) {
 		super.startCounting(exampleSet, useExampleWeights);
 		// compute margin
 		Iterator<Example> reader = exampleSet.iterator();
 		this.value = 0.0d;
-		Attribute labelAttr = exampleSet.getAttributes().getLabel();
-		Attribute weightAttribute = null;
+		IAttribute labelAttr = exampleSet.getAttributes().getLabel();
+		IAttribute weightAttribute = null;
 		if (useExampleWeights) {
 			weightAttribute = exampleSet.getAttributes().getWeight();
 		}
