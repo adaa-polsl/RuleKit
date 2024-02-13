@@ -1,6 +1,7 @@
 package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.logic.induction.ActionCovering;
+import adaa.analytics.rules.logic.representation.model.ActionRuleSet;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
 

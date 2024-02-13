@@ -16,7 +16,7 @@ package adaa.analytics.rules.operator;
 
 import adaa.analytics.rules.consoles.RoleConfigurator;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
-import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
+import adaa.analytics.rules.logic.representation.model.ClassificationRuleSet;
 import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
 import adaa.analytics.rules.logic.rulegenerator.RuleGeneratorParams;
 import adaa.analytics.rules.utils.RapidMiner5;

@@ -1,6 +1,8 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.logic.representation.model.ActionRuleSet;
+import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IExampleSet;

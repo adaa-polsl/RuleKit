@@ -14,8 +14,6 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
-import com.rapidminer.operator.ports.metadata.AttributeMetaData;
-import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +28,7 @@ import static java.lang.Float.NaN;
  *
  */
 public class RuleParser {
-	
+
 	/**
 	 * Parses a rule.
 	 * @param s String to be parsed.

@@ -16,6 +16,9 @@ package adaa.analytics.rules.logic.induction;
 
 
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.logic.representation.model.ClassificationRuleSet;
+import adaa.analytics.rules.logic.representation.model.RuleSetBase;
+import adaa.analytics.rules.logic.representation.model.SurvivalRuleSet;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IAttributes;

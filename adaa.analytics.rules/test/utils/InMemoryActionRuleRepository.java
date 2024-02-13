@@ -10,7 +10,7 @@ import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.induction.RuleFactory;
 import adaa.analytics.rules.logic.representation.Action;
 import adaa.analytics.rules.logic.representation.ActionRule;
-import adaa.analytics.rules.logic.representation.ActionRuleSet;
+import adaa.analytics.rules.logic.representation.model.ActionRuleSet;
 import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.Interval;
 import adaa.analytics.rules.logic.representation.SingletonSet;

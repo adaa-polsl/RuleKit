@@ -3,10 +3,9 @@ package adaa.analytics.rules.logic.actions.descriptors.ruleset;
 import adaa.analytics.rules.logic.actions.descriptors.ActionRuleSetDescriptorBase;
 import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
-import adaa.analytics.rules.logic.representation.ActionRuleSet;
+import adaa.analytics.rules.logic.representation.model.ActionRuleSet;
 import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import sun.tools.asm.Cover;
 
 import java.util.List;
 

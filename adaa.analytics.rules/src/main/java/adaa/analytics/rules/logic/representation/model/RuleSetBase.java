@@ -12,16 +12,18 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.model;
 
 import java.util.*;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
 
+import adaa.analytics.rules.logic.representation.Knowledge;
+import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import com.rapidminer.operator.learner.SimplePredictionModel;
+import adaa.analytics.rules.rm.operator.OperatorException;
 
 
 /**
@@ -29,8 +31,8 @@ import com.rapidminer.operator.learner.SimplePredictionModel;
  * @author Adam Gudys
  *
  */
-public abstract class RuleSetBase extends SimplePredictionModel {
-	
+public abstract class RuleSetBase extends PredictionModel {
+
 	/**
 	 * Auxiliary class storing result of rule set significance test.
 	 * @author Adam Gudys
@@ -115,7 +117,24 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 	 * @param v Rule to be added.
 	 */
 	public void addRule(Rule v) { rules.add(v); }
-	
+
+	/**
+	 * Applies the model to a single example and returns the predicted class value.
+	 */
+	public abstract double predict(Example example) throws OperatorException;
+
+	/** Iterates over all examples and applies the model to them. */
+	@Override
+	public IExampleSet performPrediction(IExampleSet exampleSet, IAttribute predictedLabel) throws OperatorException {
+		Iterator<Example> r = exampleSet.iterator();
+
+		while (r.hasNext()) {
+			Example example = r.next();
+			example.setValue(predictedLabel, predict(example));
+
+		}
+		return exampleSet;
+	}
 	/**
 	 * Calculates number of conditions.
 	 * @return Number of conditions.

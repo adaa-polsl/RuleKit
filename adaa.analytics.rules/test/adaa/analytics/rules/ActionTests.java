@@ -9,6 +9,7 @@ import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.logic.representation.model.ActionRuleSet;
 import org.apache.commons.lang.time.StopWatch;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -22,7 +23,6 @@ import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
 import adaa.analytics.rules.logic.induction.ActionFindingParameters.RangeUsageStrategy;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
-import org.renjin.repackaged.guava.collect.Lists;
 import utils.ArffFileLoader;
 
 @RunWith(Parameterized.class)

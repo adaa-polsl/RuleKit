@@ -1,10 +1,11 @@
 package adaa.analytics.rules.logic.actions;
 
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.logic.representation.model.ActionRuleSet;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
 import adaa.analytics.rules.rm.example.table.INominalMapping;
-import adaa.analytics.rules.rm.example.table.INominalMapping;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

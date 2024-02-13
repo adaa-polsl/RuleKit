@@ -7,6 +7,9 @@ import adaa.analytics.rules.logic.actions.recommendations.ClassificationRecommen
 import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.logic.representation.model.ActionRuleSet;
+import adaa.analytics.rules.logic.representation.model.ClassificationRuleSet;
+import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.rm.example.set.AttributeValueFilterSingleCondition;
 import adaa.analytics.rules.rm.example.set.ConditionedExampleSet;
 import adaa.analytics.rules.rm.example.set.ICondition;

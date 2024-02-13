@@ -46,16 +46,16 @@ public abstract class Rule implements Serializable, Cloneable {
 	protected ElementaryCondition consequence;
 	
 	/** Number of positives covered by the rule (accounting weights). */
-	protected double weighted_p = NaN;
+	public double weighted_p = NaN;
 	
 	/** Number of negatives covered by the rule (accounting weights). */
-	protected double weighted_n = NaN;
+	public double weighted_n = NaN;
 	
 	/** Number of positives in the training set (accounting weights). */
-	protected double weighted_P = NaN;
+	public double weighted_P = NaN;
 	
 	/** Number of negatives in the training set (accounting weights). */
-	protected double weighted_N = NaN;
+	public double weighted_N = NaN;
 	
 	/** Rule weight. */
 	protected double weight = Double.NEGATIVE_INFINITY;

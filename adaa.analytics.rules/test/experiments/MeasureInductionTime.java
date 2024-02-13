@@ -2,7 +2,7 @@ package experiments;
 
 import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
+import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import com.rapidminer.RapidMiner;
 import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.gui.tools.dialogs.wizards.dataimport.csv.CSVFileReader;

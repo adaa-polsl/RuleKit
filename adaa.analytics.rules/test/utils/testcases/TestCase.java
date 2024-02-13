@@ -1,11 +1,11 @@
 package utils.testcases;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
+import adaa.analytics.rules.logic.representation.ExampleSetMetaData;
 import adaa.analytics.rules.logic.representation.Knowledge;
 import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 import utils.ArffFileLoader;
 import utils.config.KnowledgeFactory;
 import utils.reports.TestReport;

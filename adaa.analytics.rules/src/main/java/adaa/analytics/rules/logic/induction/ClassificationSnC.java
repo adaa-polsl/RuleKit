@@ -20,6 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.logic.representation.model.ClassificationRuleSet;
+import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.rm.example.table.INominalMapping;
 import adaa.analytics.rules.rm.tools.container.Pair;
 import org.apache.commons.lang.StringUtils;

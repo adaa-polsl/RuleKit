@@ -1,7 +1,7 @@
 package adaa.analytics.rules.logic.actions.descriptors.ruleset;
 
 import adaa.analytics.rules.logic.actions.descriptors.ActionRuleSetDescriptorBase;
-import adaa.analytics.rules.logic.representation.ActionRuleSet;
+import adaa.analytics.rules.logic.representation.model.ActionRuleSet;
 
 public class AverageCountOfRulesDescriptor extends ActionRuleSetDescriptorBase<Integer> {
 

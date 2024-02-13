@@ -1,9 +1,7 @@
 package adaa.analytics.rules.logic.actions.descriptors;
 
-import adaa.analytics.rules.logic.representation.ActionRuleSet;
+import adaa.analytics.rules.logic.representation.model.ActionRuleSet;
 import java.util.function.Function;
-
-import static java.util.function.Function.identity;
 
 public abstract class ActionRuleSetDescriptorBase<RetType> {
 

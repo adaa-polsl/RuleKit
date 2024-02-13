@@ -18,6 +18,8 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.logic.representation.model.RegressionRuleSet;
+import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import org.apache.commons.lang.StringUtils;
 
 import adaa.analytics.rules.rm.example.IAttribute;

@@ -1,7 +1,7 @@
 package utils.reports;
 
 import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
+import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 
 import java.io.File;
 import java.io.IOException;

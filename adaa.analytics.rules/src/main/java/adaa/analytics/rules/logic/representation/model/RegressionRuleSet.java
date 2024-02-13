@@ -12,12 +12,15 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.model;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
 
+import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.operator.OperatorException;
 
 /**
  * Class representing a set of regression rules.

@@ -7,13 +7,11 @@ import adaa.analytics.rules.logic.performance.RulePerformanceCounter;
 import adaa.analytics.rules.logic.performance.MeasuredPerformance;
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
+import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import com.rapidminer.operator.Model;
+import adaa.analytics.rules.rm.operator.OperatorException;
 import com.rapidminer.operator.OperatorCreationException;
-import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.performance.PerformanceVector;
 import org.apache.commons.lang.StringUtils;
 import utils.ArffFileLoader;
 
@@ -21,7 +19,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.logging.Level;
@@ -46,7 +43,7 @@ public class TrainProcess {
     }
 
 
-    public void configure() throws  OperatorCreationException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+    public void configure() {
 
         ruleGenerator = new RuleGenerator();
 
@@ -86,7 +83,7 @@ public class TrainProcess {
 
     }
 
-    public void executeProcess() throws OperatorException, IOException, OperatorCreationException {
+    public void executeProcess() throws IOException, OperatorCreationException, OperatorException, com.rapidminer.operator.OperatorException {
 
         // Train process
         if (datasetConfiguration.trainElements.size() > 0) {
@@ -109,7 +106,7 @@ public class TrainProcess {
                 IExampleSet sourceEs = new ArffFileLoader().load(inFilePath, datasetConfiguration.label);
                 roleConfigurator.apply(sourceEs);
 
-                Model learnedModel = ruleGenerator.learn(sourceEs);
+                RuleSetBase learnedModel = ruleGenerator.learn(sourceEs);
                 ModelFileInOut.write(learnedModel, modelFilePath);
 
                 writeModelToCsv(te.modelCsvFile, (RuleSetBase) learnedModel);
@@ -117,7 +114,6 @@ public class TrainProcess {
                 IExampleSet appliedEs = learnedModel.apply(sourceEs);
                 reportModelCharacteristic(learnedModel,  trainFileName);
 
-                PerformanceVector pv = null;
                 if (!datasetConfiguration.hasOptionParameter(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
                     RulePerformanceCounter rpc = new RulePerformanceCounter(appliedEs);
                     rpc.countValues();
@@ -138,18 +134,17 @@ public class TrainProcess {
             writer.close();
         }
     }
-    private void reportModelCharacteristic(Model model , String trainFileName) throws IOException {
+    private void reportModelCharacteristic(RuleSetBase ruleModel , String trainFileName) throws IOException {
         // training report
         StringBuilder sb = new StringBuilder();
         sb.append(StringUtils.repeat("=", 80));
         sb.append("\n");
         sb.append(trainFileName);
         sb.append("\n\n");
-        sb.append(model.toString());
+        sb.append(ruleModel.toString());
 
         sb.append("\nModel characteristics:\n");
 
-        RuleSetBase ruleModel = (RuleSetBase) model;
         List<MeasuredPerformance> performance = RulePerformanceCounter.recalculatePerformance(ruleModel);
         for (MeasuredPerformance mp: performance) {
             sb.append(mp.getName()).append(": ").append(mp.getAverage()).append("\n");

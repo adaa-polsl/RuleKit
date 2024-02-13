@@ -12,10 +12,11 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.model;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
 
+import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IExampleSet;
@@ -89,7 +90,7 @@ public class ClassificationRuleSet extends RuleSetBase {
      * @throws OperatorException
      */
     @Override
-    public double predict(Example example) {
+    public double predict(Example example) throws OperatorException{
         IAttribute label = example.getAttributes().getLabel();
         assert (label.isNominal());
         int result = defaultClass;

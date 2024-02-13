@@ -5,6 +5,7 @@ import adaa.analytics.rules.logic.actions.MetaAnalysisResult;
 import adaa.analytics.rules.logic.actions.recommendations.RecommendationTask;
 import adaa.analytics.rules.logic.actions.recommendations.RegressionRecommendationTask;
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.logic.representation.model.ActionRuleSet;
 import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IAttribute;
 import com.rapidminer.RapidMiner;

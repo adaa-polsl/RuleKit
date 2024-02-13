@@ -2,6 +2,8 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.logic.representation.model.ActionRuleSet;
+import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.rm.example.IExampleSet;
 
 public class BackwardActionSnC extends ActionSnC {

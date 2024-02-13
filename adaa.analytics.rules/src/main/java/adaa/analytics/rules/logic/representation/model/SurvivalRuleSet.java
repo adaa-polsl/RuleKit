@@ -12,16 +12,21 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.model;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
 
+import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
+import adaa.analytics.rules.logic.representation.Knowledge;
+import adaa.analytics.rules.logic.representation.Rule;
+import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IExampleSet;
 import adaa.analytics.rules.rm.example.set.RemappedExampleSet;
 import adaa.analytics.rules.rm.example.table.AttributeFactory;
 import adaa.analytics.rules.rm.example.table.IExampleTable;
+import adaa.analytics.rules.rm.operator.OperatorException;
 import adaa.analytics.rules.rm.tools.Ontology;
 
 import java.util.ArrayList;

@@ -4,7 +4,6 @@ import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.rulegenerator.RuleGeneratorParams;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 import utils.testcases.KnowledgeConfigurator;
 
 import java.util.HashMap;

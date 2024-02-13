@@ -2,6 +2,7 @@ package adaa.analytics.rules.logic.actions.descriptors.ruleset;
 
 import adaa.analytics.rules.logic.actions.descriptors.ActionRuleSetDescriptorBase;
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.logic.representation.model.ActionRuleSet;
 
 public class AverageCountOfEmptyActions extends ActionRuleSetDescriptorBase<Double> {
 

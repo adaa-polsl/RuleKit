@@ -4,6 +4,8 @@ import adaa.analytics.rules.logic.performance.binary.BinaryClassificationPerform
 import adaa.analytics.rules.logic.performance.binary.ExtendedBinaryPerformance;
 import adaa.analytics.rules.logic.performance.simple.*;
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.logic.representation.model.ContrastRuleSet;
+import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IExampleSet;

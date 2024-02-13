@@ -2,7 +2,7 @@ package adaa.analytics.rules.logic.actions.descriptors.ruleset;
 
 import adaa.analytics.rules.logic.actions.descriptors.ActionRuleSetDescriptorBase;
 import adaa.analytics.rules.logic.actions.descriptors.ActionRuleDescriptorBase;
-import adaa.analytics.rules.logic.representation.ActionRuleSet;
+import adaa.analytics.rules.logic.representation.model.ActionRuleSet;
 import adaa.analytics.rules.logic.representation.Rule;
 
 import java.util.ArrayList;

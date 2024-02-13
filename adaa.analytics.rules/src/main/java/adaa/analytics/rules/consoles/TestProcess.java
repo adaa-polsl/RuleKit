@@ -7,11 +7,10 @@ import adaa.analytics.rules.logic.performance.MeasuredPerformance;
 import adaa.analytics.rules.logic.performance.RulePerformanceCounter;
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.RuleSetBase;
+import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import com.rapidminer.operator.Model;
+import adaa.analytics.rules.rm.operator.OperatorException;
 import com.rapidminer.operator.OperatorCreationException;
-import com.rapidminer.operator.OperatorException;
 import utils.ArffFileLoader;
 import utils.ArffFileWriter;
 
@@ -67,7 +66,7 @@ public class TestProcess {
         }
     }
 
-    public void executeProcess() throws OperatorException, IOException, OperatorCreationException, ClassNotFoundException {
+    public void executeProcess() throws OperatorException, IOException, OperatorCreationException, ClassNotFoundException, com.rapidminer.operator.OperatorException {
 
         // Test process
         if (datasetConfiguration.predictElements.size() > 0) {
@@ -93,7 +92,7 @@ public class TestProcess {
                 long t1 = System.nanoTime();
                 IExampleSet testEs = new ArffFileLoader().load(testFilePath, datasetConfiguration.label);
                 roleConfigurator.apply(testEs);
-                Model model = ModelFileInOut.read(modelFilePath);
+                RuleSetBase model = ModelFileInOut.read(modelFilePath);
                 IExampleSet appliedEs = model.apply(testEs);
 
                 List<MeasuredPerformance> pv = null;

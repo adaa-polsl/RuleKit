@@ -1,10 +1,8 @@
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.model;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.table.INominalMapping;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;

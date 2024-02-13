@@ -1,7 +1,6 @@
 package adaa.analytics.rules.consoles;
 
-import com.rapidminer.operator.Model;
-import com.rapidminer.operator.OperatorException;
+import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 
 import java.io.*;
 
@@ -9,16 +8,16 @@ import java.io.*;
 public class ModelFileInOut {
 
 
-    public static Model read(String filePath) throws OperatorException, IOException, ClassNotFoundException {
+    public static RuleSetBase read(String filePath) throws  IOException, ClassNotFoundException {
         FileInputStream fis = new FileInputStream(filePath);
         ObjectInputStream objectIn = new ObjectInputStream(fis);
-        Model model = (Model) objectIn.readObject();
+        RuleSetBase model = (RuleSetBase) objectIn.readObject();
         objectIn.close();
         return model;
     }
 
 
-    public static void write(Model model, String filePath) throws OperatorException, IOException {
+    public static void write(RuleSetBase model, String filePath) throws  IOException {
         File modelFile = new File(filePath);
         ObjectOutputStream objectOut = new ObjectOutputStream(new FileOutputStream(modelFile));
         objectOut.writeObject(model);

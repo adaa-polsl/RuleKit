@@ -1,8 +1,8 @@
 package utils.reports;
 
+import adaa.analytics.rules.logic.representation.ExampleSetMetaData;
 import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.RuleParser;
-import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 import org.apache.xmlbeans.impl.piccolo.io.FileFormatException;
 
 import java.io.BufferedReader;
