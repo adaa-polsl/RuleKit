@@ -1,14 +1,12 @@
 package adaa.analytics.rules.consoles;
 
 import adaa.analytics.rules.logic.representation.ContrastRule;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.operator.OperatorException;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.List;
 
 public class RoleConfigurator {
-
 
     private String labelValue;
 
@@ -33,7 +31,7 @@ public class RoleConfigurator {
         this.roles = roles;
     }
 
-    public void apply(ExampleSet exampleSet) throws OperatorException {
+    public void apply(IExampleSet exampleSet) {
 
         setRole(exampleSet, labelValue, "label", "attribute_name");
 
@@ -51,8 +49,8 @@ public class RoleConfigurator {
 
     }
 
-    private void setRole(ExampleSet exampleSet, String name, String newRole, String paramKey) {
-        Attribute attribute = exampleSet.getAttributes().get(name);
+    private void setRole(IExampleSet exampleSet, String name, String newRole, String paramKey) {
+        IAttribute attribute = exampleSet.getAttributes().get(name);
 
         if (attribute == null) {
             throw new IllegalArgumentException("Params not found: "+ paramKey+" "+name);
@@ -65,7 +63,7 @@ public class RoleConfigurator {
         if (newRole.equals(REGULAR_NAME)) {
             exampleSet.getAttributes().addRegular(attribute);
         } else {
-            Attribute oldOne = exampleSet.getAttributes().getSpecial(newRole);
+            IAttribute oldOne = exampleSet.getAttributes().getSpecial(newRole);
             if (oldOne != null) {
                 exampleSet.getAttributes().remove(oldOne);
                 exampleSet.getAttributes().addRegular(oldOne);

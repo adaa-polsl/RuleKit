@@ -18,8 +18,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.math3.util.Pair;
 
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.representation.ConditionBase;
@@ -169,7 +169,7 @@ public class MetaExample {
 		return partial;
 	}
 	
-	public Covering getCoverageForClass(ExampleSet examples, int fixedClass, Set<Integer> positives, Set<Integer> negatives) {
+	public Covering getCoverageForClass(IExampleSet examples, int fixedClass, Set<Integer> positives, Set<Integer> negatives) {
 		
 		assert(positives != null);
 		assert(negatives != null);
@@ -200,7 +200,7 @@ public class MetaExample {
 		return cov;
 	}
 	
-	public Pair<Covering, Covering> getCoverage(ExampleSet examples, int toClass, int fromClass, Set<Integer> covered) {
+	public Pair<Covering, Covering> getCoverage(IExampleSet examples, int toClass, int fromClass, Set<Integer> covered) {
 		
 		Covering classToCov = new Covering();
 		Covering classFromCov = new Covering();

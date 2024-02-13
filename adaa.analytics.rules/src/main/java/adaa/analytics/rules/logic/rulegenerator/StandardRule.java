@@ -19,8 +19,8 @@ import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 /**
  * The basic RuleKit learner operator. It enables inducing classification, regression,
@@ -40,14 +40,14 @@ public class StandardRule {
     }
 
 
-    public RuleSetBase learnStarndard(ExampleSet exampleSet) {
+    public RuleSetBase learnStarndard(IExampleSet exampleSet) {
 
         InductionParameters params = ruleGeneratorParams.fillParameters();
 
         AbstractSeparateAndConquer snc;
         AbstractFinder finder;
 
-        Attribute contrastAttr = null;
+        IAttribute contrastAttr = null;
 
         if (exampleSet.getAnnotations().containsKey(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
             contrastAttr = exampleSet.getAttributes().get(exampleSet.getAnnotations().get(ContrastRule.CONTRAST_ATTRIBUTE_ROLE));

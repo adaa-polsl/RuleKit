@@ -18,8 +18,8 @@
 */
 package adaa.analytics.rules.logic.performance.simple;
 
-import com.rapidminer.tools.Tools;
 
+import adaa.analytics.rules.rm.tools.Tools;
 
 /**
  * The average relative error in a strict way of calculation: <i>Sum(|label-predicted|/min(|label|,

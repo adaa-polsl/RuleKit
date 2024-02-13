@@ -18,9 +18,9 @@
 */
 package adaa.analytics.rules.logic.performance;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 
 /**
@@ -38,11 +38,11 @@ import com.rapidminer.example.ExampleSet;
 public class CorrelationCriterion extends MeasuredPerformance {
 
 
-	private Attribute labelAttribute;
+	private IAttribute labelAttribute;
 
-	private Attribute predictedLabelAttribute;
+	private IAttribute predictedLabelAttribute;
 
-	private Attribute weightAttribute;
+	private IAttribute weightAttribute;
 
 	private double exampleCount = 0;
 
@@ -100,7 +100,7 @@ public class CorrelationCriterion extends MeasuredPerformance {
 	}
 
 	@Override
-	public void startCounting(ExampleSet eset, boolean useExampleWeights) {
+	public void startCounting(IExampleSet eset, boolean useExampleWeights) {
 		super.startCounting(eset, useExampleWeights);
 		exampleCount = 0;
 		sumLabelPredict = sumLabel = sumPredict = sumLabelSqr = sumPredictSqr = 0.0d;

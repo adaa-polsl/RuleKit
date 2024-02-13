@@ -2,8 +2,8 @@ package utils.config;
 
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.rulegenerator.RuleGeneratorParams;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
 import utils.testcases.KnowledgeConfigurator;
 
@@ -14,10 +14,10 @@ import java.util.regex.Pattern;
 
 public class KnowledgeFactory {
 
-    private ExampleSet exampleSet;
+    private IExampleSet exampleSet;
     private ExampleSetMetaData exampleSetMetaData;
 
-    public KnowledgeFactory(ExampleSet exampleSet) {
+    public KnowledgeFactory(IExampleSet exampleSet) {
         this.exampleSet = exampleSet;
         this.exampleSetMetaData = new ExampleSetMetaData(exampleSet);
     }
@@ -29,12 +29,12 @@ public class KnowledgeFactory {
      * @param rules Rules to be fixed.
      * @param set Reference example set.
      */
-    protected void fixMappings(Iterable<Rule> rules, ExampleSet set) {
+    protected void fixMappings(Iterable<Rule> rules, IExampleSet set) {
         for (Rule rule : rules) {
             for (ConditionBase conditionBase: rule.getPremise().getSubconditions()) {
                 ElementaryCondition elementaryCondition = (conditionBase instanceof ElementaryCondition) ? (ElementaryCondition)conditionBase : null;
                 if (elementaryCondition != null) {
-                    Attribute attribute = set.getAttributes().get(elementaryCondition.getAttribute());
+                    IAttribute attribute = set.getAttributes().get(elementaryCondition.getAttribute());
                     if (attribute.isNominal()) {
                         if (elementaryCondition.getValueSet() instanceof SingletonSet) {
                             SingletonSet singletonSet = (SingletonSet) elementaryCondition.getValueSet();

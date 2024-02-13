@@ -1,17 +1,17 @@
 package adaa.analytics.rules.logic.actions;
 
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.Set;
 
 public abstract class ActionInductionRangeStrategy {
 
 	protected ElementaryCondition _pattern;
-	protected Attribute _attribute;
+	protected IAttribute _attribute;
 	
-	public ActionInductionRangeStrategy(ElementaryCondition pattern, ExampleSet dataset) {
+	public ActionInductionRangeStrategy(ElementaryCondition pattern, IExampleSet dataset) {
 		_pattern = pattern;
 		_attribute = dataset.getAttributes().get(_pattern.getAttribute());
 	}

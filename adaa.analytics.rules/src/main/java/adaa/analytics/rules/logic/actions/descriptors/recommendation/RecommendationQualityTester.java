@@ -2,8 +2,8 @@ package adaa.analytics.rules.logic.actions.descriptors.recommendation;
 
 import adaa.analytics.rules.logic.actions.descriptors.ActionRuleDescriptorBase;
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,16 +29,16 @@ public class RecommendationQualityTester {
 
 
     private ActionRuleDescriptorBase descriptor;
-    private ExampleSet examples;
+    private IExampleSet examples;
 
-    public RecommendationQualityTester(ExampleSet testExamples, ActionRuleDescriptorBase measurement) {
+    public RecommendationQualityTester(IExampleSet testExamples, ActionRuleDescriptorBase measurement) {
         examples = testExamples;
         descriptor = measurement;
     }
 
     public RecommendationTestResult runTest(ActionRule _recommendation) {
         Map<String, Object> results = new HashMap<>();
-        Attribute label = examples.getAttributes().getLabel();
+        IAttribute label = examples.getAttributes().getLabel();
         List<String> classes = new ArrayList<>(label.getMapping().getValues());
         //label.getMapping().
 

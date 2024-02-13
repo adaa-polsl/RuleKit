@@ -14,7 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import com.rapidminer.example.table.NominalMapping;
+import adaa.analytics.rules.rm.example.table.INominalMapping;
 import org.renjin.invoke.codegen.ArgumentException;
 
 public class ClassPair {
@@ -24,7 +24,7 @@ public class ClassPair {
 	protected int sourceId;
 	protected int targetId;
 	
-	public ClassPair(String source, String target, NominalMapping mapping) {
+	public ClassPair(String source, String target, INominalMapping mapping) {
 		sourceLabel = source;
 		targetLabel = target;
 		sourceId = mapping.getIndex(source);

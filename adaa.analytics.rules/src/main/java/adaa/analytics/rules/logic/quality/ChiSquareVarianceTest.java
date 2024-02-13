@@ -15,10 +15,9 @@
 package adaa.analytics.rules.logic.quality;
 
 import adaa.analytics.rules.logic.representation.Logger;
+import adaa.analytics.rules.rm.tools.container.Pair;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import java.util.logging.Level;
-
-import com.rapidminer.tools.container.Pair;
 
 /**
  * Class representing Chi-square test for variance.

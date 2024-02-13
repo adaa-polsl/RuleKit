@@ -3,14 +3,10 @@ package adaa.analytics.rules.logic.representation;
 import adaa.analytics.rules.logic.induction.ActionCovering;
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
-import adaa.analytics.rules.logic.quality.ClassificationMeasure;
-import adaa.analytics.rules.logic.quality.Hypergeometric;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.tools.container.Pair;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
-import java.io.StringWriter;
 import java.util.Set;
 
 public class ActionRule extends Rule {
@@ -28,7 +24,7 @@ public class ActionRule extends Rule {
 	protected double weighted_pRight = Double.NaN;
 	protected double weighted_nRight = Double.NaN;
 
-	public void calculatePValue(ExampleSet trainSet, IQualityMeasure measure) {
+	public void calculatePValue(IExampleSet trainSet, IQualityMeasure measure) {
 
 		Rule left  = this.getLeftRule();
 		Rule right = this.getRightRule();
@@ -144,7 +140,7 @@ public class ActionRule extends Rule {
 	}
 	
 	@Override
-	public Covering covers(ExampleSet set, Set<Integer> ids) {
+	public Covering covers(IExampleSet set, Set<Integer> ids) {
 		ActionCovering covered = new ActionCovering();
 		
 		Rule rightRule = this.getRightRule();
@@ -177,7 +173,7 @@ public class ActionRule extends Rule {
 	}
 	
 	@Override
-	public Covering covers(ExampleSet set) {
+	public Covering covers(IExampleSet set) {
 		
 		ActionCovering covered = new ActionCovering();
 		
@@ -215,12 +211,12 @@ public class ActionRule extends Rule {
 
 
 	@Override
-	public void updateWeightAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure) {
+	public void updateWeightAndPValue(IExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure) {
 		this.calculatePValue(trainSet, votingMeasure);
 	}
 
 	@Override
-	public void covers(ExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
+	public void covers(IExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
 		ActionCovering cov = (ActionCovering)this.covers(set);
 		assert(ct instanceof ActionCovering);
 		ActionCovering ac = (ActionCovering)ct;

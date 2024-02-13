@@ -9,20 +9,20 @@ import adaa.analytics.rules.logic.representation.CompoundCondition;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.RegressionRule;
 import adaa.analytics.rules.logic.representation.SingletonSet;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 public abstract class ActionMetaTable {
 
-    protected ExampleSet trainSet;
+    protected IExampleSet trainSet;
 
     List<Set<MetaValue>> metaValuesList;
 
     public ActionMetaTable(@NotNull ActionRangeDistribution distribution) {
-        trainSet = (ExampleSet) distribution.set.clone();
+        trainSet = (IExampleSet) distribution.set.clone();
         metaValuesList = distribution.getMetaValuesByAttribute();
     }
 

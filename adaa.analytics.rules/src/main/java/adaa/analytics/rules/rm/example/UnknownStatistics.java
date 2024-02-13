@@ -31,7 +31,7 @@ public class UnknownStatistics implements IStatistics {
             return (double)this.unknownCounter;
         } else {
             // @TODO Logi
-//            LogService.getRoot().log(Level.WARNING, "com.rapidminer.example.UnknownStatistics.calculating_statistics_unknown_type_error", statisticsName);
+//            LogService.getRoot().log(Level.WARNING, "adaa.analytics.rules.rm.example.UnknownStatistics.calculating_statistics_unknown_type_error", statisticsName);
             return Double.NaN;
         }
     }

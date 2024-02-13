@@ -1,26 +1,16 @@
 package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.logic.induction.ActionCovering;
-import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.quality.ChiSquareVarianceTest;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
-import adaa.analytics.rules.logic.quality.Hypergeometric;
-import cern.jet.math.Functions;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.Statistics;
-import com.rapidminer.tools.container.Pair;
-import org.apache.commons.math.MathException;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.IStatistics;
+import adaa.analytics.rules.rm.tools.container.Pair;
 import org.apache.commons.math.stat.inference.TTest;
 import org.apache.commons.math.stat.inference.TTestImpl;
-import sun.tools.asm.Cover;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class RegressionActionRule extends ActionRule {
 
@@ -37,7 +27,7 @@ public class RegressionActionRule extends ActionRule {
         super(premise, conclusion);
     }
 
-    public void calculatePValue(ExampleSet trainSet, ClassificationMeasure measure){
+    public void calculatePValue(IExampleSet trainSet, ClassificationMeasure measure){
        ChiSquareVarianceTest test = new ChiSquareVarianceTest();
 
         Rule left  = this.getLeftRule();
@@ -46,7 +36,7 @@ public class RegressionActionRule extends ActionRule {
         Covering ctLeft = left.covers(trainSet);
         Covering ctRight = right.covers(trainSet);
 
-        double expectedDev = Math.sqrt(trainSet.getStatistics(trainSet.getAttributes().getLabel(), Statistics.VARIANCE));
+        double expectedDev = Math.sqrt(trainSet.getStatistics(trainSet.getAttributes().getLabel(), IStatistics.VARIANCE));
 
         Pair<Double, Double> statAndPValueLeft = test.calculateLower(expectedDev, ctLeft.stddev_y, (int)(ctLeft.weighted_p + ctLeft.weighted_n));
         Pair<Double, Double> statAndPValueRight = test.calculateLower(expectedDev, ctRight.stddev_y, (int)(ctRight.weighted_p + ctRight.weighted_n));
@@ -172,7 +162,7 @@ public class RegressionActionRule extends ActionRule {
     }
 
     @Override
-    public Covering covers(ExampleSet set, Set<Integer> ids){
+    public Covering covers(IExampleSet set, Set<Integer> ids){
 
         Rule source = this.getLeftRule();
         Rule target = this.getRightRule();
@@ -184,7 +174,7 @@ public class RegressionActionRule extends ActionRule {
     }
 
     @Override
-    public Covering covers(ExampleSet set) {
+    public Covering covers(IExampleSet set) {
         ActionCovering aCov = new ActionCovering();
         Rule source = this.getLeftRule();
         Rule target = this.getRightRule();

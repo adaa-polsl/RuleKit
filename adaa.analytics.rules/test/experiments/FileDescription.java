@@ -1,6 +1,6 @@
 package experiments;
 
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.example.set.Partition;
 import com.rapidminer.example.set.SplittedExampleSet;
 import com.rapidminer.example.set.StratifiedPartitionBuilder;
@@ -21,8 +21,8 @@ class FileDescription {
     protected String source_class;
     protected String target_class;
     protected String file_name;
-    protected ExampleSet[] trainSets;
-    protected ExampleSet[] testSets;
+    protected IExampleSet[] trainSets;
+    protected IExampleSet[] testSets;
     protected Mutator mutator = new Mutator();
     int nFolds;
 
@@ -34,8 +34,8 @@ class FileDescription {
         }
         source_class = source;
         target_class = target;
-        trainSets = new ExampleSet[folds];
-        testSets = new ExampleSet[folds];
+        trainSets = new IExampleSet[folds];
+        testSets = new IExampleSet[folds];
         nFolds = folds;
 
         if (nFolds < 1) {
@@ -43,7 +43,7 @@ class FileDescription {
         }
         ArffFileLoader arffFileLoader = new ArffFileLoader();
 
-        ExampleSet wholeData = arffFileLoader.load(Paths.get(this.getFilePath()), "class");
+        IExampleSet wholeData = arffFileLoader.load(Paths.get(this.getFilePath()), "class");
 
         StratifiedPartitionBuilder partitionBuilder = new StratifiedPartitionBuilder(wholeData, true, 42);
 
@@ -79,10 +79,10 @@ class FileDescription {
 
     String getPathModificator() {return "";}
 
-    ExampleSet getTestSetForFold(int fold) {
+    IExampleSet getTestSetForFold(int fold) {
         return testSets[fold];
     }
-    ExampleSet getTrainSetForFold(int fold) {
+    IExampleSet getTrainSetForFold(int fold) {
         return trainSets[fold];
     }
 }

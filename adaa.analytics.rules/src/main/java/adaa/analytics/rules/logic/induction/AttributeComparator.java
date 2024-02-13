@@ -14,7 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import com.rapidminer.example.Attribute;
+import adaa.analytics.rules.rm.example.IAttribute;
 
 import java.util.Comparator;
 
@@ -24,7 +24,7 @@ import java.util.Comparator;
  * @author Adam Gudys
  *
  */
-public class AttributeComparator implements Comparator<Attribute>{
+public class AttributeComparator implements Comparator<IAttribute>{
 	/**
 	 * Compares two attributes w.r.t. their ordering in the dataset.
 	 * 
@@ -32,7 +32,7 @@ public class AttributeComparator implements Comparator<Attribute>{
 	 * @param b Second attribute.
 	 * @return Comparison result.
 	 */
-	public int compare(Attribute a, Attribute b) {
+	public int compare(IAttribute a, IAttribute b) {
         return Integer.compare(a.getTableIndex(), b.getTableIndex()); 
      }
 }

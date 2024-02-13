@@ -15,8 +15,8 @@
 package adaa.analytics.rules.logic.performance;
 
 import adaa.analytics.rules.logic.representation.ClassificationRuleSet;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.BitSet;
 
@@ -45,7 +45,7 @@ public class ClassificationRulesPerformance extends MeasuredPerformance {
 	}
 	
 	 @Override
-	 public void startCounting(ExampleSet testSet, boolean useExampleWeights)  {
+	 public void startCounting(IExampleSet testSet, boolean useExampleWeights)  {
 		 
 		 int conflictCount = 0;
 		 int negativeConflictCount = 0;

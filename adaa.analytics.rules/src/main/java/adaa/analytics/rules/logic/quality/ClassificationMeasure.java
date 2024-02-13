@@ -17,11 +17,9 @@ package adaa.analytics.rules.logic.quality;
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.utils.compiler.CompilerUtils;
 
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.operator.OperatorException;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.io.*;
-import java.security.AccessControlException;
 
 /**
  * Class gathering all quality measures for classification problems.
@@ -146,7 +144,7 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
     }
 
     @Override
-    public double calculate(ExampleSet dataset, ContingencyTable ct) {
+    public double calculate(IExampleSet dataset, ContingencyTable ct) {
         return calculate(ct.weighted_p, ct.weighted_n,
                 ct.weighted_P, ct.weighted_N, this.criterion);
     }

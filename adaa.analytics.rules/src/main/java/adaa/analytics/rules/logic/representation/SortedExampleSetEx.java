@@ -1,11 +1,9 @@
 package adaa.analytics.rules.logic.representation;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.SortedExampleSet;
-import com.rapidminer.operator.OperatorProgress;
-import com.rapidminer.operator.ProcessStoppedException;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.set.SortedExampleSet;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,19 +18,19 @@ public class SortedExampleSetEx extends SortedExampleSet {
 
     public double meanLabel = 0;
 
-    public Map<Attribute, IntegerBitSet> nonMissingVals = new HashMap<>();
+    public Map<IAttribute, IntegerBitSet> nonMissingVals = new HashMap<>();
 
-    public SortedExampleSetEx(ExampleSet parent, Attribute sortingAttribute, int sortingDirection) {
+    public SortedExampleSetEx(IExampleSet parent, IAttribute sortingAttribute, int sortingDirection) {
         super(parent, sortingAttribute, sortingDirection);
         fillLabelsAndWeights();
     }
 
-    public SortedExampleSetEx(ExampleSet parent, Attribute sortingAttribute, int sortingDirection, OperatorProgress progress) throws ProcessStoppedException {
-        super(parent, sortingAttribute, sortingDirection, progress);
-        fillLabelsAndWeights();
-    }
+//    public SortedExampleSetEx(IExampleSet parent, IAttribute sortingAttribute, int sortingDirection, OperatorProgress progress) throws ProcessStoppedException {
+//        super(parent, sortingAttribute, sortingDirection, progress);
+//        fillLabelsAndWeights();
+//    }
 
-    public SortedExampleSetEx(ExampleSet parent, int[] mapping) {
+    public SortedExampleSetEx(IExampleSet parent, int[] mapping) {
         super(parent, mapping);
         fillLabelsAndWeights();
     }
@@ -48,14 +46,14 @@ public class SortedExampleSetEx extends SortedExampleSet {
         weights = new double[this.size()];
         totalWeightsBefore = new double[this.size() + 1];
 
-        Attribute survTime = this.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
+        IAttribute survTime = this.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
         if (survTime != null) {
             survivalTimes = new double[this.size()];
         }
 
         boolean weighted = getAttributes().getWeight() != null;
 
-        for (Attribute a: this.getAttributes()) {
+        for (IAttribute a: this.getAttributes()) {
             nonMissingVals.put(a, new IntegerBitSet(this.size()));
         }
 
@@ -76,7 +74,7 @@ public class SortedExampleSetEx extends SortedExampleSet {
                 survivalTimes[i] = e.getValue(survTime);
             }
 
-            for (Attribute a: this.getAttributes()) {
+            for (IAttribute a: this.getAttributes()) {
                 if (!Double.isNaN(e.getValue(a))) {
                     nonMissingVals.get(a).add(i);
                 }

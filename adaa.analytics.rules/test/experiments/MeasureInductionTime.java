@@ -4,7 +4,7 @@ import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import com.rapidminer.RapidMiner;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.gui.tools.dialogs.wizards.dataimport.csv.CSVFileReader;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
@@ -63,7 +63,7 @@ public class MeasureInductionTime {
             String target_class = row[10];
             ArffFileLoader arffFileLoader = new ArffFileLoader();
 
-            ExampleSet wholeData = arffFileLoader.load(Paths.get(path_to_file.toString()), "class");
+            IExampleSet wholeData = arffFileLoader.load(Paths.get(path_to_file.toString()), "class");
 
 
             ActionFindingParameters afp = new ActionFindingParameters();

@@ -3,10 +3,6 @@ package adaa.analytics.rules.rm.example;
 import adaa.analytics.rules.rm.example.table.IExampleTable;
 import adaa.analytics.rules.rm.operator.IResultObject;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-
 public interface IExampleSet extends IResultObject, Cloneable, Iterable<Example> {
     long serialVersionUID = 4100925167567270064L;
 

@@ -14,18 +14,9 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import adaa.analytics.rules.logic.quality.IQualityMeasure;
-import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.representation.*;
-
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.SortedExampleSet;
-import com.rapidminer.tools.container.Pair;
-
-import java.util.HashSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import java.util.Set;
-import java.util.logging.Level;
 
 /**
  * Class for growing and pruning log rank-based survival rules with user's knowledge.
@@ -44,7 +35,7 @@ public class SurvivalLogRankExpertFinder extends RegressionExpertFinder {
 
 
 	@Override
-	public ExampleSet preprocess(ExampleSet trainSet) {
+	public IExampleSet preprocess(IExampleSet trainSet) {
 		return implementation.preprocess(trainSet);
 	}
 
@@ -58,7 +49,7 @@ public class SurvivalLogRankExpertFinder extends RegressionExpertFinder {
 	@Override
 	public void postprocess(
 			final Rule rule,
-			final ExampleSet dataset) {
+			final IExampleSet dataset) {
 
 		super.postprocess(rule, dataset);
 		implementation.postprocess(rule, dataset);
@@ -66,7 +57,7 @@ public class SurvivalLogRankExpertFinder extends RegressionExpertFinder {
 
 	@Override
 	protected boolean checkCandidate(
-			ExampleSet dataset,
+			IExampleSet dataset,
 			Rule rule,
 			ConditionBase candidate,
 			Set<Integer> uncovered,

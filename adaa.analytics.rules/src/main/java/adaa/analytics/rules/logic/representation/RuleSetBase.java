@@ -18,9 +18,9 @@ import java.util.*;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.operator.learner.SimplePredictionModel;
 
 
@@ -61,7 +61,7 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 	public static final String ANNOTATION_TEST_REPORT = "annotation_test_report";
 
 	/** Training set. */
-	protected ExampleSet trainingSet;
+	protected IExampleSet trainingSet;
 	
 	/** Collection of rules. */
 	protected List<Rule> rules = new ArrayList<Rule>();
@@ -275,7 +275,7 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 	 * @param params Induction parameters.
 	 * @param knowledge User's knowledge.
 	 */
-	public RuleSetBase(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
+	public RuleSetBase(IExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
 		super(exampleSet);
 		this.trainingSet = exampleSet;
 		this.isVoting = isVoting;
@@ -311,7 +311,7 @@ public abstract class RuleSetBase extends SimplePredictionModel {
 		sb.append("Rules:\n");
 		Map<String, AttributeRank> attributeCountsWeights = new LinkedHashMap<>(); // create attribute ranking
 		Map<String, Double> attributeWeights = new LinkedHashMap<>(); // create attribute ranking
-		for (Attribute a: trainingSet.getAttributes()) {
+		for (IAttribute a: trainingSet.getAttributes()) {
 			attributeCountsWeights.put(a.getName(), new AttributeRank(0, 0.0));
 		}
 		int rid = 1;

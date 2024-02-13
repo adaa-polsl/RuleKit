@@ -2,9 +2,9 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.OperatorCommandProxy;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
 import org.junit.Assert;
@@ -62,10 +62,10 @@ public class ClassificationSnCTest {
         }
     }
 
-    private void test_confidence(ExampleSet prediction) {
+    private void test_confidence(IExampleSet prediction) {
         for (int i = 0; i < prediction.size(); i++) {
             Example example = prediction.getExample(i);
-            Attribute label = example.getAttributes().getLabel();
+            IAttribute label = example.getAttributes().getLabel();
             List<String> labelValues = label.getMapping().getValues();
 
             double confidenceSum = 0;
@@ -83,7 +83,7 @@ public class ClassificationSnCTest {
         snc.setOperatorCommandProxy(new OperatorCommandProxy());
         RuleSetBase ruleSet = snc.run(testCase.getExampleSet());
 
-        ExampleSet prediction = ruleSet.apply(testCase.getExampleSet());
+        IExampleSet prediction = ruleSet.apply(testCase.getExampleSet());
         test_confidence(prediction);
 
         this.writeReport(testCase, ruleSet);

@@ -1,15 +1,10 @@
 package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.AttributeValueFilterSingleCondition;
-import com.rapidminer.example.set.Condition;
-import com.rapidminer.example.set.ConditionedExampleSet;
-import com.rapidminer.example.set.SortedExampleSet;
-import com.rapidminer.example.table.NominalMapping;
-import com.rapidminer.operator.tools.ExpressionEvaluationException;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.table.INominalMapping;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -39,7 +34,7 @@ public class ContrastSurvivalRuleSet extends ContrastRuleSet {
      * @param params     Induction parameters.
      * @param knowledge  User's knowledge.
      */
-    public ContrastSurvivalRuleSet(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
+    public ContrastSurvivalRuleSet(IExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
         super(exampleSet, isVoting, params, knowledge);
 
         ContrastSurvivalExampleSet ces = (exampleSet instanceof ContrastExampleSet) ? (ContrastSurvivalExampleSet)exampleSet : null;

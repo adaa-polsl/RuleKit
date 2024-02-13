@@ -14,7 +14,6 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -22,10 +21,9 @@ import adaa.analytics.rules.logic.representation.*;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.SortedExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 /**
  * User-guided separate'n'conquer algorithm for generating regression rule sets.
@@ -48,7 +46,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 	}
 	
 	@Override
-	public RuleSetBase run(final ExampleSet dataset) {
+	public RuleSetBase run(final IExampleSet dataset) {
 		
 		Logger.log("RegressionExpertSnC.run()\n", Level.FINE);
 		double beginTime;
@@ -56,7 +54,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 
 		SortedExampleSetEx sortedDataset = (SortedExampleSetEx)finder.preprocess(dataset);
 		RuleSetBase ruleset = factory.create(sortedDataset);
-		Attribute label = dataset.getAttributes().getLabel();
+		IAttribute label = dataset.getAttributes().getLabel();
 		//SortedExampleSet ses = new SortedExampleSetEx(dataset, label, SortedExampleSet.INCREASING);
 
 		sortedDataset.recalculateAttributeStatistics(sortedDataset.getAttributes().getLabel());

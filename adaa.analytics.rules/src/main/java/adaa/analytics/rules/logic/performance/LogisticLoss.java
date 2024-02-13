@@ -18,9 +18,9 @@
 */
 package adaa.analytics.rules.logic.performance;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.Iterator;
 
@@ -43,14 +43,14 @@ public class LogisticLoss extends MeasuredPerformance {
 
 	/** Calculates the margin. */
 	@Override
-	public void startCounting(ExampleSet exampleSet, boolean useExampleWeights)  {
+	public void startCounting(IExampleSet exampleSet, boolean useExampleWeights)  {
 		super.startCounting(exampleSet, useExampleWeights);
 		// compute margin
 		Iterator<Example> reader = exampleSet.iterator();
 		this.loss = 0.0d;
 		this.counter = 0.0d;
-		Attribute labelAttr = exampleSet.getAttributes().getLabel();
-		Attribute weightAttr = null;
+		IAttribute labelAttr = exampleSet.getAttributes().getLabel();
+		IAttribute weightAttr = null;
 		if (useExampleWeights) {
 			weightAttr = exampleSet.getAttributes().getWeight();
 		}

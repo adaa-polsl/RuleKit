@@ -18,9 +18,9 @@
 */
 package adaa.analytics.rules.logic.performance;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.Iterator;
 
@@ -37,11 +37,11 @@ import java.util.Iterator;
 public class RootRelativeSquaredError extends MeasuredPerformance {
 
 
-	private Attribute predictedAttribute;
+	private IAttribute predictedAttribute;
 
-	private Attribute labelAttribute;
+	private IAttribute labelAttribute;
 
-	private Attribute weightAttribute;
+	private IAttribute weightAttribute;
 
 	private double deviationSum = 0.0d;
 
@@ -59,7 +59,7 @@ public class RootRelativeSquaredError extends MeasuredPerformance {
 	}
 
 	@Override
-	public void startCounting(ExampleSet exampleSet, boolean useExampleWeights){
+	public void startCounting(IExampleSet exampleSet, boolean useExampleWeights){
 		super.startCounting(exampleSet, useExampleWeights);
 		if (exampleSet.size() <= 1) {
 			throw new IllegalStateException( getName()+" "+

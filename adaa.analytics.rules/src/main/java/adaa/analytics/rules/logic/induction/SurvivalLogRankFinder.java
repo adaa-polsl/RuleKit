@@ -14,17 +14,12 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import adaa.analytics.rules.logic.quality.IQualityMeasure;
-import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.representation.*;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.SortedExampleSet;
-import com.rapidminer.tools.container.Pair;
-import org.jetbrains.annotations.NotNull;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.set.SortedExampleSet;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -37,22 +32,22 @@ import java.util.logging.Level;
 public class SurvivalLogRankFinder extends RegressionFinder{
 
 	public static class Implementation {
-		public ExampleSet preprocess(ExampleSet trainSet) {
-			Attribute survTime = trainSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
+		public IExampleSet preprocess(IExampleSet trainSet) {
+			IAttribute survTime = trainSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
 			SortedExampleSetEx ses = new SortedExampleSetEx(trainSet, survTime, SortedExampleSet.INCREASING);
 			return ses;
 		}
 
 		public void postprocess(
 				final Rule rule,
-				final ExampleSet dataset) {
+				final IExampleSet dataset) {
 
 			KaplanMeierEstimator kme = new KaplanMeierEstimator(dataset, rule.getCoveredPositives());
 			((SurvivalRule)rule).setEstimator(kme);
 		}
 
 		protected boolean checkCandidate(
-				ExampleSet dataset,
+				IExampleSet dataset,
 				Rule rule,
 				ConditionBase candidate,
 				Set<Integer> uncovered,
@@ -140,7 +135,7 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 	}
 
 	@Override
-	public ExampleSet preprocess(ExampleSet trainSet) {
+	public IExampleSet preprocess(IExampleSet trainSet) {
 		return implementation.preprocess(trainSet);
 	}
 
@@ -154,7 +149,7 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 	@Override
 	public void postprocess(
 			final Rule rule,
-			final ExampleSet dataset) {
+			final IExampleSet dataset) {
 
 		super.postprocess(rule, dataset);
 		implementation.postprocess(rule, dataset);
@@ -162,7 +157,7 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 
 	@Override
 	protected boolean checkCandidate(
-			ExampleSet dataset,
+			IExampleSet dataset,
 			Rule rule,
 			ConditionBase candidate,
 			Set<Integer> uncovered,

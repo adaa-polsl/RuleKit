@@ -1,16 +1,16 @@
 package utils;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Attributes;
-import com.rapidminer.example.Example;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IAttributes;
 
 public class PrettyExamplePrinter {
 
     public static String format(Example example) {
         StringBuilder builder = new StringBuilder();
-        Attributes atr = example.getAttributes();
+        IAttributes atr = example.getAttributes();
         builder.append('(');
-        for (Attribute a : atr){
+        for (IAttribute a : atr){
             builder.append(a.getName());
             builder.append("=");
 

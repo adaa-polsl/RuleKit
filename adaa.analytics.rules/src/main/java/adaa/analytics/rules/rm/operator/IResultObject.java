@@ -6,6 +6,8 @@ import java.io.Serializable;
 public interface IResultObject extends Serializable {
     String getName();
 
+    Annotations getAnnotations();
+
 //    String toResultString();
 
 //    Icon getResultIcon();

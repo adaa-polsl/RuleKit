@@ -17,9 +17,9 @@ package adaa.analytics.rules.logic.performance;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.logic.representation.SurvivalRuleSet;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -40,10 +40,10 @@ public class IntegratedBrierScore extends MeasuredPerformance {
 	 }
 	 
 	 @Override
-	 public void startCounting(ExampleSet testSet, boolean useExampleWeights) {
+	 public void startCounting(IExampleSet testSet, boolean useExampleWeights) {
 		 	 
-		Attribute survTime = testSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE); 
-		Attribute survStat = testSet.getAttributes().getLabel();
+		IAttribute survTime = testSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
+		 IAttribute survStat = testSet.getAttributes().getLabel();
   	
 		List<SurvInfo> info = new ArrayList<SurvInfo>();	
 		for (int i = 0; i < testSet.size(); i++) {

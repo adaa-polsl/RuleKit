@@ -4,18 +4,17 @@ import adaa.analytics.rules.logic.actions.ActionMetaTable;
 import adaa.analytics.rules.logic.actions.ActionRangeDistribution;
 import adaa.analytics.rules.logic.actions.OptimizedActionMetaTable;
 import adaa.analytics.rules.logic.actions.recommendations.ClassificationRecommendationTask;
-import adaa.analytics.rules.logic.actions.recommendations.RegressionRecommendationTask;
 import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.rm.example.set.AttributeValueFilterSingleCondition;
+import adaa.analytics.rules.rm.example.set.ConditionedExampleSet;
+import adaa.analytics.rules.rm.example.set.ICondition;
+import adaa.analytics.rules.rm.example.table.INominalMapping;
 import com.rapidminer.RapidMiner;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.AttributeValueFilterSingleCondition;
-import com.rapidminer.example.set.Condition;
-import com.rapidminer.example.set.ConditionedExampleSet;
-import com.rapidminer.example.table.NominalMapping;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.gui.tools.dialogs.wizards.dataimport.csv.CSVFileReader;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
@@ -25,7 +24,6 @@ import com.rapidminer.operator.tools.ExpressionEvaluationException;
 import com.rapidminer.tools.LineParser;
 import com.rapidminer.tools.LogService;
 import com.rapidminer.tools.OperatorService;
-import main.ActionRulesConsole;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.renjin.repackaged.guava.base.Strings;
@@ -39,7 +37,6 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class VerificationExperiment {
 
@@ -99,59 +96,6 @@ public class VerificationExperiment {
         experiment(new FileDescription("wine-reduced.arff", "1", "2", number_of_folds),10,  new ClassificationMeasure(ClassificationMeasure.Precision));
         experiment(new FileDescription("labor.arff", "bad", "good", number_of_folds),10,  new ClassificationMeasure(ClassificationMeasure.Precision));
     */
-    }
-
- //   @Test
-    public void testManyOnRegression() throws OperatorException, OperatorCreationException, IOException {
-        resultDir = "C:/Users/pawel/desktop/action-rules/results/regression/";
-        prepareDataSetsForRegression();
-        ClassificationMeasure[] measures =
-                {
-           /*             new ClassificationMeasure(ClassificationMeasure.C2),
-                        new ClassificationMeasure(ClassificationMeasure.RSS),
-                        new ClassificationMeasure(ClassificationMeasure.InformationGain),
-                        new ClassificationMeasure(ClassificationMeasure.WeightedLaplace),
-                        new ClassificationMeasure(ClassificationMeasure.Correlation),
-             */           new ClassificationMeasure(ClassificationMeasure.Precision)
-                };
-
-        FileWriter fw = new FileWriter("C:\\Users\\pawel\\desktop\\action-rules\\analysis\\r-package\\action.rules\\results\\regression\\preResults7.csv");
-
-
-        boolean headerWritten = false;
-        for (FileDescription desc : dataFiles) {
-            for (ClassificationMeasure m : measures) {
-                System.out.println("Starting experiment for file " + desc.getFilePath() + " for function " + m.getName() + " " + desc.getPathModificator());
-                List<Map<String, Double>> results = regressionExperiment(desc, m);
-
-                if (!headerWritten) {
-                    String header = buildHeader(results);
-                    fw.write(header);
-                    fw.write(System.lineSeparator());
-                    headerWritten = true;
-                }
-
-                RegressionFileDescription rfd = (RegressionFileDescription)desc;
-                for (int i = 0; i < results.size(); i++) {
-                    StringJoiner joiner = new StringJoiner(";");
-                    fw.write(desc.getFileNameWithoutExtension());fw.write(';');
-                    fw.write(m.getName());fw.write(';');
-                    fw.write(Boolean.toString(rfd.getCanOverlapConsequences()));fw.write(';');
-                    Map<String,Double> result = results.get(i);
-                    for (String key : result.keySet()) {
-                        joiner.add(result.get(key).toString());
-                    }
-                    fw.write(joiner.toString());
-                    fw.write(System.lineSeparator());
-                }
-
-            }
-        }
-        fw.close();
-    }
-
-    private String buildHeader(List<Map<String, Double>> results) {
-        return "dataset;measure;can_overlap_consequences;" + String.join(";",  results.get(0).keySet().stream().collect(Collectors.toList()));
     }
 
     private void runClassificaitonInternal(String resultBit) throws OperatorException, OperatorCreationException, IOException {
@@ -264,16 +208,6 @@ public class VerificationExperiment {
         fw.write(entry.get("predicted_target_in_test").toString());fw.write(";");
     }
 
-    private void prepareDataSetsForRegression() throws OperatorException, OperatorCreationException {
-        dataDirectory = regressionDirectory;
-        List<String[]> datasets = getDatasetDescriptions();
-        dataFiles = new ArrayList<>();
-        for (String[] row : datasets) {
-            boolean intersectingConclusions = Boolean.parseBoolean(row[7]);
-            dataFiles.add(new RegressionFileDescription(row[0] + ".arff",  row[6], intersectingConclusions, number_of_folds));
-        }
-    }
-
     private void prepareDataSets() throws OperatorException, OperatorCreationException {
         List<String[]> datasets = getDatasetDescriptions();
 
@@ -347,106 +281,6 @@ public class VerificationExperiment {
 
     }
 
-
-    private List<Map<String, Double>> regressionExperiment(FileDescription dataFileDesc, ClassificationMeasure qualityFunction) throws OperatorException, OperatorCreationException, IOException {
-        List<Map<String,Double>> allResults = new ArrayList<>();
-
-        RegressionExperimentTask task = new RegressionExperimentTask();
-        prepareParams(qualityFunction, task);
-        task.preprocessParams(params, dataFileDesc);
-        for (int iteration = 0; iteration < dataFileDesc.getFoldCount(); iteration++) {
-            Map<String, Double> results = new HashMap<>();
-            ExampleSet train = dataFileDesc.getTrainSetForFold(iteration);
-
-            ExampleSet testSet = dataFileDesc.getTestSetForFold(iteration);
-            ExampleSet test_no_id = mutator.materializeExamples(testSet);
-            IdTagging id = OperatorService.createOperator(IdTagging.class);
-            ExampleSet test = id.apply(test_no_id);
-
-            RuleSerializer ser = new RuleSerializer(train, ';', "nil");
-
-            RegressionActionSnC actionSnC = (RegressionActionSnC)task.getActionSnC(params);
-            RegressionSnC regressionSnC = (RegressionSnC)task.getRuleSnc(params);
-
-            RegressionRuleSet regressionRules = (RegressionRuleSet)regressionSnC.run(train);
-            ActionRuleSet regActionRules = (ActionRuleSet)actionSnC.run(train);
-
-            if(regActionRules.getRules().size() < 1) {
-                System.out.println("0 action rules generated for fold " + iteration + " measure " + measure.getName());
-            }
-
-            ExampleSet predictedTrain = regressionRules.apply(train);
-            ExampleSet predictedTest = regressionRules.apply(test);
-            RegressionExperimentTask.RegressionExampleSetEvaluation predictedTrainEval = new RegressionExperimentTask.RegressionExampleSetEvaluation(predictedTrain);
-            RegressionExperimentTask.RegressionExampleSetEvaluation predictedTestEval = new RegressionExperimentTask.RegressionExampleSetEvaluation(predictedTest);
-
-            String trainDumpName = buildArffFileName (iteration, "train", dataFileDesc);
-            ArffFileWriter.write(predictedTrain, trainDumpName);
-
-            String testDumpName = buildArffFileName(iteration, "test", dataFileDesc);
-            ArffFileWriter.write(predictedTest, testDumpName);
-
-            RegressionRecommendationTask recomTask = (RegressionRecommendationTask)task.getRecommendationTask(params, dataFileDesc, train, qualityFunction);
-            ActionRangeDistribution ard = new ActionRangeDistribution(regActionRules, train);
-            ard.calculateActionDistribution();
-            OptimizedActionMetaTable metaTable = new OptimizedActionMetaTable(ard, params.getStableAttributes());
-
-            AttributeAdd adder = OperatorService.createOperator(AttributeAdd.class);
-            adder.setParameter(AttributeAdd.PARAMETER_NAME, "mutated_rule_id");
-            adder.setParameter(AttributeAdd.PARAMETER_VALUE_TYPE, "integer");
-
-            ExampleSet mutableExamples = mutator.materializeExamples(test);
-            mutableExamples = adder.apply(mutableExamples);
-
-            ActionRuleSet recommendations = new ActionRuleSet(train, false, params, null);
-            ExampleSet mutatedByRecommendations = mutator.mutateExamples(mutableExamples, metaTable, recommendations, train, recomTask);
-
-            ExampleSet mutatedByRules = mutator.mutateExamples(mutableExamples, regActionRules, train);
-
-
-            ExampleSet mutatedAndCoveredByRules = getCoveredByRules(mutatedByRules);
-            ExampleSet mutatedAndCoveredByRecom = getCoveredByRecom(mutatedByRecommendations);
-
-
-            ExampleSet mutatedByRulesPredictedByRules = regressionRules.apply(mutatedAndCoveredByRules);
-            ExampleSet mutatedByRecomPredictedByRules = regressionRules.apply(mutatedAndCoveredByRecom);
-
-
-            RegressionExperimentTask.RegressionExampleSetEvaluation mutatedByRulesEval = new RegressionExperimentTask.RegressionExampleSetEvaluation(mutatedByRulesPredictedByRules);
-            RegressionExperimentTask.RegressionExampleSetEvaluation mutatedByRecomEval = new RegressionExperimentTask.RegressionExampleSetEvaluation(mutatedByRecomPredictedByRules);
-
-
-            File regressionRulesFile = buildRulesFile(iteration, "rules", dataFileDesc);
-            Files.write(regressionRules.toString().getBytes(), regressionRulesFile);
-            File regActionRulesFile = buildRulesFile(iteration, "action-rule", dataFileDesc);
-            Files.write((regActionRules.toString() + System.lineSeparator()  + ser.serializeToCsv(regActionRules)).getBytes(), regActionRulesFile);
-
-            String mutatedByRulesFilename = buildArffFileName(iteration, "mutated", dataFileDesc);
-            ArffFileWriter.write(mutatedByRules, mutatedByRulesFilename);
-            String mutatedByRecomFilename = buildArffFileName(iteration, "mutated-recom", dataFileDesc);
-            ArffFileWriter.write(mutatedByRecommendations, mutatedByRecomFilename);
-
-            String recomFileName = buildRecommendationsFileName(iteration, "", dataFileDesc);
-            Files.write((recommendations.toString() + System.lineSeparator() + ser.serializeToCsv(recommendations)).getBytes(), new File(recomFileName));
-
-            results.put("fold_id", (double)iteration);
-            results.put("train_rules_MSE", predictedTrainEval.getMSE());
-            results.put("test_rules_MSE", predictedTrainEval.getMSE());
-            results.put("test_well_predicted", (double)predictedTestEval.getWellPredictedCount());
-            results.put("train_well_predicted", (double)predictedTrainEval.getWellPredictedCount());
-            results.put("well_predicted_on_mutated_by_rules", (double)mutatedByRulesEval.getWellPredictedCount());
-            results.put("well_predicted_on_mutated_by_recom", (double)mutatedByRecomEval.getWellPredictedCount());
-            results.put("MSE_on_mutated_by_rules", mutatedByRulesEval.getMSE());
-            results.put("MSE_on_mutated_by_recom", mutatedByRecomEval.getMSE());
-            results.put("examples_in_mutated", (double)mutatedByRecommendations.size());
-            results.put("covered_by_rules", (double)mutatedAndCoveredByRules.size());
-            results.put("covered_by_recom", (double)mutatedAndCoveredByRecom.size());
-
-            allResults.add(results);
-        }
-        return allResults;
-    }
-
     private List<Map<String, Double>> experiment(FileDescription dataFileDesc, ClassificationMeasure qualityFunction) throws OperatorException, OperatorCreationException, IOException {
         if (!RapidMiner.isInitialized()) {
             RapidMiner.init();
@@ -460,12 +294,12 @@ public class VerificationExperiment {
         prepareParams(qualityFunction, task);
         for (int iteration = 0; iteration < dataFileDesc.getFoldCount(); iteration++) {
             Map<String, Double> results = new HashMap<>();
-            ExampleSet train = dataFileDesc.getTrainSetForFold(iteration);
+            IExampleSet train = dataFileDesc.getTrainSetForFold(iteration);
 
-            ExampleSet testSet = dataFileDesc.getTestSetForFold(iteration);
-            ExampleSet test_no_id = mutator.materializeExamples(testSet);
+            IExampleSet testSet = dataFileDesc.getTestSetForFold(iteration);
+            IExampleSet test_no_id = mutator.materializeExamples(testSet);
             IdTagging id = OperatorService.createOperator(IdTagging.class);
-            ExampleSet test = id.apply(test_no_id);
+            IExampleSet test = id.apply(test_no_id);
 
             RuleSerializer ser = new RuleSerializer(train, ';', "nil");
             //induce the action rules
@@ -485,12 +319,12 @@ public class VerificationExperiment {
             ActionRuleSet backwardRuleSet = (ActionRuleSet)backwardActionSnC.run(train);
             ClassificationRuleSet cRuleSet = (ClassificationRuleSet) classificationSnC.run(train);
 
-            ExampleSet classifiedTrain = cRuleSet.apply(train);
+            IExampleSet classifiedTrain = cRuleSet.apply(train);
 
             ExperimentTask.ExampleSetEvaluation trainEval = new ExperimentTask.ExampleSetEvaluation(classifiedTrain, dataFileDesc);
             double ruleTrainAcc = trainEval.balancedAcc;
 
-            ExampleSet predictedByClassificationRules = cRuleSet.apply(test);
+            IExampleSet predictedByClassificationRules = cRuleSet.apply(test);
 
             ExperimentTask.ExampleSetEvaluation testEval = new ExperimentTask.ExampleSetEvaluation(predictedByClassificationRules, dataFileDesc);
             double testAcc = testEval.balancedAcc;
@@ -501,8 +335,8 @@ public class VerificationExperiment {
 
             writeRuleSetsTestTrain(dataFileDesc, iteration, train, ser, actionRuleSet, backwardRuleSet, cRuleSet, predictedByClassificationRules);
 
-            Condition cnd = new AttributeValueFilterSingleCondition(test.getAttributes().getLabel(), AttributeValueFilterSingleCondition.EQUALS, dataFileDesc.getSourceClass());
-            ExampleSet sourceExamplesInTestSet  = mutator.materializeExamples(new ConditionedExampleSet(test, cnd));
+            ICondition cnd = new AttributeValueFilterSingleCondition(test.getAttributes().getLabel(), AttributeValueFilterSingleCondition.EQUALS, dataFileDesc.getSourceClass());
+            IExampleSet sourceExamplesInTestSet  = mutator.materializeExamples(new ConditionedExampleSet(test, cnd));
 
             AttributeAdd adder = OperatorService.createOperator(AttributeAdd.class);
             adder.setParameter(AttributeAdd.PARAMETER_NAME, "mutated_rule_id");
@@ -543,27 +377,27 @@ public class VerificationExperiment {
             ActionRuleSet FBRecommendations = new ActionRuleSet(sourceExamplesInTestSet, true, params, null);
             timeBefore = System.currentTimeMillis();
 
-            ExampleSet mutatedBackwardRecom = mutator.mutateExamples(sourceExamplesInTestSet, backwardMetaTable, dataFileDesc.getSourceClass(), dataFileDesc.getTargetClass(), backwardRecommendations, train, recomTask);
+            IExampleSet mutatedBackwardRecom = mutator.mutateExamples(sourceExamplesInTestSet, backwardMetaTable, dataFileDesc.getSourceClass(), dataFileDesc.getTargetClass(), backwardRecommendations, train, recomTask);
             System.out.println("Mutacja rekomendacjami backward: " + (System.currentTimeMillis() - timeBefore));
 
             timeBefore = System.currentTimeMillis();
-            ExampleSet mutatedBackwardRules = mutator.mutateExamples(sourceExamplesInTestSet, backwardRuleSet, train, dataFileDesc.getTargetClass());
+            IExampleSet mutatedBackwardRules = mutator.mutateExamples(sourceExamplesInTestSet, backwardRuleSet, train, dataFileDesc.getTargetClass());
             System.out.println("Mutacja regułami backward: " + (System.currentTimeMillis() - timeBefore));
 
             timeBefore = System.currentTimeMillis();
-            ExampleSet mutatedRecom = mutator.mutateExamples(sourceExamplesInTestSet, optimized, dataFileDesc.getSourceClass(), dataFileDesc.getTargetClass(), recommendations, train, recomTask);
+            IExampleSet mutatedRecom = mutator.mutateExamples(sourceExamplesInTestSet, optimized, dataFileDesc.getSourceClass(), dataFileDesc.getTargetClass(), recommendations, train, recomTask);
             System.out.println("Mutacja rekomendacjami forward: " + (System.currentTimeMillis() - timeBefore));
 
             timeBefore = System.currentTimeMillis();
-            ExampleSet mutated = mutator.mutateExamples(sourceExamplesInTestSet, actionRuleSet, train, dataFileDesc.getTargetClass());
+            IExampleSet mutated = mutator.mutateExamples(sourceExamplesInTestSet, actionRuleSet, train, dataFileDesc.getTargetClass());
             System.out.println("Mutacja regułami forward: " + (System.currentTimeMillis() - timeBefore));
 
             timeBefore = System.currentTimeMillis();
-            ExampleSet mutatedRecomFB = mutator.mutateExamples(sourceExamplesInTestSet, fbMetaTable, dataFileDesc.getSourceClass(), dataFileDesc.getTargetClass(), FBRecommendations, train, recomTask);
+            IExampleSet mutatedRecomFB = mutator.mutateExamples(sourceExamplesInTestSet, fbMetaTable, dataFileDesc.getSourceClass(), dataFileDesc.getTargetClass(), FBRecommendations, train, recomTask);
             System.out.println("Mutacja rekomendacjami forward-backward: " + (System.currentTimeMillis() - timeBefore));
 
             timeBefore = System.currentTimeMillis();
-            ExampleSet mutatedFBRules = mutator.mutateExamples(sourceExamplesInTestSet, fb, train, dataFileDesc.getTargetClass());
+            IExampleSet mutatedFBRules = mutator.mutateExamples(sourceExamplesInTestSet, fb, train, dataFileDesc.getTargetClass());
             System.out.println("Mutacja regułami forward-backward: " + (System.currentTimeMillis() - timeBefore));
 
 
@@ -574,21 +408,21 @@ public class VerificationExperiment {
 
             //for the verification we take only examples that were covered by action rules or recommendations
 
-            ExampleSet mutatedAndCoveredByRules = getCoveredByRules(mutated);
-            ExampleSet mutatedAndCoveredByBackwardRules = getCoveredByRules(mutatedBackwardRules);
-            ExampleSet mutatedAndCoveredByFBRules = getCoveredByRules(mutatedFBRules);
+            IExampleSet mutatedAndCoveredByRules = getCoveredByRules(mutated);
+            IExampleSet mutatedAndCoveredByBackwardRules = getCoveredByRules(mutatedBackwardRules);
+            IExampleSet mutatedAndCoveredByFBRules = getCoveredByRules(mutatedFBRules);
 
-            ExampleSet mutatedAndCoveredByRecom = getCoveredByRecom(mutatedRecom);
-            ExampleSet mutatedAndCoveredByBackwardRecom = getCoveredByRecom(mutatedBackwardRecom);
-            ExampleSet mutatedAndCoveredByFBRecom = getCoveredByRecom(mutatedRecomFB);
+            IExampleSet mutatedAndCoveredByRecom = getCoveredByRecom(mutatedRecom);
+            IExampleSet mutatedAndCoveredByBackwardRecom = getCoveredByRecom(mutatedBackwardRecom);
+            IExampleSet mutatedAndCoveredByFBRecom = getCoveredByRecom(mutatedRecomFB);
 
-            ExampleSet rules_mutated = cRuleSet.apply(mutatedAndCoveredByRules);
-            ExampleSet rules_mutatedBackwardRules = cRuleSet.apply(mutatedAndCoveredByBackwardRules);
-            ExampleSet rules_mutatedFBRules = cRuleSet.apply(mutatedAndCoveredByFBRules);
+            IExampleSet rules_mutated = cRuleSet.apply(mutatedAndCoveredByRules);
+            IExampleSet rules_mutatedBackwardRules = cRuleSet.apply(mutatedAndCoveredByBackwardRules);
+            IExampleSet rules_mutatedFBRules = cRuleSet.apply(mutatedAndCoveredByFBRules);
 
-            ExampleSet rules_mutatedRecom = cRuleSet.apply(mutatedAndCoveredByRecom);
-            ExampleSet rules_mutatedBackwardRecom = cRuleSet.apply(mutatedAndCoveredByBackwardRecom);
-            ExampleSet rules_mutatedFBRecom = cRuleSet.apply(mutatedAndCoveredByFBRecom);
+            IExampleSet rules_mutatedRecom = cRuleSet.apply(mutatedAndCoveredByRecom);
+            IExampleSet rules_mutatedBackwardRecom = cRuleSet.apply(mutatedAndCoveredByBackwardRecom);
+            IExampleSet rules_mutatedFBRecom = cRuleSet.apply(mutatedAndCoveredByFBRecom);
 
             int n_predicted_as_source_f = getNumberOfPredictedExamples(rules_mutated, dataFileDesc.getSourceClass());
             int n_predicted_as_target_f = getNumberOfPredictedExamples(rules_mutated, dataFileDesc.getTargetClass());
@@ -646,12 +480,12 @@ public class VerificationExperiment {
                                                        ActionRuleSet recommendations,
                                                        ActionRuleSet backwardRecommendations,
                                                        ActionRuleSet fbRecommendations,
-                                                       ExampleSet mutatedBackwardRecom,
-                                                       ExampleSet mutatedBackwardRules,
-                                                       ExampleSet mutatedRecom,
-                                                       ExampleSet mutated,
-                                                       ExampleSet mutatedFB,
-                                                       ExampleSet mutatedFBRecom)
+                                                       IExampleSet mutatedBackwardRecom,
+                                                       IExampleSet mutatedBackwardRules,
+                                                       IExampleSet mutatedRecom,
+                                                       IExampleSet mutated,
+                                                       IExampleSet mutatedFB,
+                                                       IExampleSet mutatedFBRecom)
             throws OperatorCreationException, OperatorException, IOException {
 
 
@@ -678,7 +512,7 @@ public class VerificationExperiment {
         Files.write((fbRecommendations.toString() + System.lineSeparator() + ser.serializeToCsv(fbRecommendations)).getBytes(), new File(recommendationsFBFileName));
     }
 
-    private void writeRuleSetsTestTrain(FileDescription dataFileDesc, int iteration, ExampleSet train, RuleSerializer ser, ActionRuleSet actionRuleSet, ActionRuleSet backwardRuleSet, ClassificationRuleSet cRuleSet, ExampleSet predictedByClassificationRules) throws IOException, OperatorCreationException, OperatorException {
+    private void writeRuleSetsTestTrain(FileDescription dataFileDesc, int iteration, IExampleSet train, RuleSerializer ser, ActionRuleSet actionRuleSet, ActionRuleSet backwardRuleSet, ClassificationRuleSet cRuleSet, IExampleSet predictedByClassificationRules) throws IOException, OperatorCreationException, OperatorException {
         File rulesFile = buildRulesFile(iteration, "rules", dataFileDesc);
         File actionRulesFile = buildRulesFile(iteration, "action-rules", dataFileDesc);
         File backwardActionRulesFile = buildRulesFile(iteration, "action-backward-rules", dataFileDesc);
@@ -724,23 +558,23 @@ public class VerificationExperiment {
                 "Significant target rules FWER: " + sigFRFWER.fraction + System.lineSeparator();
     }
 
-    private ExampleSet getCoveredByRules(ExampleSet mutated) throws ExpressionEvaluationException {
-        Attribute attribute = mutated.getAttributes().get("mutated_rule_id");
-        Condition cnd = new AttributeValueFilterSingleCondition(attribute, AttributeValueFilterSingleCondition.NEQ1, "?");
+    private IExampleSet getCoveredByRules(IExampleSet mutated) throws ExpressionEvaluationException {
+        IAttribute attribute = mutated.getAttributes().get("mutated_rule_id");
+        ICondition cnd = new AttributeValueFilterSingleCondition(attribute, AttributeValueFilterSingleCondition.NEQ1, "?");
         return new ConditionedExampleSet(mutated, cnd);
     }
 
-    private ExampleSet getCoveredByRecom(ExampleSet mutated) throws ExpressionEvaluationException {
-        Attribute attribute = mutated.getAttributes().get("mutated_rule_id");
-        Condition cnd = new AttributeValueFilterSingleCondition(attribute, AttributeValueFilterSingleCondition.NEQ1, "-1964.0");
+    private IExampleSet getCoveredByRecom(IExampleSet mutated) throws ExpressionEvaluationException {
+        IAttribute attribute = mutated.getAttributes().get("mutated_rule_id");
+        ICondition cnd = new AttributeValueFilterSingleCondition(attribute, AttributeValueFilterSingleCondition.NEQ1, "-1964.0");
         return new ConditionedExampleSet(mutated, cnd);
     }
 
 
-    private int getNumberOfPredictedExamples(ExampleSet set, String className){
-        Attribute clazz = set.getAttributes().getLabel();
-        Attribute pred = set.getAttributes().getPredictedLabel();
-        NominalMapping mapping = clazz.getMapping();
+    private int getNumberOfPredictedExamples(IExampleSet set, String className){
+        IAttribute clazz = set.getAttributes().getLabel();
+        IAttribute pred = set.getAttributes().getPredictedLabel();
+        INominalMapping mapping = clazz.getMapping();
         double classIdx = mapping.getIndex(className);
         int cnt = 0;
         for (Example ex : set) {

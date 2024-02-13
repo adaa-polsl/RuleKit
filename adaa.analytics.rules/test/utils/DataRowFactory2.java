@@ -16,22 +16,22 @@ package utils;
 
 import java.util.ArrayList;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.table.DataRow;
-import com.rapidminer.example.table.DataRowFactory;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.table.DataRow;
+import adaa.analytics.rules.rm.example.table.DataRowFactory;
 
 public abstract class DataRowFactory2 {
 
     public abstract DataRow createRow(Iterable<String> inputRow);
 
-    public static DataRowFactory2 withFullStopDecimalSeparator(Iterable<Attribute> attributes) {
+    public static DataRowFactory2 withFullStopDecimalSeparator(Iterable<IAttribute> attributes) {
         if (attributes == null || attributes.spliterator().getExactSizeIfKnown() == 0)
         	return null;
         DataRowFactory factory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, '.');
         return new DataRowFactoryImpl(attributes, factory);
     }
 
-    public static DataRowFactory2 withCommaDecimalSeparator(Iterable<Attribute> attributes) {
+    public static DataRowFactory2 withCommaDecimalSeparator(Iterable<IAttribute> attributes) {
     	if (attributes == null || attributes.spliterator().getExactSizeIfKnown() == 0)
         	return null;
         DataRowFactory factory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY, ',');
@@ -40,12 +40,12 @@ public abstract class DataRowFactory2 {
 
     private DataRowFactory2() {}
 
-    public static Attribute[] toAttributeArray(Iterable<Attribute> itr) {
-        ArrayList<Attribute> ret = new ArrayList<Attribute>();
-        for(Attribute t : itr) {
+    public static IAttribute[] toAttributeArray(Iterable<IAttribute> itr) {
+        ArrayList<IAttribute> ret = new ArrayList<IAttribute>();
+        for(IAttribute t : itr) {
             ret.add(t);
         }
-        return (Attribute[]) ret.toArray(new Attribute[0]);
+        return (IAttribute[]) ret.toArray(new IAttribute[0]);
     }
     
     public static String[] toArray(Iterable<String> itr) {
@@ -59,9 +59,9 @@ public abstract class DataRowFactory2 {
     private static final class DataRowFactoryImpl extends DataRowFactory2 {
 
         private final DataRowFactory factory;
-        private final Attribute[] attributes;
+        private final IAttribute[] attributes;
 
-        DataRowFactoryImpl(Iterable<Attribute> attributes, DataRowFactory factory){
+        DataRowFactoryImpl(Iterable<IAttribute> attributes, DataRowFactory factory){
             assert factory != null;
             assert attributes != null;
             this.attributes = toAttributeArray(attributes);

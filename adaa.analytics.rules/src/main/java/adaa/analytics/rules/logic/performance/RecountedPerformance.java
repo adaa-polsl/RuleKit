@@ -19,7 +19,7 @@
 package adaa.analytics.rules.logic.performance;
 
 
-import com.rapidminer.example.Example;
+import adaa.analytics.rules.rm.example.Example;
 
 public class RecountedPerformance extends MeasuredPerformance{
 

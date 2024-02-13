@@ -20,9 +20,9 @@ import java.util.logging.Level;
 import adaa.analytics.rules.logic.representation.*;
 import org.apache.commons.lang.StringUtils;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 /**
  * Separate'n'conquer algorithm for generating regression rule sets.
@@ -40,13 +40,13 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 	}
 
 	@Override
-	public RuleSetBase run(final ExampleSet dataset) {
+	public RuleSetBase run(final IExampleSet dataset) {
 
 		Logger.log("RegressionSnC.run()\n", Level.FINE);
 
 		SortedExampleSetEx sortedDataset = (SortedExampleSetEx)finder.preprocess(dataset);
 		RuleSetBase ruleset = factory.create(sortedDataset);
-		Attribute label = dataset.getAttributes().getLabel();
+		IAttribute label = dataset.getAttributes().getLabel();
 		//SortedExampleSetEx ses = new SortedExampleSetEx(dataset, label, SortedExampleSet.INCREASING);
 
 		sortedDataset.recalculateAttributeStatistics(sortedDataset.getAttributes().getLabel());

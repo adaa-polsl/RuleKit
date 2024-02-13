@@ -7,9 +7,9 @@ import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.AnyValueSet;
 import adaa.analytics.rules.logic.representation.IValueSet;
 import adaa.analytics.rules.logic.representation.SingletonSet;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import org.omg.CORBA.Any;
 
 import java.util.*;
@@ -32,22 +32,22 @@ public class ClassificationRecommendationTask extends RecommendationTask {
     }
 
     @Override
-    public IValueSet getSourceValue(Attribute label) {
+    public IValueSet getSourceValue(IAttribute label) {
         if (Double.compare(from, -1.0) == 0) return new AnyValueSet();
         return new SingletonSet(from, label.getMapping().getValues());
     }
 
     @Override
-    public IValueSet getTargetValue(Attribute label) {
+    public IValueSet getTargetValue(IAttribute label) {
         return new SingletonSet(to, label.getMapping().getValues());
     }
 
     @Override
-    public ExampleSet preprocessExamples(ExampleSet examples) {
+    public IExampleSet preprocessExamples(IExampleSet examples) {
         return examples;
     }
 
-    public double rankMetaPremise(MetaExample metaPremise, ExampleSet examples) {
+    public double rankMetaPremise(MetaExample metaPremise, IExampleSet examples) {
         Set<Integer> pos = new HashSet<>();
         Set<Integer> neg = new HashSet<>();
         Covering covering = metaPremise.getCoverageForClass(examples, to, pos, neg);
@@ -59,7 +59,7 @@ public class ClassificationRecommendationTask extends RecommendationTask {
         return Double.isNaN(measure) ? Double.MIN_VALUE : measure;
     }
 
-    public MetaValue getBestMetaValue(Set<String> allowedAttributes, Map<String, Set<MetaValue>> metaValuesByAttributeLocal, MetaExample contra, ExampleSet examples) {
+    public MetaValue getBestMetaValue(Set<String> allowedAttributes, Map<String, Set<MetaValue>> metaValuesByAttributeLocal, MetaExample contra, IExampleSet examples) {
 
         double best_quality = Double.NEGATIVE_INFINITY;
 

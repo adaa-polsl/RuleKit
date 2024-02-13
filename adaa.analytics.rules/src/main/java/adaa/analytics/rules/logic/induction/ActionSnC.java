@@ -1,10 +1,10 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.NominalMapping;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.table.INominalMapping;
 
 import java.util.HashSet;
 import java.util.List;
@@ -31,15 +31,15 @@ public class ActionSnC extends AbstractSeparateAndConquer {
     }
 	
 	@Override
-	public RuleSetBase run(ExampleSet dataset) {
+	public RuleSetBase run(IExampleSet dataset) {
 		long currTime = System.currentTimeMillis();
 		Logger.log("ActionSnC.run entered at " + currTime, Level.FINE);
 
 
 		ActionRuleSet ruleset = (ActionRuleSet) factory.create(dataset);
 		unprunedRules = (ActionRuleSet)factory.create(dataset);
-		Attribute label = dataset.getAttributes().getLabel();
-		NominalMapping mapping = label.getMapping();
+		IAttribute label = dataset.getAttributes().getLabel();
+		INominalMapping mapping = label.getMapping();
 		
 		List<ClassPair> pairs = ((ActionInductionParameters)params).generateClassPairs(mapping);
 		

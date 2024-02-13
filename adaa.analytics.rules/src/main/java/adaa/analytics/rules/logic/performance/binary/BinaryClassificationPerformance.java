@@ -19,9 +19,9 @@
 package adaa.analytics.rules.logic.performance.binary;
 
 import adaa.analytics.rules.logic.performance.MeasuredPerformance;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 
 /**
@@ -86,13 +86,13 @@ public class BinaryClassificationPerformance extends MeasuredPerformance {
 	private String negativeClassName = "";
 
 	/** The predicted label attribute. */
-	private Attribute predictedLabelAttribute;
+	private IAttribute predictedLabelAttribute;
 
 	/** The label attribute. */
-	private Attribute labelAttribute;
+	private IAttribute labelAttribute;
 
 	/** The weight attribute. Might be null. */
-	private Attribute weightAttribute;
+	private IAttribute weightAttribute;
 
 	/**
 	 * True if the user defined positive class should be used instead of the label's default mapping.
@@ -112,7 +112,7 @@ public class BinaryClassificationPerformance extends MeasuredPerformance {
 	// ================================================================================
 
 	@Override
-	public void startCounting(ExampleSet eSet, boolean useExampleWeights) {
+	public void startCounting(IExampleSet eSet, boolean useExampleWeights) {
 		super.startCounting(eSet, useExampleWeights);
 		this.predictedLabelAttribute = eSet.getAttributes().getPredictedLabel();
 		this.labelAttribute = eSet.getAttributes().getLabel();

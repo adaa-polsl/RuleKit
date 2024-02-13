@@ -3,12 +3,9 @@ package adaa.analytics.rules.logic.induction;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.tools.container.Pair;
-import org.renjin.repackaged.guava.collect.ImmutableSet;
-import org.renjin.repackaged.guava.collect.Sets;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -30,7 +27,7 @@ public class ActionFinder extends AbstractFinder {
 		classificationFinder = new ClassificationFinder(params);
 	}
 
-	public ExampleSet preprocess(ExampleSet trainSet) {
+	public IExampleSet preprocess(IExampleSet trainSet) {
 		return classificationFinder.preprocess(trainSet);
 	}
 
@@ -43,7 +40,7 @@ public class ActionFinder extends AbstractFinder {
 
 	private ConditionBase getBestElementaryCondition(
 			Set<ElementaryCondition> conditions,
-			ExampleSet trainSet,
+			IExampleSet trainSet,
 			Set<Integer> positives,
 			Rule rule) {
 
@@ -80,12 +77,12 @@ public class ActionFinder extends AbstractFinder {
 	}
 
 	private void getElementaryConditionForAttribute(
-			ExampleSet trainSet,
+			IExampleSet trainSet,
 			Set<Integer> coveredByRule,
 			Set<ElementaryCondition> conditions,
 			String attributeName) {
 		
-		Attribute attribute = trainSet.getAttributes().get(attributeName);
+		IAttribute attribute = trainSet.getAttributes().get(attributeName);
 		Set<Double> attributeValues = new HashSet<>();
 		
 		if (attribute.isNominal()) {
@@ -147,7 +144,7 @@ public class ActionFinder extends AbstractFinder {
 	 */
 	public int grow(
 			final Rule rule,
-			final ExampleSet dataset,
+			final IExampleSet dataset,
 			final Set<Integer> uncovered) {
 
 		Logger.log("AbstractFinder.grow()\n", Level.FINE);
@@ -161,8 +158,8 @@ public class ActionFinder extends AbstractFinder {
 
 		IntegerBitSet conditionCovered = new IntegerBitSet(dataset.size());
 
-		Set<Attribute> allowedAttributes = new TreeSet<>(new AttributeComparator());
-		for (Attribute a: dataset.getAttributes()) {
+		Set<IAttribute> allowedAttributes = new TreeSet<>(new AttributeComparator());
+		for (IAttribute a: dataset.getAttributes()) {
 			allowedAttributes.add(a);
 		}
 
@@ -208,7 +205,7 @@ public class ActionFinder extends AbstractFinder {
 	public boolean tryAddCondition(
 			final Rule rule,
 			final ConditionBase condition,
-			final ExampleSet trainSet,
+			final IExampleSet trainSet,
 			final Set<Integer> covered,
 			final IntegerBitSet conditionCovered) {
 
@@ -278,10 +275,10 @@ public class ActionFinder extends AbstractFinder {
 	@Override
 	protected ElementaryCondition induceCondition(
 			Rule rule,
-			ExampleSet trainSet, 
+			IExampleSet trainSet,
 			Set<Integer> uncoveredByRuleset, //uncovered positives
 			Set<Integer> coveredByRule,
-			Set<Attribute> allowedAttributes,
+			Set<IAttribute> allowedAttributes,
 			Object... extraParams) {
 		
 		ActionRule aRule = rule instanceof ActionRule ? (ActionRule)rule : null;
@@ -301,8 +298,8 @@ public class ActionFinder extends AbstractFinder {
 			return null;
 		
 		ElementaryCondition best = (ElementaryCondition)_best;
-		
-		Attribute usedAttribute = trainSet.getAttributes().get(best.getAttribute());
+
+		IAttribute usedAttribute = trainSet.getAttributes().get(best.getAttribute());
 		if (usedAttribute.isNominal()){
 			allowedAttributes.remove(usedAttribute);
 		}
@@ -354,7 +351,7 @@ public class ActionFinder extends AbstractFinder {
 		return measure.calculate(covering.weighted_p, covering.weighted_n, covering.weighted_P, covering.weighted_N);
 	}
 
-	public void prune(Rule rule_, final ExampleSet trainSet, Set<Integer> uncoveredPositives) {
+	public void prune(Rule rule_, final IExampleSet trainSet, Set<Integer> uncoveredPositives) {
 		ActionRule rule = rule_ instanceof ActionRule ? (ActionRule)rule_ : null;
 		if (rule == null) {
 			throw new RuntimeException("Not an actionrule in actionrule pruning!");
@@ -420,7 +417,7 @@ public class ActionFinder extends AbstractFinder {
 	}
 
 	//@Override
-	public Covering prune3(final Rule rule_, final ExampleSet trainSet) {
+	public Covering prune3(final Rule rule_, final IExampleSet trainSet) {
 		
 		log("Entering ActionFinder.prune()", Level.FINEST);
 		ActionRule rule = rule_ instanceof ActionRule ? (ActionRule)rule_ : null;

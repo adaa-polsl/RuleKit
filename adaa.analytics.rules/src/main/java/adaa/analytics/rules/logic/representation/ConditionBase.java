@@ -15,8 +15,8 @@
 package adaa.analytics.rules.logic.representation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -91,7 +91,7 @@ public abstract class ConditionBase implements Cloneable, Serializable {
 	 * @param set Input dataset.
 	 * @param outIndices Output set of indices covered by the condition.
 	 */
-	public void evaluate(ExampleSet set, Set<Integer> outIndices) {
+	public void evaluate(IExampleSet set, Set<Integer> outIndices) {
 		if (!disabled) 
 			internalEvaluate(set, outIndices);
 	}
@@ -121,7 +121,7 @@ public abstract class ConditionBase implements Cloneable, Serializable {
 	 * @param set Input dataset.
 	 * @param outIndices Output set of indices covered by the condition.
 	 */
-	protected abstract void internalEvaluate(ExampleSet set,  Set<Integer> outIndices);
+	protected abstract void internalEvaluate(IExampleSet set,  Set<Integer> outIndices);
 
 	public abstract ConditionBase clone();
 }

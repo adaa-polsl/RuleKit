@@ -16,19 +16,16 @@ package adaa.analytics.rules.logic.induction;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.representation.*;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.NominalMapping;
-import com.rapidminer.tools.container.Pair;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.table.INominalMapping;
 
 /**
  * User-guided separate'n'conquer algorithm for generating classification rule sets.
@@ -57,15 +54,15 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 	}
 	
 	@Override
-	public ClassificationRuleSet run(ExampleSet dataset)
+	public ClassificationRuleSet run(IExampleSet dataset)
 	{
 		Logger.log("ClassificationExpertSnC.run()\n", Level.FINE);
 		double beginTime;
 		beginTime = System.nanoTime();
 		
 		ClassificationRuleSet ruleset = (ClassificationRuleSet)factory.create(dataset);
-		Attribute label = dataset.getAttributes().getLabel();
-		NominalMapping mapping = label.getMapping();
+		IAttribute label = dataset.getAttributes().getLabel();
+		INominalMapping mapping = label.getMapping();
 
 		int totalExpertRules = 0;
 		int totalAutoRules = 0;

@@ -207,7 +207,7 @@ public class Tools {
         FORMAT_SYMBOLS = new DecimalFormatSymbols(FORMAT_LOCALE);
 //        ALL_RESOURCE_SOURCES = Collections.synchronizedList(new LinkedList());
 //        PLUGIN_RESOURCE_SOURCES = Collections.synchronizedMap(new HashMap());
-//        ALL_RESOURCE_SOURCES.add(new ResourceSource(com.rapidminer.tools.Tools.class.getClassLoader()));
+//        ALL_RESOURCE_SOURCES.add(new ResourceSource(adaa.analytics.rules.rm.tools.Tools.class.getClassLoader()));
         int numberDigits = 3;
 //
 //        try {
@@ -233,9 +233,9 @@ public class Tools {
 //                    } catch (NumberFormatException var5) {
 //                    }
 //
-//                    com.rapidminer.tools.Tools.numberOfFractionDigits = numberDigits;
-//                    com.rapidminer.tools.Tools.epsilonDisplayValue = Math.min(1.11E-16, 1.0 / Math.pow(10.0, (double) com.rapidminer.tools.Tools.numberOfFractionDigits));
-//                    com.rapidminer.tools.Tools.NUMBER_FORMAT = new DecimalFormat(com.rapidminer.tools.Tools.getDecimalFormatPattern(numberDigits), DecimalFormatSymbols.getInstance(com.rapidminer.tools.Tools.FORMAT_LOCALE));
+//                    adaa.analytics.rules.rm.tools.Tools.numberOfFractionDigits = numberDigits;
+//                    adaa.analytics.rules.rm.tools.Tools.epsilonDisplayValue = Math.min(1.11E-16, 1.0 / Math.pow(10.0, (double) adaa.analytics.rules.rm.tools.Tools.numberOfFractionDigits));
+//                    adaa.analytics.rules.rm.tools.Tools.NUMBER_FORMAT = new DecimalFormat(adaa.analytics.rules.rm.tools.Tools.getDecimalFormatPattern(numberDigits), DecimalFormatSymbols.getInstance(adaa.analytics.rules.rm.tools.Tools.FORMAT_LOCALE));
 //                }
 //
 //            }
@@ -259,11 +259,113 @@ public class Tools {
         }
     }
 
+    public static boolean isZero(double d) {
+        return isEqual(d, 0.0);
+    }
+
+    public static boolean isNotEqual(double d1, double d2) {
+        return !isEqual(d1, d2);
+    }
+
+    public static boolean isGreater(double d1, double d2) {
+        if (!Double.isNaN(d1) && !Double.isNaN(d2)) {
+            return Double.compare(d1, d2) > 0;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isGreaterEqual(double d1, double d2) {
+        if (!Double.isNaN(d1) && !Double.isNaN(d2)) {
+            return Double.compare(d1, d2) > 0 || isEqual(d1, d2);
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isLess(double d1, double d2) {
+        if (!Double.isNaN(d1) && !Double.isNaN(d2)) {
+            return Double.compare(d1, d2) < 0;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isLessEqual(double d1, double d2) {
+        if (!Double.isNaN(d1) && !Double.isNaN(d2)) {
+            return Double.compare(d1, d2) < 0 || isEqual(d1, d2);
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isEqual(Date d1, Date d2) {
+        if (d1 == d2) {
+            return true;
+        } else if (d1 != null && d2 != null) {
+            return d1.compareTo(d2) == 0;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isNotEqual(Date d1, Date d2) {
+        return !isEqual(d1, d2);
+    }
+
+    public static boolean isGreater(Date d1, Date d2) {
+        if (d1 != null && d2 != null) {
+            return d1.compareTo(d2) > 0;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isGreaterEqual(Date d1, Date d2) {
+        return isEqual(d1, d2) || d1 != null && d1.compareTo(d2) > 0;
+    }
+
+    public static boolean isLess(Date d1, Date d2) {
+        if (d1 != null && d2 != null) {
+            return d1.compareTo(d2) < 0;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isLessEqual(Date d1, Date d2) {
+        return isEqual(d1, d2) || d1 != null && d1.compareTo(d2) < 0;
+    }
+
     public static boolean isDefault(double defaultValue, double value) {
         if (Double.isNaN(defaultValue)) {
             return Double.isNaN(value);
         } else {
             return defaultValue == value;
+        }
+    }
+
+    public static Class<?> classForName(String className) throws ClassNotFoundException {
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException var6) {
+            try {
+                return ClassLoader.getSystemClassLoader().loadClass(className);
+            } catch (ClassNotFoundException var5) {
+                // TODO Plugin iteration
+//                Iterator<Plugin> i = Plugin.getAllPlugins().iterator();
+//
+//                while(i.hasNext()) {
+//                    Plugin p = (Plugin)i.next();
+//
+//                    try {
+//                        return p.getClassLoader().loadClass(className);
+//                    } catch (ClassNotFoundException var4) {
+//                    }
+//                }
+
+                throw new ClassNotFoundException(className);
+            }
         }
     }
 }

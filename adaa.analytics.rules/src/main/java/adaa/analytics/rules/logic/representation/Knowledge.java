@@ -14,7 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -153,7 +153,7 @@ public class Knowledge implements Serializable {
 	 * @param preferredConditions Collection of preferred conditions (it also contains preferred attributes).
 	 * @param forbiddenConditions Collection of forbidden conditions (it also contains forbidden attributes).
 	 */
-	public Knowledge(ExampleSet dataset, MultiSet<Rule> rules, MultiSet<Rule> preferredConditions, MultiSet<Rule> forbiddenConditions) {
+	public Knowledge(IExampleSet dataset, MultiSet<Rule> rules, MultiSet<Rule> preferredConditions, MultiSet<Rule> forbiddenConditions) {
 		
 		this.isRegression = dataset.getAttributes().getLabel().isNumerical();
 		

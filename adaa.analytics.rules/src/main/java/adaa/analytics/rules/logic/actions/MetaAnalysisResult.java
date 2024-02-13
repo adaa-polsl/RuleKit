@@ -2,9 +2,9 @@ package adaa.analytics.rules.logic.actions;
 
 import adaa.analytics.rules.logic.actions.recommendations.RecommendationTask;
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.renjin.repackaged.guava.collect.Sets;
@@ -19,11 +19,11 @@ public class MetaAnalysisResult {
     public MetaExample contraMetaExample;
     public Example example;
     RecommendationTask task;
-    private ExampleSet sourceExamples;
+    private IExampleSet sourceExamples;
 
 
 
-    public MetaAnalysisResult(Example ex, MetaExample prime, MetaExample contre, RecommendationTask task, ExampleSet set) {
+    public MetaAnalysisResult(Example ex, MetaExample prime, MetaExample contre, RecommendationTask task, IExampleSet set) {
         example = ex;
         primeMetaExample = prime;
         contraMetaExample = contre;
@@ -71,7 +71,7 @@ public class MetaAnalysisResult {
             .forEach(x -> rule.getPremise().addSubcondition(x));
 
 
-        Attribute classAtr = sourceExamples.getAttributes().getLabel();
+        IAttribute classAtr = sourceExamples.getAttributes().getLabel();
 
         IValueSet sourceClass = task.getSourceValue(classAtr);
         IValueSet targetClass = task.getTargetValue(classAtr);

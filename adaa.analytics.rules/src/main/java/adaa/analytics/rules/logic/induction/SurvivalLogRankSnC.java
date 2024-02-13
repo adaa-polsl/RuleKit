@@ -14,14 +14,6 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.SortedExampleSet;
-
-import java.util.Set;
-import java.util.logging.Level;
-
 /**
  *  Separate'n'conquer algorithm for generating log rank-based survival rule sets.
  * @author Adam Gudys

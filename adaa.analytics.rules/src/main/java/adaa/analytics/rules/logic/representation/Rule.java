@@ -18,9 +18,8 @@ import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.tools.container.Pair;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -204,7 +203,7 @@ public abstract class Rule implements Serializable, Cloneable {
 	 * @return Information about covering.
 	 */
 	@Deprecated
-	public abstract Covering covers(ExampleSet set, Set<Integer> filterIds);
+	public abstract Covering covers(IExampleSet set, Set<Integer> filterIds);
 	
 	/**
 	 * Applies the rule on a specified example set.
@@ -212,7 +211,7 @@ public abstract class Rule implements Serializable, Cloneable {
 	 * @return Information about covering.
 	 */
 	@Deprecated
-	public abstract Covering covers(ExampleSet set);
+	public abstract Covering covers(IExampleSet set);
 
 	/***
 	 * Calculates {@link #weight} and {@link #pvalue}.
@@ -221,14 +220,14 @@ public abstract class Rule implements Serializable, Cloneable {
 	 * @param ct Contingency table.
 	*  @param votingMeasure Measure used as weight.
 	 */
-	public abstract void updateWeightAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure);
+	public abstract void updateWeightAndPValue(IExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure);
 	
 	/**
 	 * Applies the rule on a specified example set.
 	 * @param set Example set.
 	 * @param ct Output contingency table.
 	 */
-	public void covers(ExampleSet set, ContingencyTable ct) {
+	public void covers(IExampleSet set, ContingencyTable ct) {
 		Set<Integer> dummy = new Set<Integer>() {
 			public int size() { return 0; }
 			public boolean isEmpty() { return false; }
@@ -253,7 +252,7 @@ public abstract class Rule implements Serializable, Cloneable {
 	 * @param set Example set to be examined.
 	 * @return Set of indices of covered examples.
 	 */
-	public Set<Integer> coversUnlabelled(ExampleSet set) {
+	public Set<Integer> coversUnlabelled(IExampleSet set) {
 		Set<Integer> out = new HashSet<>();
 		int id = 0;
 		for (Example ex : set) {
@@ -273,7 +272,7 @@ public abstract class Rule implements Serializable, Cloneable {
 	 * @param positives Output collection of covered positive ids.
 	 * @param negatives Output collection of covered negative ids.
 	 */
-	public void covers(ExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
+	public void covers(IExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
 		assert false: "Not implemented: Rule.covers(ExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives)";
 	}
 	

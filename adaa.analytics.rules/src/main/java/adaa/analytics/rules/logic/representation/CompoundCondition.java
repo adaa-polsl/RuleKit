@@ -14,8 +14,8 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.*;
 
@@ -81,7 +81,7 @@ public class CompoundCondition extends ConditionBase {
 	 * @param outIndices Output set of indices covered by the condition.
 	 */
 	@Override
-	protected void internalEvaluate(ExampleSet set, Set<Integer> outIndices) {
+	protected void internalEvaluate(IExampleSet set, Set<Integer> outIndices) {
 		
 		IntegerBitSet temp = new IntegerBitSet(set.size());
 		

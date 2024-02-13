@@ -1,27 +1,20 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Attributes;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.DataRow;
+import adaa.analytics.rules.rm.example.IAttribute;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
 
 public class ClassificationFinderPrecalculated extends ClassificationFinder {
 
     class PrecalculatedCovering {
-        Attribute attribute;
+        IAttribute attribute;
         double value;
         boolean complement; // negated for nominal, right-sided for numerical
         IntegerBitSet mask;
         int prefixSums[]; // store prefix sums for every 100th element
 
-        PrecalculatedCovering(Attribute attribute, double value, boolean complement, int size) {
+        PrecalculatedCovering(IAttribute attribute, double value, boolean complement, int size) {
             this.attribute = attribute;
             this.value = value;
             this.complement = complement;

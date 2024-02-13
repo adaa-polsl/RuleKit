@@ -15,7 +15,7 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 /**
  * A factory class for creating instances of rules and rule sets of different types (classification/regression,/survival).
@@ -114,7 +114,7 @@ public class RuleFactory {
 	 * @param set Training set.
 	 * @return Empty rule set.
 	 */
-	public RuleSetBase create(ExampleSet set) {
+	public RuleSetBase create(IExampleSet set) {
 		switch (type) {
 		case CLASSIFICATION:
 			return new ClassificationRuleSet(set, isVoting, params, knowledge);

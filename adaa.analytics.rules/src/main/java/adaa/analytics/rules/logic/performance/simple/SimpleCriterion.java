@@ -19,10 +19,9 @@
 package adaa.analytics.rules.logic.performance.simple;
 
 import adaa.analytics.rules.logic.performance.MeasuredPerformance;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.tools.LogService;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.logging.Level;
 
@@ -46,11 +45,11 @@ public abstract class SimpleCriterion extends MeasuredPerformance {
 
 	private double exampleCount = 0;
 
-	private Attribute predictedAttribute;
+	private IAttribute predictedAttribute;
 
-	private Attribute labelAttribute;
+	private IAttribute labelAttribute;
 
-	private Attribute weightAttribute;
+	private IAttribute weightAttribute;
 
 	public SimpleCriterion() {}
 
@@ -81,8 +80,9 @@ public abstract class SimpleCriterion extends MeasuredPerformance {
 		} else {
 			// LogService.getGlobal().log("SimpleCriterion: Deviation of Performance was NaN!",
 			// LogService.WARNING);
-			LogService.getRoot().log(Level.WARNING,
-					"com.rapidminer.operator.performance.SimpleCriterion.deviation_of_performance_was_nan");
+			// @TODO LogService
+//			LogService.getRoot().log(Level.WARNING,
+//					"SimpleCriterion.deviation_of_performance_was_nan");
 		}
 	}
 
@@ -111,7 +111,7 @@ public abstract class SimpleCriterion extends MeasuredPerformance {
 	}
 
 	@Override
-	public void startCounting(ExampleSet eset, boolean useExampleWeights)  {
+	public void startCounting(IExampleSet eset, boolean useExampleWeights)  {
 		super.startCounting(eset, useExampleWeights);
 		exampleCount = 0.0d;
 		sum = squaresSum = 0.0d;

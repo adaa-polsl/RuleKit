@@ -17,14 +17,12 @@ package adaa.analytics.rules.logic.induction;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.ConditionBase.Type;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.tools.container.Pair;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import org.apache.commons.lang.SerializationUtils;
 
 import java.util.*;
-import java.util.concurrent.locks.Condition;
 import java.util.logging.Level;
 
 /**
@@ -48,7 +46,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 	
 	public void adjust(
 			Rule rule,
-			ExampleSet dataset, 
+			IExampleSet dataset,
 			Set<Integer> uncovered) {
 			
 			CompoundCondition expertPremise = rule.getPremise();
@@ -69,7 +67,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 					rule.setCoveringInformation(covering);
 					
 					// determine attribute
-					Set<Attribute> attr = new TreeSet<Attribute>(new AttributeComparator());
+					Set<IAttribute> attr = new TreeSet<IAttribute>(new AttributeComparator());
 					attr.add(dataset.getAttributes().get(ec.getAttribute()));
 					
 					Set<Integer> mustBeCovered;
@@ -121,7 +119,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 	@Override 
 	public int grow(
 			Rule rule,
-			ExampleSet dataset, 
+			IExampleSet dataset,
 			Set<Integer> uncovered)
 	{
 		Logger.log("RegressionExpertFinder.grow()\n", Level.FINE);
@@ -138,10 +136,10 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 		IntegerBitSet covered = new IntegerBitSet(dataset.size());
 		covered.addAll(positives);
 		covered.addAll(negatives);
-		Set<Attribute> allowedAttributes = new TreeSet<Attribute>(new AttributeComparator());
+		Set<IAttribute> allowedAttributes = new TreeSet<IAttribute>(new AttributeComparator());
 		
 		// add all attributes 
-		for (Attribute a: dataset.getAttributes()) {
+		for (IAttribute a: dataset.getAttributes()) {
 			allowedAttributes.add(a);
 		}
 		
@@ -165,7 +163,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 				
 				// select best condition (in terms of rule quality).
 				for (CompoundCondition candidate : knowledge.getPreferredConditions()) {
-					List<Attribute> attrs = new ArrayList<Attribute>();
+					List<IAttribute> attrs = new ArrayList<IAttribute>();
 					for (String name: candidate.getAttributes()) {
 						attrs.add(dataset.getAttributes().get(name));
 					}
@@ -177,7 +175,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 				}
 				
 				if (bestEvaluation.condition != null) {
-					List<Attribute> attrs = new ArrayList<Attribute>();
+					List<IAttribute> attrs = new ArrayList<IAttribute>();
 					for (String name: bestEvaluation.condition.getAttributes()) {
 						attrs.add(dataset.getAttributes().get(name));
 					}
@@ -208,9 +206,9 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 			int preferredCounter = knowledge.getPreferredAttributesPerRule();
 			
 			// create temporary collection of preferred attributes
-			Set<Attribute> localAllowed = new TreeSet<Attribute>(new AttributeComparator());
-			Set<Attribute> used = new TreeSet<Attribute>(new AttributeComparator());
-			for (Attribute a: allowedAttributes) {
+			Set<IAttribute> localAllowed = new TreeSet<IAttribute>(new AttributeComparator());
+			Set<IAttribute> used = new TreeSet<IAttribute>(new AttributeComparator());
+			for (IAttribute a: allowedAttributes) {
 				if (knowledge.getPreferredAttributes().contains(a.getName())) {
 					localAllowed.add(a);
 				}
@@ -256,7 +254,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 			} while (carryOn);
 			
 			// remove already utilised attributes from allowed collection
-			for (Attribute a: used) {
+			for (IAttribute a: used) {
 				allowedAttributes.remove(a);
 			}
 		}
@@ -326,7 +324,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 	
 	@Override
 	protected boolean checkCandidate(
-			ExampleSet dataset, 
+			IExampleSet dataset,
 			Rule rule,
 			ConditionBase candidate,
 			Set<Integer> uncovered,

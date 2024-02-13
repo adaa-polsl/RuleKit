@@ -18,8 +18,7 @@
 */
 package adaa.analytics.rules.logic.performance.simple;
 
-import adaa.analytics.rules.logic.performance.simple.SimpleCriterion;
-import com.rapidminer.tools.Tools;
+import adaa.analytics.rules.rm.tools.Tools;
 
 
 /**

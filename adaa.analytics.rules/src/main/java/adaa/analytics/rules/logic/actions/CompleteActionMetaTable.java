@@ -3,8 +3,8 @@ package adaa.analytics.rules.logic.actions;
 import adaa.analytics.rules.logic.actions.recommendations.RecommendationTask;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.SingletonSet;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -46,7 +46,7 @@ public class CompleteActionMetaTable extends ActionMetaTable {
 
 		HashSet<String> allowedAttributes = new HashSet<>();
 
-		Iterator<Attribute> it = trainSet.getAttributes().allAttributes();
+		Iterator<IAttribute> it = trainSet.getAttributes().allAttributes();
 
 		it.forEachRemaining(x -> {
 					if (x.equals(trainSet.getAttributes().getLabel())) { return;}
@@ -61,7 +61,7 @@ public class CompleteActionMetaTable extends ActionMetaTable {
 		Logger.log("Initial contre-meta-example is " + contraMe + " at quality " + bestQ + "\r\n", Level.FINE);
 		while (grown) {
 
-			Attribute label = trainSet.getAttributes().getLabel();
+			IAttribute label = trainSet.getAttributes().getLabel();
 			int from = (int)((SingletonSet)task.getSourceValue(label)).getValue();
 			int to = (int)((SingletonSet)task.getTargetValue(label)).getValue();
 

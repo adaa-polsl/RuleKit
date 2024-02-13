@@ -23,9 +23,9 @@ import adaa.analytics.rules.logic.induction.Covering;
 
 import adaa.analytics.rules.logic.quality.Hypergeometric;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.tools.container.Pair;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.tools.container.Pair;
 
 import java.util.Set;
 
@@ -62,7 +62,7 @@ public class ClassificationRule extends Rule {
 	 *  @param votingMeasure Measure used as weight.
 	 */
 	@Override
-	public void updateWeightAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure) {
+	public void updateWeightAndPValue(IExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure) {
 		Hypergeometric test = new Hypergeometric();
 		Pair<Double, Double> statAndPValue = test.calculate(ct);
 
@@ -77,7 +77,7 @@ public class ClassificationRule extends Rule {
 	 * @param filterIds Set of identifiers to be examined.
 	 * @return Information about covering.
 	 */
-	public Covering covers(ExampleSet set, Set<Integer> filterIds) {
+	public Covering covers(IExampleSet set, Set<Integer> filterIds) {
 		Covering covered = new Covering();
 		
 		for (int id : filterIds) {
@@ -111,7 +111,7 @@ public class ClassificationRule extends Rule {
 	 * @param set Example set.
 	 * @return Information about covering.
 	 */
-	public Covering covers(ExampleSet set) {
+	public Covering covers(IExampleSet set) {
 		//assert false: "Obsolete method in ClassificationRule: Covering covers(ExampleSet set)";
 		//return null;
 
@@ -126,7 +126,7 @@ public class ClassificationRule extends Rule {
 	 * @param ct Output contingency table.
 	 */
 	@Override
-	public void covers(ExampleSet set, ContingencyTable ct) {
+	public void covers(IExampleSet set, ContingencyTable ct) {
 
 		boolean unweighted = set.getAttributes().getWeight() == null;
 		for (Example ex : set) {
@@ -158,7 +158,7 @@ public class ClassificationRule extends Rule {
 	 * @param positives Output collection of covered positive ids.
 	 * @param negatives Output collection of covered negative ids.
 	 */
-	public void covers(ExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
+	public void covers(IExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
 		int id = 0;
 		boolean unweighted = set.getAttributes().getWeight() == null;
 		for (Example ex : set) {

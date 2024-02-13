@@ -15,7 +15,7 @@
 package adaa.analytics.rules.logic.quality;
 
 import adaa.analytics.rules.logic.induction.ContingencyTable;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 /**
  * Interface to be implemented by all classes representing quality measures.
@@ -30,7 +30,7 @@ public interface IQualityMeasure {
 	 * @param ct Contingency table.
 	 * @return Calculated measure.
 	 */
-	public double calculate(ExampleSet dataset, ContingencyTable ct);
+	public double calculate(IExampleSet dataset, ContingencyTable ct);
 
 	/**
 	 * Calculates quality from contingency table elements.

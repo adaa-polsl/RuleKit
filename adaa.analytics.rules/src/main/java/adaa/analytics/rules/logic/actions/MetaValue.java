@@ -8,8 +8,8 @@ import java.util.stream.Stream;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
 
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Interval;
@@ -91,7 +91,7 @@ public class MetaValue /*implements IValueSet*/ {
 	}
 
 	public boolean contains(Example example) {
-		Attribute commonAttribute = example.getAttributes().get(getAttribute());
+		IAttribute commonAttribute = example.getAttributes().get(getAttribute());
 		if (commonAttribute == null) {
 			return false;
 		}

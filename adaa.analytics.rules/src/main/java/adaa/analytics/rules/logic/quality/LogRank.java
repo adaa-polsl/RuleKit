@@ -19,17 +19,11 @@ import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.representation.IntegerBitSet;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 
-import adaa.analytics.rules.logic.representation.Logger;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.tools.container.Pair;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
-import com.rapidminer.tools.container.Pair;
-
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.logging.Level;
 
 /**
  * Class representing log-rank test.
@@ -54,7 +48,7 @@ public class LogRank implements IQualityMeasure, Serializable {
 	}
 
 	@Override
-	public double calculate(ExampleSet dataset, ContingencyTable ct) {
+	public double calculate(IExampleSet dataset, ContingencyTable ct) {
 		Covering cov = (Covering)ct;
 
 		IntegerBitSet coveredIndices = (IntegerBitSet) cov.positives; // in survival rules all examples are classified as positives

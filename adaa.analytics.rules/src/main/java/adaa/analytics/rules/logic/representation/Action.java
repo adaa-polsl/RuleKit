@@ -1,8 +1,8 @@
 package adaa.analytics.rules.logic.representation;
 
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
@@ -204,8 +204,8 @@ public class Action extends ElementaryCondition {
 	 * For aciton always assume that condition evaluates, if left part of action is met for given example
 	 */
 	@Override
-	protected void internalEvaluate(ExampleSet set, Set<Integer> outIndices) {
-		Attribute atr = set.getAttributes().get(getAttribute());
+	protected void internalEvaluate(IExampleSet set, Set<Integer> outIndices) {
+		IAttribute atr = set.getAttributes().get(getAttribute());
 
 		for (int id = 0; id < set.size(); ++id) {
 			Example e = set.getExample(id);

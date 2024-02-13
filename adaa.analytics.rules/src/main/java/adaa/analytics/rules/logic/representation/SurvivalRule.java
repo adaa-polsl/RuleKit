@@ -16,12 +16,9 @@ package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
-import adaa.analytics.rules.logic.quality.ChiSquareVarianceTest;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.Statistics;
-import com.rapidminer.tools.container.Pair;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -74,7 +71,7 @@ public class SurvivalRule extends Rule {
 	 *  @param votingMeasure Measure used as weight.
 	 */
 	@Override
-	public void updateWeightAndPValue(ExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure) {
+	public void updateWeightAndPValue(IExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure) {
 		double logrank = votingMeasure.calculate(trainSet, ct);
 
 		this.weight = logrank;
@@ -88,7 +85,7 @@ public class SurvivalRule extends Rule {
 	 * @return Information about covering.
 	 */
 	@Override
-	public Covering covers(ExampleSet set, Set<Integer> ids) {
+	public Covering covers(IExampleSet set, Set<Integer> ids) {
 		Covering covered = new Covering();
 
 		for (int id : ids) {
@@ -105,7 +102,7 @@ public class SurvivalRule extends Rule {
 
 
 	@Override
-	public void covers(ExampleSet set, @NotNull ContingencyTable ct) {
+	public void covers(IExampleSet set, @NotNull ContingencyTable ct) {
 		boolean unweighted = set.getAttributes().getWeight() == null;
 
 		for (Example ex: set) {
@@ -119,7 +116,7 @@ public class SurvivalRule extends Rule {
 	}
 
 	@Override
-	public void covers(ExampleSet set, @NotNull ContingencyTable ct,  @NotNull Set<Integer> positives, @NotNull Set<Integer> negatives) {
+	public void covers(IExampleSet set, @NotNull ContingencyTable ct,  @NotNull Set<Integer> positives, @NotNull Set<Integer> negatives) {
 		int id = 0;
 		boolean unweighted = set.getAttributes().getWeight() == null;
 
@@ -141,7 +138,7 @@ public class SurvivalRule extends Rule {
 	 * @return Information about covering.
 	 */
 	@Override
-	public Covering covers(ExampleSet set) {
+	public Covering covers(IExampleSet set) {
 		Covering covered = new Covering();
 		
 		for (int id = 0; id < set.size(); ++id) {

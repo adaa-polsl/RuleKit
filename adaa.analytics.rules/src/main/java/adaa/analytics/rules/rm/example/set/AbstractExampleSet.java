@@ -1,21 +1,19 @@
 package adaa.analytics.rules.rm.example.set;
 
 import adaa.analytics.rules.rm.example.*;
+import adaa.analytics.rules.rm.operator.Annotations;
 import adaa.analytics.rules.rm.tools.Tools;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.Charset;
 import java.util.*;
-import java.util.zip.GZIPOutputStream;
 
 public abstract class AbstractExampleSet implements IExampleSet {
     private static final long serialVersionUID = 8596141056047402798L;
     private final Map<String, List<IStatistics>> statisticsMap = new HashMap();
     private Map<Double, int[]> idMap = new HashMap();
+
+    private Annotations annotations = new Annotations();
 
     public AbstractExampleSet() {
     }
@@ -700,5 +698,9 @@ public abstract class AbstractExampleSet implements IExampleSet {
 
     public boolean isThreadSafeView() {
         return false;
+    }
+
+    public Annotations getAnnotations() {
+        return this.annotations;
     }
 }

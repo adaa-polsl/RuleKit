@@ -26,7 +26,7 @@ import adaa.analytics.rules.logic.representation.SurvivalRule;
 import com.rapidminer.Process;
 import com.rapidminer.RapidMiner;
 import com.rapidminer.example.Attributes;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.operator.IOContainer;
 import com.rapidminer.operator.IOObject;
 import com.rapidminer.operator.OperatorCreationException;
@@ -41,7 +41,7 @@ import adaa.analytics.rules.utils.RapidMiner5;
 
 public class ArffFileLoader extends ExamplesetFileLoader {
 
-	protected ExampleSet loadExampleSet(String filePath, String labelParameterName, String survivalTimeParameter) throws OperatorCreationException, OperatorException {
+	protected IExampleSet loadExampleSet(String filePath, String labelParameterName, String survivalTimeParameter) throws OperatorCreationException, OperatorException {
 		System.setProperty(PlatformUtilities.PROPERTY_RAPIDMINER_HOME, Paths.get("").toAbsolutePath().toString());
 		LogService.getRoot().setLevel(Level.OFF);
 		RapidMiner.setExecutionMode(RapidMiner.ExecutionMode.COMMAND_LINE);
@@ -76,7 +76,7 @@ public class ArffFileLoader extends ExamplesetFileLoader {
 
 		IOContainer c = process.run();
 		//parsed arff file
-		return (ExampleSet)c.getElementAt(0);
+		return (IExampleSet)c.getElementAt(0);
 	}
 
 }

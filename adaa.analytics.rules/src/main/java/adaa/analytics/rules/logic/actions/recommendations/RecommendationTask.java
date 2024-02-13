@@ -6,9 +6,9 @@ import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.ActionRule;
 import adaa.analytics.rules.logic.representation.IValueSet;
 import com.lowagie.text.Meta;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.Map;
 import java.util.Set;
@@ -17,7 +17,7 @@ public abstract class RecommendationTask {
     protected boolean pruningEnabled;
     protected boolean generateMultipleRecommendations;
     protected MetaExample finalMetaexample;
-    protected ExampleSet trainingSet;
+    protected IExampleSet trainingSet;
     protected ClassificationMeasure measure;
 
     protected RecommendationTask(boolean enablePruning, boolean multipleRecommendations, ClassificationMeasure qualityFunction) {
@@ -31,10 +31,10 @@ public abstract class RecommendationTask {
         finalMetaexample = ex;
     }
 
-    public abstract IValueSet getSourceValue(Attribute label);
-    public abstract IValueSet getTargetValue(Attribute label);
+    public abstract IValueSet getSourceValue(IAttribute label);
+    public abstract IValueSet getTargetValue(IAttribute label);
 
-    public ExampleSet preprocessExamples(ExampleSet examples) {
+    public IExampleSet preprocessExamples(IExampleSet examples) {
         trainingSet = examples;
         return  examples;
     }
@@ -45,6 +45,6 @@ public abstract class RecommendationTask {
 
     public boolean getPruningEnabled() { return  pruningEnabled; }
     public boolean getMultiplRecommendationsEnabled() { return generateMultipleRecommendations; }
-    public abstract double rankMetaPremise(MetaExample metaPremise, ExampleSet examples);
-    public abstract MetaValue getBestMetaValue(Set<String> allowedAttributes, Map<String, Set<MetaValue>> metaValuesByAttribute, MetaExample contra, ExampleSet examples) ;
+    public abstract double rankMetaPremise(MetaExample metaPremise, IExampleSet examples);
+    public abstract MetaValue getBestMetaValue(Set<String> allowedAttributes, Map<String, Set<MetaValue>> metaValuesByAttribute, MetaExample contra, IExampleSet examples) ;
 }

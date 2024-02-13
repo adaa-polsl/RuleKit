@@ -1,12 +1,12 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.set.AttributeValueFilter;
-import com.rapidminer.example.set.ConditionedExampleSet;
-import com.rapidminer.example.set.SimpleExampleSet;
-import com.rapidminer.example.table.NominalMapping;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.set.AttributeValueFilter;
+import adaa.analytics.rules.rm.example.set.ConditionedExampleSet;
+import adaa.analytics.rules.rm.example.set.SimpleExampleSet;
+import adaa.analytics.rules.rm.example.table.INominalMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public class ContrastSnC extends ClassificationSnC {
      * @param dataset Training data set.
      * @return Rule set.
      */
-    public RuleSetBase run(ExampleSet dataset) {
+    public RuleSetBase run(IExampleSet dataset) {
 
         // make a contrast dataset
         ContrastExampleSet ces;
@@ -85,9 +85,9 @@ public class ContrastSnC extends ClassificationSnC {
         Logger.log("ContrastSnC.run()\n", Level.FINE);
 
         // try to get contrast attribute (use label if not specified)
-        final Attribute contrastAttr = dataset.getContrastAttribute();
+        final IAttribute contrastAttr = dataset.getContrastAttribute();
 
-        NominalMapping mapping = contrastAttr.getMapping();
+        INominalMapping mapping = contrastAttr.getMapping();
         IPenalizedFinder pf = (IPenalizedFinder)finder;
 
         try {
@@ -133,7 +133,7 @@ public class ContrastSnC extends ClassificationSnC {
                                 contrastAttr.getName() + " = " + mapping.mapIndex(j);
 
                         AttributeValueFilter cnd = new AttributeValueFilter(dataset, conditionString);
-                        ExampleSet conditionedSet = new ConditionedExampleSet(dataset, cnd);
+                        IExampleSet conditionedSet = new ConditionedExampleSet(dataset, cnd);
                         rs = super.run(conditionedSet);
 
                         for (Rule r : rs.getRules()) {

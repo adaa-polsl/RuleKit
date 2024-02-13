@@ -1,9 +1,10 @@
 package adaa.analytics.rules.logic.actions;
 
 import adaa.analytics.rules.logic.representation.*;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.NominalMapping;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.example.table.INominalMapping;
+import adaa.analytics.rules.rm.example.table.INominalMapping;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,12 +37,12 @@ public class ActionRangeDistribution {
 	}
 
 	protected final ActionRuleSet actions;
-	protected final ExampleSet set;
+	protected final IExampleSet set;
 	protected HashSet<Rule> splittedRules = new HashSet<Rule>();
 
 	protected Map<IValueSet, DistributionEntry> distribution = new HashMap<IValueSet, DistributionEntry>();
 
-	public ActionRangeDistribution(ActionRuleSet ruleset, ExampleSet dataset) {
+	public ActionRangeDistribution(ActionRuleSet ruleset, IExampleSet dataset) {
 		actions = ruleset;
 		set = dataset;
 	}
@@ -105,10 +106,10 @@ public class ActionRangeDistribution {
 			String atr = entry.getKey();
 			Map<ElementaryCondition, DistributionEntry> split = new HashMap<ElementaryCondition, DistributionEntry>();
 
-			Attribute currAttribute = set.getAttributes().get(atr);
+			IAttribute currAttribute = set.getAttributes().get(atr);
 			
 			if (!currAttribute.isNumerical()) {
-				NominalMapping mapping = currAttribute.getMapping();
+				INominalMapping mapping = currAttribute.getMapping();
 				
 				mapping.getValues()
 					.stream()

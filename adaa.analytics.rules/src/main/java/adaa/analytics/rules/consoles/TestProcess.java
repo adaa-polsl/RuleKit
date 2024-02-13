@@ -8,7 +8,7 @@ import adaa.analytics.rules.logic.performance.RulePerformanceCounter;
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.RuleSetBase;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.operator.Model;
 import com.rapidminer.operator.OperatorCreationException;
 import com.rapidminer.operator.OperatorException;
@@ -91,10 +91,10 @@ public class TestProcess {
 
 
                 long t1 = System.nanoTime();
-                ExampleSet testEs = new ArffFileLoader().load(testFilePath, datasetConfiguration.label);
+                IExampleSet testEs = new ArffFileLoader().load(testFilePath, datasetConfiguration.label);
                 roleConfigurator.apply(testEs);
                 Model model = ModelFileInOut.read(modelFilePath);
-                ExampleSet appliedEs = model.apply(testEs);
+                IExampleSet appliedEs = model.apply(testEs);
 
                 List<MeasuredPerformance> pv = null;
                 if (!datasetConfiguration.hasOptionParameter(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
@@ -118,7 +118,7 @@ public class TestProcess {
         }
     }
 
-    private void generateAnnotationHeader(ExampleSet predictions, String testFileName) throws IOException {
+    private void generateAnnotationHeader(IExampleSet predictions, String testFileName) throws IOException {
         if (predictions.getAnnotations().containsKey(RuleSetBase.ANNOTATION_TEST_REPORT)) {
             testingReport.append("================================================================================\n");
             testingReport.append(testFileName + "\n");

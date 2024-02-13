@@ -1,7 +1,7 @@
 package adaa.analytics.rules.logic.actions;
 
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.Set;
 import java.util.function.Function;
@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 public class ExclusiveOnlyActionInductionRangeStrategy extends NotIntersectingActionInductionRangeStrategy{
 
-	public ExclusiveOnlyActionInductionRangeStrategy(ElementaryCondition pattern, ExampleSet dataset) {
+	public ExclusiveOnlyActionInductionRangeStrategy(ElementaryCondition pattern, IExampleSet dataset) {
 		super(pattern, dataset);
 	}
 

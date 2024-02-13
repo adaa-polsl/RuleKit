@@ -18,9 +18,10 @@ import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.ConditionBase.Type;
-import com.rapidminer.example.Attribute;
-import com.rapidminer.example.ExampleSet;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ public class ExpertRule {
     }
 
 
-    public RuleSetBase learnWithExpert(ExampleSet exampleSet) {
+    public RuleSetBase learnWithExpert(IExampleSet exampleSet) {
 
         MultiSet<Rule> rules = new MultiSet<Rule>();
         MultiSet<Rule> preferredConditions = new MultiSet<Rule>();
@@ -154,7 +155,7 @@ public class ExpertRule {
      * @param rules Rules to be fixed.
      * @param set   Reference example set.
      */
-    protected void fixMappings(Iterable<Rule> rules, ExampleSet set) {
+    protected void fixMappings(Iterable<Rule> rules, IExampleSet set) {
 
         for (Rule r : rules) {
             List<ConditionBase> toCheck = new ArrayList<ConditionBase>(); // list of elementary conditions to check
@@ -164,7 +165,7 @@ public class ExpertRule {
             for (ConditionBase c : toCheck) {
                 ElementaryCondition ec = (c instanceof ElementaryCondition) ? (ElementaryCondition) c : null;
                 if (ec != null) {
-                    Attribute a = set.getAttributes().get(ec.getAttribute());
+                    IAttribute a = set.getAttributes().get(ec.getAttribute());
                     if (a.isNominal()) {
                         if (ec.getValueSet() instanceof SingletonSet) {
                             SingletonSet ss = (SingletonSet) ec.getValueSet();

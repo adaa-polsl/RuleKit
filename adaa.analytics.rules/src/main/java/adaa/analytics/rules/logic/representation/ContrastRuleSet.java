@@ -1,13 +1,10 @@
 package adaa.analytics.rules.logic.representation;
 
-import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.induction.SetHelper;
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.operator.OperatorException;
-import org.apache.commons.collections15.CollectionUtils;
-import org.apache.commons.collections15.Predicate;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.operator.OperatorException;
 
 import java.util.*;
 
@@ -49,7 +46,7 @@ public class ContrastRuleSet extends ClassificationRuleSet {
      * @param params     Induction parameters.
      * @param knowledge  User's knowledge.
      */
-    public ContrastRuleSet(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
+    public ContrastRuleSet(IExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
         super(exampleSet, isVoting, params, knowledge);
     }
 
@@ -169,7 +166,7 @@ public class ContrastRuleSet extends ClassificationRuleSet {
 
 
     @Override
-    public ExampleSet apply(ExampleSet exampleSet) throws OperatorException {
+    public IExampleSet apply(IExampleSet exampleSet) throws OperatorException {
         return exampleSet;
     }
 

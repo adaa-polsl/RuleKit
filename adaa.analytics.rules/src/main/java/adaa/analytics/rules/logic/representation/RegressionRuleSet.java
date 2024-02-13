@@ -16,9 +16,8 @@ package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
 
-import com.rapidminer.example.Example;
-import com.rapidminer.example.ExampleSet;
-import com.rapidminer.operator.OperatorException;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
 
 /**
  * Class representing a set of regression rules.
@@ -45,7 +44,7 @@ public class RegressionRuleSet extends RuleSetBase {
 	 * @param params Induction parameters.
 	 * @param knowledge User's knowledge.
 	 */
-	public RegressionRuleSet(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
+	public RegressionRuleSet(IExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
 		super(exampleSet, isVoting, params, knowledge);
 	}
 
