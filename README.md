@@ -7,9 +7,9 @@
 Rule-based models are often used for data analysis as they combine interpretability with predictive power. We present RuleKit, a versatile tool for rule learning. Based on a sequential covering induction algorithm, it is suitable for classification, regression, and survival problems. The presence of user-guided induction mode facilitates verifying hypotheses concerning data dependencies which are expected or of interest. The powerful and flexible experimental environment allows straightforward investigation of different induction schemes. The analysis can be performed in batch mode, through RapidMiner plugin, as well as R package and [Python](https://github.com/adaa-polsl/RuleKit-python) packages. A documented Java API is also provided for convenience. 
 
 RuleKit provides latest versions of our algorithms (some of them were initially published as independent packages and integrated later):
-* [LR-Rules](https://github.com/adaa-polsl/LR-Rules) (Wróbel et al, 2017) - survival rules induction,
-* [GuideR](https://github.com/adaa-polsl/GuideR) (Sikora et al, 2019) - user-guided induction.
-* [RuleKit-CS](https://doi.org/10.48550/arXiv.2204.00497) (Gudyś et al, 2022) - contrast set mining.
+* [LR-Rules](https://github.com/adaa-polsl/LR-Rules) ([Wróbel et al, 2017](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-017-1693-x)) - survival rules induction,
+* [GuideR](https://github.com/adaa-polsl/GuideR) ([Sikora et al, 2019](https://www.sciencedirect.com/science/article/abs/pii/S0950705119300802?dgcid=coauthor)) - user-guided induction.
+* RuleKit-CS ([Gudyś et al, 2024](https://www.sciencedirect.com/science/article/pii/S0957417424002410?dgcid=author)) - contrast set mining.
 
 
 # Getting started
@@ -136,8 +136,7 @@ The software is publicly available under [GNU AGPL-3.0 license](LICENSE).
  
 # Citing
 
-[Gudyś, A, Sikora, M, Wróbel, Ł (2022) Separate and conquer heuristic allows robust mining of contrast sets from various types of data,  	
-https://doi.org/10.48550/arXiv.2204.00497](https://doi.org/10.48550/arXiv.2204.00497)
+[Gudyś, A, Sikora, M, Wróbel, Ł (2024) Separate and conquer heuristic allows robust mining of contrast sets in classification, regression, and survival data, Expert Systems with Applications, 248: 123376](https://www.sciencedirect.com/science/article/pii/S0957417424002410?dgcid=author)
 
 [Gudyś, A, Sikora, M, Wróbel, Ł (2020) RuleKit: A comprehensive suite for rule-based learning, Knowledge-Based Systems, 194: 105480](https://doi.org/10.1016/j.knosys.2020.105480)
 
