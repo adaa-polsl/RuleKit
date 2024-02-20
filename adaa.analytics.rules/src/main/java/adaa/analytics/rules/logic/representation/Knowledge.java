@@ -138,13 +138,17 @@ public class Knowledge implements Serializable {
 
 	/** Gets {@link #preferredConditionsPerRule}. */
 	public int getPreferredConditionsPerRule() { return preferredConditionsPerRule; }
-	/** Sets {@link #preferredConditionsPerRule}. */
-	public void setPreferredConditionsPerRule(int preferredConditionsPerRule) { this.preferredConditionsPerRule = preferredConditionsPerRule; }
+	/** Sets {@link #preferredConditionsPerRule}. The value of 0 is translated to the infinity.*/
+	public void setPreferredConditionsPerRule(int v) {
+		this.preferredConditionsPerRule = (v == 0) ? Integer.MAX_VALUE : v;
+	}
 
 	/** Gets {@link #preferredAttributesPerRule}. */
 	public int getPreferredAttributesPerRule() { return preferredAttributesPerRule; }
-	/** Sets {@link #preferredAttributesPerRule}. */
-	public void setPreferredAttributesPerRule(int preferredAttributesPerRule) { this.preferredAttributesPerRule = preferredAttributesPerRule; }
+	/** Sets {@link #preferredAttributesPerRule}. The value of 0 is translated to the infinity.*/
+	public void setPreferredAttributesPerRule(int v) {
+		this.preferredAttributesPerRule = (v == 0) ? Integer.MAX_VALUE : v;
+	}
 
 	/**
 	 * Initializes knowledge from collections of initial rules, preferred/forbidden conditions and attributes.
