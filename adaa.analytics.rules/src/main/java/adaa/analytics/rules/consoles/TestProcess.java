@@ -11,7 +11,7 @@ import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.rm.example.IExampleSet;
 import adaa.analytics.rules.rm.operator.OperatorException;
 import utils.ArffFileLoader;
-//import utils.ArffFileWriter;
+import utils.ArffFileWriter;
 
 import java.io.File;
 import java.io.IOException;
@@ -100,7 +100,7 @@ public class TestProcess {
                     rpc.countValues();
                     pv = rpc.getResult();
                 }
-//                ArffFileWriter.write(appliedEs,predictionsFilePath);
+                ArffFileWriter.write(appliedEs,predictionsFilePath);
 
                 long t2 = System.nanoTime();
                 double elapsedSec = (double) (t2 - t1) / 1e9;
