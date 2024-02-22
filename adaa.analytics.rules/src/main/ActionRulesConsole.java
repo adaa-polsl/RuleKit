@@ -309,8 +309,8 @@ public class ActionRulesConsole {
         String recommFile = fileNameBase + ".recommendations";
         String rulesFile = fileNameBase + ".rules";
 
-//        ArffFileWriter.write(testSetMutatedByActionRules, mutatedByActions);
-//        ArffFileWriter.write(testSetMutatedByRecommendations, mutatedByRecoms);
+        ArffFileWriter.write(testSetMutatedByActionRules, mutatedByActions);
+        ArffFileWriter.write(testSetMutatedByRecommendations, mutatedByRecoms);
 
         Files.write(recommendations.toString().getBytes(), new File(recommFile));
         Files.write(rulesOnTrain.toString().getBytes(), new File(rulesFile));
