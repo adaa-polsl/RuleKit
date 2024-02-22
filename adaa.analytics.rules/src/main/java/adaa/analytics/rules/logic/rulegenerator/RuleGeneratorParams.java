@@ -4,7 +4,6 @@ import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.representation.Logger;
-import com.rapidminer.operator.OperatorException;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -281,7 +280,6 @@ public class RuleGeneratorParams {
      * @param destination Destination of measure (growing/pruning/voting).
      * @param defaultMeasure Default measure.
      * @return New quality measure.
-     * @throws OperatorException
      * @throws IllegalAccessException
      */
     protected IQualityMeasure createMeasure(MeasureDestination destination, IQualityMeasure defaultMeasure)  {

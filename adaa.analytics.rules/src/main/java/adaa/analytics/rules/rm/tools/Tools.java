@@ -1,5 +1,8 @@
 package adaa.analytics.rules.rm.tools;
 
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
+
 import java.text.*;
 import java.util.*;
 
@@ -366,6 +369,22 @@ public class Tools {
 
                 throw new ClassNotFoundException(className);
             }
+        }
+    }
+
+    public static void isLabelled(IExampleSet es) {
+        if (es.getAttributes().getLabel() == null) {
+            // TODO throw
+//            throw new UserError();
+        }
+    }
+
+    public static void hasNominalLabels(IExampleSet es, String algorithm) {
+        isLabelled(es);
+        IAttribute a = es.getAttributes().getLabel();
+        if (!Ontology.ATTRIBUTE_VALUE_TYPE.isA(a.getValueType(), 1)) {
+            // TODO throw
+//            throw new UserError((Operator)null, 101, new Object[]{algorithm, a.getName()});
         }
     }
 }

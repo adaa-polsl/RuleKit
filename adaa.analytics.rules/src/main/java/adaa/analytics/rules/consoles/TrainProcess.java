@@ -11,7 +11,6 @@ import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
 import adaa.analytics.rules.rm.example.IExampleSet;
 import adaa.analytics.rules.rm.operator.OperatorException;
-import com.rapidminer.operator.OperatorCreationException;
 import org.apache.commons.lang.StringUtils;
 import utils.ArffFileLoader;
 
@@ -83,7 +82,7 @@ public class TrainProcess {
 
     }
 
-    public void executeProcess() throws IOException, OperatorCreationException, OperatorException, com.rapidminer.operator.OperatorException {
+    public void executeProcess() throws IOException, OperatorException {
 
         // Train process
         if (datasetConfiguration.trainElements.size() > 0) {

@@ -30,8 +30,6 @@ public class DataRowFactory {
     private int type;
     private char decimalPointCharacter;
 
-    /** @deprecated */
-    @Deprecated
     public DataRowFactory(int type) {
         this(type, '.');
     }
