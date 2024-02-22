@@ -16,8 +16,6 @@ public class MemoryExampleTable extends AbstractExampleTable implements IGrowing
         this(Arrays.asList(attributes));
     }
 
-    /** @deprecated */
-    @Deprecated
     public MemoryExampleTable(List<IAttribute> attributes) {
         super(attributes);
         this.dataList = new ArrayList();

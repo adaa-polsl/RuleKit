@@ -4,7 +4,7 @@ public class BinominalAttribute extends NominalAttribute {
     private static final long serialVersionUID = 2932687830235332221L;
     private INominalMapping nominalMapping = (INominalMapping) new BinominalMapping();
 
-    BinominalAttribute(String name) {
+    public BinominalAttribute(String name) {
         super(name, 6);
     }
 

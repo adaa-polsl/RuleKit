@@ -7,7 +7,7 @@ public class PolynominalAttribute extends NominalAttribute {
     private static final int MAX_NUMBER_OF_SHOWN_NOMINAL_VALUES = 100;
     private INominalMapping nominalMapping;
 
-    PolynominalAttribute(String name) {
+    public PolynominalAttribute(String name) {
         this(name, 1);
     }
 

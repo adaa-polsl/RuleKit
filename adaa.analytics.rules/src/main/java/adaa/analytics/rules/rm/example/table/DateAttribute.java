@@ -9,7 +9,7 @@ import java.util.Date;
 public class DateAttribute extends AbstractAttribute {
     private static final long serialVersionUID = -685655991653799960L;
 
-    protected DateAttribute(String name) {
+    public DateAttribute(String name) {
         this(name, 10);
     }
 

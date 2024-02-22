@@ -11,7 +11,7 @@ public class NumericalAttribute extends AbstractAttribute {
     public static final int DEFAULT_NUMBER_OF_DIGITS = -1;
     public static final int UNLIMITED_NUMBER_OF_DIGITS = -2;
 
-    protected NumericalAttribute(String name) {
+    public NumericalAttribute(String name) {
         this(name, 2);
     }
 
