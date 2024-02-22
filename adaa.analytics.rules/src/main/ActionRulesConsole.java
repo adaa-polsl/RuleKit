@@ -14,10 +14,7 @@ import adaa.analytics.rules.rm.example.set.ICondition;
 import adaa.analytics.rules.rm.example.table.INominalMapping;
 import com.google.common.io.Files;
 import org.apache.commons.cli.*;
-import utils.ArffFileLoader;
-import utils.CsvFileLoader;
-import utils.ExamplesetFileLoader;
-import utils.Mutator;
+import utils.*;
 
 import java.io.File;
 import java.io.IOException;
