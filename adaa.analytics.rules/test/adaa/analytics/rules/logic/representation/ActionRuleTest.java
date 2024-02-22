@@ -1,9 +1,9 @@
 package adaa.analytics.rules.logic.representation;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.renjin.repackaged.guava.collect.ImmutableList;
 
 import java.util.List;
 

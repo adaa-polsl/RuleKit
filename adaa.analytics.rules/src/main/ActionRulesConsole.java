@@ -1,4 +1,5 @@
 package main;
+
 import adaa.analytics.rules.logic.actions.ActionMetaTable;
 import adaa.analytics.rules.logic.actions.ActionRangeDistribution;
 import adaa.analytics.rules.logic.actions.OptimizedActionMetaTable;
@@ -6,18 +7,17 @@ import adaa.analytics.rules.logic.actions.recommendations.ClassificationRecommen
 import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.model.ActionRuleSet;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import adaa.analytics.rules.rm.example.set.AttributeValueFilterSingleCondition;
 import adaa.analytics.rules.rm.example.set.ConditionedExampleSet;
 import adaa.analytics.rules.rm.example.set.ICondition;
 import adaa.analytics.rules.rm.example.table.INominalMapping;
-import com.rapidminer.RapidMiner;
-import adaa.analytics.rules.rm.example.IExampleSet;
-import com.rapidminer.operator.OperatorCreationException;
-import com.rapidminer.operator.OperatorException;
+import com.google.common.io.Files;
 import org.apache.commons.cli.*;
-import org.renjin.invoke.codegen.ArgumentException;
-import org.renjin.repackaged.guava.io.Files;
-import utils.*;
+import utils.ArffFileLoader;
+import utils.CsvFileLoader;
+import utils.ExamplesetFileLoader;
+import utils.Mutator;
 
 import java.io.File;
 import java.io.IOException;
@@ -128,7 +128,7 @@ public class ActionRulesConsole {
 
     private static void validateFilename(String name) {
         if (!name.endsWith(".arff")) {
-            throw new ArgumentException("The data files must be in ARFF format and with .arff extension");
+            throw new IllegalArgumentException("The data files must be in ARFF format and with .arff extension");
         }
     }
 
@@ -149,11 +149,11 @@ public class ActionRulesConsole {
         String readValue = cmd.getOptionValue(MEASURE_OPT_NAME, DEFAULT_MEASURE);
 
         if (!Arrays.asList(ALLOWED_MEASURES).contains(readValue)) {
-            throw new ArgumentException(readValue + "is not in allowed list of measures. Choose from: {" + String.join(", ", Arrays.asList(ALLOWED_MEASURES)) + "}");
+            throw new IllegalArgumentException(readValue + "is not in allowed list of measures. Choose from: {" + String.join(", ", Arrays.asList(ALLOWED_MEASURES)) + "}");
         }
 
         int id = Arrays.asList(ClassificationMeasure.NAMES).indexOf(readValue);
-        if (id < 0) throw new ArgumentException("unrecognized measure name");
+        if (id < 0) throw new IllegalArgumentException("unrecognized measure name");
 
         return new ClassificationMeasure(id);
     }
@@ -163,7 +163,7 @@ public class ActionRulesConsole {
 
         int parsedValue = Integer.parseInt(readValue);
         if (parsedValue < 1) {
-            throw new ArgumentException("Mincov has to be at least 1");
+            throw new IllegalArgumentException("Mincov has to be at least 1");
         }
         return parsedValue;
     }
@@ -179,7 +179,7 @@ public class ActionRulesConsole {
     private static String getSourceClassname(CommandLine cmd, IExampleSet examples) {
         String read = cmd.getOptionValue(SOURCE_OPT_NAME);
         if (!examples.getAttributes().getLabel().getMapping().getValues().contains(read)) {
-            throw new ArgumentException("The requested source class name: " + read + " was not found in train set examples.");
+            throw new IllegalArgumentException("The requested source class name: " + read + " was not found in train set examples.");
         }
         return read;
     }
@@ -189,7 +189,7 @@ public class ActionRulesConsole {
 
         if (read == null) {
             INominalMapping mapping = examples.getAttributes().getLabel().getMapping();
-            if (mapping.size() > 2) throw new ArgumentException("The exampleset contains more then two class. Target class have to be specified");
+            if (mapping.size() > 2) throw new IllegalArgumentException("The exampleset contains more then two class. Target class have to be specified");
             String source = getSourceClassname(cmd, examples);
             for (String value : mapping.getValues()) {
                 if (!value.equals(source)) return value;
@@ -197,7 +197,7 @@ public class ActionRulesConsole {
         }
 
         if (!examples.getAttributes().getLabel().getMapping().getValues().contains(read)) {
-            throw new ArgumentException("The requested target class name: " + read + " was not found in train set examples.");
+            throw new IllegalArgumentException("The requested target class name: " + read + " was not found in train set examples.");
         }
         return read;
     }
@@ -210,7 +210,7 @@ public class ActionRulesConsole {
         } else if (fileName.endsWith(".csv")) {
             loader = new CsvFileLoader();
         } else {
-            throw new ArgumentException("Only .arff or .csv files are supported");
+            throw new IllegalArgumentException("Only .arff or .csv files are supported");
         }
 
         try {
@@ -230,11 +230,10 @@ public class ActionRulesConsole {
         }
     }
 
-    public static void main(String[] args) throws OperatorException, OperatorCreationException, IOException {
+    public static void main(String[] args) throws IOException {
 
         CommandLine cmdParams = parseCommandLineParams(args);
 
-        if (!RapidMiner.isInitialized()) RapidMiner.init();
 
         Mutator mutator;
         try {

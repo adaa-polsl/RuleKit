@@ -14,7 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
 import java.util.ArrayList;

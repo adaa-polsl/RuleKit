@@ -5,9 +5,8 @@ import adaa.analytics.rules.logic.actions.MetaValue;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.ActionRule;
 import adaa.analytics.rules.logic.representation.IValueSet;
-import com.lowagie.text.Meta;
-import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.Map;

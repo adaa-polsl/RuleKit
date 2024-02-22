@@ -28,7 +28,6 @@ import java.util.Iterator;
 
 
 public class HeaderExampleSet extends AbstractExampleSet {
-
 	private static final long serialVersionUID = -255270841843010670L;
 
 	/** The parent example set. */
@@ -39,7 +38,10 @@ public class HeaderExampleSet extends AbstractExampleSet {
 		this.attributes = (IAttributes) parent.getAttributes().clone();
 	}
 
-
+	public HeaderExampleSet(HeaderExampleSet other) {
+//		cloneAnnotationsFrom(other);
+		this.attributes = (IAttributes) other.attributes.clone();
+	}
 
 	@Override
 	public IAttributes getAttributes() {

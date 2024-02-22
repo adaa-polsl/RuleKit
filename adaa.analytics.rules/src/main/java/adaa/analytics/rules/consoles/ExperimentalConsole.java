@@ -37,8 +37,6 @@ import org.xml.sax.SAXException;
 
 import adaa.analytics.rules.logic.representation.Logger;
 
-import com.rapidminer.RapidMiner;
-import com.rapidminer.tools.LogService;
 
 /**
  * Console used in batch mode.
@@ -54,6 +52,7 @@ public class ExperimentalConsole {
 
     private String configFile;
 
+    private ExecutorService pool;
     public static void main(String[] args) {
         ExperimentalConsole console = new ExperimentalConsole();
         console.printVersionInfo();
@@ -129,7 +128,6 @@ public class ExperimentalConsole {
 
     private void initLogs() {
         Logger.getInstance().addStream(System.out, logsVeryVerbose ? Level.FINEST : (logsVerbose ? Level.FINE : Level.INFO));
-        LogService.getRoot().setLevel(Level.OFF);
     }
 
     private Document readXmlDocument(String configFile) throws ParserConfigurationException, IOException, SAXException {
@@ -142,7 +140,7 @@ public class ExperimentalConsole {
     private List<Future> executeExperiments(List<ParamSetWrapper> paramSets, List<DatasetConfiguration> datasetConfigurationList) throws ParserConfigurationException, SAXException, IOException, InterruptedException, ExecutionException {
         List<Future> futures = new ArrayList<>();
         String lineSeparator = System.getProperty("line.separator");
-        ExecutorService pool = Executors.newFixedThreadPool(experimentalThreads);
+        pool = Executors.newFixedThreadPool(experimentalThreads);
 
         for (DatasetConfiguration dc : datasetConfigurationList) {
             // create experiments for all params sets
@@ -167,9 +165,8 @@ public class ExperimentalConsole {
         for (Future f : futures) {
             f.get();
         }
-
+        pool.shutdown();
         Logger.log("Experiments finished", Level.INFO);
-        RapidMiner.quit(RapidMiner.ExitMode.NORMAL);
     }
 
 

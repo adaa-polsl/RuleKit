@@ -3,7 +3,6 @@ package utils.reports;
 import adaa.analytics.rules.logic.representation.ExampleSetMetaData;
 import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.RuleParser;
-import org.apache.xmlbeans.impl.piccolo.io.FileFormatException;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -44,7 +43,7 @@ public class TestReportReader {
                 case "":
                     continue;
                 default:
-                    throw new FileFormatException("Invalid report file format for file: " + fileName);
+                    throw new IOException("Invalid report file format for file: " + fileName);
             }
         }
         return report;

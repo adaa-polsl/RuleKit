@@ -20,8 +20,8 @@ import java.util.logging.Level;
 
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.model.ClassificationRuleSet;
-import org.apache.commons.lang.SerializationUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;

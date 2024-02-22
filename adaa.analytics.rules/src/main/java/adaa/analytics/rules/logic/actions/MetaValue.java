@@ -1,19 +1,17 @@
 package adaa.analytics.rules.logic.actions;
 
+import adaa.analytics.rules.logic.representation.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.Interval;
+import adaa.analytics.rules.logic.representation.Rule;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IAttribute;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.Example;
-
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.Interval;
-import adaa.analytics.rules.logic.representation.Rule;
 
 public class MetaValue /*implements IValueSet*/ {
 	

@@ -2,12 +2,12 @@ package adaa.analytics.rules.logic.actions;
 
 import adaa.analytics.rules.logic.actions.recommendations.RecommendationTask;
 import adaa.analytics.rules.logic.representation.*;
-import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import org.apache.commons.lang.builder.EqualsBuilder;
+import com.google.common.collect.Sets;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.jetbrains.annotations.NotNull;
-import org.renjin.repackaged.guava.collect.Sets;
 
 import java.util.List;
 import java.util.Map;

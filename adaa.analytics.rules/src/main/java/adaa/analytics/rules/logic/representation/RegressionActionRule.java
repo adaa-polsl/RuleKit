@@ -7,8 +7,7 @@ import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.rm.example.IExampleSet;
 import adaa.analytics.rules.rm.example.IStatistics;
 import adaa.analytics.rules.rm.tools.container.Pair;
-import org.apache.commons.math.stat.inference.TTest;
-import org.apache.commons.math.stat.inference.TTestImpl;
+import org.apache.commons.math3.stat.inference.TTest;
 
 import java.util.Set;
 
@@ -47,7 +46,7 @@ public class RegressionActionRule extends ActionRule {
         this.pValueRight = statAndPValueRight.getSecond();
 
 
-        TTest tTest = new TTestImpl();
+        TTest tTest = new TTest();
         double[] sourceVals = ctLeft.positives.stream().map(x -> trainSet.getExample(x).getLabel()).mapToDouble(x->x).toArray();
         double[] targetVals = ctRight.positives.stream().map(x -> trainSet.getExample(x).getLabel()).mapToDouble(x->x).toArray();
 

@@ -7,7 +7,7 @@ import adaa.analytics.rules.rm.operator.OperatorException;
 import adaa.analytics.rules.rm.tools.Tools;
 import adaa.analytics.rules.rm.example.set.SimpleExampleSet;
 import adaa.analytics.rules.rm.tools.att.AttributeSet;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.*;
 

@@ -3,15 +3,15 @@ package adaa.analytics.rules.consoles;
 import adaa.analytics.rules.consoles.config.DatasetConfiguration;
 import adaa.analytics.rules.consoles.config.ParamSetWrapper;
 import adaa.analytics.rules.consoles.config.TrainElement;
-import adaa.analytics.rules.logic.performance.RulePerformanceCounter;
 import adaa.analytics.rules.logic.performance.MeasuredPerformance;
+import adaa.analytics.rules.logic.performance.RulePerformanceCounter;
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
 import adaa.analytics.rules.rm.example.IExampleSet;
 import adaa.analytics.rules.rm.operator.OperatorException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import utils.ArffFileLoader;
 
 import java.io.BufferedWriter;

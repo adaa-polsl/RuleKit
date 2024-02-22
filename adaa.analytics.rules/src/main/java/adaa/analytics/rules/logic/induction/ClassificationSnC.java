@@ -14,21 +14,23 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.model.ClassificationRuleSet;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import adaa.analytics.rules.rm.example.table.INominalMapping;
 import adaa.analytics.rules.rm.tools.container.Pair;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.Example;
-import adaa.analytics.rules.rm.example.IExampleSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 
 /**
  * Separate'n'conquer algorithm for generating classification rule sets.

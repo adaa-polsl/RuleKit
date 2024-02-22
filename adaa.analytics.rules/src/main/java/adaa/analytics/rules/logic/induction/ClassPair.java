@@ -15,7 +15,6 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.rm.example.table.INominalMapping;
-import org.renjin.invoke.codegen.ArgumentException;
 
 public class ClassPair {
 
@@ -30,10 +29,10 @@ public class ClassPair {
 		sourceId = mapping.getIndex(source);
 		targetId = mapping.getIndex(target);
 		if (sourceId < 0) {
-			throw new ArgumentException("sourceId negative - check class name");
+			throw new IllegalArgumentException("sourceId negative - check class name");
 		}
 		if (targetId < 0){
-			throw new ArgumentException("targetId negative - check class name");
+			throw new IllegalArgumentException("targetId negative - check class name");
 		}
 	}
 	

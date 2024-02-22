@@ -14,8 +14,6 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
-import com.sun.jna.platform.win32.WinDef;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -34,11 +32,6 @@ import java.util.Set;
  */
 public class IntegerBitSet implements Set<Integer>, Serializable {
 
-	/**
-	 * Iterator for {@link #adaa.analytics.rules.logic.representation.IntegerBitSet}.
-	 * @author Adam Gudys
-	 *
-	 */
 	private class BitIterator implements Iterator<Integer> {
 
 		/** Reference to the bit set being iterated. */
@@ -292,7 +285,6 @@ public class IntegerBitSet implements Set<Integer>, Serializable {
 	 */
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

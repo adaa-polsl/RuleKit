@@ -2,8 +2,6 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.OperatorCommandProxy;
-import com.rapidminer.operator.OperatorCreationException;
-import com.rapidminer.operator.OperatorException;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.FromDataPoints;
 import org.junit.experimental.theories.Theories;
@@ -59,7 +57,7 @@ public class SurvivalLogRankExpertSnCTest {
     }
 
     @Theory
-    public void runTestCase(@FromDataPoints("Test cases") TestCase testCase) throws OperatorException, OperatorCreationException, IOException {
+    public void runTestCase(@FromDataPoints("Test cases") TestCase testCase) throws IOException {
         SurvivalLogRankExpertFinder finder = new SurvivalLogRankExpertFinder(testCase.getParameters());
         SurvivalLogRankExpertSnC snc = new SurvivalLogRankExpertSnC(finder, testCase.getParameters(), testCase.getKnowledge());
         snc.setOperatorCommandProxy(new OperatorCommandProxy());

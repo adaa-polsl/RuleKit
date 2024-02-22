@@ -7,7 +7,7 @@ import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IExampleSet;
 import adaa.analytics.rules.rm.example.set.SortedExampleSet;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashSet;
 import java.util.Set;

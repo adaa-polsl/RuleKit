@@ -10,7 +10,7 @@ import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
 import adaa.analytics.rules.rm.example.set.AttributeValueFilter;
 import adaa.analytics.rules.rm.example.set.ConditionedExampleSet;
-import org.apache.commons.math.stat.descriptive.rank.Median;
+import org.apache.commons.math3.stat.descriptive.rank.Median;
 
 import java.util.ArrayList;
 import java.util.Comparator;

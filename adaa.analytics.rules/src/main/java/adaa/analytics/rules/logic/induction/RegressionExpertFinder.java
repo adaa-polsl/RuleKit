@@ -20,7 +20,7 @@ import adaa.analytics.rules.logic.representation.ConditionBase.Type;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
 
-import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang3.SerializationUtils;
 
 import java.util.*;
 import java.util.logging.Level;

@@ -10,17 +10,13 @@ import java.util.logging.Level;
 import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.model.ActionRuleSet;
-import org.apache.commons.lang.time.StopWatch;
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.rapidminer.RapidMiner;
-import com.rapidminer.RapidMiner.ExitMode;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import com.rapidminer.operator.OperatorCreationException;
-import com.rapidminer.operator.OperatorException;
 import adaa.analytics.rules.logic.induction.ActionFindingParameters.RangeUsageStrategy;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import utils.ArffFileLoader;
@@ -36,7 +32,6 @@ public class ActionTests {
 	protected ActionInductionParameters params;
 	protected String testFile;
 	protected String outputFileName;
-	protected com.rapidminer.Process process;
 	protected IExampleSet exampleSet;
 	protected String labelParameter;
 	protected int sourceId;
@@ -88,18 +83,9 @@ public class ActionTests {
 		
 	}
 	
-	@BeforeClass
-	public static void setUpBeforeClass() {
-		RapidMiner.init();
-	}
 
-	@AfterClass
-	public static void tearDownAfterClass()  {
-		RapidMiner.quit(ExitMode.NORMAL);
-	}
-	
 	@Before
-	public void beforeTest() throws OperatorException, OperatorCreationException {
+	public void beforeTest() {
 		exampleSet = parseArffFile();
 		stopwatch = new StopWatch();
 		stopwatch.start();
@@ -156,7 +142,7 @@ public class ActionTests {
 		}
 	}
 
-	protected IExampleSet parseArffFile() throws OperatorException, OperatorCreationException {
+	protected IExampleSet parseArffFile()  {
 		return arffFileLoader.load(Paths.get(testDirectory, testFile), labelParameter);
 	}
 

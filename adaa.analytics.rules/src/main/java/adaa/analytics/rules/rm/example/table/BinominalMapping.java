@@ -1,6 +1,6 @@
 package adaa.analytics.rules.rm.example.table;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.Arrays;
 import java.util.Collections;

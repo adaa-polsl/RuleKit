@@ -4,8 +4,6 @@ import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.representation.ExampleSetMetaData;
 import adaa.analytics.rules.logic.representation.Knowledge;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import com.rapidminer.operator.OperatorCreationException;
-import com.rapidminer.operator.OperatorException;
 import utils.ArffFileLoader;
 import utils.config.KnowledgeFactory;
 import utils.reports.TestReport;
@@ -50,7 +48,7 @@ public class TestCase {
         this.parameters = parameters;
     }
 
-    public IExampleSet getExampleSet() throws OperatorException, OperatorCreationException {
+    public IExampleSet getExampleSet() {
         if (exampleSet == null) {
             if (survivalTime != null) {
                 this.exampleSet = arffFileLoader.load(dataSetFilePath, labelAttribute, survivalTime);
@@ -61,7 +59,7 @@ public class TestCase {
         return exampleSet;
     }
 
-    public TestReport getReferenceReport() throws OperatorException, OperatorCreationException, IOException {
+    public TestReport getReferenceReport() throws  IOException {
         if (referenceReport == null) {
            TestReportReader reportReader = new TestReportReader(reportFilePath, new ExampleSetMetaData(getExampleSet()));
            referenceReport = reportReader.read();
@@ -82,7 +80,7 @@ public class TestCase {
         this.parametersConfigs = parametersConfigs;
     }
 
-    public Knowledge getKnowledge() throws OperatorException, OperatorCreationException {
+    public Knowledge getKnowledge() {
         if (knowledge == null) {
             IExampleSet exampleSet = getExampleSet();
             KnowledgeFactory knowledgeFactory = new KnowledgeFactory(exampleSet);

@@ -2,8 +2,6 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.OperatorCommandProxy;
-import com.rapidminer.operator.OperatorCreationException;
-import com.rapidminer.operator.OperatorException;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.FromDataPoints;
 import org.junit.experimental.theories.Theories;
@@ -59,7 +57,7 @@ public class RegressionSnCTest {
     }
 
     @Theory
-    public void runTestCase(@FromDataPoints("Test cases") TestCase testCase) throws OperatorException, OperatorCreationException, IOException {
+    public void runTestCase(@FromDataPoints("Test cases") TestCase testCase) throws IOException {
         RegressionFinder finder = new RegressionFinder(testCase.getParameters());
         RegressionSnC snc = new RegressionSnC(finder, testCase.getParameters());
         snc.setOperatorCommandProxy(new OperatorCommandProxy());

@@ -17,11 +17,9 @@ package adaa.analytics.rules.logic.induction;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.ConditionBase.Type;
-
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
-
-import org.apache.commons.lang.SerializationUtils;
+import org.apache.commons.lang3.SerializationUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -115,7 +113,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 			} else {
 				// add condition as it is without verification
 				conditionCovered.clear();
-				newCondition = (ElementaryCondition)SerializationUtils.clone(ec);
+				newCondition = (ElementaryCondition) SerializationUtils.clone(ec);
 				newCondition.evaluate(dataset, conditionCovered);
 
 				rule.getPremise().addSubcondition(newCondition);

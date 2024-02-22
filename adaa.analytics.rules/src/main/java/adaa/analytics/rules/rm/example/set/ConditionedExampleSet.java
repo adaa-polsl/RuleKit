@@ -6,7 +6,7 @@ import adaa.analytics.rules.rm.example.IExampleSet;
 import adaa.analytics.rules.rm.example.table.IExampleTable;
 import adaa.analytics.rules.rm.operator.Annotations;
 import adaa.analytics.rules.rm.tools.Tools;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;

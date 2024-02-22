@@ -1,30 +1,17 @@
 package adaa.analytics.rules.logic.actions;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.math3.util.Pair;
-
-import adaa.analytics.rules.rm.example.Example;
-import adaa.analytics.rules.rm.example.IExampleSet;
-
 import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.representation.ConditionBase;
 import adaa.analytics.rules.logic.representation.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.Rule;
+import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IExampleSet;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.math3.util.Pair;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MetaExample {
 	private Map<String, MetaValue> data;
