@@ -26,7 +26,7 @@ public class SurvivalLogRankExpertSnC extends RegressionExpertSnC {
 	public SurvivalLogRankExpertSnC(RegressionFinder finder,
 			InductionParameters params, Knowledge knowledge) {
 		super(finder, params, knowledge);
-		this.factory = new RuleFactory(RuleFactory.SURVIVAL, true, params, knowledge);
+		this.factory = new RuleFactory(RuleFactory.SURVIVAL,  params, knowledge);
 	}
 
 }

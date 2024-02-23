@@ -55,12 +55,6 @@ public class ClassificationRuleSet extends RuleSetBase {
      */
     private int defaultClass = -1;
 
-    /**
-     * Gets {@link #defaultClass}
-     */
-    public int getDefaultClass() {
-        return defaultClass;
-    }
 
     /**
      * Sets {@link #defaultClass}
@@ -79,7 +73,6 @@ public class ClassificationRuleSet extends RuleSetBase {
      */
     public ClassificationRuleSet(IExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
         super(exampleSet, isVoting, params, knowledge);
-        // TODO Auto-generated constructor stub
     }
 
     /**

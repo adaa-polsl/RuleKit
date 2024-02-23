@@ -37,7 +37,7 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 	public RegressionSnC(final RegressionFinder finder, final InductionParameters params) {
 		super(params);
 		this.finder = finder;
-		factory = new RuleFactory(RuleFactory.REGRESSION, true, params, null);
+		factory = new RuleFactory(RuleFactory.REGRESSION,  params, null);
 	}
 
 	@Override

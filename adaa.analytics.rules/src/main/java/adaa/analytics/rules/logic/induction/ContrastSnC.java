@@ -28,7 +28,7 @@ public class ContrastSnC extends ClassificationSnC {
         }
 
         // replace the factory
-       this.factory = new RuleFactory(ruleType, true, params, null);
+       this.factory = new RuleFactory(ruleType,  params, null);
     }
 
     /**

@@ -57,7 +57,6 @@ public class Margin extends MeasuredPerformance {
 		}
 	}
 
-	/** Does nothing. Everything is done in {@link #startCounting(ExampleSet, boolean)}. */
 	@Override
 	public void countExample(Example example) {}
 

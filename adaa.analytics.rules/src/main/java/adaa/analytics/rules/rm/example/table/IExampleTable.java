@@ -1,10 +1,9 @@
 package adaa.analytics.rules.rm.example.table;
 
-import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.AttributeRole;
+import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
 import adaa.analytics.rules.rm.operator.OperatorException;
-import adaa.analytics.rules.rm.tools.att.AttributeSet;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -22,8 +21,6 @@ public interface IExampleTable extends Serializable {
 
     IAttribute getAttribute(int var1);
 
-    IAttribute findAttribute(String var1) throws OperatorException;
-
     void addAttributes(Collection<IAttribute> var1);
 
     int addAttribute(IAttribute var1);
@@ -34,21 +31,13 @@ public interface IExampleTable extends Serializable {
 
     int getNumberOfAttributes();
 
-    int getAttributeCount();
-
-    IExampleSet createExampleSet(IAttribute var1);
-
-    IExampleSet createExampleSet(Iterator<AttributeRole> var1);
 
     IExampleSet createExampleSet(IAttribute var1, IAttribute var2, IAttribute var3);
 
-    IExampleSet createExampleSet(AttributeSet var1);
 
     IExampleSet createExampleSet(Map<IAttribute, String> var1);
 
-    IExampleSet createExampleSet();
 
     String toString();
 
-    String toDataString();
 }

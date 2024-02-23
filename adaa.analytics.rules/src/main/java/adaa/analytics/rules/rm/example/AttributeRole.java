@@ -75,10 +75,6 @@ public class AttributeRole  implements Serializable, Cloneable {
 
     }
 
-    public void changeToRegular() {
-        this.setSpecial((String)null);
-    }
-
     public String toString() {
         return this.isSpecial() ? this.specialName + " := " + this.attribute.getName() : this.attribute.getName();
     }

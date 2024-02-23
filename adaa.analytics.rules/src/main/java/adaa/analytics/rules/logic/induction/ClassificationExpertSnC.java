@@ -50,7 +50,7 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 	 */
 	public ClassificationExpertSnC(ClassificationFinder finder, InductionParameters params, Knowledge knowledge) {
 		super(finder, params);
-		factory = new RuleFactory(RuleFactory.CLASSIFICATION, true, params, knowledge);
+		factory = new RuleFactory(RuleFactory.CLASSIFICATION,  params, knowledge);
 		this.knowledge = (Knowledge)SerializationUtils.clone(knowledge);
 	}
 	

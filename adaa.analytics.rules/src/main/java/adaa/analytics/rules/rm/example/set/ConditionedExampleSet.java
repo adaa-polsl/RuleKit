@@ -16,29 +16,7 @@ import java.util.List;
 
 public class ConditionedExampleSet extends AbstractExampleSet {
     private static final long serialVersionUID = 877488093216198777L;
-    public static final String[] KNOWN_CONDITION_NAMES = new String[]{"all", "correct_predictions", "wrong_predictions", "no_missing_attributes", "missing_attributes", "no_missing_labels", "missing_labels", "attribute_value_filter", "expression", "custom_filters"};
-    public static final int CONDITION_ALL = 0;
-    public static final int CONDITION_CORRECT_PREDICTIONS = 1;
-    public static final int CONDITION_WRONG_PREDICTIONS = 2;
-    public static final int CONDITION_NO_MISSING_ATTRIBUTES = 3;
-    public static final int CONDITION_MISSING_ATTRIBUTES = 4;
-    public static final int CONDITION_NO_MISSING_LABELS = 5;
-    public static final int CONDITION_MISSING_LABELS = 6;
-    public static final int CONDITION_ATTRIBUTE_VALUE_FILTER = 7;
-    public static final int CONDITION_EXPRESSION = 8;
-    public static final int CONDITION_CUSTOM_FILTER = 9;
-    private static final String[] KNOWN_CONDITION_IMPLEMENTATIONS = new String[]{
-            AcceptAllCondition.class.getName(),
-            CorrectPredictionCondition.class.getName(),
-            WrongPredictionCondition.class.getName(),
-            NoMissingAttributesCondition.class.getName(),
-            MissingAttributesCondition.class.getName(),
-            NoMissingLabelsCondition.class.getName(),
-            MissingLabelsCondition.class.getName(),
-            AttributeValueFilter.class.getName()
-//            ExpressionFilter.class.getName(),
-//            CustomFilter.class.getName()
-    };
+
     private IExampleSet parent;
     private int[] mapping;
 
@@ -46,15 +24,6 @@ public class ConditionedExampleSet extends AbstractExampleSet {
         this(parent, condition, false);
     }
 
-//    public ConditionedExampleSet(IExampleSet parent, ICondition condition, boolean inverted) {
-//        this.parent = (IExampleSet)parent.clone();
-//
-//        try {
-//            this.mapping = this.calculateMapping(condition, inverted, (OperatorProgress)null);
-//        } catch (ProcessStoppedException var5) {
-//        }
-//
-//    }
 
     public ConditionedExampleSet(IExampleSet parent, ICondition condition, boolean inverted) {
         this.parent = (IExampleSet)parent.clone();
@@ -152,45 +121,7 @@ public class ConditionedExampleSet extends AbstractExampleSet {
         return this.parent.getExampleTable();
     }
 
-    public static ICondition createCondition(String name, IExampleSet exampleSet, String parameterString) {
-        String className = name;
 
-        for(int i = 0; i < KNOWN_CONDITION_NAMES.length; ++i) {
-            if (KNOWN_CONDITION_NAMES[i].equals(name)) {
-                className = KNOWN_CONDITION_IMPLEMENTATIONS[i];
-                break;
-            }
-        }
-
-        try {
-            Class<?> clazz = Tools.classForName(className);
-            if (!ICondition.class.isAssignableFrom(clazz)) {
-//                throw new ConditionCreationException("'" + className + "' does not implement Condition!");
-                throw new NotImplementedException();
-            } else {
-                Constructor<?> constructor = clazz.getConstructor(IExampleSet.class, String.class);
-                return (ICondition)constructor.newInstance(exampleSet, parameterString);
-            }
-        }
-        catch(Exception e){
-            throw new NotImplementedException();
-        }
-//        catch (ClassNotFoundException var6) {
-//            throw new ConditionCreationException("Cannot find class '" + className + "'. Check your classpath.", var6);
-//        } catch (NoSuchMethodException var7) {
-//            throw new ConditionCreationException("'" + className + "' must implement two argument constructor " + className + "(ExampleSet, String)!", var7);
-//        } catch (IllegalAccessException var8) {
-//            throw new ConditionCreationException("'" + className + "' cannot access two argument constructor " + className + "(ExampleSet, String)!", var8);
-//        } catch (InstantiationException var9) {
-//            throw new ConditionCreationException(className + ": cannot create condition (" + var9.getMessage() + ").", var9);
-//        } catch (Throwable var10) {
-//            if (var10.getCause() instanceof ConditionCreationException) {
-//                throw (ConditionCreationException)var10.getCause();
-//            } else {
-//                throw new ConditionCreationException(className + ": cannot invoke condition (" + (var10.getCause() != null ? var10.getCause().getMessage() : var10.getMessage()) + ").", var10);
-//            }
-//        }
-    }
 
     public Annotations getAnnotations() {
         return this.parent.getAnnotations();

@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AttributeFactory {
-    private static final String GENSYM_PREFIX = "gensym";
     private static Map<String, AtomicInteger> nameCounters = new HashMap();
 
     public AttributeFactory() {
@@ -29,22 +28,6 @@ public class AttributeFactory {
         }
     }
 
-    public static IAttribute createAttribute(int valueType) {
-        return createAttribute(createName(), valueType);
-    }
-
-    public static IAttribute createAttribute(int valueType, int blockType, String constructionDescription) {
-        IAttribute attribute = createAttribute(valueType);
-        attribute.setBlockType(blockType);
-        attribute.setConstruction(constructionDescription);
-        return attribute;
-    }
-
-    public static IAttribute createAttribute(String name, int valueType, int blockType) {
-        IAttribute attribute = createAttribute(name, valueType);
-        attribute.setBlockType(blockType);
-        return attribute;
-    }
 
     public static IAttribute createAttribute(IAttribute attribute) {
         return createAttribute(attribute, (String)null);
@@ -62,15 +45,6 @@ public class AttributeFactory {
         return result;
     }
 
-    public static IAttribute changeValueType(IAttribute attribute, int valueType) {
-        IAttribute result = createAttribute(attribute.getName(), valueType);
-        if (attribute.isNominal() && result.isNominal()) {
-            result.setMapping(attribute.getMapping());
-        }
-
-        result.setTableIndex(attribute.getTableIndex());
-        return result;
-    }
 
     public static void resetNameCounters() {
         nameCounters.clear();

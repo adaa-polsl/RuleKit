@@ -49,7 +49,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 	public ClassificationSnC(AbstractFinder finder, InductionParameters params) {
 		super(params);
 		this.finder = finder;
-		this.factory = new RuleFactory(RuleFactory.CLASSIFICATION, true, params, null);
+		this.factory = new RuleFactory(RuleFactory.CLASSIFICATION,  params, null);
 	}
 	
 	/**

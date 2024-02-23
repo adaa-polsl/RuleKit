@@ -31,8 +31,6 @@ public class RuleFactory {
 	public static final int CONTRAST = 4;
 	public static final int CONTRAST_REGRESSION = 5;
 	public static final int CONTRAST_SURVIVAL = 6;
-	public static final int ACTION = 7;
-	public static final int REGRESSION_ACTION = 8;
 	/**
 	 * Rule type (classification/regression/survival).
 	 */
@@ -58,24 +56,15 @@ public class RuleFactory {
 	 * @return Rule type.
 	 */
 	public int getType() { return this.type; }
-	
-	/**
-	 * Constructor of non-guided rules factory. Initializes members with arguments.
-	 * @param type Rule type (classification/regression/survival).
-	 * @param isVoting Flag indicating whether rules are voting (ignored - always true).
-	 */
-	public RuleFactory(int type, boolean isVoting) {
-		this.type = type;
-	}
+
 	
 	/**
 	 * Constructor of guided rules factory. Initializes with arguments members.
 	 * @param type Rule type (classification/regression/survival).
-	 * @param isVoting Flag indicating whether rules are voting (ignored - always true).
 	 * @param params Induction parameters.
 	 * @param knowledge User's knowledge.
 	 */
-	public RuleFactory(int type, boolean isVoting, InductionParameters params, Knowledge knowledge) {
+	public RuleFactory(int type,InductionParameters params, Knowledge knowledge) {
 		this.params = params;
 		this.type = type;
 		this.knowledge = knowledge;
@@ -101,10 +90,6 @@ public class RuleFactory {
 			return new ContrastRegressionRule(premise, consequence);
 		case CONTRAST_SURVIVAL:
 			return new ContrastSurvivalRule(premise, consequence);
-		case ACTION:
-			return new ActionRule();
-		case REGRESSION_ACTION:
-			return new RegressionActionRule(premise, (Action)consequence);
 		}
 		
 		return null;
@@ -129,9 +114,6 @@ public class RuleFactory {
 			return new ContrastRegressionRuleSet(set, isVoting, params, knowledge);
 		case CONTRAST_SURVIVAL:
 			return new ContrastSurvivalRuleSet(set, isVoting, params, knowledge);
-		case ACTION:
-		case REGRESSION_ACTION:
-			return new ActionRuleSet(set, isVoting, params, knowledge);
 		}
 		
 		return null;

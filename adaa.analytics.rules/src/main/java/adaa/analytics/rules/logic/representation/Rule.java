@@ -248,24 +248,6 @@ public abstract class Rule implements Serializable, Cloneable {
 	}
 
 	/**
-	 * Gets indices of covered examples without positive/negative distinction.
-	 * @param set Example set to be examined.
-	 * @return Set of indices of covered examples.
-	 */
-	public Set<Integer> coversUnlabelled(IExampleSet set) {
-		Set<Integer> out = new HashSet<>();
-		int id = 0;
-		for (Example ex : set) {
-			if (premise.evaluate(ex)) {
-				out.add(id);
-			}
-			++ id;
-
-		}
-		return out;
-	}
-
-	/**
 	 * Applies the rule on a specified example set.
 	 * @param set Example set.
 	 * @param ct Output contingency table.
