@@ -34,11 +34,35 @@ public abstract class TableSawLoader extends ExamplesetFileLoader {
             List<AttributeInfo> attributesInfo
     ) {
 
-        CsvReadOptions options = builder
+        builder = builder
                 .separator(',')
                 .quoteChar('\'')
-                .missingValueIndicator("?")
-                .build();
+                .missingValueIndicator("?");
+
+        ColumnType[] columnTypes = null;
+
+        if(attributesInfo != null) {
+
+            columnTypes = new ColumnType[attributesInfo.size()];
+            for(int i=0 ; i<attributesInfo.size() ; i++) {
+
+                if(attributesInfo.get(i).getCellType() == EColType.NUMERIC) {
+                    columnTypes[i] = ColumnType.DOUBLE;
+                }
+                else if(attributesInfo.get(i).getCellType() == EColType.TEXT) {
+                    columnTypes[i] = ColumnType.STRING;
+                }
+                else if(attributesInfo.get(i).getCellType() == EColType.DATE) {
+                    columnTypes[i] = ColumnType.LOCAL_DATE_TIME;
+                }
+                else {
+                    columnTypes[i] = ColumnType.STRING;
+                }
+            }
+            builder = builder.columnTypes(columnTypes);
+        }
+
+        CsvReadOptions options = builder.build();
 
         Table tsTable = Table.read().usingOptions(options);
 

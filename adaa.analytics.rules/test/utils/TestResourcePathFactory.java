@@ -17,7 +17,7 @@ public class TestResourcePathFactory {
         } else {
             pathString = resourceFolderPath + "../../../test/resources/" + fileName;
         }
-        if (pathString.startsWith("/")) {
+        if (pathString.startsWith("/") && !System.getProperty("os.name").toLowerCase().contains("linux")) {
             pathString = pathString.substring(1);
         }
         return Paths.get(pathString);
