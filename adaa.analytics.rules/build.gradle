@@ -1,26 +1,17 @@
 import java.text.SimpleDateFormat
 
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
-    }
+plugins {
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id 'java'
 }
 
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'java'
-
-
-sourceCompatibility = 1.8
 version = '1.7.1-cleaning'
-
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+}
 
 jar {
-    baseName = 'rulekit'
+    archiveBaseName = 'rulekit'
     manifest {
         attributes 'Implementation-Version': version
         attributes 'Main-Class': 'adaa.analytics.rules.consoles.ExperimentalConsole'
@@ -28,7 +19,6 @@ jar {
 }
 
 repositories {
-    jcenter()
     mavenCentral()
 }
 
@@ -47,18 +37,19 @@ sourceSets {
 }
 
 dependencies {
-    compile group: 'commons-cli', name: 'commons-cli', version: '1.6.0'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.16.1'
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
-    compile group: 'gov.nist.math', name: 'jama', version: '1.0.3'
-    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
-    compile group: 'com.intellij', name: 'annotations', version: '12.0'
+    implementation group: 'commons-cli', name: 'commons-cli', version: '1.6.0'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.16.1'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
+    implementation group: 'gov.nist.math', name: 'jama', version: '1.0.3'
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    implementation group: 'com.intellij', name: 'annotations', version: '12.0'
 
-    compile files(org.gradle.internal.jvm.Jvm.current().toolsJar)
-    compile group: 'tech.tablesaw', name: 'tablesaw-core', version: '0.43.1'
-    compile group: 'com.google.guava', name: 'guava', version: '33.0.0-jre'
+    implementation group: 'tech.tablesaw', name: 'tablesaw-core', version: '0.43.1'
+    implementation group: 'com.google.guava', name: 'guava', version: '33.0.0-jre'
 
-    testCompile group: 'junit', name: 'junit', version: '4.+'
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30'
+
+    testImplementation group: 'junit', name: 'junit', version: '4.+'
 }
 
 shadowJar {
@@ -67,44 +58,25 @@ shadowJar {
 
 
 task rjar(type: Jar) {
-    baseName = 'rulekit'
-    classifier = 'all'
+    archiveBaseName = 'rulekit'
+    archiveClassifier = 'all'
     manifest {
         attributes 'Implementation-Version': version
         attributes 'Main-Class': 'adaa.analytics.rules.consoles.ExperimentalConsole'
     }
 
     from {
-        configurations.compile.filter({ !(it.name =~ /.*\.pom/) }).collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.filter({ !(it.name =~ /.*\.pom/) }).collect { it.isDirectory() ? it : zipTree(it) }
     } {
         exclude('**/*.SF')
         exclude('**/*.DSA')
         exclude('**/*.RSA')
     }
-
+    duplicatesStrategy(DuplicatesStrategy.INCLUDE)
     with jar
     zip64 true
 }
 
-task acrules(type: Jar) {
-    baseName = 'ac-rules'
-    classifier = 'all'
-    manifest {
-        attributes 'Implementation-Version': version
-        attributes 'Main-Class': 'main.ActionRulesConsole'
-    }
-
-    from {
-        configurations.compile.filter({ !(it.name =~ /.*\.pom/) }).collect { it.isDirectory() ? it : zipTree(it) }
-    } {
-        exclude('**/*.SF')
-        exclude('**/*.DSA')
-        exclude('**/*.RSA')
-    }
-
-    with jar
-    zip64 true
-}
 
 task generateVersionProperties {
     doLast {
@@ -112,7 +84,7 @@ task generateVersionProperties {
         propertiesFile.parentFile.mkdirs()
         def properties = new Properties()
         properties.setProperty("version", rootProject.version.toString())
-        properties.setProperty("date", new SimpleDateFormat("dd.MM.yyyy").format(new java.util.Date()))
+        properties.setProperty("date", new SimpleDateFormat("dd.MM.yyyy").format(new Date()))
         properties.setProperty("commitHash", ['git', 'rev-parse', 'HEAD'].execute().text.trim())
         properties.setProperty("commitDate", ['git', 'log', '-1', '--format=%ct', '--date=local'].execute().text.trim())
         propertiesFile.withWriter { properties.store(it, null) }

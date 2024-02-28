@@ -276,7 +276,7 @@ public class Example implements Serializable, Map<String, Object> {
     }
 
     public Set<String> keySet() {
-        Set<String> allKeys = new HashSet();
+        Set<String> allKeys = new HashSet<>();
         Iterator<IAttribute> a = this.parentExampleSet.getAttributes().allAttributes();
 
         while(a.hasNext()) {
