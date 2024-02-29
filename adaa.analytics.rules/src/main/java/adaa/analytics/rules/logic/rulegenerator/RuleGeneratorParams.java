@@ -227,6 +227,12 @@ public class RuleGeneratorParams {
         parameterValues.put(PARAMETER_CONSIDER_OTHER_CLASSES, false);
         parameterValues.put(PARAMETER_PREFERRED_CONDITIONS_PER_RULE,  Integer.MAX_VALUE);
         parameterValues.put(PARAMETER_PREFERRED_ATTRIBUTES_PER_RULE, Integer.MAX_VALUE);
+
+
+        parameterValues.put(PARAMETER_EXPERT_CONFIG, null);
+        parameterValues.put(PARAMETER_EXPERT_RULES, null);
+        parameterValues.put(PARAMETER_EXPERT_PREFERRED_CONDITIONS, null);
+        parameterValues.put(PARAMETER_EXPERT_FORBIDDEN_CONDITIONS, null);
     }
 
     public boolean contains(String key) {
