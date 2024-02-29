@@ -44,6 +44,7 @@ public class AttributeInfo {
                 StrTokenizer typeTokenizer = new StrTokenizer(type);
                 typeTokenizer.setDelimiterChar(',');
                 typeTokenizer.setQuoteChar('\'');
+                typeTokenizer.setTrimmerMatcher(StrTokenizer.getCSVInstance().getTrimmerMatcher());
                 values = typeTokenizer.getTokenArray();
                 cellType = EColType.TEXT;
             } else {
