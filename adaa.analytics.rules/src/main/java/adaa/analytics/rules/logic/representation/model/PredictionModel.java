@@ -22,7 +22,6 @@ import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IAttributes;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.set.ExampleSetUtilities;
 import adaa.analytics.rules.rm.example.set.HeaderExampleSet;
 import adaa.analytics.rules.rm.example.set.RemappedExampleSet;
 import adaa.analytics.rules.rm.example.table.AttributeFactory;
@@ -62,7 +61,8 @@ public abstract class PredictionModel implements Serializable {
 	 * values.
 	 */
 
-	public IExampleSet apply(IExampleSet exampleSet) throws OperatorException {
+	public IExampleSet apply(IExampleSet exampleSet) throws OperatorException
+	{
 		IExampleSet mappedExampleSet = RemappedExampleSet.create(exampleSet, getTrainingHeader(), false, true);
 		checkCompatibility(mappedExampleSet);
 		IAttribute predictedLabel = createPredictionAttributes(mappedExampleSet, getLabel());
@@ -89,9 +89,7 @@ public abstract class PredictionModel implements Serializable {
 	 */
 	protected void checkCompatibility(IExampleSet exampleSet) throws OperatorException {
 		IExampleSet trainingHeaderSet = getTrainingHeader();
-		// check given constraints (might throw an UserError)
-		ExampleSetUtilities.checkAttributesMatching(trainingHeaderSet.getAttributes(),
-				exampleSet.getAttributes(), null, null);
+
 		// check number of attributes
 		if (exampleSet.getAttributes().size() != trainingHeaderSet.getAttributes().size()) {
 			Logger.log("The number of regular attributes of the given example set does not fit the number of attributes of the training example set, training: "
@@ -186,8 +184,7 @@ public abstract class PredictionModel implements Serializable {
 	 * predicted label and confidence are not longer needed, e.g. after each crossvalidation run or
 	 * after a meta learning iteration.
 	 */
-	public static void removePredictedLabel(IExampleSet exampleSet, boolean removePredictionFromTable,
-			boolean removeConfidencesFromTable) {
+	public static void removePredictedLabel(IExampleSet exampleSet) {
 		IAttribute predictedLabel = exampleSet.getAttributes().getPredictedLabel();
 		if (predictedLabel != null) { // remove old predicted label
 			if (predictedLabel.isNominal()) {
@@ -196,16 +193,10 @@ public abstract class PredictionModel implements Serializable {
 							IAttributes.CONFIDENCE_NAME + "_" + value);
 					if (currentConfidenceAttribute != null) {
 						exampleSet.getAttributes().remove(currentConfidenceAttribute);
-						if (removeConfidencesFromTable) {
-							exampleSet.getExampleTable().removeAttribute(currentConfidenceAttribute);
-						}
 					}
 				}
 			}
 			exampleSet.getAttributes().remove(predictedLabel);
-			if (removePredictionFromTable) {
-				exampleSet.getExampleTable().removeAttribute(predictedLabel);
-			}
 		}
 	}
 
@@ -218,7 +209,7 @@ public abstract class PredictionModel implements Serializable {
 		if (predictedLabel != null) {
 			// remove attributes but do not delete the columns from the table, otherwise copying is
 			// not possible
-			removePredictedLabel(destination, false, false);
+			removePredictedLabel(destination);
 			if (predictedLabel.isNominal()) {
 				for (String value : predictedLabel.getMapping().getValues()) {
 					IAttribute currentConfidenceAttribute = source.getAttributes()

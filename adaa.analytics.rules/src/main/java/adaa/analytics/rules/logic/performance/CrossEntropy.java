@@ -18,10 +18,9 @@
 */
 package adaa.analytics.rules.logic.performance;
 
-import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.tools.math.MathFunctions;
 
 import java.util.Iterator;
 
@@ -62,12 +61,14 @@ public class CrossEntropy extends MeasuredPerformance {
 			if (weightAttribute != null) {
 				weight = example.getValue(weightAttribute);
 			}
-			this.value -= weight * MathFunctions.ld(confidence);
+			this.value -= weight * ld(confidence);
 
 			this.counter += weight;
 		}
 	}
-
+	private double ld(double value) {
+		return Math.log(value) / Math.log(2.0);
+	}
 	@Override
 	public void countExample(Example example) {}
 

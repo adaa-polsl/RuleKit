@@ -40,7 +40,6 @@ dependencies {
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.6.0'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.16.1'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
-    implementation group: 'gov.nist.math', name: 'jama', version: '1.0.3'
     implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
     implementation group: 'com.intellij', name: 'annotations', version: '12.0'
 
