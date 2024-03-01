@@ -96,9 +96,7 @@ public class BinominalMapping implements INominalMapping {
             case 1:
                 return this.secondValue;
             default:
-                // @TODO uzupełnić wyjątek
-                throw new NotImplementedException("TODO uzupełnić wyjątek");
-                //throw new AttributeTypeException("Cannot map index of binary attribute to nominal value: index " + index + " is out of bounds!");
+                throw new RuntimeException("\nEXCEPTION: Cannot map index of binary attribute to nominal value: index " + index + " is out of bounds!");
         }
     }
 
@@ -107,13 +105,11 @@ public class BinominalMapping implements INominalMapping {
             this.firstValue = nominalValue;
         } else {
             if (index != 1) {
-                // @TODO uzupełnić wyjątek
-                //throw new AttributeTypeException("Cannot set mapping of binary attribute to index '" + index + "'.");
+                throw new RuntimeException("\nEXCEPTION: Cannot set value '" + nominalValue + "' mapping of binary attribute to index '" + index + "'.");
             }
 
             this.secondValue = nominalValue;
         }
-
     }
 
     public int getNegativeIndex() {
