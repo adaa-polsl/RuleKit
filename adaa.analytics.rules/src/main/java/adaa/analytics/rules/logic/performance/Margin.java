@@ -30,7 +30,7 @@ import java.util.Iterator;
  * 
  * @author Martin Scholz, Ingo Mierswa
  */
-public class Margin extends MeasuredPerformance {
+public class Margin extends AbstractPerformanceCounter {
 
 
 	/** The value of the criterion. */
@@ -43,8 +43,7 @@ public class Margin extends MeasuredPerformance {
 
 	/** Calculates the margin. */
 	@Override
-	public void startCounting(IExampleSet exampleSet, boolean useExampleWeights) {
-		super.startCounting(exampleSet, useExampleWeights);
+	public void startCounting(IExampleSet exampleSet) {
 		// compute margin
 		Iterator<Example> reader = exampleSet.iterator();
 		this.margin = 1.0d;

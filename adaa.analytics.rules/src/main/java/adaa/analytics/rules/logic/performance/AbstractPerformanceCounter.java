@@ -25,9 +25,9 @@ import adaa.analytics.rules.rm.tools.Tools;
 import java.util.List;
 
 
-public abstract class MeasuredPerformance {
+public abstract class AbstractPerformanceCounter {
 
-	public MeasuredPerformance() {
+	public AbstractPerformanceCounter() {
 	}
 	/**
 	 * Returns the name of this averagable. The returned string should only contain lowercase
@@ -47,11 +47,11 @@ public abstract class MeasuredPerformance {
 
 
 	/** Initializes the criterion. The default implementation does nothing. */
-	public void startCounting(IExampleSet set, boolean useExampleWeights)  {}
+	public void startCounting(IExampleSet set)  {}
 
-	public static String toString(List<MeasuredPerformance> list) {
+	public static String toString(List<AbstractPerformanceCounter> list) {
 		StringBuffer result = new StringBuffer(Tools.getLineSeparator() + "Performance [");
-		for (MeasuredPerformance mp :list) {
+		for (AbstractPerformanceCounter mp :list) {
 			result.append(Tools.getLineSeparator() + "-----");
 			result.append(mp.getName()+": "+mp.getAverage());
 		}

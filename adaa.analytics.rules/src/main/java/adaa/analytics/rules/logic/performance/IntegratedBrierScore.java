@@ -30,7 +30,7 @@ import java.util.List;
  *
  * @author Adam Gudys
  */
-public class IntegratedBrierScore extends MeasuredPerformance {
+public class IntegratedBrierScore extends AbstractPerformanceCounter {
 
 	
 	protected double score;
@@ -40,7 +40,7 @@ public class IntegratedBrierScore extends MeasuredPerformance {
 	 }
 	 
 	 @Override
-	 public void startCounting(IExampleSet testSet, boolean useExampleWeights) {
+	 public void startCounting(IExampleSet testSet) {
 		 	 
 		IAttribute survTime = testSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
 		 IAttribute survStat = testSet.getAttributes().getLabel();

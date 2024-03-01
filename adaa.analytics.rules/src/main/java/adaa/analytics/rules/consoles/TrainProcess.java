@@ -3,7 +3,7 @@ package adaa.analytics.rules.consoles;
 import adaa.analytics.rules.consoles.config.DatasetConfiguration;
 import adaa.analytics.rules.consoles.config.ParamSetWrapper;
 import adaa.analytics.rules.consoles.config.TrainElement;
-import adaa.analytics.rules.logic.performance.MeasuredPerformance;
+import adaa.analytics.rules.logic.performance.AbstractPerformanceCounter;
 import adaa.analytics.rules.logic.performance.RulePerformanceCounter;
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.Logger;
@@ -144,21 +144,21 @@ public class TrainProcess {
 
         sb.append("\nModel characteristics:\n");
 
-        List<MeasuredPerformance> performance = RulePerformanceCounter.recalculatePerformance(ruleModel);
-        for (MeasuredPerformance mp: performance) {
+        List<AbstractPerformanceCounter> performance = RulePerformanceCounter.recalculatePerformance(ruleModel);
+        for (AbstractPerformanceCounter mp: performance) {
             sb.append(mp.getName()).append(": ").append(mp.getAverage()).append("\n");
         }
 
         trainingReport.append(sb.toString());
     }
 
-    private void reportTrainingPerformance(List<MeasuredPerformance> performanceData) throws IOException {
+    private void reportTrainingPerformance(List<AbstractPerformanceCounter> performanceData) throws IOException {
         // training report
         StringBuilder sb = new StringBuilder();
         // if evaluator is enabled
         sb.append("\nTraining set performance:\n");
         // add performance
-        for (MeasuredPerformance pc : performanceData) {
+        for (AbstractPerformanceCounter pc : performanceData) {
             double avg = pc.getAverage();
             sb.append(pc.getName()).append(": ").append(avg).append("\n");
         }

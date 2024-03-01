@@ -26,7 +26,7 @@ import java.util.BitSet;
  *
  * @author Adam Gudys
  */
-public class ClassificationRulesPerformance extends MeasuredPerformance {
+public class ClassificationRulesPerformance extends AbstractPerformanceCounter {
 
 	public static final int RULES_PER_EXAMPLE = 1;
 	
@@ -45,7 +45,7 @@ public class ClassificationRulesPerformance extends MeasuredPerformance {
 	}
 	
 	 @Override
-	 public void startCounting(IExampleSet testSet, boolean useExampleWeights)  {
+	 public void startCounting(IExampleSet testSet)  {
 		 
 		 int conflictCount = 0;
 		 int negativeConflictCount = 0;

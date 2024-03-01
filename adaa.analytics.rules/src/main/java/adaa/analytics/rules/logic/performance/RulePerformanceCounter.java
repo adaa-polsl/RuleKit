@@ -18,7 +18,7 @@ import java.util.List;
 
 public class RulePerformanceCounter {
 
-    private static final MeasuredPerformance[] MULTICLASS_CRITERIA_CLASSES = {
+    private static final AbstractPerformanceCounter[] MULTICLASS_CRITERIA_CLASSES = {
             new MultiClassificationPerformance(MultiClassificationPerformance.ACCURACY),
             new MultiClassificationPerformance(MultiClassificationPerformance.ERROR),
             new MultiClassificationPerformance(MultiClassificationPerformance.KAPPA),
@@ -32,7 +32,7 @@ public class RulePerformanceCounter {
             new LogisticLoss()
     };
 
-    private static final MeasuredPerformance[] BINARY_CRITERIA_CLASSES = {
+    private static final AbstractPerformanceCounter[] BINARY_CRITERIA_CLASSES = {
             new BinaryClassificationPerformance(BinaryClassificationPerformance.PRECISION),
             new BinaryClassificationPerformance(BinaryClassificationPerformance.SENSITIVITY),
             new BinaryClassificationPerformance(BinaryClassificationPerformance.SPECIFICITY),
@@ -49,7 +49,7 @@ public class RulePerformanceCounter {
             new BinaryClassificationPerformance(BinaryClassificationPerformance.TRUE_NEGATIVE),
     };
 
-    private static final MeasuredPerformance[] REGRESSION_CRITERIA_CLASSES = {
+    private static final AbstractPerformanceCounter[] REGRESSION_CRITERIA_CLASSES = {
             new AbsoluteError(),
             new RelativeError(),
             new LenientRelativeError(),
@@ -62,11 +62,11 @@ public class RulePerformanceCounter {
             new SquaredCorrelationCriterion()
     };
 
-    private static final MeasuredPerformance[] SURVIVAL_CRITERIA_CLASSES = {
+    private static final AbstractPerformanceCounter[] SURVIVAL_CRITERIA_CLASSES = {
             new IntegratedBrierScore()
     };
 
-    private List<MeasuredPerformance> choosedCriterion = new ArrayList<>();
+    private List<AbstractPerformanceCounter> choosedCriterion = new ArrayList<>();
 
     private IExampleSet testSet;
 
@@ -114,10 +114,10 @@ public class RulePerformanceCounter {
         }
 
         // initialize all criteria
-        for (MeasuredPerformance c : choosedCriterion) {
+        for (AbstractPerformanceCounter c : choosedCriterion) {
 
             // init all criteria
-            c.startCounting(testSet, true);
+            c.startCounting(testSet);
         }
 
         Iterator<Example> exampleIterator = testSet.iterator();
@@ -128,13 +128,13 @@ public class RulePerformanceCounter {
                 continue;
             }
 
-            for (MeasuredPerformance criterion: choosedCriterion) {
+            for (AbstractPerformanceCounter criterion: choosedCriterion) {
                      criterion.countExample(example);
             }
         }
     }
 
-    public List<MeasuredPerformance> getResult()
+    public List<AbstractPerformanceCounter> getResult()
     {
         return choosedCriterion;
     }
@@ -146,8 +146,8 @@ public class RulePerformanceCounter {
      * @param rs Rule set to be investigated.
      * @return Performance vector with model characteristics.
      */
-    public static List<MeasuredPerformance> recalculatePerformance(RuleSetBase rs) {
-        List<MeasuredPerformance> ret = new ArrayList<>();
+    public static List<AbstractPerformanceCounter> recalculatePerformance(RuleSetBase rs) {
+        List<AbstractPerformanceCounter> ret = new ArrayList<>();
         ret.add(new RecountedPerformance("time_total_s", rs.getTotalTime()));
 
         ret.add(new RecountedPerformance("time_growing_s", rs.getGrowingTime()));

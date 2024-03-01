@@ -21,7 +21,7 @@ package adaa.analytics.rules.logic.performance;
 
 import adaa.analytics.rules.rm.example.Example;
 
-public class RecountedPerformance extends MeasuredPerformance{
+public class RecountedPerformance extends AbstractPerformanceCounter {
 
 	private String name;
 

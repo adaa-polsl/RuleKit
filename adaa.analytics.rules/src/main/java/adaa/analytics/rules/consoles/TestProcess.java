@@ -3,7 +3,7 @@ package adaa.analytics.rules.consoles;
 import adaa.analytics.rules.consoles.config.DatasetConfiguration;
 import adaa.analytics.rules.consoles.config.ParamSetWrapper;
 import adaa.analytics.rules.consoles.config.PredictElement;
-import adaa.analytics.rules.logic.performance.MeasuredPerformance;
+import adaa.analytics.rules.logic.performance.AbstractPerformanceCounter;
 import adaa.analytics.rules.logic.performance.RulePerformanceCounter;
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.Logger;
@@ -15,7 +15,6 @@ import utils.ArffFileWriter;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -94,7 +93,7 @@ public class TestProcess {
                 RuleSetBase model = ModelFileInOut.read(modelFilePath);
                 IExampleSet appliedEs = model.apply(testEs);
 
-                List<MeasuredPerformance> pv = null;
+                List<AbstractPerformanceCounter> pv = null;
                 if (!datasetConfiguration.hasOptionParameter(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
                     RulePerformanceCounter rpc = new RulePerformanceCounter(appliedEs);
                     rpc.countValues();
@@ -126,31 +125,31 @@ public class TestProcess {
 
     }
 
-    private void generatePerformanceReport(RuleSetBase model, List<MeasuredPerformance> performanceData, String testFileName, String dateString, double elapsedSec) throws IOException {
-        List<MeasuredPerformance> performance = RulePerformanceCounter.recalculatePerformance(model);
+    private void generatePerformanceReport(RuleSetBase model, List<AbstractPerformanceCounter> performanceData, String testFileName, String dateString, double elapsedSec) throws IOException {
+        List<AbstractPerformanceCounter> performance = RulePerformanceCounter.recalculatePerformance(model);
 
-        Logger.log(MeasuredPerformance.toString(performance) + "\n", Level.FINE);
+        Logger.log(AbstractPerformanceCounter.toString(performance) + "\n", Level.FINE);
 
         // generate headers
         StringBuilder performanceHeader = new StringBuilder("Dataset, time started, elapsed[s], ");
         StringBuilder row = new StringBuilder(testFileName + "," + dateString + "," + elapsedSec + ",");
 
-        for(MeasuredPerformance pc: performance){
+        for(AbstractPerformanceCounter pc: performance){
             performanceHeader.append(pc.getName()).append(",");
         }
 
         if (performanceData != null) {
-            for(MeasuredPerformance pc: performanceData){
+            for(AbstractPerformanceCounter pc: performanceData){
                 performanceHeader.append(pc.getName()).append(",");
             }
         }
 
-        for(MeasuredPerformance pc: performance){
+        for(AbstractPerformanceCounter pc: performance){
             row.append(pc.getAverage()).append(", ");
         }
 
         if (performanceData != null) {
-            for(MeasuredPerformance pc: performanceData){
+            for(AbstractPerformanceCounter pc: performanceData){
                 row.append(pc.getAverage()).append(", ");
             }
         }
