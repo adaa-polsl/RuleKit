@@ -16,9 +16,11 @@ package adaa.analytics.rules.logic.representation;
 
 import com.rapidminer.operator.ports.metadata.AttributeMetaData;
 import com.rapidminer.operator.ports.metadata.ExampleSetMetaData;
+import org.apache.commons.lang.math.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,45 +41,50 @@ public class RuleParser {
 	 */
 	public static Rule parseRule(String s, ExampleSetMetaData meta) {
 		Rule rule = null; 
-		
-    	Pattern pattern = Pattern.compile("IF\\s+(?<premise>.+)\\s+THEN(?<consequence>\\s+.*|\\s*)");
-    	Matcher matcher = pattern.matcher(s);
- 	
-    	boolean isSurvival = false;
+
+		Pattern pattern = Pattern.compile("IF\\s+(?<premise>.+)\\s+THEN(?<consequence>\\s+.*|\\s*)");
+		Matcher matcher = pattern.matcher(s);
+
+		boolean isSurvival = false;
 		if (meta.getAttributeByRole(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
 			isSurvival = true;
 		}
-    	
-    	if (matcher.find()) {
-	    	String pre = matcher.group("premise");
-	    	String con = matcher.group("consequence");
 
-			ElementaryCondition consequence;
-	    	CompoundCondition premise = parseCompoundCondition(pre, meta);
+		if (matcher.find()) {
+			String pre = matcher.group("premise");
+			String con = matcher.group("consequence");
 
-	    	if (con == null || con.trim().length() == 0) {
-	    		if (!meta.getLabelMetaData().isNumerical())
-	    			throw new IllegalArgumentException("Empty conclusion for non-numeric label attribute");
-	    		consequence = new ElementaryCondition();
-	    		consequence.attribute = meta.getLabelMetaData().getName();
-	    		consequence.valueSet = new SingletonSet(NaN, null);
-	    		consequence.adjustable = false;
-	    		consequence.disabled = false;
+			ElementaryCondition consequence = null;
+			CompoundCondition premise = parseCompoundCondition(pre, meta);
+
+			if (con == null || con.trim().length() == 0) {
+				if (!meta.getLabelMetaData().isNumerical()) {
+					Logger.log("Empty conclusion for nominal label"+ "\n", Level.WARNING);
+				} else {
+					consequence = new ElementaryCondition();
+					consequence.attribute = meta.getLabelMetaData().getName();
+					consequence.valueSet = new SingletonSet(NaN, null);
+					consequence.adjustable = false;
+					consequence.disabled = false;
+				}
 			} else {
 				consequence = parseElementaryCondition(con, meta);
 			}
-	    	
-	    	if (premise == null || consequence == null) {
-	    		return null;
-	    	}
-	    	
-	    	rule = meta.getLabelMetaData().isNominal() 
-	    			? new ClassificationRule(premise, consequence) 
-	    			: (isSurvival 
+
+			if (premise != null && consequence != null) {
+
+				rule = meta.getLabelMetaData().isNominal()
+						? new ClassificationRule(premise, consequence)
+						: (isSurvival
 						? new SurvivalRule(premise, consequence)
 						: new RegressionRule(premise, consequence));
-    	}
-    	
+			}
+		}
+
+		if (rule == null) {
+			Logger.log("Omitting expert's knowledge entry: " + s + "\n", Level.WARNING);
+		}
+
     	return rule;
 	}
 	
@@ -143,6 +150,10 @@ public class RuleParser {
 	    	IValueSet valueSet = null;
 
 	    	AttributeMetaData attributeMeta = meta.getAttributeByName(attribute);
+	    	if (attributeMeta == null) {
+				Logger.log("Attribute <" + attribute + "> not found"+ "\n", Level.WARNING);
+				return null;
+			}
 
 	    	ConditionBase.Type type = (numBrackets == 0) ? ConditionBase.Type.NORMAL :
 	    		((numBrackets == 1) ? ConditionBase.Type.PREFERRED : ConditionBase.Type.FORCED);
@@ -159,7 +170,8 @@ public class RuleParser {
 					mapping.addAll(attributeMeta.getValueSet());
 					double v = mapping.indexOf(value);
 		    		if (v == -1) {
-		    			return null;
+						Logger.log("Invalid value <" + value + "> of the nominal attribute <" + attribute + ">"+ "\n", Level.WARNING);
+						return null;
 		    		}
 		    		valueSet = new SingletonSet(v, mapping);
 		    			
@@ -180,14 +192,36 @@ public class RuleParser {
 			    	matcher = regex.matcher(valueString);
 	
 			    	if (matcher.find()) {
+
 			    		String lo = matcher.group("lo");
 			    		String hi = matcher.group("hi");
-				    		
-				    	valueSet = new Interval(
-				    			lo.equals("-inf") ? Interval.MINUS_INF : Double.parseDouble(lo), 
-				    			hi.equals("inf")? Interval.INF : Double.parseDouble(hi),
-				    			leftClosed, rightClosed);
-			    	}
+
+						double numLo = Double.NaN;
+						double numHi = Double.NaN;
+
+			    		if (lo.equals("-inf")) {
+			    			numLo = Interval.MINUS_INF;
+						} else if (NumberUtils.isNumber(lo)) {
+			    			numLo = Double.parseDouble(lo);
+						} else {
+							Logger.log("Invalid lower interval bound: " + lo + "\n" , Level.WARNING);
+							return null;
+						}
+
+						if (hi.equals("inf")) {
+							numHi = Interval.INF;
+						} else if (NumberUtils.isNumber(hi)) {
+							numHi = Double.parseDouble(hi);
+						} else {
+							Logger.log("Invalid upper interval bound: " + hi + "\n", Level.WARNING );
+							return null;
+						}
+
+				    	valueSet = new Interval(numLo, numHi, leftClosed, rightClosed);
+			    	} else {
+						Logger.log("Invalid interval: " + valueString, Level.WARNING );
+						return null;
+					}
 		    	}
 	    	}
 	    	
@@ -196,8 +230,11 @@ public class RuleParser {
 	    		out.setType(type);
 	    		out.setAdjustable(adjustable);
 	    	}
-    	}
+    	} else {
+			Logger.log("Invalid elementary condition: " + s + "\n", Level.WARNING );
+		}
     	
 		return out;
 	}
+
 }
