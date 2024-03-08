@@ -15,8 +15,6 @@
 package adaa.analytics.rules.logic.performance.binary;
 
 
-import adaa.analytics.rules.logic.performance.binary.BinaryClassificationPerformance;
-
 /**
  * Class gathering additional performance measures for binary classification models (e.g., geometric mean of sensitivity
  * and specificity).

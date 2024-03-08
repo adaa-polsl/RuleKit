@@ -420,9 +420,7 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
         } catch (ExceptionInInitializerError e) {
             if (e.getCause().getClass().getName().contains("AccessControlException")) {
                 throw new IllegalStateException("Exception: java.security.AccessControlException occurred in 'RuleKit Generator'. " +
-                        "Induction measure: 'UserDefined' is not supported for unsigned plugin. "+
-                        "Please choose different induction measure. " +
-                        "Read more: https://docs.rapidminer.com/latest/developers/security/",e);
+                        "Induction measure: 'UserDefined' is not supported for unsigned plugin. ",e);
             } else {
                 throw (e);
             }

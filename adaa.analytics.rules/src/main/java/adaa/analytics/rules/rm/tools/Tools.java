@@ -31,7 +31,6 @@ public class Tools {
     private static final String MISSING_DATE = "Missing";
     private static final String MISSING_TIME = "Missing";
     private static int numberOfFractionDigits;
-    public static final String RESOURCE_PREFIX = "com/rapidminer/resources/";
     public static String[] availableTimeZoneNames;
     public static final int SYSTEM_TIME_ZONE = 0;
     public static final String[] TRUE_STRINGS;
@@ -118,7 +117,6 @@ public class Tools {
     }
 
     public static int getPreferredTimeZoneIndex() {
-//        String timeZoneString = ParameterService.getParameterValue("rapidminer.general.timezone");
         String timeZoneString = null;
         int preferredTimeZone = 0;
 
@@ -212,37 +210,8 @@ public class Tools {
 //        PLUGIN_RESOURCE_SOURCES = Collections.synchronizedMap(new HashMap());
 //        ALL_RESOURCE_SOURCES.add(new ResourceSource(adaa.analytics.rules.rm.tools.Tools.class.getClassLoader()));
         int numberDigits = 3;
-//
-//        try {
-//            String numberDigitsString = ParameterService.getParameterValue("rapidminer.general.fractiondigits.numbers");
-//            numberDigits = Integer.parseInt(numberDigitsString);
-//        } catch (NumberFormatException var2) {
-//        }
-
         numberOfFractionDigits = numberDigits;
         epsilonDisplayValue = Math.min(1.11E-16, 1.0 / Math.pow(10.0, (double)numberOfFractionDigits));
-//        NUMBER_FORMAT = new DecimalFormat(getDecimalFormatPattern(numberDigits), DecimalFormatSymbols.getInstance(FORMAT_LOCALE));
-//        ParameterService.registerParameterChangeListener(new ParameterChangeListener() {
-//            public void informParameterSaved() {
-//            }
-//
-//            public void informParameterChanged(String key, String value) {
-//                if ("rapidminer.general.fractiondigits.numbers".equals(key)) {
-//                    int numberDigits = 3;
-//
-//                    try {
-//                        String numberDigitsString = ParameterService.getParameterValue("rapidminer.general.fractiondigits.numbers");
-//                        numberDigits = Integer.parseInt(numberDigitsString);
-//                    } catch (NumberFormatException var5) {
-//                    }
-//
-//                    adaa.analytics.rules.rm.tools.Tools.numberOfFractionDigits = numberDigits;
-//                    adaa.analytics.rules.rm.tools.Tools.epsilonDisplayValue = Math.min(1.11E-16, 1.0 / Math.pow(10.0, (double) adaa.analytics.rules.rm.tools.Tools.numberOfFractionDigits));
-//                    adaa.analytics.rules.rm.tools.Tools.NUMBER_FORMAT = new DecimalFormat(adaa.analytics.rules.rm.tools.Tools.getDecimalFormatPattern(numberDigits), DecimalFormatSymbols.getInstance(adaa.analytics.rules.rm.tools.Tools.FORMAT_LOCALE));
-//                }
-//
-//            }
-//        });
         String[] allTimeZoneNames = TimeZone.getAvailableIDs();
         Arrays.sort(allTimeZoneNames);
         availableTimeZoneNames = new String[allTimeZoneNames.length + 1];

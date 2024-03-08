@@ -1,21 +1,3 @@
-/**
- * Copyright (C) 2001-2019 by RapidMiner and the contributors
- * <p>
- * Complete list of developers available at our web site:
- * <p>
- * http://rapidminer.com
- * <p>
- * This program is free software: you can redistribute it and/or modify it under the terms of the
- * GNU Affero General Public License as published by the Free Software Foundation, either version 3
- * of the License, or (at your option) any later version.
- * <p>
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Affero General Public License for more details.
- * <p>
- * You should have received a copy of the GNU Affero General Public License along with this program.
- * If not, see http://www.gnu.org/licenses/.
- */
 package adaa.analytics.rules.logic.performance.simple;
 
 import adaa.analytics.rules.logic.performance.AbstractPerformanceCounter;
@@ -33,7 +15,6 @@ import adaa.analytics.rules.rm.example.IExampleSet;
  * subclasses can be used for both regression and classification problems. In case of classification
  * the confidence value for the desired true label is used as prediction.
  *
- * @author Ingo Mierswa, Simon Fischer
  */
 public abstract class SimpleCriterion extends AbstractPerformanceCounter {
 
