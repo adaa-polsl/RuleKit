@@ -19,14 +19,6 @@
 //import adaa.analytics.rules.logic.representation.model.ClassificationRuleSet;
 //import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
 //import adaa.analytics.rules.logic.rulegenerator.RuleGeneratorParams;
-//import adaa.analytics.rules.utils.RapidMiner5;
-//import com.rapidminer.RapidMiner;
-//import adaa.analytics.rules.rm.example.IExampleSet;
-//import com.rapidminer.example.set.SplittedExampleSet;
-//import com.rapidminer.operator.*;
-//import com.rapidminer.tools.LogService;
-//import com.rapidminer.tools.PlatformUtilities;
-//import com.rapidminer5.operator.io.ArffExampleSource;
 //import org.junit.Test;
 //import utils.TestResourcePathFactory;
 //
@@ -43,13 +35,6 @@
 //
 //    private final static String LABEL_ATTRIBUTE = "Future Customer";
 //
-//    private void initRapidMiner() {
-//        System.setProperty(PlatformUtilities.PROPERTY_RAPIDMINER_HOME, Paths.get("").toAbsolutePath().toString());
-//        LogService.getRoot().setLevel(Level.OFF);
-//        RapidMiner.setExecutionMode(RapidMiner.ExecutionMode.COMMAND_LINE);
-//
-//        RapidMiner.init();
-//    }
 //
 //    private IExampleSet getExampleSet(String filePath) throws OperatorCreationException, OperatorException {
 //
@@ -102,7 +87,7 @@
 //
 //    @Test
 //    public void testRuleInductionOnSplittedExampleSet() throws OperatorException, OperatorCreationException {
-//        this.initRapidMiner();
+//
 //
 //        Path trainFilePath = TestResourcePathFactory.get(TRAIN_DEALS_FILE);
 //        Path doubledFilePath = TestResourcePathFactory.get(TRAIN_DEALS_DOUBLED_FILE);

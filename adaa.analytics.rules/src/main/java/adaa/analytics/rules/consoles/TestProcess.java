@@ -4,6 +4,7 @@ import adaa.analytics.rules.consoles.config.DatasetConfiguration;
 import adaa.analytics.rules.consoles.config.ParamSetWrapper;
 import adaa.analytics.rules.consoles.config.PredictElement;
 import adaa.analytics.rules.logic.performance.AbstractPerformanceCounter;
+import adaa.analytics.rules.logic.performance.PerformanceResult;
 import adaa.analytics.rules.logic.performance.RulePerformanceCounter;
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.Logger;
@@ -93,7 +94,7 @@ public class TestProcess {
                 RuleSetBase model = ModelFileInOut.read(modelFilePath);
                 IExampleSet appliedEs = model.apply(testEs);
 
-                List<AbstractPerformanceCounter> pv = null;
+                List<PerformanceResult> pv = null;
                 if (!datasetConfiguration.hasOptionParameter(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
                     RulePerformanceCounter rpc = new RulePerformanceCounter(appliedEs);
                     rpc.countValues();
@@ -125,32 +126,32 @@ public class TestProcess {
 
     }
 
-    private void generatePerformanceReport(RuleSetBase model, List<AbstractPerformanceCounter> performanceData, String testFileName, String dateString, double elapsedSec) throws IOException {
-        List<AbstractPerformanceCounter> performance = RulePerformanceCounter.recalculatePerformance(model);
+    private void generatePerformanceReport(RuleSetBase model, List<PerformanceResult> performanceData, String testFileName, String dateString, double elapsedSec) throws IOException {
+        List<PerformanceResult> performance = RulePerformanceCounter.recalculatePerformance(model);
 
-        Logger.log(AbstractPerformanceCounter.toString(performance) + "\n", Level.FINE);
+        Logger.log(PerformanceResult.toString(performance) + "\n", Level.FINE);
 
         // generate headers
         StringBuilder performanceHeader = new StringBuilder("Dataset, time started, elapsed[s], ");
         StringBuilder row = new StringBuilder(testFileName + "," + dateString + "," + elapsedSec + ",");
 
-        for(AbstractPerformanceCounter pc: performance){
+        for(PerformanceResult pc: performance){
             performanceHeader.append(pc.getName()).append(",");
         }
 
         if (performanceData != null) {
-            for(AbstractPerformanceCounter pc: performanceData){
+            for(PerformanceResult pc: performanceData){
                 performanceHeader.append(pc.getName()).append(",");
             }
         }
 
-        for(AbstractPerformanceCounter pc: performance){
-            row.append(pc.getAverage()).append(", ");
+        for(PerformanceResult pc: performance){
+            row.append(pc.getValue()).append(", ");
         }
 
         if (performanceData != null) {
-            for(AbstractPerformanceCounter pc: performanceData){
-                row.append(pc.getAverage()).append(", ");
+            for(PerformanceResult pc: performanceData){
+                row.append(pc.getValue()).append(", ");
             }
         }
 

@@ -1,19 +1,16 @@
 package adaa.analytics.rules.logic.performance;
 
-import adaa.analytics.rules.logic.performance.binary.BinaryClassificationPerformance;
-import adaa.analytics.rules.logic.performance.binary.ExtendedBinaryPerformance;
-import adaa.analytics.rules.logic.performance.simple.*;
-import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.logic.representation.ContrastIndicators;
+import adaa.analytics.rules.logic.representation.ContrastRule;
+import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.logic.representation.model.ContrastRuleSet;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IExampleSet;
 import adaa.analytics.rules.rm.example.IStatistics;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class RulePerformanceCounter {
@@ -25,11 +22,7 @@ public class RulePerformanceCounter {
             new ClassificationRulesPerformance(ClassificationRulesPerformance.BALANCED_ACCURACY),
             new ClassificationRulesPerformance(ClassificationRulesPerformance.RULES_PER_EXAMPLE),
             new ClassificationRulesPerformance(ClassificationRulesPerformance.VOTING_CONFLICTS),
-            new ClassificationRulesPerformance( ClassificationRulesPerformance.NEGATIVE_VOTING_CONFLICTS),
-            new CrossEntropy(),
-            new Margin(),
-            new SoftMarginLoss(),
-            new LogisticLoss()
+            new ClassificationRulesPerformance(ClassificationRulesPerformance.NEGATIVE_VOTING_CONFLICTS)
     };
 
     private static final AbstractPerformanceCounter[] BINARY_CRITERIA_CLASSES = {
@@ -39,7 +32,7 @@ public class RulePerformanceCounter {
             new BinaryClassificationPerformance(BinaryClassificationPerformance.NEGATIVE_PREDICTIVE_VALUE),
             new BinaryClassificationPerformance(BinaryClassificationPerformance.FALLOUT),
             new BinaryClassificationPerformance(BinaryClassificationPerformance.YOUDEN),
-            new ExtendedBinaryPerformance(),
+            new BinaryClassificationPerformance(BinaryClassificationPerformance.GEOMETRIC_MEAN),
             new BinaryClassificationPerformance(BinaryClassificationPerformance.PSEP),
             new BinaryClassificationPerformance(BinaryClassificationPerformance.LIFT),
             new BinaryClassificationPerformance(BinaryClassificationPerformance.F_MEASURE),
@@ -50,13 +43,13 @@ public class RulePerformanceCounter {
     };
 
     private static final AbstractPerformanceCounter[] REGRESSION_CRITERIA_CLASSES = {
-            new AbsoluteError(),
-            new RelativeError(),
-            new LenientRelativeError(),
-            new StrictRelativeError(),
+            new SimpleCriterion(SimpleCriterion.ABSOLUTE_ERROR),
+            new SimpleCriterion(SimpleCriterion.RELATIVE_ERROR),
+            new SimpleCriterion(SimpleCriterion.LENIENT_RELATIVE_ERROR),
+            new SimpleCriterion(SimpleCriterion.STRICT_RELATIVE_ERROR),
             new NormalizedAbsoluteError(),
-            new SquaredError(),
-            new RootMeanSquaredError(),
+            new SimpleCriterion(SimpleCriterion.SQUARED_ERROR),
+            new SimpleCriterion(SimpleCriterion.ROOT_MEAN_SQUARED_ERROR),
             new RootRelativeSquaredError(),
             new CorrelationCriterion(),
             new SquaredCorrelationCriterion()
@@ -68,16 +61,17 @@ public class RulePerformanceCounter {
 
     private List<AbstractPerformanceCounter> choosedCriterion = new ArrayList<>();
 
+
+    private List<PerformanceResult> performanceResults = new ArrayList<>();
+
     private IExampleSet testSet;
 
-    public RulePerformanceCounter(IExampleSet testSet)
-    {
+    public RulePerformanceCounter(IExampleSet testSet) {
         this.testSet = testSet;
         prepareCriteriaNames();
     }
 
-    private void prepareCriteriaNames()
-    {
+    private void prepareCriteriaNames() {
         IAttribute label = testSet.getAttributes().getLabel();
 
         if (testSet.getAnnotations().containsKey(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
@@ -114,29 +108,16 @@ public class RulePerformanceCounter {
         }
 
         // initialize all criteria
-        for (AbstractPerformanceCounter c : choosedCriterion) {
+        for (AbstractPerformanceCounter criterion : choosedCriterion) {
 
             // init all criteria
-            c.startCounting(testSet);
-        }
-
-        Iterator<Example> exampleIterator = testSet.iterator();
-        while (exampleIterator.hasNext()) {
-            Example example = exampleIterator.next();
-
-            if ((Double.isNaN(example.getLabel()) || Double.isNaN(example.getPredictedLabel()))) {
-                continue;
-            }
-
-            for (AbstractPerformanceCounter criterion: choosedCriterion) {
-                     criterion.countExample(example);
-            }
+            PerformanceResult pr = criterion.countExample(testSet);
+            performanceResults.add(pr);
         }
     }
 
-    public List<AbstractPerformanceCounter> getResult()
-    {
-        return choosedCriterion;
+    public List<PerformanceResult> getResult() {
+        return performanceResults;
     }
 
 
@@ -146,16 +127,15 @@ public class RulePerformanceCounter {
      * @param rs Rule set to be investigated.
      * @return Performance vector with model characteristics.
      */
-    public static List<AbstractPerformanceCounter> recalculatePerformance(RuleSetBase rs) {
-        List<AbstractPerformanceCounter> ret = new ArrayList<>();
-        ret.add(new RecountedPerformance("time_total_s", rs.getTotalTime()));
+    public static List<PerformanceResult> recalculatePerformance(RuleSetBase rs) {
+        List<PerformanceResult> ret = new ArrayList<>();
+        ret.add(new PerformanceResult("time_total_s", rs.getTotalTime()));
 
-        ret.add(new RecountedPerformance("time_growing_s", rs.getGrowingTime()));
-        ret.add(new RecountedPerformance("time_pruning_s", rs.getPruningTime()));
-        ret.add(new RecountedPerformance("#rules", rs.getRules().size()));
-        ret.add(new RecountedPerformance("#conditions_per_rule", rs.calculateConditionsCount()));
-        ret.add(new RecountedPerformance("#induced_conditions_per_rule", rs.calculateInducedCondtionsCount()));
-
+        ret.add(new PerformanceResult("time_growing_s", rs.getGrowingTime()));
+        ret.add(new PerformanceResult("time_pruning_s", rs.getPruningTime()));
+        ret.add(new PerformanceResult("#rules", rs.getRules().size()));
+        ret.add(new PerformanceResult("#conditions_per_rule", rs.calculateConditionsCount()));
+        ret.add(new PerformanceResult("#induced_conditions_per_rule", rs.calculateInducedCondtionsCount()));
 
 
         if (rs instanceof ContrastRuleSet) {
@@ -164,26 +144,26 @@ public class RulePerformanceCounter {
             ContrastIndicators indicators = crs.calculateAvgContrastIndicators();
 
             for (String k : indicators.values.keySet()) {
-                ret.add(new RecountedPerformance(k, indicators.get(k)));
+                ret.add(new PerformanceResult(k, indicators.get(k)));
             }
 
             double[] stats = crs.calculateAttributeStats();
-            ret.add(new RecountedPerformance("attribute_occurence", stats[0]));
-            ret.add(new RecountedPerformance("redundancy", stats[1]));
-            ret.add(new RecountedPerformance("total_duplicates", crs.getTotalDuplicates()));
+            ret.add(new PerformanceResult("attribute_occurence", stats[0]));
+            ret.add(new PerformanceResult("redundancy", stats[1]));
+            ret.add(new PerformanceResult("total_duplicates", crs.getTotalDuplicates()));
         } else {
-            ret.add(new RecountedPerformance("avg_rule_coverage", rs.calculateAvgRuleCoverage()));
-            ret.add(new RecountedPerformance("avg_rule_precision", rs.calculateAvgRulePrecision()));
-            ret.add(new RecountedPerformance("avg_rule_quality", rs.calculateAvgRuleQuality()));
+            ret.add(new PerformanceResult("avg_rule_coverage", rs.calculateAvgRuleCoverage()));
+            ret.add(new PerformanceResult("avg_rule_precision", rs.calculateAvgRulePrecision()));
+            ret.add(new PerformanceResult("avg_rule_quality", rs.calculateAvgRuleQuality()));
 
 
-            ret.add(new RecountedPerformance("avg_pvalue", rs.calculateSignificance(0.05).p));
-            ret.add(new RecountedPerformance("avg_FDR_pvalue", rs.calculateSignificanceFDR(0.05).p));
-            ret.add(new RecountedPerformance("avg_FWER_pvalue", rs.calculateSignificanceFWER(0.05).p));
+            ret.add(new PerformanceResult("avg_pvalue", rs.calculateSignificance(0.05).p));
+            ret.add(new PerformanceResult("avg_FDR_pvalue", rs.calculateSignificanceFDR(0.05).p));
+            ret.add(new PerformanceResult("avg_FWER_pvalue", rs.calculateSignificanceFWER(0.05).p));
 
-            ret.add(new RecountedPerformance("fraction_0.05_significant", rs.calculateSignificance(0.05).fraction));
-            ret.add(new RecountedPerformance("fraction_0.05_FDR_significant", rs.calculateSignificanceFDR(0.05).fraction));
-            ret.add(new RecountedPerformance("fraction_0.05_FWER_significant", rs.calculateSignificanceFWER(0.05).fraction));
+            ret.add(new PerformanceResult("fraction_0.05_significant", rs.calculateSignificance(0.05).fraction));
+            ret.add(new PerformanceResult("fraction_0.05_FDR_significant", rs.calculateSignificanceFDR(0.05).fraction));
+            ret.add(new PerformanceResult("fraction_0.05_FWER_significant", rs.calculateSignificanceFWER(0.05).fraction));
         }
         return ret;
     }

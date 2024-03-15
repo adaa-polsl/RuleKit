@@ -5,8 +5,6 @@
 //import adaa.analytics.rules.rm.example.IAttribute;
 //import adaa.analytics.rules.rm.example.Example;
 //import adaa.analytics.rules.rm.example.IExampleSet;
-//import com.rapidminer.operator.OperatorCreationException;
-//import com.rapidminer.operator.OperatorException;
 //import org.junit.Assert;
 //import org.junit.experimental.theories.DataPoints;
 //import org.junit.experimental.theories.FromDataPoints;

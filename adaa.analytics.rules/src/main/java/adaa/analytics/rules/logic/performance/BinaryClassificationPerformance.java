@@ -1,9 +1,12 @@
-package adaa.analytics.rules.logic.performance.binary;
+package adaa.analytics.rules.logic.performance;
 
 import adaa.analytics.rules.logic.performance.AbstractPerformanceCounter;
+import adaa.analytics.rules.logic.performance.PerformanceResult;
 import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
+
+import java.util.Iterator;
 
 
 /**
@@ -44,13 +47,15 @@ public class BinaryClassificationPerformance extends AbstractPerformanceCounter 
 
     public static final int PSEP = 14;
 
+    public static final int GEOMETRIC_MEAN = 15;
+
     private static final int N = 0;
 
     private static final int P = 1;
 
     public static final String[] NAMES = {"precision", "recall", "lift", "fallout", "f_measure", "false_positive",
             "false_negative", "true_positive", "true_negative", "sensitivity", "specificity", "youden",
-            "positive_predictive_value", "negative_predictive_value", "psep"};
+            "positive_predictive_value", "negative_predictive_value", "psep", "geometric_mean"};
 
     private int type = 0;
 
@@ -82,7 +87,7 @@ public class BinaryClassificationPerformance extends AbstractPerformanceCounter 
     // ================================================================================
 
     @Override
-    public void startCounting(IExampleSet eSet) {
+    public PerformanceResult countExample(IExampleSet eSet) {
         this.predictedLabelAttribute = eSet.getAttributes().getPredictedLabel();
         this.labelAttribute = eSet.getAttributes().getLabel();
         if (!labelAttribute.isNominal()) {
@@ -104,24 +109,30 @@ public class BinaryClassificationPerformance extends AbstractPerformanceCounter 
 
         this.weightAttribute = eSet.getAttributes().getWeight();
         this.counter = new double[2][2];
-    }
 
-    @Override
-    public void countExample(Example example) {
-        String labelString = example.getNominalValue(labelAttribute);
-        int label = positiveClassName.equals(labelString) ? P : N;
-        String predString = example.getNominalValue(predictedLabelAttribute);
-        int plabel = positiveClassName.equals(predString) ? P : N;
+        Iterator<Example> exampleIterator = eSet.iterator();
+        while (exampleIterator.hasNext()) {
+            Example example = exampleIterator.next();
 
-        double weight = 1.0d;
-        if (weightAttribute != null) {
-            weight = example.getValue(weightAttribute);
+            if ((Double.isNaN(example.getLabel()) || Double.isNaN(example.getPredictedLabel()))) {
+                continue;
+            }
+            String labelString = example.getNominalValue(labelAttribute);
+            int label = positiveClassName.equals(labelString) ? P : N;
+            String predString = example.getNominalValue(predictedLabelAttribute);
+            int plabel = positiveClassName.equals(predString) ? P : N;
+
+            double weight = 1.0d;
+            if (weightAttribute != null) {
+                weight = example.getValue(weightAttribute);
+            }
+            counter[label][plabel] += weight;
+
         }
-        counter[label][plabel] += weight;
+        return new PerformanceResult(NAMES[type], countResultValue());
     }
 
-    @Override
-    public double getAverage() {
+    public double countResultValue() {
         double x = 0.0d, y = 0.0d;
         switch (type) {
             case PRECISION:
@@ -182,6 +193,9 @@ public class BinaryClassificationPerformance extends AbstractPerformanceCounter 
                 y = counter[P][P] * counter[N][N] + counter[P][P] * counter[P][N] + counter[N][P] * counter[N][N]
                         + counter[N][P] * counter[P][N];
                 break;
+            case GEOMETRIC_MEAN:
+                countGeometricMean();
+                break;
             default:
                 throw new RuntimeException("Illegal value for type in BinaryClassificationPerformance: " + type);
         }
@@ -191,14 +205,31 @@ public class BinaryClassificationPerformance extends AbstractPerformanceCounter 
         return x / y;
     }
 
-    @Override
-    public String getName() {
-        return NAMES[type];
+
+
+    private double countGeometricMean() {
+        double x = 0.0d, y = 0.0d;
+
+
+        x = counter[P][P];
+        y = counter[P][P] + counter[P][N];
+
+        if (y == 0) {
+            return Double.NaN;
+        }
+
+        double se = x / y;
+
+        x = counter[N][N];
+        y = counter[N][N] + counter[N][P];
+
+        if (y == 0) {
+            return Double.NaN;
+        }
+
+        double sp = x / y;
+
+        return Math.sqrt(se * sp);
+
     }
-
-
-    public double[][] getCounter() {
-        return counter;
-    }
-
 }

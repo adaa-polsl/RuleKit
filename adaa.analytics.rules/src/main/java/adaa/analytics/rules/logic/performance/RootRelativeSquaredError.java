@@ -1,7 +1,7 @@
 package adaa.analytics.rules.logic.performance;
 
-import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.Iterator;
@@ -18,44 +18,23 @@ import java.util.Iterator;
 public class RootRelativeSquaredError extends AbstractPerformanceCounter {
 
 
-    private IAttribute predictedAttribute;
-
-    private IAttribute labelAttribute;
-
-    private IAttribute weightAttribute;
-
-    private double deviationSum = 0.0d;
-
-    private double relativeSum = 0.0d;
-
-    private double trueLabelSum = 0.0d;
-
-    private double exampleCounter = 0;
-
     public RootRelativeSquaredError() {
     }
 
     @Override
-    public String getName() {
-        return "root_relative_squared_error";
-    }
-
-    @Override
-    public void startCounting(IExampleSet exampleSet) {
-        super.startCounting(exampleSet);
+    public PerformanceResult countExample(IExampleSet exampleSet){
         if (exampleSet.size() <= 1) {
-            throw new IllegalStateException(getName() + " " +
-                    "root relative squared error can only be calculated for test sets with more than 2 examples.");
+            throw new IllegalStateException("root relative squared error can only be calculated for test sets with more than 2 examples.");
         }
-        this.predictedAttribute = exampleSet.getAttributes().getPredictedLabel();
-        this.labelAttribute = exampleSet.getAttributes().getLabel();
-        this.weightAttribute = exampleSet.getAttributes().getWeight();
+        IAttribute predictedAttribute = exampleSet.getAttributes().getPredictedLabel();
+        IAttribute labelAttribute = exampleSet.getAttributes().getLabel();
+        IAttribute weightAttribute = exampleSet.getAttributes().getWeight();
 
 
-        this.trueLabelSum = 0.0d;
-        this.deviationSum = 0.0d;
-        this.relativeSum = 0.0d;
-        this.exampleCounter = 0.0d;
+        double trueLabelSum = 0.0d;
+        double deviationSum = 0.0d;
+        double relativeSum = 0.0d;
+        double exampleCounter = 0.0d;
         Iterator<Example> reader = exampleSet.iterator();
         while (reader.hasNext()) {
             Example example = reader.next();
@@ -65,37 +44,38 @@ public class RootRelativeSquaredError extends AbstractPerformanceCounter {
                 trueLabelSum += label;
             }
         }
-    }
 
-    /**
-     * Calculates the error for the current example.
-     */
-    @Override
-    public void countExample(Example example) {
-        double plabel;
-        double label = example.getValue(labelAttribute);
 
-        if (!predictedAttribute.isNominal()) {
-            plabel = example.getValue(predictedAttribute);
-        } else {
-            String labelS = example.getNominalValue(labelAttribute);
-            plabel = example.getConfidence(labelS);
-            label = 1.0d;
+
+        Iterator<Example> exampleIterator = exampleSet.iterator();
+        while (exampleIterator.hasNext()) {
+            Example example = exampleIterator.next();
+
+            if ((Double.isNaN(example.getLabel()) || Double.isNaN(example.getPredictedLabel()))) {
+                continue;
+            }
+            double plabel;
+            double label = example.getValue(labelAttribute);
+
+            if (!predictedAttribute.isNominal()) {
+                plabel = example.getValue(predictedAttribute);
+            } else {
+                String labelS = example.getNominalValue(labelAttribute);
+                plabel = example.getConfidence(labelS);
+                label = 1.0d;
+            }
+
+            double weight = 1.0d;
+            if (weightAttribute != null) {
+                weight = example.getValue(weightAttribute);
+            }
+
+            double diff = Math.abs(label - plabel);
+            deviationSum += diff * diff * weight * weight;
+            double relDiff = Math.abs(label - (trueLabelSum / exampleCounter));
+            relativeSum += relDiff * relDiff * weight * weight;
         }
-
-        double weight = 1.0d;
-        if (weightAttribute != null) {
-            weight = example.getValue(weightAttribute);
-        }
-
-        double diff = Math.abs(label - plabel);
-        deviationSum += diff * diff * weight * weight;
-        double relDiff = Math.abs(label - (trueLabelSum / exampleCounter));
-        relativeSum += relDiff * relDiff * weight * weight;
+        return new PerformanceResult("root_relative_squared_error", Math.sqrt(deviationSum / relativeSum));
     }
 
-    @Override
-    public double getAverage() {
-        return Math.sqrt(deviationSum / relativeSum);
-    }
 }

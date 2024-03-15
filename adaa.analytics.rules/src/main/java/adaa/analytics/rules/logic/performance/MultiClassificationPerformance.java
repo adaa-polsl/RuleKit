@@ -87,7 +87,7 @@ public class MultiClassificationPerformance extends AbstractPerformanceCounter {
      * Initializes the criterion and sets the label.
      */
     @Override
-    public void startCounting(IExampleSet eSet) {
+    public PerformanceResult countExample(IExampleSet eSet) {
         hasNominalLabels(eSet, "calculation of classification performance criteria");
 
         this.labelAttribute = eSet.getAttributes().getLabel();
@@ -114,6 +114,23 @@ public class MultiClassificationPerformance extends AbstractPerformanceCounter {
             classNameMap.put(classNames[n], n);
             n++;
         }
+
+        Iterator<Example> exampleIterator = eSet.iterator();
+        while (exampleIterator.hasNext()) {
+            Example example = exampleIterator.next();
+
+            if ((Double.isNaN(example.getLabel()) || Double.isNaN(example.getPredictedLabel()))) {
+                continue;
+            }
+            int label = classNameMap.get(example.getNominalValue(labelAttribute));
+            int plabel = classNameMap.get(example.getNominalValue(predictedLabelAttribute));
+            double weight = 1.0d;
+            if (weightAttribute != null) {
+                weight = example.getValue(weightAttribute);
+            }
+            counter[label][plabel] += weight;
+        }
+        return new PerformanceResult(NAMES[type], countResultValue());
     }
 
     private void hasNominalLabels(IExampleSet es, String algorithm) {
@@ -127,25 +144,7 @@ public class MultiClassificationPerformance extends AbstractPerformanceCounter {
         }
     }
 
-    /**
-     * Increases the prediction value in the matrix.
-     */
-    @Override
-    public void countExample(Example example) {
-        int label = classNameMap.get(example.getNominalValue(labelAttribute));
-        int plabel = classNameMap.get(example.getNominalValue(predictedLabelAttribute));
-        double weight = 1.0d;
-        if (weightAttribute != null) {
-            weight = example.getValue(weightAttribute);
-        }
-        counter[label][plabel] += weight;
-    }
-
-    /**
-     * Returns either the accuracy or the classification error.
-     */
-    @Override
-    public double getAverage() {
+    public double countResultValue() {
         double diagonal = 0, total = 0;
         for (int i = 0; i < counter.length; i++) {
             diagonal += counter[i][i];
@@ -183,11 +182,4 @@ public class MultiClassificationPerformance extends AbstractPerformanceCounter {
         }
     }
 
-    /**
-     * Returns the name.
-     */
-    @Override
-    public String getName() {
-        return NAMES[type];
-    }
 }

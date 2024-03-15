@@ -31,15 +31,11 @@ public class NormalizedAbsoluteError extends AbstractPerformanceCounter {
     public NormalizedAbsoluteError() {
     }
 
-    @Override
-    public String getName() {
-        return "normalized_absolute_error";
-    }
 
     @Override
-    public void startCounting(IExampleSet exampleSet) {
+    public PerformanceResult countExample(IExampleSet exampleSet){
         if (exampleSet.size() <= 1) {
-            throw new IllegalStateException(getName() + " " +
+            throw new IllegalStateException(
                     "normalized absolute error can only be calculated for test sets with more than 2 examples.");
         }
         this.predictedAttribute = exampleSet.getAttributes().getPredictedLabel();
@@ -63,38 +59,37 @@ public class NormalizedAbsoluteError extends AbstractPerformanceCounter {
                 trueLabelSum += label * weight;
             }
         }
-    }
 
-    /**
-     * Calculates the error for the current example.
-     */
-    @Override
-    public void countExample(Example example) {
-        double plabel;
-        double label = example.getValue(labelAttribute);
 
-        if (!predictedAttribute.isNominal()) {
-            plabel = example.getValue(predictedAttribute);
-        } else {
-            String labelS = example.getValueAsString(labelAttribute);
-            plabel = example.getConfidence(labelS);
-            label = 1.0d;
+        Iterator<Example> exampleIterator = exampleSet.iterator();
+        while (exampleIterator.hasNext()) {
+            Example example = exampleIterator.next();
+
+            if ((Double.isNaN(example.getLabel()) || Double.isNaN(example.getPredictedLabel()))) {
+                continue;
+            }
+            double plabel;
+            double label = example.getValue(labelAttribute);
+
+            if (!predictedAttribute.isNominal()) {
+                plabel = example.getValue(predictedAttribute);
+            } else {
+                String labelS = example.getValueAsString(labelAttribute);
+                plabel = example.getConfidence(labelS);
+                label = 1.0d;
+            }
+
+            double weight = 1.0d;
+            if (weightAttribute != null) {
+                weight = example.getValue(weightAttribute);
+            }
+
+            double diff = weight * Math.abs(label - plabel);
+            deviationSum += diff;
+            double relDiff = Math.abs(weight * label - (trueLabelSum / exampleCounter));
+            relativeSum += relDiff;
         }
-
-        double weight = 1.0d;
-        if (weightAttribute != null) {
-            weight = example.getValue(weightAttribute);
-        }
-
-        double diff = weight * Math.abs(label - plabel);
-        deviationSum += diff;
-        double relDiff = Math.abs(weight * label - (trueLabelSum / exampleCounter));
-        relativeSum += relDiff;
-    }
-
-    @Override
-    public double getAverage() {
-        return deviationSum / relativeSum;
+        return new PerformanceResult("normalized_absolute_error",deviationSum / relativeSum);
     }
 
 }
