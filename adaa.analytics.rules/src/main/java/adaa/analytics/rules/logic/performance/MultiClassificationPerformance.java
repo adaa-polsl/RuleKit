@@ -45,29 +45,9 @@ public class MultiClassificationPerformance extends AbstractPerformanceCounter {
     private double[][] counter;
 
     /**
-     * The class names of the label. Used for logging and result display.
-     */
-    private String[] classNames;
-
-    /**
      * Maps class names to indices.
      */
     private Map<String, Integer> classNameMap = new HashMap<String, Integer>();
-
-    /**
-     * The currently used label attribute.
-     */
-    private IAttribute labelAttribute;
-
-    /**
-     * The currently used predicted label attribute.
-     */
-    private IAttribute predictedLabelAttribute;
-
-    /**
-     * The weight attribute. Might be null.
-     */
-    private IAttribute weightAttribute;
 
     /**
      * The type of this performance: accuracy or classification error.
@@ -90,16 +70,25 @@ public class MultiClassificationPerformance extends AbstractPerformanceCounter {
     public PerformanceResult countExample(IExampleSet eSet) {
         hasNominalLabels(eSet, "calculation of classification performance criteria");
 
-        this.labelAttribute = eSet.getAttributes().getLabel();
-        this.predictedLabelAttribute = eSet.getAttributes().getPredictedLabel();
-        if (this.predictedLabelAttribute == null || !this.predictedLabelAttribute.isNominal()) {
+        /**
+         * The currently used label attribute.
+         */
+        IAttribute labelAttribute = eSet.getAttributes().getLabel();
+        /**
+         * The currently used predicted label attribute.
+         */
+        IAttribute predictedLabelAttribute = eSet.getAttributes().getPredictedLabel();
+        if (predictedLabelAttribute == null || !predictedLabelAttribute.isNominal()) {
             throw new IllegalStateException("calculation of classification performance criteria " + predictedLabelAttribute.getName());
         }
 
-        this.weightAttribute = eSet.getAttributes().getWeight();
+        /**
+         * The weight attribute. Might be null.
+         */
+        IAttribute weightAttribute = eSet.getAttributes().getWeight();
 
-        Collection<String> labelValues = this.labelAttribute.getMapping().getValues();
-        Collection<String> predictedLabelValues = this.predictedLabelAttribute.getMapping().getValues();
+        Collection<String> labelValues = labelAttribute.getMapping().getValues();
+        Collection<String> predictedLabelValues = predictedLabelAttribute.getMapping().getValues();
 
         // searching for greater mapping for making symmetric matrix in case of different mapping
         // sizes
@@ -107,7 +96,10 @@ public class MultiClassificationPerformance extends AbstractPerformanceCounter {
         unionedMapping.addAll(predictedLabelValues);
 
         this.counter = new double[unionedMapping.size()][unionedMapping.size()];
-        this.classNames = new String[unionedMapping.size()];
+        /**
+         * The class names of the label. Used for logging and result display.
+         */
+        String[] classNames = new String[unionedMapping.size()];
         int n = 0;
         for (String labelValue : unionedMapping) {
             classNames[n] = labelValue;

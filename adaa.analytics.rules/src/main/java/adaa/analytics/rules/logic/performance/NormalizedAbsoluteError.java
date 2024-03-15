@@ -14,20 +14,6 @@ import java.util.Iterator;
  */
 public class NormalizedAbsoluteError extends AbstractPerformanceCounter {
 
-    private IAttribute predictedAttribute;
-
-    private IAttribute labelAttribute;
-
-    private IAttribute weightAttribute;
-
-    private double deviationSum = 0.0d;
-
-    private double relativeSum = 0.0d;
-
-    private double trueLabelSum = 0.0d;
-
-    private double exampleCounter = 0.0d;
-
     public NormalizedAbsoluteError() {
     }
 
@@ -38,14 +24,14 @@ public class NormalizedAbsoluteError extends AbstractPerformanceCounter {
             throw new IllegalStateException(
                     "normalized absolute error can only be calculated for test sets with more than 2 examples.");
         }
-        this.predictedAttribute = exampleSet.getAttributes().getPredictedLabel();
-        this.labelAttribute = exampleSet.getAttributes().getLabel();
-        this.weightAttribute = exampleSet.getAttributes().getWeight();
+        IAttribute predictedAttribute = exampleSet.getAttributes().getPredictedLabel();
+        IAttribute labelAttribute = exampleSet.getAttributes().getLabel();
+        IAttribute weightAttribute = exampleSet.getAttributes().getWeight();
 
-        this.trueLabelSum = 0.0d;
-        this.deviationSum = 0.0d;
-        this.relativeSum = 0.0d;
-        this.exampleCounter = 0.0d;
+        double trueLabelSum = 0.0d;
+        double deviationSum = 0.0d;
+        double relativeSum = 0.0d;
+        double exampleCounter = 0.0d;
         Iterator<Example> reader = exampleSet.iterator();
         while (reader.hasNext()) {
             Example example = reader.next();
@@ -89,7 +75,7 @@ public class NormalizedAbsoluteError extends AbstractPerformanceCounter {
             double relDiff = Math.abs(weight * label - (trueLabelSum / exampleCounter));
             relativeSum += relDiff;
         }
-        return new PerformanceResult("normalized_absolute_error",deviationSum / relativeSum);
+        return new PerformanceResult("normalized_absolute_error", deviationSum / relativeSum);
     }
 
 }

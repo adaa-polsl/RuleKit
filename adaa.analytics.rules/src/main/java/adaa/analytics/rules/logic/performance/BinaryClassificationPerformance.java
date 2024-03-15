@@ -62,18 +62,6 @@ public class BinaryClassificationPerformance extends AbstractPerformanceCounter 
     /** true label, predicted label. PP = TP, PN = FN, NP = FP, NN = TN. */
     private double[][] counter = new double[2][2];
 
-    /** Name of the positive class. */
-    private String positiveClassName = "";
-
-    /** The predicted label attribute. */
-    private IAttribute predictedLabelAttribute;
-
-    /** The label attribute. */
-    private IAttribute labelAttribute;
-
-    /** The weight attribute. Might be null. */
-    private IAttribute weightAttribute;
-
 
     public BinaryClassificationPerformance() {
         type = -1;
@@ -88,8 +76,10 @@ public class BinaryClassificationPerformance extends AbstractPerformanceCounter 
 
     @Override
     public PerformanceResult countExample(IExampleSet eSet) {
-        this.predictedLabelAttribute = eSet.getAttributes().getPredictedLabel();
-        this.labelAttribute = eSet.getAttributes().getLabel();
+        /** The predicted label attribute. */
+        IAttribute predictedLabelAttribute = eSet.getAttributes().getPredictedLabel();
+        /** The label attribute. */
+        IAttribute labelAttribute = eSet.getAttributes().getLabel();
         if (!labelAttribute.isNominal()) {
             throw new IllegalStateException();
         }
@@ -105,9 +95,11 @@ public class BinaryClassificationPerformance extends AbstractPerformanceCounter 
         if (!labelAttribute.getMapping().equals(predictedLabelAttribute.getMapping())) {
             throw new IllegalStateException();
         }
-        positiveClassName = predictedLabelAttribute.getMapping().getPositiveString();
+        /** Name of the positive class. */
+        String positiveClassName = predictedLabelAttribute.getMapping().getPositiveString();
 
-        this.weightAttribute = eSet.getAttributes().getWeight();
+        /** The weight attribute. Might be null. */
+        IAttribute weightAttribute = eSet.getAttributes().getWeight();
         this.counter = new double[2][2];
 
         Iterator<Example> exampleIterator = eSet.iterator();
