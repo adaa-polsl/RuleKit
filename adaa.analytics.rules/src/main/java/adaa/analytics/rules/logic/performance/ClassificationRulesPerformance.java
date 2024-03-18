@@ -109,14 +109,20 @@ public class ClassificationRulesPerformance extends AbstractPerformanceCounter {
         switch (type) {
             case RULES_PER_EXAMPLE:
                 ret.setName("#rules_per_example");
+                break;
             case VOTING_CONFLICTS:
                 ret.setName("#voting_conflicts");
+                break;
             case NEGATIVE_VOTING_CONFLICTS:
                 ret.setName("#negative_voting_conflicts");
+                break;
             case BALANCED_ACCURACY:
                 ret.setName("balanced_accuracy");
+                break;
+            default:
+                ret.setName("unspecified_name");
         }
-        ret.setName("unspecified_name");
+
         ret.setValue(value);
         return ret;
     }
