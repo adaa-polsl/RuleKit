@@ -1,7 +1,8 @@
-package adaa.analytics.rules.utils;
+package adaa.analytics.rules.consoles;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Properties;
 
 public class VersionService {
@@ -51,7 +52,8 @@ public class VersionService {
     }
 
     public String getHeader() {
-        return getSimpleHeader() + "    RuleKit Development Team (c) 2019\n\n";
+        int yearNumber = Calendar.getInstance().get(Calendar.YEAR);
+        return getSimpleHeader() + "    RuleKit Development Team (c) "+Math.max(2024,yearNumber)+"\n\n";
     }
 
 }

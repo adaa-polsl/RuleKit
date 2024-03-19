@@ -15,11 +15,9 @@
 package adaa.analytics.rules.logic.quality;
 
 import adaa.analytics.rules.logic.induction.ContingencyTable;
-import adaa.analytics.rules.utils.compiler.CompilerUtils;
-
 import adaa.analytics.rules.rm.example.IExampleSet;
 
-import java.io.*;
+import java.io.Serializable;
 
 /**
  * Class gathering all quality measures for classification problems.
@@ -309,8 +307,7 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
                 return w1 * p / (p + n) + w2 * (p / P);
 
             case UserDefined:
-                userMeasure.setValues(p,n,P,N);
-                return userMeasure.getResult();
+                return userMeasure.getResult(p,n,P,N);
 
             default:
                 throw new IllegalArgumentException("ClassificationMeasure: unknown measure type");
@@ -383,47 +380,14 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
     }
 
 
-    public void createUserMeasure(String userMeasure) {
+    public void createUserMeasure(String className) {
 
-        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("adaa/analytics/rules/resources/UserMeasureTemplate.txt");
-        InputStreamReader reader = new InputStreamReader(resourceAsStream);
-
-        StringBuffer sb = new StringBuffer();
-        String javaCode = "";
-        String className = "adaa.analytics.rules.logic.quality.UserMeasure";
-        if (resourceAsStream == null) {
-            throw new IllegalStateException("File 'UserMeasureTemplate.txt' doesn't exist.");
-        }
         try {
-            BufferedReader in = new BufferedReader(reader);
-            String str;
-            while ((str = in.readLine()) != null) {
-                sb.append(str);
-            }
-            in.close();
-            reader.close();
-            resourceAsStream.close();
-            String s = sb.toString();
-            javaCode = s.replaceAll("(equation)", userMeasure);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new IllegalStateException("Couldn't open file with user defined induction measure. " + e.getMessage());
-        }
-        double result = 0;
-        try {
-            Class aClass = CompilerUtils.CACHED_COMPILER.loadFromJava(className, javaCode);
+            Class aClass =  Class.forName(className);
             IUserMeasure measure = (IUserMeasure) aClass.newInstance();
             this.userMeasure = measure;
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-            throw new IllegalStateException("Error while compiling UserMeasure class. " + e.getMessage());
-        } catch (ExceptionInInitializerError e) {
-            if (e.getCause().getClass().getName().contains("AccessControlException")) {
-                throw new IllegalStateException("Exception: java.security.AccessControlException occurred in 'RuleKit Generator'. " +
-                        "Induction measure: 'UserDefined' is not supported for unsigned plugin. ",e);
-            } else {
-                throw (e);
-            }
+        } catch (Exception e) {
+            throw new IllegalStateException("Error while running UserMeasure class. " + e.getMessage());
         }
     }
 }

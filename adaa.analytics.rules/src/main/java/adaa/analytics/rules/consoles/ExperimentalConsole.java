@@ -29,7 +29,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import adaa.analytics.rules.consoles.config.*;
-import adaa.analytics.rules.utils.VersionService;
 
 import org.apache.commons.cli.*;
 import org.w3c.dom.Document;

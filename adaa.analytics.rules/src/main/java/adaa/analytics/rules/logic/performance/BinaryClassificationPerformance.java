@@ -186,8 +186,7 @@ public class BinaryClassificationPerformance extends AbstractPerformanceCounter 
                         + counter[N][P] * counter[P][N];
                 break;
             case GEOMETRIC_MEAN:
-                countGeometricMean();
-                break;
+                return countGeometricMean();
             default:
                 throw new RuntimeException("Illegal value for type in BinaryClassificationPerformance: " + type);
         }

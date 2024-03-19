@@ -147,21 +147,21 @@ public class RuleGeneratorParams {
     public static final String PARAMETER_VOTING_MEASURE = "voting_measure";
 
     /**
-     * Equation of user-defined induction measure; applies only when the corresponding measure parameter has value UserDefined;
+     * Class name of user-defined induction measure; applies only when the corresponding measure parameter has value UserDefined;
      * the equation must be a mathematical expression with p, n, P, N literals (elements of confusion matrix), operators,
      * numbers, and library functions (sin, log, etc.).
      */
-    public static final String PARAMETER_USER_INDUCTION_EQUATION = "user_induction_equation";
+    public static final String PARAMETER_USER_INDUCTION_CLASS = "user_induction_class";
 
     /**
-     * Equation of user-defined pruning measure.
+     * Class name of user-defined pruning measure.
      */
-    public static final String PARAMETER_USER_PRUNING_EQUATION = "user_pruning_equation";
+    public static final String PARAMETER_USER_PRUNING_CLASS = "user_pruning_class";
 
     /**
-     * Equation of user-defined voting measure.
+     * Class name of user-defined voting measure.
      */
-    public static final String PARAMETER_USER_VOTING_EQUATION = "user_voting_equation";
+    public static final String PARAMETER_USER_VOTING_CLASS = "user_voting_class";
 
     /**
      * Boolean telling whether missing values should be ignored (by default, a missing value of given attribute is always
@@ -203,12 +203,12 @@ public class RuleGeneratorParams {
         parameterValues.put(PARAMETER_SELECT_BEST_CANDIDATE, defaultParams.getSelectBestCandidate());
         parameterValues.put(PARAMETER_COMPLEMENTARY_CONDITIONS,defaultParams.isConditionComplementEnabled());
         parameterValues.put(PARAMETER_INDUCTION_MEASURE, defaultParams.getInductionMeasure().getName());
-        parameterValues.put(PARAMETER_USER_INDUCTION_EQUATION, null);
+        parameterValues.put(PARAMETER_USER_INDUCTION_CLASS, null);
         parameterValues.put(PARAMETER_ENABLE_PRUNING,defaultParams.isPruningEnabled());
         parameterValues.put(PARAMETER_PRUNING_MEASURE, defaultParams.getPruningMeasure().getName());
-        parameterValues.put(PARAMETER_USER_PRUNING_EQUATION, null);
+        parameterValues.put(PARAMETER_USER_PRUNING_CLASS, null);
         parameterValues.put(PARAMETER_VOTING_MEASURE, defaultParams.getVotingMeasure().getName());
-        parameterValues.put(PARAMETER_USER_VOTING_EQUATION,null);
+        parameterValues.put(PARAMETER_USER_VOTING_CLASS,null);
         parameterValues.put(PARAMETER_IGNORE_MISSING,defaultParams.isIgnoreMissing());
         parameterValues.put(PARAMETER_MAXCOV_NEGATIVE, defaultParams.getMaxcovNegative());
         parameterValues.put(PARAMETER_PENALTY_STRENGTH, defaultParams.getPenaltyStrength());
@@ -291,17 +291,17 @@ public class RuleGeneratorParams {
     protected IQualityMeasure createMeasure(MeasureDestination destination, IQualityMeasure defaultMeasure)  {
 
         String measureName;
-        String equation;
+        String className;
 
         if (destination == MeasureDestination.INDUCTION) {
             measureName = getParameterAsString(PARAMETER_INDUCTION_MEASURE);
-            equation = getParameter(PARAMETER_USER_INDUCTION_EQUATION);
+            className = getParameter(PARAMETER_USER_INDUCTION_CLASS);
         } else if (destination == MeasureDestination.PRUNING) {
             measureName = getParameterAsString(PARAMETER_PRUNING_MEASURE);
-            equation = getParameter(PARAMETER_USER_PRUNING_EQUATION);
+            className = getParameter(PARAMETER_USER_PRUNING_CLASS);
         } else {
             measureName = getParameterAsString(PARAMETER_VOTING_MEASURE);
-            equation = getParameter(PARAMETER_USER_VOTING_EQUATION);
+            className = getParameter(PARAMETER_USER_VOTING_CLASS);
         }
 
         int variant = -1;
@@ -314,7 +314,7 @@ public class RuleGeneratorParams {
             ClassificationMeasure classificationMeasure = new ClassificationMeasure(variant);
             String userMeasure = ClassificationMeasure.getName(ClassificationMeasure.UserDefined);
             if (measureName.equals(userMeasure)) {
-                classificationMeasure.createUserMeasure(equation);
+                classificationMeasure.createUserMeasure(className);
             }
             return classificationMeasure;
         } else {

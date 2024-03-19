@@ -5,7 +5,7 @@
 			<param name="min_rule_covered">8</param>
 			<param name="induction_measure">BinaryEntropy</param>
 			<param name="pruning_measure">UserDefined</param>
-			<param name="user_pruning_equation">2 * p / n</param>
+			<param name="user_pruning_class">adaa.analytics.rules.logic.quality.UserMeasureExample</param>
 			<param name="voting_measure">C2</param>
 		</parameter_set>
 	</parameter_sets>

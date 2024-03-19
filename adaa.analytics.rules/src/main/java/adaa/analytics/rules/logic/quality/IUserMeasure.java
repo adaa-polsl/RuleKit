@@ -21,6 +21,5 @@ import java.io.Serializable;
  */
 public interface IUserMeasure extends Serializable{
 
-    void setValues(double p, double n, double P, double N);
-    double getResult();
+    double getResult(double p, double n, double P, double N);
 }
