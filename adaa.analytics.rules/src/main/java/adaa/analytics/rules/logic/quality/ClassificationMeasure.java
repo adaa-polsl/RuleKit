@@ -380,14 +380,7 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
     }
 
 
-    public void createUserMeasure(String className) {
-
-        try {
-            Class aClass =  Class.forName(className);
-            IUserMeasure measure = (IUserMeasure) aClass.newInstance();
-            this.userMeasure = measure;
-        } catch (Exception e) {
-            throw new IllegalStateException("Error while running UserMeasure class. " + e.getMessage());
-        }
+    public void setUserMeasure(IUserMeasure userMeasure) {
+        this.userMeasure = userMeasure;
     }
 }

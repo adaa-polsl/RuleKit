@@ -14,8 +14,11 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.rulegenerator;
 
+import adaa.analytics.rules.logic.quality.IUserMeasure;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.rm.example.IExampleSet;
+
+import java.util.List;
 
 /**
  * The basic RuleKit learner operator. It enables inducing classification, regression,
@@ -41,10 +44,6 @@ public class RuleGenerator {
         operatorCommandProxy = new OperatorCommandProxy();
     }
 
-    public RuleGeneratorParams getRuleGeneratorParams() {
-        return ruleGeneratorParams;
-    }
-
     public void addOperatorListener(ICommandListener commandListener) {
         operatorCommandProxy.addCommandListener(commandListener);
     }
@@ -60,5 +59,29 @@ public class RuleGenerator {
             m = ruleGenerator.learnStarndard(exampleSet);
         }
         return m;
+    }
+
+    public boolean containsParameter(String key) {
+        return ruleGeneratorParams.contains(key);
+    }
+
+    public void setParameter(String key, String o) {
+        ruleGeneratorParams.setParameter(key, o);
+    }
+
+    public void setListParameter(String key, List<String[]> o) {
+        ruleGeneratorParams.setListParameter(key, o);
+    }
+
+    public void setUserMeasureInductionObject(IUserMeasure userMeasureInductionObject) {
+        ruleGeneratorParams.setUserMeasureInductionObject(userMeasureInductionObject);
+    }
+
+    public void setUserMeasurePurningObject(IUserMeasure userMeasurePurningObject) {
+        ruleGeneratorParams.setUserMeasurePurningObject(userMeasurePurningObject);
+    }
+
+    public void setUserMeasureVotingObject(IUserMeasure userMeasureVotingObject) {
+        ruleGeneratorParams.setUserMeasureVotingObject(userMeasureVotingObject);
     }
 }

@@ -65,13 +65,13 @@ public class TrainProcess {
 
         for (String key : paramSetWrapper.listKeys()) {
             Object o = paramSetWrapper.getParam(key);
-            boolean paramOk = ruleGenerator.getRuleGeneratorParams().contains(key);
+            boolean paramOk = ruleGenerator.containsParameter(key);
 
             if (paramOk)
                 if (o instanceof String) {
-                    ruleGenerator.getRuleGeneratorParams().setParameter(key, (String) o);
+                    ruleGenerator.setParameter(key, (String) o);
                 } else if (o instanceof List) {
-                    ruleGenerator.getRuleGeneratorParams().setListParameter(key, (List<String[]>) o);
+                    ruleGenerator.setListParameter(key, (List<String[]>) o);
                 } else {
                     throw new InvalidParameterException("Invalid paramter type: " + key);
                 }

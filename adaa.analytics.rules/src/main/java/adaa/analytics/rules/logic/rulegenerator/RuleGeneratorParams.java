@@ -3,6 +3,7 @@ package adaa.analytics.rules.logic.rulegenerator;
 import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
+import adaa.analytics.rules.logic.quality.IUserMeasure;
 import adaa.analytics.rules.logic.representation.Logger;
 
 import java.util.*;
@@ -191,7 +192,22 @@ public class RuleGeneratorParams {
     public static final String PARAMETER_APPROXIMATE_INDUCTION = "approximate_induction";
 
     public static final String PARAMETER_APPROXIMATE_BINS_COUNT = "approximate_bins_count";
-    private Map<String,Object> parameterValues = new HashMap<>();
+    private final Map<String,Object> parameterValues = new HashMap<>();
+    /**
+    * Instead of parameter in settings (user_induction_class) one can set object with IUserMeasure
+    * */
+    public IUserMeasure userMeasureInductionObject;
+
+    /**
+     * Instead of parameter in settings (user_purning_class) one can set object with IUserMeasure
+     * */
+    public IUserMeasure userMeasurePurningObject;
+
+    /**
+     * Instead of parameter in settings (user_voting_class) one can set object with IUserMeasure
+     * */
+    public IUserMeasure userMeasureVotingObject;
+
 
     public RuleGeneratorParams() {
         InductionParameters defaultParams = new InductionParameters();
@@ -256,6 +272,19 @@ public class RuleGeneratorParams {
         return Boolean.valueOf(parameterValues.get(key).toString());
     }
 
+    public void setUserMeasureInductionObject(IUserMeasure userMeasureInductionObject) {
+        this.userMeasureInductionObject = userMeasureInductionObject;
+    }
+
+
+    public void setUserMeasurePurningObject(IUserMeasure userMeasurePurningObject) {
+        this.userMeasurePurningObject = userMeasurePurningObject;
+    }
+
+    public void setUserMeasureVotingObject(IUserMeasure userMeasureVotingObject) {
+        this.userMeasureVotingObject = userMeasureVotingObject;
+    }
+
     public int getParameterAsInt(String key) {
         return Integer.valueOf(parameterValues.get(key).toString());
     }
@@ -289,19 +318,13 @@ public class RuleGeneratorParams {
      * @throws IllegalAccessException
      */
     protected IQualityMeasure createMeasure(MeasureDestination destination, IQualityMeasure defaultMeasure)  {
-
         String measureName;
-        String className;
-
         if (destination == MeasureDestination.INDUCTION) {
             measureName = getParameterAsString(PARAMETER_INDUCTION_MEASURE);
-            className = getParameter(PARAMETER_USER_INDUCTION_CLASS);
         } else if (destination == MeasureDestination.PRUNING) {
             measureName = getParameterAsString(PARAMETER_PRUNING_MEASURE);
-            className = getParameter(PARAMETER_USER_PRUNING_CLASS);
         } else {
             measureName = getParameterAsString(PARAMETER_VOTING_MEASURE);
-            className = getParameter(PARAMETER_USER_VOTING_CLASS);
         }
 
         int variant = -1;
@@ -312,14 +335,44 @@ public class RuleGeneratorParams {
         }
         if (variant != -1) {
             ClassificationMeasure classificationMeasure = new ClassificationMeasure(variant);
-            String userMeasure = ClassificationMeasure.getName(ClassificationMeasure.UserDefined);
-            if (measureName.equals(userMeasure)) {
-                classificationMeasure.createUserMeasure(className);
+            if (measureName.equals(ClassificationMeasure.getName(ClassificationMeasure.UserDefined))) {
+                classificationMeasure.setUserMeasure(resolveUserMeasure(destination));
             }
             return classificationMeasure;
         } else {
             Logger.log("No quality measure defined, using default (" + defaultMeasure.getName() + ")", Level.INFO);
             return defaultMeasure;
+        }
+    }
+
+    private IUserMeasure resolveUserMeasure(MeasureDestination destination)
+    {
+        IUserMeasure userMeasureObj = null;
+        String className;
+        if (destination == MeasureDestination.INDUCTION) {
+            className = getParameter(PARAMETER_USER_INDUCTION_CLASS);
+            userMeasureObj = this.userMeasureInductionObject;
+        } else if (destination == MeasureDestination.PRUNING) {
+            className = getParameter(PARAMETER_USER_PRUNING_CLASS);
+            userMeasureObj = this.userMeasurePurningObject;
+        } else {
+            className = getParameter(PARAMETER_USER_VOTING_CLASS);
+            userMeasureObj = this.userMeasureVotingObject;
+        }
+
+        if (userMeasureObj!=null)
+            return userMeasureObj;
+
+        if (className==null || className.isEmpty())
+        {
+            throw new IllegalStateException("No user measure defined for "+destination);
+        }
+
+        try {
+            Class aClass =  Class.forName(className);
+            return (IUserMeasure) aClass.newInstance();
+        } catch (Exception e) {
+            throw new IllegalStateException("Error while running UserMeasure class. " + e.getMessage());
         }
     }
 
