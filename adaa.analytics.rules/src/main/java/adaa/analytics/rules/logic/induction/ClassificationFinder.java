@@ -684,7 +684,7 @@ public class ClassificationFinder extends AbstractFinder {
 								quality = modifier.modifyQuality(quality, attr.getName(), p, toCover_p);
 								// prefer (gender = female) over (gender = !male) for boolean attributes
 								if (quality > best.quality ||
-										(quality == best.quality && (p > best.covered || best.opposite))) {
+										(quality == best.quality && (p > best.covered || (p == best.covered && best.opposite)))) {
 									ElementaryCondition candidate =
 											new ElementaryCondition(attr.getName(), new SingletonSet((double) i, attr.getMapping().getValues()));
 									if (checkCandidate(candidate, classId, p, n, toCover_p, P, uncoveredPositives.size(), rule.getRuleOrderNum())) {
@@ -741,7 +741,8 @@ public class ClassificationFinder extends AbstractFinder {
 			for (Future f : futures) {
 				ConditionEvaluation eval = (ConditionEvaluation)f.get();
 
-				Logger.log("\tAttribute best: " + eval.condition + ", quality=" + eval.quality + "\n", Level.FINEST);
+				Logger.log("\tAttribute best: " + eval.condition + ", quality=" + eval.quality
+						+ ", p=" + eval.covered + "\n", Level.FINEST);
 
 				if (best == null || eval.quality > best.quality || (eval.quality == best.quality && eval.covered > best.covered)) {
 					best = eval;
@@ -755,7 +756,8 @@ public class ClassificationFinder extends AbstractFinder {
 		if (best.condition != null) {
 			Attribute bestAttr = trainSet.getAttributes().get(((ElementaryCondition)best.condition).getAttribute());
 
-			Logger.log("\tFinal best: " + best.condition + ", quality=" + best.quality + "\n", Level.FINEST);
+			Logger.log("\tFinal best: " + best.condition + ", quality=" + best.quality
+					+ ", p=" + best.covered + "\n", Level.FINEST);
 
 			if (bestAttr.isNominal()) {
 				allowedAttributes.remove(bestAttr);
