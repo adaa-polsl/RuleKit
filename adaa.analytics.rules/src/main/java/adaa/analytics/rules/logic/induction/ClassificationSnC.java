@@ -67,6 +67,9 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 				: dataset.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
 
 		NominalMapping mapping = outputAttr.getMapping();
+		List<String> labels = new ArrayList<>();
+		labels.addAll(mapping.getValues());
+		Collections.sort(labels);
 
 		boolean weighted = (dataset.getAttributes().getWeight() != null);
 
@@ -78,9 +81,9 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 		double defaultClassP = 0;
 
 		// iterate over all classes
-		for (int cid = 0; cid < mapping.size(); ++cid) {
-			final int classId = cid;
-			Logger.log("Class " + classId + " started\n" , Level.FINE);
+		for (String label : labels) {
+			int classId = mapping.getIndex(label);
+			Logger.log("Class " + label + " (" +classId + ") started\n" , Level.FINE);
 
 			preprocessClass(dataset, classId);
 
