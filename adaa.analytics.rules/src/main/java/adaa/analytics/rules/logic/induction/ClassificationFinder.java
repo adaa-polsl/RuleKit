@@ -44,6 +44,8 @@ public class ClassificationFinder extends AbstractFinder {
 
 	protected Map<IAttribute, Map<Double, IntegerBitSet>> precalculatedCoveringsComplement;
 
+	protected Map<IAttribute, Integer[]> attributeValuesOrder;
+
 	/**
 	 * Initializes induction parameters.
 	 * @param params Induction parameters.
@@ -66,6 +68,7 @@ public class ClassificationFinder extends AbstractFinder {
 			return trainSet;
 		}
 
+		attributeValuesOrder = new HashMap<IAttribute, Integer[]>();
 		precalculatedCoverings = new HashMap<IAttribute, Map<Double, IntegerBitSet>>();
 		precalculatedCoveringsComplement = new HashMap<IAttribute, Map<Double, IntegerBitSet>>();
 		IAttributes attributes = trainSet.getAttributes();
@@ -78,9 +81,19 @@ public class ClassificationFinder extends AbstractFinder {
 			Future f = pool.submit( () -> {
 				Map<Double, IntegerBitSet> attributeCovering = new TreeMap<Double, IntegerBitSet>();
 				Map<Double, IntegerBitSet> attributeCoveringComplement = new TreeMap<Double, IntegerBitSet>();
+				Integer[] valuesOrder = null;
 
 				// check if attribute is nominal
 				if (attr.isNominal()) {
+					// get orders
+					valuesOrder = new Integer[attr.getMapping().size()];
+					List<String> labels = new ArrayList<>();
+					labels.addAll(attr.getMapping().getValues());
+					Collections.sort(labels);
+					for (int j = 0; j < labels.size(); ++j) {
+						valuesOrder[j] = attr.getMapping().getIndex(labels.get(j));
+					}
+
 					// prepare bit vectors
 					for (int val = 0; val != attr.getMapping().size(); ++val) {
 						attributeCovering.put((double) val, new IntegerBitSet(trainSet.size()));
@@ -108,6 +121,7 @@ public class ClassificationFinder extends AbstractFinder {
 				synchronized (this) {
 					precalculatedCoverings.put(attr, attributeCovering);
 					precalculatedCoveringsComplement.put(attr, attributeCoveringComplement);
+					attributeValuesOrder.put(attr, valuesOrder);
 				}
 			});
 
@@ -664,9 +678,10 @@ public class ClassificationFinder extends AbstractFinder {
 					} else {
 						// unweighted case
 						// try all possible conditions
-						for (int i = 0; i < attr.getMapping().size(); ++i) {
+						for (int j = 0; j < attr.getMapping().size(); ++j) {
 
 							// evaluate straight condition
+							int i = attributeValuesOrder.get(attr)[j];
 							IntegerBitSet conditionCovered = precalculatedCoverings.get(attr).get((double) i);
 							double p = conditionCovered.calculateIntersectionSize(rule.getCoveredPositives());
 							int toCover_p = conditionCovered.calculateIntersectionSize((IntegerBitSet) coveredByRule, (IntegerBitSet) uncoveredPositives);
