@@ -51,8 +51,8 @@ public class BinominalMapping implements INominalMapping {
                     return true;
                 }
 
-                value = (String)var2.next();
-            } while(value.equals(this.firstValue) || value.equals(this.secondValue));
+                value = (String) var2.next();
+            } while (value.equals(this.firstValue) || value.equals(this.secondValue));
 
             return false;
         }
@@ -71,9 +71,7 @@ public class BinominalMapping implements INominalMapping {
                     this.secondValue = str;
                     return 1;
                 } else {
-                    // @TODO uzupełnić wyjątek
-                    throw new NotImplementedException("TODO uzupełnić wyjątek");
-                    //throw new AttributeTypeException("Cannot map another string for binary attribute: already mapped two strings (" + this.firstValue + ", " + this.secondValue + "). The third string that was tried to add: '" + str + "'");
+                    throw new IllegalStateException("Cannot map another string for binary attribute: already mapped two strings (" + this.firstValue + ", " + this.secondValue + "). The third string that was tried to add: '" + str + "'");
                 }
             } else {
                 return index;
