@@ -14,7 +14,8 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
     static class ConditionCandidate extends ElementaryCondition {
 
         public double quality = -Double.MAX_VALUE;
-        public double covered = 0;
+        public double p = 0;
+        public double n = 0;
         public boolean opposite = false;
         public int blockId = -1;
 
@@ -91,6 +92,18 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
             determineBins(dataset, attr, descriptions[ia], mappings[ia], bins_begins[ia], ruleRanges[ia]);
 
             arrayCopies.put("ruleRanges", (Object)Arrays.stream(ruleRanges).map(int[]::clone).toArray(int[][]::new));
+
+            if (attr.isNominal()) {
+                // get orders
+                Integer[] valuesOrder = new Integer[attr.getMapping().size()];
+                List<String> labels = new ArrayList<>();
+                labels.addAll(attr.getMapping().getValues());
+                Collections.sort(labels);
+                for (int j = 0; j < labels.size(); ++j) {
+                    valuesOrder[j] = attr.getMapping().getIndex(labels.get(j));
+                }
+                attributeValuesOrder.put(attr, valuesOrder);
+            }
         }
 
         return dataset;
@@ -267,11 +280,6 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
             Set<IAttribute> allowedAttributes,
             Object... extraParams) {
 
-
-        if (rule.getPremise().getSubconditions().size() == 41) {
-            //return null;
-        }
-
         if (allowedAttributes.size() == 0) {
             return null;
         }
@@ -335,26 +343,26 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
                     }
                 }
 
-                int first_bid = ruleRanges[attribute_id][0];
-                int last_bid = ruleRanges[attribute_id][1];
-
-                // omit empty bins from the beginning and from the end
-                while (first_bid < last_bid && (cur_positives[first_bid] + cur_negatives[first_bid] == 0)) {
-                    ++first_bid;
-                }
-
-                while (first_bid < last_bid && (cur_positives[last_bid - 1] + cur_negatives[last_bid - 1] == 0)) {
-                    --last_bid;
-                }
-
                 Stats[] stats = new Stats[2];
-                stats[0] = new Stats(cur_positives[first_bid], cur_negatives[first_bid], cur_newPositives[first_bid]);
-                stats[1] = new Stats(finalCovered_p - stats[0].p, finalCovered_n - stats[0].n, finalCovered_new_p - stats[0].p_new);
 
                 // numerical attribute
                 if (attr.isNumerical()) {
-                    // iterate over blocks
+                    int first_bid = ruleRanges[attribute_id][0];
+                    int last_bid = ruleRanges[attribute_id][1];
 
+                    // omit empty bins from the beginning and from the end
+                    while (first_bid < last_bid && (cur_positives[first_bid] + cur_negatives[first_bid] == 0)) {
+                        ++first_bid;
+                    }
+
+                    while (first_bid < last_bid && (cur_positives[last_bid - 1] + cur_negatives[last_bid - 1] == 0)) {
+                        --last_bid;
+                    }
+
+                    stats[0] = new Stats(cur_positives[first_bid], cur_negatives[first_bid], cur_newPositives[first_bid]);
+                    stats[1] = new Stats(finalCovered_p - stats[0].p, finalCovered_n - stats[0].n, finalCovered_new_p - stats[0].p_new);
+
+                    // iterate over blocks
                     for (int bid = first_bid + 1; bid < last_bid; ++bid) {
                         // omit conditions:
                         // - preceding empty bins - they may appear as coverage drops
@@ -374,7 +382,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
                                     double quality = params.getInductionMeasure().calculate(stats[c].p, stats[c].n, P, N);
 
                                     // better then current best
-                                    if (quality > best.quality || (quality == best.quality && stats[c].p > best.covered)) {
+                                    if (quality > best.quality || (quality == best.quality && stats[c].p > best.p)) {
 
                                         int left_id = (int) (cur_descriptions[cur_begins[bid] - 1] & MASK_IDENTIFIER);
                                         int right_id = (int) (cur_descriptions[cur_begins[bid]] & MASK_IDENTIFIER);
@@ -390,7 +398,8 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
                                             //Logger.log("\tCurrent best: " + candidate + " (p=" + stats[c].p + ", n=" + stats[c].n + ", new_p=" + (double) stats[c].p_new + ", quality=" + quality + ")\n", Level.FINEST);
                                             best = candidate;
                                             best.quality = quality;
-                                            best.covered = stats[c].p;
+                                            best.p = stats[c].p;
+                                            best.n = stats[c].n;
                                             best.opposite = (c == 1);
                                             best.blockId = bid;
                                         }
@@ -410,32 +419,12 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
                     }
                 } else { // nominal attribute
 
-                    for (int bid = 1; bid < cur_positives.length; ++bid) {
-                        // evaluate both conditions
-                        for (int c = 0; c < 2; ++c) {
-                            double prec = stats[c].p / (stats[c].p + stats[c].n);
+                    // they will be reassigned anyway
+                    stats[0] = new Stats(0, 0, 0);
+                    stats[1] = new Stats(finalCovered_p - stats[0].p, finalCovered_n - stats[0].n, finalCovered_new_p - stats[0].p_new);
 
-                            if (prec > apriori_prec && stats[c].p_new > 0) {
-                                double quality = params.getInductionMeasure().calculate(stats[c].p, stats[c].n, P, N);
-
-                                // better then current best
-                                if (quality > best.quality || (quality == best.quality && stats[c].p > best.covered)) {
-                                    IValueSet interval = (c == 0)
-                                            ? new SingletonSet((double) bid, attr.getMapping().getValues())
-                                            : new SingletonSetComplement((double) bid, attr.getMapping().getValues());
-
-                                    ConditionCandidate candidate = new ConditionCandidate(attr.getName(), interval);
-                                    if (checkCandidate(candidate, classId, stats[c].p, stats[c].n, stats[c].p_new, P, uncoveredPositives.size(), rule.getRuleOrderNum())) {
-                                        //Logger.log("\tCurrent best: " + candidate + " (p=" + stats[c].p + ", n=" + stats[c].n + ", new_p=" + (double) stats[c].p_new + ", quality=" + quality + ")\n", Level.FINEST);
-                                        best = candidate;
-                                        best.quality = quality;
-                                        best.covered = stats[c].p;
-                                        best.opposite = (c == 1);
-                                        best.blockId = bid;
-                                    }
-                                }
-                            }
-                        }
+                    for (int j = 0; j < attr.getMapping().size(); ++j) {
+                        int bid = attributeValuesOrder.get(attr)[j];
 
                         // update stats
                         stats[0].p = cur_positives[bid];
@@ -446,6 +435,35 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
                         stats[1].n = finalCovered_n - stats[0].n;
                         stats[1].p_new = finalCovered_new_p - stats[0].p_new;
 
+                        // evaluate both conditions
+                        for (int c = 0; c < 2; ++c) {
+                            double prec = stats[c].p / (stats[c].p + stats[c].n);
+
+                            if (prec > apriori_prec && stats[c].p_new > 0) {
+                                double quality = params.getInductionMeasure().calculate(stats[c].p, stats[c].n, P, N);
+                                boolean opposite = (c == 1);
+
+                                // better than current best
+                                if (quality > best.quality || (quality == best.quality && (stats[c].p > best.p ||
+                                        (stats[c].p == best.p && best.opposite && !opposite)))) {
+
+                                    IValueSet interval = !opposite
+                                            ? new SingletonSet((double) bid, attr.getMapping().getValues())
+                                            : new SingletonSetComplement((double) bid, attr.getMapping().getValues());
+
+                                    ConditionCandidate candidate = new ConditionCandidate(attr.getName(), interval);
+                                    if (checkCandidate(candidate, classId, stats[c].p, stats[c].n, stats[c].p_new, P, uncoveredPositives.size(), rule.getRuleOrderNum())) {
+                                        //Logger.log("\tCurrent best: " + candidate + " (p=" + stats[c].p + ", n=" + stats[c].n + ", new_p=" + (double) stats[c].p_new + ", quality=" + quality + ")\n", Level.FINEST);
+                                        best = candidate;
+                                        best.quality = quality;
+                                        best.p = stats[c].p;
+                                        best.n = stats[c].n;
+                                        best.opposite = opposite;
+                                        best.blockId = bid;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -462,15 +480,15 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
                 ConditionCandidate current = (ConditionCandidate)f.get();
 
                 if (current != null && current.getAttribute() != null) {
-                    Logger.log("\tAttribute best: " + current + ", quality=" + current.quality, Level.FINEST);
-                    IAttribute attr = dataset.getAttributes().get(current.getAttribute());
+                    Logger.log("\tAttribute best: " + current + ", quality=" +
+                            current.quality + ", p=" + current.p + ", n=" + current.n, Level.FINEST);   IAttribute attr = dataset.getAttributes().get(current.getAttribute());
                     if (attr.isNumerical()) {
                         updateMidpoint(dataset, current);
                     }
                     Logger.log(", adjusted: " + current + "\n", Level.FINEST);
                 }
 
-                if (best == null || current.quality > best.quality || (current.quality == best.quality && current.covered > best.covered)) {
+                if (best == null || current.quality > best.quality || (current.quality == best.quality && current.p > best.p)) {
                     best = current;
                 }
             }
@@ -831,7 +849,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
     protected void printArrays() {
 
-        if (true) {
+        if (false) {
             return;
         }
 
