@@ -40,11 +40,14 @@ public class ClassificationFinder extends AbstractFinder {
 	 * Map of precalculated coverings (time optimization).
 	 * For each attribute there is a set of distinctive values. For each value there is a bit vector of examples covered.
 	 */
-	protected Map<Attribute, Map<Double, IntegerBitSet>> precalculatedCoverings;
+	protected Map<Attribute, Map<Double, IntegerBitSet>> precalculatedCoverings
+			= new HashMap<Attribute, Map<Double, IntegerBitSet>>();
 
-	protected Map<Attribute, Map<Double, IntegerBitSet>> precalculatedCoveringsComplement;
+	protected Map<Attribute, Map<Double, IntegerBitSet>> precalculatedCoveringsComplement
+			= new HashMap<Attribute, Map<Double, IntegerBitSet>>();
 
-	protected Map<Attribute, Integer[]> attributeValuesOrder;
+	protected Map<Attribute, Integer[]> attributeValuesOrder
+			= new HashMap<Attribute, Integer[]>();
 
 	/**
 	 * Initializes induction parameters.
@@ -68,9 +71,6 @@ public class ClassificationFinder extends AbstractFinder {
 			return trainSet;
 		}
 
-		attributeValuesOrder = new HashMap<Attribute, Integer[]>();
-		precalculatedCoverings = new HashMap<Attribute, Map<Double, IntegerBitSet>>();
-		precalculatedCoveringsComplement = new HashMap<Attribute, Map<Double, IntegerBitSet>>();
 		Attributes attributes = trainSet.getAttributes();
 
 		List<Future> futures = new ArrayList<Future>();
