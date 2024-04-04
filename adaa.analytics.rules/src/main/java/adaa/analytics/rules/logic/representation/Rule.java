@@ -66,8 +66,6 @@ public abstract class Rule implements Serializable, Cloneable {
 	/** Rule order number. */
 	protected int ruleOrderNum = -1;
 
-	protected String classLabel = "";
-
 	/** Number of induced conditions. */
 	protected int inducedConditionsCount = 0;
 
@@ -125,14 +123,6 @@ public abstract class Rule implements Serializable, Cloneable {
 		this.ruleOrderNum = ruleOrderNum;
 	}
 
-	public String getClassLabel() {
-		return classLabel;
-	}
-
-	public void setClassLabel(String classLabel) {
-		this.classLabel = classLabel;
-	}
-
 	/** Gets {@link #pvalue} */
 	public double getPValue() { return pvalue; }
 	/** Sets {@link #pvalue} */
@@ -180,7 +170,6 @@ public abstract class Rule implements Serializable, Cloneable {
 		this.premise = ref.premise;
 		this.consequence = ref.consequence;
 		this.ruleOrderNum = ref.ruleOrderNum;
-		this.classLabel = ref.classLabel;
 	}
 	
 	/**
