@@ -134,7 +134,6 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 				rule.setCoveredNegatives(new IntegerBitSet(dataset.size()));
 				rule.getCoveredPositives().addAll(positives);
 				rule.getCoveredNegatives().addAll(negatives);
-				rule.setClassLabel(label);
 				rule.setRuleOrderNum(countRuleOrderNumber(ruleset,label));
 
 				rule.getConsequence().setCovering(positives);
@@ -205,7 +204,8 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 
 		for(Rule r: ruleSet.getRules())
 		{
-			if (r.getClassLabel().equals(currentClassLabel))
+			ClassificationRule cr = (ClassificationRule)r;
+			if (cr.getClassLabel().equals(currentClassLabel))
 			{
 				counter++;
 			}

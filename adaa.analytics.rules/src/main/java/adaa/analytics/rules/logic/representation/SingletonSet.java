@@ -41,6 +41,9 @@ public class SingletonSet implements IValueSet, Serializable {
 	public double getValue() { return value; }
 	/** Sets {@link #value} */
 	public void setValue(double v) { value = v; }
+
+	/** Gets {@link #value} as string */
+	public String getValueAsString() { return mapping.get((int)value); }
 	
 	/** Gets {@link #mapping} */
 	public List<String> getMapping() { return mapping; }
