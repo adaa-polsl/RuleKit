@@ -38,6 +38,10 @@ public class ClassificationRule extends Rule {
 	/** Serialization identifier. */
 	private static final long serialVersionUID = -809625670611500594L;
 
+	public String getClassLabel() {
+		SingletonSet ss = (SingletonSet)getConsequence().getValueSet();
+		return ss.getValueAsString();
+	}
 	/**
 	 * Creates empty classification rule.
 	 */
