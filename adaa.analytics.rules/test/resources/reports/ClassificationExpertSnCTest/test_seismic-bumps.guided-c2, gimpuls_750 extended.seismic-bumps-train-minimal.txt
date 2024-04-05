@@ -3,6 +3,4 @@
 Rules
 	IF [gimpuls = (-inf, 1350.50)] THEN class = {0}
 	IF goenergy = <-32.50, inf) AND gimpuls = (-inf, 2784) AND goimpuls = <-39, 111) AND nbumps = (-inf, 5.50) THEN class = {0}
-	IF [gimpuls = <1350.50, inf)] AND genergy = (-inf, 344875) AND senergy = (-inf, 4650) THEN class = {1}
-	IF ghazard = {a} AND gimpuls = (-inf, 1758.50) AND goimpuls = (-inf, 10.50) AND genergy = <17495, inf) AND senergy = <2650, 8250) AND nbumps2 = <0.50, inf) THEN class = {1}
-	IF ghazard = {a} AND goenergy = <-21, 9) AND gimpuls = (-inf, 688.50) AND goimpuls = (-inf, 17.50) AND genergy = <24830, 36505) THEN class = {1}
+	IF [gimpuls = <408.50, inf)] AND ghazard = {a} AND goenergy = (-inf, 94.50) AND maxenergy = (-inf, 6500) AND genergy = <35165, 294530) AND senergy = (-inf, 8750) AND nbumps3 = (-inf, 2.50) THEN class = {1}

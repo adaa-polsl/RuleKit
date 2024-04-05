@@ -358,10 +358,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 			return fractionCurrentGeneration * sizeToCover;
 		}else
 		{
-			return Math.min(
-					params.getAbsoluteMinimumCovered(size),
-					Math.max(1.0, 0.2 * size));
-
+			return params.getAbsoluteMinimumCovered(size);
 		}
 	}
 

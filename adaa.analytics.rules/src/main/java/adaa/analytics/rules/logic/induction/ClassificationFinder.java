@@ -906,13 +906,9 @@ public class ClassificationFinder extends AbstractFinder {
 	 * @return
 	 */
 	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double p, double n, double new_p, double P,double uncoveredSize, int ruleOrderNum) {
-		double adjustedMinCov =
-				countAbsoluteMinimumCovered(P, ruleOrderNum, uncoveredSize);
-		if (new_p >= adjustedMinCov && p >= params.getAbsoluteMinimumCoveredAll(P)) {
-			return true;
-		} else {
-			return false;
-		}
+
+		return new_p >= countAbsoluteMinimumCovered(P, ruleOrderNum, uncoveredSize)
+				&& p >= params.getAbsoluteMinimumCoveredAll(P);
 	}
 
 

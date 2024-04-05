@@ -232,9 +232,7 @@ public class ActionFinder extends AbstractFinder {
 			}
 
 			// analyse stopping criteria
-			double adjustedMinCov = Math.min(
-					params.getMinimumCovered(),
-					Math.max(1.0, 0.2 * ct.weighted_P));
+			double adjustedMinCov = params.getMinimumCovered();
 
 			if (ct.weighted_p < adjustedMinCov) {
 				if (rule.getPremise().getSubconditions().size() == 0) {

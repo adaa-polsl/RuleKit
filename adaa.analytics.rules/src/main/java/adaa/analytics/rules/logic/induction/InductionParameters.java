@@ -77,7 +77,7 @@ public class InductionParameters implements Serializable {
 
 	public double getMinimumCovered() {return minimumCovered;}
 	public double getAbsoluteMinimumCovered(double size) {
-		return minimumCovered * (minimumCovered >= 1 ? 1 : size);
+		return Math.max(1, minimumCovered * (minimumCovered >= 1 ? 1 : size));
 	}
 	public void setMinimumCovered(double minimumCovered) {this.minimumCovered = minimumCovered;}
 
