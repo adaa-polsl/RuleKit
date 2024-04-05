@@ -14,8 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -64,8 +63,12 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 		beginTime = System.nanoTime();
 		
 		ClassificationRuleSet ruleset = (ClassificationRuleSet)factory.create(dataset);
-		Attribute label = dataset.getAttributes().getLabel();
-		NominalMapping mapping = label.getMapping();
+		Attribute outputAttr = dataset.getAttributes().getLabel();
+		NominalMapping mapping = outputAttr.getMapping();
+		List<String> labels = new ArrayList<>();
+		labels.addAll(mapping.getValues());
+		Collections.sort(labels);
+
 
 		int totalExpertRules = 0;
 		int totalAutoRules = 0;
@@ -76,7 +79,9 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 		finder.preprocess(dataset);
 		
 		// iterate over all classes
-		for (int classId = 0; classId < mapping.size(); ++classId) {
+		for (String label : labels) {
+			int classId = mapping.getIndex(label);
+			Logger.log("Class " + label + " (" +classId + ") started\n" , Level.FINE);
 
 			IntegerBitSet positives = new IntegerBitSet(dataset.size());
 			IntegerBitSet negatives = new IntegerBitSet(dataset.size());
@@ -185,7 +190,7 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 			while (carryOn) {
 				Rule rule = new ClassificationRule(
 						new CompoundCondition(),
-						new ElementaryCondition(label.getName(), new SingletonSet((double)classId, mapping.getValues())));
+						new ElementaryCondition(outputAttr.getName(), new SingletonSet((double)classId, mapping.getValues())));
 				
 				rule.setWeighted_P(weighted_P);
 				rule.setWeighted_N(weighted_N);

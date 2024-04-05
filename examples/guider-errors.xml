@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+<experiment>
+	<parameter_sets>
+	
+		<!--=======================================================================================================================-->
+		
+		<parameter_set name="illegal attribute">
+			<param name="use_expert">true</param>
+			<param name ="expert_rules">
+				<entry name="rule-0">IF [[gimpul = (-inf, 750)]] THEN class = {0}</entry>
+			</param>
+			<param name ="expert_preferred_conditions">
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>	
+		</parameter_set>
+		
+		<!--=======================================================================================================================-->
+		
+		<parameter_set name="illegal_class_value">
+			<param name="use_expert">true</param>
+			<param name ="expert_rules">
+			</param>
+			<param name ="expert_preferred_conditions">
+				<entry name="preferred-attribute-0">1: IF [[gimpuls = Any]] THEN class = {14}</entry>
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>
+		</parameter_set>
+		
+		<!--=======================================================================================================================-->
+				
+		<parameter_set name="illegal_attribute_value">
+			<param name="use_expert">true</param>
+			<param name ="expert_rules">	
+			</param>
+			<param name ="expert_preferred_conditions">
+				<entry name="preferred-condition-01">inf: IF [[seismic = {q}]] THEN class = {0}</entry>
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>
+		</parameter_set>
+		
+		<!--=======================================================================================================================-->
+				
+		<parameter_set name="illegal_equality">
+			<param name="use_expert">true</param>
+			<param name ="expert_rules">	
+			</param>
+			<param name ="expert_preferred_conditions">
+				<entry name="preferred-condition-01">inf: IF [[seismic - {q}]] THEN class = {0}</entry>
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>
+		</parameter_set>
+		
+		<!--=======================================================================================================================-->
+				
+		<parameter_set name="illegal_if_then">
+			<param name="use_expert">true</param>
+			<param name ="expert_rules">	
+			</param>
+			<param name ="expert_preferred_conditions">
+				<entry name="preferred-condition-01">inf: IFF [[seismic = {a}]] THEN class = {0}</entry>
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>
+		</parameter_set>
+		
+		<!--=======================================================================================================================-->
+		
+		<parameter_set name="illegal_interval_comma">
+			<param name="use_expert">true</param>
+			<param name ="expert_rules">
+				<entry name="rule-0">IF [[gimpuls = (-inf 750)]] THEN class = {0}</entry>
+			</param>
+			<param name ="expert_preferred_conditions">
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>	
+		</parameter_set>
+		
+		<!--=======================================================================================================================-->
+		
+		<parameter_set name="illegal_interval_no_left">
+			<param name="use_expert">true</param>
+			<param name ="expert_rules">
+				<entry name="rule-0">IF [[gimpuls = -inf, 750)]] THEN class = {0}</entry>
+			</param>
+			<param name ="expert_preferred_conditions">
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>	
+		</parameter_set>
+		
+		<!--=======================================================================================================================-->
+		
+		<parameter_set name="illegal_interval_no_right">
+			<param name="use_expert">true</param>
+			<param name ="expert_rules">
+				<entry name="rule-0">IF [[gimpuls = (-inf, 750]] THEN class = {0}</entry>
+			</param>
+			<param name ="expert_preferred_conditions">
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>	
+		</parameter_set>
+		
+		<!--=======================================================================================================================-->
+		
+		<parameter_set name="illegal_lowerbound">
+			<param name="use_expert">true</param>
+			<param name ="expert_rules">
+				<entry name="rule-0">IF [[gimpuls = (-inff, 750)]] THEN class = {0}</entry>
+			</param>
+			<param name ="expert_preferred_conditions">
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>	
+		</parameter_set>
+		
+		<!--=======================================================================================================================-->
+		
+		<parameter_set name="illegal_upperbound">
+			<param name="use_expert">true</param>
+			<param name ="expert_rules">
+				<entry name="rule-0">IF [[gimpuls = (-inf, a750)]] THEN class = {0}</entry>
+			</param>
+			<param name ="expert_preferred_conditions">
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>	
+		</parameter_set>
+		
+		<!--=======================================================================================================================-->
+		
+		<parameter_set name="illegal_upperbound_2">
+			<param name="use_expert">true</param>
+			<param name ="expert_rules">
+				<entry name="rule-0">IF [[gimpuls = (-inf, 0.5.4)]] THEN class = {0}</entry>
+			</param>
+			<param name ="expert_preferred_conditions">
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>	
+		</parameter_set>
+		
+	</parameter_sets>		
+		
+	<datasets>
+		<dataset>
+			<label>class</label>
+			<out_directory>./results-guider/errors</out_directory>		
+    
+			<training>  
+				 <report_file>training.txt</report_file>    
+
+				<train>
+					 <in_file>../data/seismic-bumps/seismic-bumps.arff</in_file>               	
+					 <model_file>seismic-bumps-full.mdl</model_file> 
+				 </train>
+				 
+			</training>
+    
+			<prediction>
+				
+			</prediction>
+			
+    
+		</dataset>
+  	</datasets>
+</experiment>
