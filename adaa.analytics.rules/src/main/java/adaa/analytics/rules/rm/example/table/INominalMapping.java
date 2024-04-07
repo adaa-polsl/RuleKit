@@ -1,5 +1,7 @@
 package adaa.analytics.rules.rm.example.table;
 
+import adaa.analytics.rules.data.ColumnMetaData;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -8,13 +10,13 @@ public interface INominalMapping extends Cloneable, Serializable {
 
     Object clone();
 
-    int getPositiveIndex();
+//    int getPositiveIndex();
 
     String getPositiveString();
 
-    int getNegativeIndex();
-
-    String getNegativeString();
+//    int getNegativeIndex();
+//
+//    String getNegativeString();
 
     int getIndex(String var1);
 
@@ -22,13 +24,15 @@ public interface INominalMapping extends Cloneable, Serializable {
 
     String mapIndex(int var1);
 
-    void setMapping(String var1, int var2);
+//    void setMapping(String var1, int var2);
 
     List<String> getValues();
 
     int size();
 
-    void sortMappings();
+//    void sortMappings();
 
     void clear();
+
+    ColumnMetaData getColMetaData();
 }

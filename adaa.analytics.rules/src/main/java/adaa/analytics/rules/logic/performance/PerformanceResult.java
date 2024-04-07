@@ -1,6 +1,6 @@
 package adaa.analytics.rules.logic.performance;
 
-import adaa.analytics.rules.rm.tools.Tools;
+import adaa.analytics.rules.utils.Tools;
 
 import java.util.List;
 

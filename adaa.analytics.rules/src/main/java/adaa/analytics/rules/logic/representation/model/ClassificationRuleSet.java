@@ -20,7 +20,6 @@ import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.set.RemappedExampleSet;
 import adaa.analytics.rules.rm.example.table.AttributeFactory;
 import adaa.analytics.rules.rm.example.table.IExampleTable;
 import adaa.analytics.rules.rm.operator.OperatorException;
@@ -161,7 +160,8 @@ public class ClassificationRuleSet extends RuleSetBase {
      */
     @Override
     public IExampleSet apply(IExampleSet exampleSet) throws OperatorException {
-        IExampleSet mappedExampleSet = new RemappedExampleSet(exampleSet, getTrainingHeader(), false);
+//        IExampleSet mappedExampleSet = new RemappedExampleSet(exampleSet, getTrainingHeader(), false);
+        IExampleSet mappedExampleSet = exampleSet.updateMapping(getTrainingHeader());
         checkCompatibility(mappedExampleSet);
         IAttribute predictedLabel = createPredictionAttributes(mappedExampleSet, getLabel());
         IExampleSet result = performPrediction(mappedExampleSet, predictedLabel);

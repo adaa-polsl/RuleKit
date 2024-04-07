@@ -1,9 +1,10 @@
 package adaa.analytics.rules.logic.representation;
 
+import adaa.analytics.rules.data.condition.AbstractCondition;
+import adaa.analytics.rules.data.condition.ICondition;
+import adaa.analytics.rules.data.condition.StringCondition;
+import adaa.analytics.rules.rm.comp.TsExampleSet;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.set.AttributeValueFilterSingleCondition;
-import adaa.analytics.rules.rm.example.set.ConditionedExampleSet;
-import adaa.analytics.rules.rm.example.set.SimpleExampleSet;
 import adaa.analytics.rules.rm.example.table.INominalMapping;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class ContrastSurvivalExampleSet extends ContrastExampleSet {
     /** Gets {@link #trainingEstimator}}. */
     public KaplanMeierEstimator getTrainingEstimator() { return trainingEstimator; }
 
-    public ContrastSurvivalExampleSet(SimpleExampleSet exampleSet) {
+    public ContrastSurvivalExampleSet(TsExampleSet exampleSet) {
         super(exampleSet);
 
         // establish training survival estimator
@@ -33,19 +34,14 @@ public class ContrastSurvivalExampleSet extends ContrastExampleSet {
         try {
             INominalMapping mapping = contrastAttribute.getMapping();
 
-            for (int i = 0; i < mapping.size(); ++i) {
-                AttributeValueFilterSingleCondition cnd = new AttributeValueFilterSingleCondition(
-                        contrastAttribute, AttributeValueFilterSingleCondition.EQUALS, mapping.mapIndex(i));
-
-                IExampleSet conditionedSet = new ConditionedExampleSet(exampleSet,cnd);
+            for(String value : mapping.getValues()) {
+                ICondition cnd = new StringCondition(contrastAttribute.getName(), AbstractCondition.EComparisonOperator.EQUALS, value);
+                IExampleSet conditionedSet = exampleSet.filter(cnd);
                 groupEstimators.add(new KaplanMeierEstimator(conditionedSet));
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        catch (ExpressionEvaluationException e) {
-//            e.printStackTrace();
-//        }
     }
 }

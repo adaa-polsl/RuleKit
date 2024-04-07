@@ -1,16 +1,19 @@
 package utils;
 
+import adaa.analytics.rules.data.EColumnType;
 import org.apache.commons.lang3.text.StrTokenizer;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class AttributeInfo {
 
     private String name;
-    private EColType cellType;
-    private String[] values;
+    private EColumnType colType;
+    private List<String> values;
 
     public AttributeInfo(String arffAttributeLine) {
 
@@ -38,43 +41,38 @@ public class AttributeInfo {
 
             if (type.equalsIgnoreCase("numeric") ||
                     type.equalsIgnoreCase("real")) {
-                cellType = EColType.NUMERIC;
+                colType = EColumnType.NUMERICAL;
             } else if (type.startsWith("{") && type.endsWith("}")) {
                 type = type.substring(1, type.length() - 1);
                 StrTokenizer typeTokenizer = new StrTokenizer(type);
                 typeTokenizer.setDelimiterChar(',');
                 typeTokenizer.setQuoteChar('\'');
                 typeTokenizer.setTrimmerMatcher(StrTokenizer.getCSVInstance().getTrimmerMatcher());
-                values = typeTokenizer.getTokenArray();
-                cellType = EColType.TEXT;
+                values = Arrays.asList(typeTokenizer.getTokenArray());
+                colType = EColumnType.NOMINAL;
             } else {
-                cellType = EColType.UNKNOWN;
+                colType = EColumnType.OTHER;
             }
         }
     }
 
-    public AttributeInfo(String name, EColType cellType, List<?> values) {
-
+    public AttributeInfo(String name, EColumnType cellType, List<?> values) {
         this.name = name;
-        this.cellType = cellType;
-        this.values = null;
-        if(values != null && this.cellType == EColType.TEXT) {
-            this.values = new String[values.size()];
-            for(int i=0 ; i<values.size() ; i++) {
-                this.values[i] = values.get(i).toString();
-            }
-        }
+        this.colType = cellType;
+        this.values = (values != null && cellType == EColumnType.NOMINAL) ?
+                values.stream().map(Object::toString).collect(Collectors.toList()) : null;
     }
+
 
     public String getName() {
         return name;
     }
 
-    public EColType getCellType() {
-        return cellType;
+    public EColumnType getCellType() {
+        return colType;
     }
 
-    public String[] getValues() {
+    public List<String> getValues() {
         return values;
     }
 }

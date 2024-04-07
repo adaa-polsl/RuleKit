@@ -2,15 +2,11 @@ package adaa.analytics.rules.rm.example;
 
 import adaa.analytics.rules.rm.example.table.DataRow;
 import adaa.analytics.rules.rm.tools.Ontology;
-import adaa.analytics.rules.rm.tools.Tools;
 
 import java.io.Serializable;
 import java.util.*;
 
 public class Example implements Serializable, Map<String, Object> {
-    private static final long serialVersionUID = 7761687908683290928L;
-    public static final String SEPARATOR = " ";
-    public static final String SPARSE_SEPARATOR = ":";
     private DataRow data;
     private IExampleSet parentExampleSet;
 
@@ -33,7 +29,7 @@ public class Example implements Serializable, Map<String, Object> {
 
     public String getNominalValue(IAttribute a) {
         if (!a.isNominal()) {
-            throw new AttributeTypeException("Extraction of nominal example value for non-nominal attribute '" + a.getName() + "' is not possible.");
+            throw new IllegalStateException("Extraction of nominal example value for non-nominal attribute '" + a.getName() + "' is not possible.");
         } else {
             double value = this.getValue(a);
             return Double.isNaN(value) ? "?" : a.getMapping().mapIndex((int)value);
@@ -42,19 +38,19 @@ public class Example implements Serializable, Map<String, Object> {
 
     public double getNumericalValue(IAttribute a) {
         if (!a.isNumerical()) {
-            throw new AttributeTypeException("Extraction of numerical example value for non-numerical attribute '" + a.getName() + "' is not possible.");
+            throw new IllegalStateException("Extraction of numerical example value for non-numerical attribute '" + a.getName() + "' is not possible.");
         } else {
             return this.getValue(a);
         }
     }
 
-    public Date getDateValue(IAttribute a) {
-        if (!Ontology.ATTRIBUTE_VALUE_TYPE.isA(a.getValueType(), 9)) {
-            throw new AttributeTypeException("Extraction of date example value for non-date attribute '" + a.getName() + "' is not possible.");
-        } else {
-            return new Date((long)this.getValue(a));
-        }
-    }
+//    public Date getDateValue(IAttribute a) {
+//        if (!Ontology.ATTRIBUTE_VALUE_TYPE.isA(a.getValueType(), 9)) {
+//            throw new AttributeTypeException("Extraction of date example value for non-date attribute '" + a.getName() + "' is not possible.");
+//        } else {
+//            return new Date((long)this.getValue(a));
+//        }
+//    }
 
     public void setValue(IAttribute a, double value) {
         this.data.set(a, value);
@@ -62,22 +58,13 @@ public class Example implements Serializable, Map<String, Object> {
 
     public void setValue(IAttribute a, String str) {
         if (!a.isNominal()) {
-            throw new AttributeTypeException("setValue(Attribute, String) only supported for nominal values!");
+            throw new IllegalStateException("setValue(Attribute, String) only supported for nominal values!");
         } else {
             if (str != null) {
                 this.setValue(a, (double)a.getMapping().mapString(str));
             } else {
                 this.setValue(a, Double.NaN);
             }
-
-        }
-    }
-
-    public boolean equalValue(IAttribute first, IAttribute second) {
-        if (first.isNominal() && second.isNominal()) {
-            return this.getValueAsString(first).equals(this.getValueAsString(second));
-        } else {
-            return !first.isNominal() && !second.isNominal() ? Tools.isEqual(this.getValue(first), this.getValue(second)) : false;
         }
     }
 
@@ -85,40 +72,16 @@ public class Example implements Serializable, Map<String, Object> {
         return this.getValue(this.getAttributes().getLabel());
     }
 
-    public void setLabel(double value) {
-        this.setValue(this.getAttributes().getLabel(), value);
-    }
-
     public double getPredictedLabel() {
         return this.getValue(this.getAttributes().getPredictedLabel());
-    }
-
-    public void setPredictedLabel(double value) {
-        this.setValue(this.getAttributes().getPredictedLabel(), value);
-    }
-
-    public double getId() {
-        return this.getValue(this.getAttributes().getId());
-    }
-
-    public void setId(double value) {
-        this.setValue(this.getAttributes().getId(), value);
     }
 
     public double getWeight() {
         return this.getValue(this.getAttributes().getWeight());
     }
 
-    public void setWeight(double value) {
-        this.setValue(this.getAttributes().getWeight(), value);
-    }
-
     public double getConfidence(String classValue) {
         return this.getValue(this.getAttributes().getConfidence(classValue));
-    }
-
-    public void setConfidence(String classValue, double confidence) {
-        this.setValue(this.getAttributes().getSpecial("confidence_" + classValue), confidence);
     }
 
     public String getValueAsString(IAttribute attribute) {
@@ -147,61 +110,6 @@ public class Example implements Serializable, Map<String, Object> {
         }
 
         return result.toString();
-    }
-
-    public String toSparseString(int format, int fractionDigits, boolean quoteNominal) {
-        StringBuffer str = new StringBuffer();
-        IAttribute labelAttribute = this.getAttributes().getSpecial("label");
-        if (format == 1 && labelAttribute != null) {
-            str.append(this.getValueAsString(labelAttribute, fractionDigits, quoteNominal) + " ");
-        }
-
-        IAttribute idAttribute = this.getAttributes().getSpecial("id");
-        if (idAttribute != null) {
-            str.append("id:" + this.getValueAsString(idAttribute, fractionDigits, quoteNominal) + " ");
-        }
-
-        IAttribute weightAttribute = this.getAttributes().getSpecial("weight");
-        if (weightAttribute != null) {
-            str.append("w:" + this.getValueAsString(weightAttribute, fractionDigits, quoteNominal) + " ");
-        }
-
-        IAttribute batchAttribute = this.getAttributes().getSpecial("batch");
-        if (batchAttribute != null) {
-            str.append("b:" + this.getValueAsString(batchAttribute, fractionDigits, quoteNominal) + " ");
-        }
-
-        str.append(this.getAttributesAsSparseString(" ", ":", fractionDigits, quoteNominal) + " ");
-        if (format == 2 && labelAttribute != null) {
-            str.append("l:" + this.getValueAsString(labelAttribute, fractionDigits, quoteNominal));
-        }
-
-        if (format == 0 && labelAttribute != null) {
-            str.append(this.getValueAsString(labelAttribute, fractionDigits, quoteNominal));
-        }
-
-        return str.toString();
-    }
-
-    String getAttributesAsSparseString(String separator, String indexValueSeparator, int fractionDigits, boolean quoteNominal) {
-        StringBuffer str = new StringBuffer();
-        boolean first = true;
-        int counter = 1;
-
-        for(Iterator var8 = this.getAttributes().iterator(); var8.hasNext(); ++counter) {
-            IAttribute attribute = (IAttribute)var8.next();
-            double value = this.getValue(attribute);
-            if (!Tools.isDefault(attribute.getDefault(), value)) {
-                if (!first) {
-                    str.append(separator);
-                }
-
-                first = false;
-                str.append(counter + indexValueSeparator + this.getValueAsString(attribute, fractionDigits, quoteNominal));
-            }
-        }
-
-        return str.toString();
     }
 
     public Object get(Object key) {

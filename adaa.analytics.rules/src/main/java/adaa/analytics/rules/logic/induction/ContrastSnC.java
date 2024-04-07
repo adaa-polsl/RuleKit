@@ -1,13 +1,14 @@
 package adaa.analytics.rules.logic.induction;
 
+import adaa.analytics.rules.data.condition.AbstractCondition;
+import adaa.analytics.rules.data.condition.ICondition;
+import adaa.analytics.rules.data.condition.StringCondition;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.model.ContrastRuleSet;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
+import adaa.analytics.rules.rm.comp.TsExampleSet;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.set.AttributeValueFilter;
-import adaa.analytics.rules.rm.example.set.ConditionedExampleSet;
-import adaa.analytics.rules.rm.example.set.SimpleExampleSet;
 import adaa.analytics.rules.rm.example.table.INominalMapping;
 
 import java.util.ArrayList;
@@ -42,11 +43,11 @@ public class ContrastSnC extends ClassificationSnC {
         ContrastExampleSet ces;
 
         if (factory.getType() == RuleFactory.CONTRAST_REGRESSION) {
-            ces = new ContrastRegressionExampleSet((SimpleExampleSet) dataset);
+            ces = new ContrastRegressionExampleSet((TsExampleSet) dataset);
         } else if (factory.getType() == RuleFactory.CONTRAST_SURVIVAL) {
-            ces = new ContrastSurvivalExampleSet((SimpleExampleSet) dataset);
+            ces = new ContrastSurvivalExampleSet((TsExampleSet) dataset);
         } else {
-            ces = new ContrastExampleSet((SimpleExampleSet) dataset);
+            ces = new ContrastExampleSet((TsExampleSet) dataset);
         }
 
         ContrastRuleSet rs = (ContrastRuleSet) factory.create(ces);
@@ -131,11 +132,17 @@ public class ContrastSnC extends ClassificationSnC {
 
                         Logger.log("\nContrast " + group1 +" vs " + group2 + "\n" , Level.INFO);
 
-                        String conditionString = contrastAttr.getName() + " = " + mapping.mapIndex(i) + " || " +
-                                contrastAttr.getName() + " = " + mapping.mapIndex(j);
+//                        String conditionString = contrastAttr.getName() + " = " + mapping.mapIndex(i) + " || " +
+//                                contrastAttr.getName() + " = " + mapping.mapIndex(j);
+//
+//                        AttributeValueFilter cnd = new AttributeValueFilter(dataset, conditionString);
+//                        IExampleSet conditionedSet = new ConditionedExampleSet(dataset, cnd);
 
-                        AttributeValueFilter cnd = new AttributeValueFilter(dataset, conditionString);
-                        IExampleSet conditionedSet = new ConditionedExampleSet(dataset, cnd);
+                        List<ICondition> cndList = new ArrayList<>(2);
+                        cndList.add(new StringCondition(contrastAttr.getName(), AbstractCondition.EComparisonOperator.EQUALS, mapping.mapIndex(i)));
+                        cndList.add(new StringCondition(contrastAttr.getName(), AbstractCondition.EComparisonOperator.EQUALS, mapping.mapIndex(j)));
+                        IExampleSet conditionedSet = dataset.filterWithOr(cndList);
+
                         rs = super.run(conditionedSet);
 
                         for (Rule r : rs.getRules()) {

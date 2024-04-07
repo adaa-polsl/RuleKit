@@ -14,6 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
+import adaa.analytics.rules.data.ColumnMetaData;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.ArrayList;
@@ -147,7 +148,7 @@ public class RuleParser {
 	    	
 	    	IValueSet valueSet = null;
 
-	    	AttributeMetaData attributeMeta = meta.getAttributeByName(attribute);
+	    	ColumnMetaData attributeMeta = meta.getAttributeByName(attribute);
 	    	if (attributeMeta == null) {
 				Logger.log("Attribute <" + attribute + "> not found"+ "\n", Level.WARNING);
 				return null;
@@ -164,8 +165,7 @@ public class RuleParser {
 		    	matcher = regex.matcher(valueString);
 		    	if (matcher.find()) {
 		    		String value = matcher.group("discrete");
-		    		List<String> mapping = new ArrayList<String>();
-					mapping.addAll(attributeMeta.getValueSet());
+                    List<String> mapping = new ArrayList<String>(attributeMeta.getMapping().getValues());
 					double v = mapping.indexOf(value);
 		    		if (v == -1) {
 						Logger.log("Invalid value <" + value + "> of the nominal attribute <" + attribute + ">"+ "\n", Level.WARNING);

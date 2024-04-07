@@ -1,24 +1,24 @@
 package utils;
 
-import adaa.analytics.rules.logic.representation.SurvivalRule;
+import adaa.analytics.rules.data.DataTable;
+import adaa.analytics.rules.data.EColumnRole;
+import adaa.analytics.rules.data.EColumnType;
+import adaa.analytics.rules.rm.comp.TsExampleSet;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.set.SimpleExampleSet;
-import adaa.analytics.rules.rm.example.table.*;
 import org.jetbrains.annotations.NotNull;
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.Row;
-import tech.tablesaw.api.Table;
-import tech.tablesaw.columns.Column;
 import tech.tablesaw.io.csv.CsvReadOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class TableSawLoader extends ExamplesetFileLoader {
 
-    private static final DataRowFactory dataRowFactory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY);
+//    @Deprecated
+//    private static final DataRowFactory dataRowFactory = new DataRowFactory(DataRowFactory.TYPE_DOUBLE_ARRAY);
 
+    @Deprecated
     protected IExampleSet loadExampleSet(
             CsvReadOptions.Builder builder,
             String labelParameterName,
@@ -27,6 +27,7 @@ public abstract class TableSawLoader extends ExamplesetFileLoader {
         return loadExampleSet(builder, labelParameterName, survivalTimeParameter, null);
     }
 
+    @Deprecated
     protected IExampleSet loadExampleSet(
             CsvReadOptions.Builder builder,
             String labelParameterName,
@@ -34,118 +35,116 @@ public abstract class TableSawLoader extends ExamplesetFileLoader {
             List<AttributeInfo> attributesInfo
     ) {
 
+        DataTable dataTable = loadDataTable(builder, labelParameterName, survivalTimeParameter, attributesInfo);
+
+        return new TsExampleSet(dataTable);
+
+//        List<IAttribute> attributes = new ArrayList<>(attributesInfo.size());
+//        for(AttributeInfo attributeInfo : attributesInfo) {
+//
+//            IAttribute attribute = new TsAttribute();
+//
+//            if(attributeInfo.getCellType() == EColumnType.TEXT) {
+//
+//                TsNominalMapping nominalMapping = new TsNominalMapping();
+//                for(String value : attributeInfo.getValues()){
+//                    nominalMapping.mapString(value);
+//                }
+//
+//                int uniqueDataSize = 0;
+//                if(attributeInfo.getValues() != null) {
+//                    uniqueDataSize = attributeInfo.getValues().size();
+//                }
+//
+//                if(uniqueDataSize <= 2) {
+//                    attribute = new BinominalAttribute(attributeInfo.getName());
+//                    BinominalMapping biMapping = new BinominalMapping();
+//                    for(String value : attributeInfo.getValues()){
+//                        biMapping.mapString(value);
+//                    }
+//                    attribute.setMapping(biMapping);
+//                }
+//                else {
+//                    attribute = new PolynominalAttribute(attributeInfo.getName());
+//                    PolynominalMapping polyMapping = new PolynominalMapping();
+//                    for(String value : attributeInfo.getValues()){
+//                        polyMapping.mapString(value);
+//                    }
+//                    attribute.setMapping(polyMapping);
+//                }
+//            }
+//            else if(attributeInfo.getCellType() == EColumnType.NUMERIC) {
+//
+//                attribute = new NumericalAttribute(attributeInfo.getName());
+//            }
+//            else if(attributeInfo.getCellType() == EColumnType.DATE) {
+//
+//                attribute = new NumericalAttribute(attributeInfo.getName());
+//            }
+//            if(attribute != null){
+//                attributes.add(attribute);
+//            }
+//        }
+//        IAttribute[] attributeArray = attributes.toArray(new IAttribute[attributes.size()]);
+//
+//        MemoryExampleTable meTable = new MemoryExampleTable(attributes);
+//
+//        for(Row row : tsTable) {
+//
+//            DataRow dataRow = rowToDataRow(row, attributeArray);
+//            meTable.addDataRow(dataRow);
+//        }
+//
+//        SimpleExampleSet exampleSet = new SimpleExampleSet(meTable);
+//
+//        exampleSet.getAttributes().setLabel(exampleSet.getAttributes().get(labelParameterName));
+//        exampleSet.getAttributes().setSpecialAttribute(exampleSet.getAttributes().get(survivalTimeParameter), SurvivalRule.SURVIVAL_TIME_ROLE);
+//
+//        return exampleSet;
+    }
+
+    protected DataTable loadDataTable(
+            CsvReadOptions.Builder builder,
+            String labelParameterName,
+            String survivalTimeParameter,
+            List<AttributeInfo> attributesInfo
+    ) {
+        // TableSaw CSV builder for reading
         builder = builder
                 .separator(',')
                 .quoteChar('\'')
                 .missingValueIndicator("?");
 
-        ColumnType[] columnTypes = null;
+        // Defined options for tablesaw csv loader
+//        CsvReadOptions options = builder.build();
 
-        if(attributesInfo != null) {
+        DataTable dataTable = new DataTable(builder, attributesInfo);
+        dataTable.setRole(labelParameterName, EColumnRole.label.name());
+        dataTable.setRole(survivalTimeParameter, EColumnRole.survival_time.name());
 
-            columnTypes = new ColumnType[attributesInfo.size()];
-            for(int i=0 ; i<attributesInfo.size() ; i++) {
+//        if(attributesInfo != null) {
+//
+//            if(attributesInfo.size() != dataTable.columnCount()) {
+//
+//                throw new IllegalStateException("Niezgodna liczba atrybutów");
+//            }
+//            for(AttributeInfo attInfo : attributesInfo) {
+//
+//                EColumnRole role = EColumnRole.REGULAR;
+//                if(attInfo.getName().equals(labelParameterName)) {
+//                    role = EColumnRole.LABEL;
+//                }
+//                else if(attInfo.getName().equals(survivalTimeParameter)) {
+//                    role = EColumnRole.SURVIVAL_TIME;
+//                }
+//                dataTable.addColumn(attInfo.getName(), attInfo.getCellType(), role, attInfo.getValues());
+//            }
+//        }
 
-                if(attributesInfo.get(i).getCellType() == EColType.NUMERIC) {
-                    columnTypes[i] = ColumnType.DOUBLE;
-                }
-                else if(attributesInfo.get(i).getCellType() == EColType.TEXT) {
-                    columnTypes[i] = ColumnType.STRING;
-                }
-                else if(attributesInfo.get(i).getCellType() == EColType.DATE) {
-                    columnTypes[i] = ColumnType.LOCAL_DATE_TIME;
-                }
-                else {
-                    columnTypes[i] = ColumnType.STRING;
-                }
-            }
-            builder = builder.columnTypes(columnTypes);
-        }
-
-        CsvReadOptions options = builder.build();
-
-        Table tsTable = Table.read().usingOptions(options);
-
-        if(attributesInfo != null) {
-
-            if(attributesInfo.size() != tsTable.columnCount()) {
-
-                throw new IllegalStateException("Niezgodna liczba atrybutów");
-            }
-            for(int i=0 ; i<attributesInfo.size() ; i++) {
-
-                tsTable.column(i).setName(attributesInfo.get(i).getName());
-            }
-        }
-        else {
-
-            attributesInfo = new ArrayList<>(tsTable.columnCount());
-            for(Column<?> col : tsTable.columnArray()) {
-
-                attributesInfo.add(new AttributeInfo(col.name(), getCellType(col.type()), col.unique().asList()));
-            }
-        }
-
-        List<IAttribute> attributes = new ArrayList<>(attributesInfo.size());
-        for(AttributeInfo attributeInfo : attributesInfo) {
-
-            IAttribute attribute = null;
-
-            if(attributeInfo.getCellType() == EColType.TEXT) {
-
-                int uniqueDataSize = 0;
-                if(attributeInfo.getValues() != null) {
-                    uniqueDataSize = attributeInfo.getValues().length;
-                }
-
-                if(uniqueDataSize <= 2) {
-                    attribute = new BinominalAttribute(attributeInfo.getName());
-                    BinominalMapping biMapping = new BinominalMapping();
-                    for(String value : attributeInfo.getValues()){
-                        biMapping.mapString(value);
-                    }
-                    attribute.setMapping(biMapping);
-                }
-                else {
-                    attribute = new PolynominalAttribute(attributeInfo.getName());
-                    PolynominalMapping polyMapping = new PolynominalMapping();
-                    for(String value : attributeInfo.getValues()){
-                        polyMapping.mapString(value);
-                    }
-                    attribute.setMapping(polyMapping);
-                }
-            }
-            else if(attributeInfo.getCellType() == EColType.NUMERIC) {
-
-                attribute = new NumericalAttribute(attributeInfo.getName());
-            }
-            else if(attributeInfo.getCellType() == EColType.DATE) {
-
-                attribute = new NumericalAttribute(attributeInfo.getName());
-            }
-            if(attribute != null){
-                attributes.add(attribute);
-            }
-        }
-        IAttribute[] attributeArray = attributes.toArray(new IAttribute[attributes.size()]);
-
-        MemoryExampleTable meTable = new MemoryExampleTable(attributes);
-
-        for(Row row : tsTable) {
-
-            DataRow dataRow = rowToDataRow(row, attributeArray);
-            meTable.addDataRow(dataRow);
-        }
-
-        SimpleExampleSet exampleSet = new SimpleExampleSet(meTable);
-
-        exampleSet.getAttributes().setLabel(exampleSet.getAttributes().get(labelParameterName));
-        exampleSet.getAttributes().setSpecialAttribute(exampleSet.getAttributes().get(survivalTimeParameter), SurvivalRule.SURVIVAL_TIME_ROLE);
-
-        return exampleSet;
+        return dataTable;
     }
 
-    protected EColType getCellType(@NotNull ColumnType type) {
+    protected EColumnType getCellType(@NotNull ColumnType type) {
 
         if (type.equals(ColumnType.INTEGER) ||
                 type.equals(ColumnType.FLOAT) ||
@@ -153,18 +152,18 @@ public abstract class TableSawLoader extends ExamplesetFileLoader {
                 type.equals(ColumnType.SHORT) ||
                 type.equals(ColumnType.LONG) ||
                 type.equals(ColumnType.BOOLEAN)) {
-            return EColType.NUMERIC;
+            return EColumnType.NUMERICAL;
         }
         else if (type.equals(ColumnType.STRING) ||
                 type.equals(ColumnType.TEXT)) {
-            return EColType.TEXT;
+            return EColumnType.NOMINAL;
         }
         else if (type.equals(ColumnType.LOCAL_DATE) ||
                 type.equals(ColumnType.LOCAL_DATE_TIME) ||
                 type.equals(ColumnType.LOCAL_TIME)) {
-            return EColType.DATE;
+            return EColumnType.DATE;
         }
-        return EColType.UNKNOWN;
+        return EColumnType.OTHER;
     }
 
     protected String [] rowToStringArray(@NotNull Row row, @NotNull IAttribute[] attributes) {
@@ -174,15 +173,15 @@ public abstract class TableSawLoader extends ExamplesetFileLoader {
         for(int i=0 ; i<attributes.length ; i++) {
 
             String colName = attributes[i].getName();
-            if(getCellType(row.getColumnType(colName)) == EColType.TEXT) {
+            if(getCellType(row.getColumnType(colName)) == EColumnType.NOMINAL) {
 
                 stringRow[i] = row.getString(colName);
             }
-            else if(getCellType(row.getColumnType(colName)) == EColType.NUMERIC) {
+            else if(getCellType(row.getColumnType(colName)) == EColumnType.NUMERICAL) {
 
                 stringRow[i] = Double.toString(row.getNumber(colName));
             }
-            else if(getCellType(row.getColumnType(colName)) == EColType.DATE) {
+            else if(getCellType(row.getColumnType(colName)) == EColumnType.DATE) {
 
                 stringRow[i] = Double.toString(row.getPackedDateTime(colName));
             }
@@ -191,10 +190,10 @@ public abstract class TableSawLoader extends ExamplesetFileLoader {
         return stringRow;
     }
 
-    protected DataRow rowToDataRow(Row row, IAttribute[] attributes) {
-
-        String [] strRow = rowToStringArray(row, attributes);
-
-        return dataRowFactory.create(strRow, attributes);
-    }
+//    protected DataRow rowToDataRow(Row row, IAttribute[] attributes) {
+//
+//        String [] strRow = rowToStringArray(row, attributes);
+//
+//        return dataRowFactory.create(strRow, attributes);
+//    }
 }

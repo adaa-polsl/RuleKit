@@ -14,7 +14,7 @@ public class ArffFileWriter {
         List<IAttribute> attributes = new ArrayList<>();
 
         try {
-            FileWriter fileWriter = new FileWriter(fileName, true);
+            FileWriter fileWriter = new FileWriter(fileName);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
             bufferedWriter.write("@relation ''");

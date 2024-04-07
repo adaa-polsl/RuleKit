@@ -1,14 +1,16 @@
 package adaa.analytics.rules.logic.representation;
 
+import adaa.analytics.rules.data.DataTable;
+import adaa.analytics.rules.data.EColumnSortDirections;
+import adaa.analytics.rules.rm.comp.TsExampleSet;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.set.SortedExampleSet;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class SortedExampleSetEx extends SortedExampleSet {
+public class SortedExampleSetEx extends TsExampleSet {
 
     public double[] labels;
     public double[] weights;
@@ -20,23 +22,9 @@ public class SortedExampleSetEx extends SortedExampleSet {
 
     public Map<IAttribute, IntegerBitSet> nonMissingVals = new HashMap<>();
 
-    public SortedExampleSetEx(IExampleSet parent, IAttribute sortingAttribute, int sortingDirection) {
-        super(parent, sortingAttribute, sortingDirection);
-        fillLabelsAndWeights();
-    }
-
-//    public SortedExampleSetEx(IExampleSet parent, IAttribute sortingAttribute, int sortingDirection, OperatorProgress progress) throws ProcessStoppedException {
-//        super(parent, sortingAttribute, sortingDirection, progress);
-//        fillLabelsAndWeights();
-//    }
-
-    public SortedExampleSetEx(IExampleSet parent, int[] mapping) {
-        super(parent, mapping);
-        fillLabelsAndWeights();
-    }
-
-    public SortedExampleSetEx(SortedExampleSet exampleSet) {
-        super(exampleSet);
+    public SortedExampleSetEx(IExampleSet parent, IAttribute sortingAttribute, EColumnSortDirections sortingDirection) {
+        super(parent);
+        dataTable.sortBy(sortingAttribute.getName(), sortingDirection);
         fillLabelsAndWeights();
     }
 

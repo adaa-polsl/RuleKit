@@ -4,15 +4,15 @@ import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IAttributes;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.set.HeaderExampleSet;
-import adaa.analytics.rules.rm.example.set.RemappedExampleSet;
 import adaa.analytics.rules.rm.example.table.AttributeFactory;
 import adaa.analytics.rules.rm.example.table.IExampleTable;
+import adaa.analytics.rules.rm.example.table.INominalMapping;
 import adaa.analytics.rules.rm.operator.OperatorException;
 import adaa.analytics.rules.rm.tools.Ontology;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 
 public abstract class PredictionModel implements Serializable {
@@ -24,7 +24,7 @@ public abstract class PredictionModel implements Serializable {
 
 	protected PredictionModel(IExampleSet trainingExampleSet) {
 		if (trainingExampleSet != null) {
-			this.headerExampleSet = new HeaderExampleSet(trainingExampleSet);
+			this.headerExampleSet = trainingExampleSet.getMetaData();
 		}
 	}
 
@@ -45,7 +45,8 @@ public abstract class PredictionModel implements Serializable {
 
 	public IExampleSet apply(IExampleSet exampleSet) throws OperatorException
 	{
-		IExampleSet mappedExampleSet = RemappedExampleSet.create(exampleSet, getTrainingHeader(), false, true);
+//		IExampleSet mappedExampleSet = RemappedExampleSet.create(exampleSet, getTrainingHeader(), false, true);
+		IExampleSet mappedExampleSet = exampleSet.updateMapping(getTrainingHeader());
 		checkCompatibility(mappedExampleSet);
 		IAttribute predictedLabel = createPredictionAttributes(mappedExampleSet, getLabel());
 		IExampleSet result = performPrediction(mappedExampleSet, predictedLabel);
@@ -112,7 +113,9 @@ public abstract class PredictionModel implements Serializable {
 									+ ", application: "
 									+ attribute.getMapping().size(), Level.WARNING);
 						} else {
-							for (String v : trainingAttribute.getMapping().getValues()) {
+							INominalMapping mapping = trainingAttribute.getMapping();
+							List<String> values = mapping.getValues();
+							for (String v : values) {
 								int trainingIndex = trainingAttribute.getMapping().getIndex(v);
 								int applicationIndex = attribute.getMapping().getIndex(v);
 								if (trainingIndex != applicationIndex) {
@@ -134,7 +137,6 @@ public abstract class PredictionModel implements Serializable {
 	protected IAttribute createPredictionAttributes(IExampleSet exampleSet, IAttribute label) {
 		// create and add prediction attribute
 		IAttribute predictedLabel = AttributeFactory.createAttribute(label, IAttributes.PREDICTION_NAME);
-		predictedLabel.clearTransformations();
 		IExampleTable table = exampleSet.getExampleTable();
 		table.addAttribute(predictedLabel);
 		exampleSet.getAttributes().setPredictedLabel(predictedLabel);

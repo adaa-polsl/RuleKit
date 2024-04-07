@@ -14,11 +14,11 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
+import adaa.analytics.rules.data.EColumnSortDirections;
 import adaa.analytics.rules.logic.representation.*;
 
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.set.SortedExampleSet;
 
 import java.util.Set;
 import java.util.logging.Level;
@@ -34,7 +34,7 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 	public static class Implementation {
 		public IExampleSet preprocess(IExampleSet trainSet) {
 			IAttribute survTime = trainSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
-			SortedExampleSetEx ses = new SortedExampleSetEx(trainSet, survTime, SortedExampleSet.INCREASING);
+			SortedExampleSetEx ses = new SortedExampleSetEx(trainSet, survTime, EColumnSortDirections.INCREASING);
 			return ses;
 		}
 

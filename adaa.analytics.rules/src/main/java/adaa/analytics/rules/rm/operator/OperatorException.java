@@ -1,9 +1,6 @@
 package adaa.analytics.rules.rm.operator;
 
 import java.text.MessageFormat;
-import java.util.Enumeration;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 
 public class OperatorException extends Exception {
     private static final long serialVersionUID = 3626738574540303240L;

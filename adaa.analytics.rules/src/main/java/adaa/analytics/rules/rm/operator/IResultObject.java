@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 //public interface IResultObject extends IOObject {
 public interface IResultObject extends Serializable {
-    String getName();
+//    String getName();
 
     Annotations getAnnotations();
 

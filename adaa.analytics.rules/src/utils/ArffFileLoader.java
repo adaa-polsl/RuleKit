@@ -1,5 +1,6 @@
 package utils;
 
+import adaa.analytics.rules.data.DataTable;
 import adaa.analytics.rules.rm.example.IExampleSet;
 import tech.tablesaw.io.csv.CsvReadOptions;
 
@@ -9,13 +10,31 @@ import java.util.List;
 
 public class ArffFileLoader extends TableSawLoader {
 
+    @Deprecated
     @Override
     protected IExampleSet loadExampleSet(String path, String labelParameterName, String survivalTimeParameter) {
 
-        List<AttributeInfo> attributesNames = new ArrayList<>();
+        List<AttributeInfo> attributesInfo = new ArrayList<>();
+
+        CsvReadOptions.Builder builder = createArffLoadBuilder(path, attributesInfo);
+
+        return loadExampleSet(builder, labelParameterName, survivalTimeParameter, attributesInfo);
+    }
+
+    @Override
+    protected DataTable loadDataTable(String path, String labelParameterName, String survivalTimeParameter) {
+
+        List<AttributeInfo> attributesInfo = new ArrayList<>();
+
+        CsvReadOptions.Builder builder = createArffLoadBuilder(path, attributesInfo);
+
+        return loadDataTable(builder, labelParameterName, survivalTimeParameter, attributesInfo);
+    }
+
+    private CsvReadOptions.Builder createArffLoadBuilder(String path, List<AttributeInfo> attributesInfo) {
 
         File file = new File(path);
-        long dataPosition = findDataPosition(file, attributesNames);
+        long dataPosition = findDataPosition(file, attributesInfo);
 
         BufferedReader bufferReader = null;
         if (dataPosition >= 0) {
@@ -30,10 +49,7 @@ public class ArffFileLoader extends TableSawLoader {
             System.out.println("Nie znaleziono znacznika '@data'.");
         }
 
-        CsvReadOptions.Builder builder = CsvReadOptions.builder(bufferReader)
-                .header(false);
-
-        return loadExampleSet(builder, labelParameterName, survivalTimeParameter, attributesNames);
+        return CsvReadOptions.builder(bufferReader).header(false);
     }
 
     private long findDataPosition(File file, List<AttributeInfo> attributesInfo) {

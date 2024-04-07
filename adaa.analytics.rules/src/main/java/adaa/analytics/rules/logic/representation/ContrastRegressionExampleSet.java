@@ -1,11 +1,12 @@
 package adaa.analytics.rules.logic.representation;
 
+import adaa.analytics.rules.data.condition.AbstractCondition;
+import adaa.analytics.rules.data.condition.ICondition;
+import adaa.analytics.rules.data.condition.StringCondition;
+import adaa.analytics.rules.rm.comp.TsExampleSet;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
 import adaa.analytics.rules.rm.example.IStatistics;
-import adaa.analytics.rules.rm.example.set.AttributeValueFilterSingleCondition;
-import adaa.analytics.rules.rm.example.set.ConditionedExampleSet;
-import adaa.analytics.rules.rm.example.set.SimpleExampleSet;
 import adaa.analytics.rules.rm.example.table.INominalMapping;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class ContrastRegressionExampleSet extends ContrastExampleSet {
     /** Gets {@link #trainingEstimator}}. */
     public double getTrainingEstimator() { return trainingEstimator; }
 
-    public ContrastRegressionExampleSet(SimpleExampleSet exampleSet) {
+    public ContrastRegressionExampleSet(TsExampleSet exampleSet) {
         super(exampleSet);
 
         String averageName = (exampleSet.getAttributes().getWeight() != null)
@@ -40,15 +41,13 @@ public class ContrastRegressionExampleSet extends ContrastExampleSet {
         try {
             INominalMapping mapping = contrastAttribute.getMapping();
 
-            for (int i = 0; i < mapping.size(); ++i) {
-                AttributeValueFilterSingleCondition cnd = new AttributeValueFilterSingleCondition(
-                        contrastAttribute, AttributeValueFilterSingleCondition.EQUALS, mapping.mapIndex(i));
+            for(String value : mapping.getValues()) {
+                ICondition cnd = new StringCondition(contrastAttribute.getName(), AbstractCondition.EComparisonOperator.EQUALS, value);
 
-                IExampleSet conditionedSet = new ConditionedExampleSet(exampleSet,cnd);
+                IExampleSet conditionedSet = exampleSet.filter(cnd);
                 conditionedSet.recalculateAttributeStatistics(label);
                 groupEstimators.add(conditionedSet.getStatistics(label, averageName));
             }
-
         }
         catch (Exception e) {
             e.printStackTrace();

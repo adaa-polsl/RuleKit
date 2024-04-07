@@ -1,11 +1,9 @@
 package adaa.analytics.rules.logic.performance;
 
-import adaa.analytics.rules.logic.performance.AbstractPerformanceCounter;
-import adaa.analytics.rules.logic.performance.PerformanceResult;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.tools.Tools;
+import adaa.analytics.rules.utils.Tools;
 
 import java.util.Iterator;
 

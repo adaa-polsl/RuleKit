@@ -14,12 +14,12 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
+import adaa.analytics.rules.data.EColumnSortDirections;
 import adaa.analytics.rules.logic.representation.*;
 
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.set.SortedExampleSet;
 
 import java.security.InvalidParameterException;
 import java.util.*;
@@ -42,7 +42,7 @@ public class RegressionFinder extends AbstractFinder {
 	@Override
 	public IExampleSet preprocess(IExampleSet trainSet) {
 		IAttribute label = trainSet.getAttributes().getLabel();
-		SortedExampleSetEx ses = new SortedExampleSetEx(trainSet, label, SortedExampleSet.INCREASING);
+		SortedExampleSetEx ses = new SortedExampleSetEx(trainSet, label, EColumnSortDirections.INCREASING);
 		return ses;
 	}
 

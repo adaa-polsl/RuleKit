@@ -1,7 +1,10 @@
 package adaa.analytics.rules.rm.example.table;
 
+import adaa.analytics.rules.data.ColumnMetaData;
+import adaa.analytics.rules.data.EColumnRole;
+import adaa.analytics.rules.rm.comp.Converter;
+import adaa.analytics.rules.rm.comp.TsAttribute;
 import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.tools.Ontology;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,17 +18,8 @@ public class AttributeFactory {
 
     public static IAttribute createAttribute(String name, int valueType) {
         String attributeName = name != null ? new String(name) : createName();
-        if (Ontology.ATTRIBUTE_VALUE_TYPE.isA(valueType, 9)) {
-            return new DateAttribute(attributeName, valueType);
-        } else if (Ontology.ATTRIBUTE_VALUE_TYPE.isA(valueType, 6)) {
-            return new BinominalAttribute(attributeName);
-        } else if (Ontology.ATTRIBUTE_VALUE_TYPE.isA(valueType, 1)) {
-            return new PolynominalAttribute(attributeName, valueType);
-        } else if (Ontology.ATTRIBUTE_VALUE_TYPE.isA(valueType, 2)) {
-            return new NumericalAttribute(attributeName, valueType);
-        } else {
-            throw new RuntimeException("AttributeFactory: cannot create attribute with value type '" + Ontology.ATTRIBUTE_VALUE_TYPE.mapIndex(valueType) + "' (" + valueType + ")!");
-        }
+
+        return new TsAttribute(new ColumnMetaData(attributeName, Converter.RmOntologyToEColumnType(valueType)));
     }
 
 
@@ -34,15 +28,16 @@ public class AttributeFactory {
     }
 
     public static IAttribute createAttribute(IAttribute attribute, String functionName) {
-        IAttribute result = (IAttribute)attribute.clone();
+        ColumnMetaData cmd = attribute.getColumnMetaData();
+        cmd.setRole(EColumnRole.regular.name());
         if (functionName == null) {
-            result.setName(attribute.getName());
+            cmd.setName(attribute.getName());
         } else {
-            result.setName(functionName + "(" + attribute.getName() + ")");
-            result.setConstruction(functionName + "(" + attribute.getName() + ")");
+            cmd.setName(functionName + "(" + attribute.getName() + ")");
+//            result.setConstruction(functionName + "(" + attribute.getName() + ")");
         }
 
-        return result;
+        return new TsAttribute(cmd.clone());
     }
 
 
