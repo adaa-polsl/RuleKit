@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import com.sun.source.tree.AssertTree;
+//import com.sun.source.tree.AssertTree;
 import org.junit.Assert;
 import org.junit.Test;
 
