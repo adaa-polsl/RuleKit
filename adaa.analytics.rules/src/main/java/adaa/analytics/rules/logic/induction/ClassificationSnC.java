@@ -41,8 +41,6 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 	 */
 	protected AbstractFinder finder;
 
-	protected int numClassThreads = 1;
-
 	public ClassificationSnC(AbstractFinder finder, InductionParameters params) {
 		super(params);
 		this.finder = finder;
