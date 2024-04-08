@@ -357,16 +357,10 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 	 */
 	@Override
 	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double p, double n, double new_p, double P,double uncoveredSize,  int ruleOrderNum) {
-		double adjustedMinCov =
-				Math.min(
-						params.getAbsoluteMinimumCovered(P),
-						Math.max(1.0, 0.2 * P));
-		if (new_p >= adjustedMinCov && p >= params.getAbsoluteMinimumCoveredAll(P)) {
-			return true &&
-					!knowledge.isForbidden(cnd.getAttribute(), cnd.getValueSet(), (int)classId);
-		} else {
-			return false;
-		}
+		return new_p >= params.getAbsoluteMinimumCovered(P)
+				&& p >= params.getAbsoluteMinimumCoveredAll(P)
+				&& !knowledge.isForbidden(cnd.getAttribute(), cnd.getValueSet(), (int)classId);
+
 	}
 	
 	

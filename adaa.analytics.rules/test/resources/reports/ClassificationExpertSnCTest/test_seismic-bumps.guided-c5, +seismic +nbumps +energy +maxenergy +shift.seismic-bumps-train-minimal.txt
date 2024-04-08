@@ -5,7 +5,4 @@ Rules
 	IF goenergy = <-73.50, inf) AND nbumps = (-inf, 1.50) THEN class = {0}
 	IF goenergy = <-73.50, inf) AND genergy = (-inf, 117615) AND nbumps2 = (-inf, 1.50) THEN class = {0}
 	IF nbumps = (-inf, 5.50) THEN class = {0}
-	IF senergy = <2650, 3850) AND nbumps = <1.50, inf) THEN class = {1}
-	IF goenergy = (-inf, 11) AND genergy = <17495, 401025) AND senergy = <2650, 8250) AND nbumps2 = <0.50, inf) THEN class = {1}
-	IF goenergy = <-21, 9) AND genergy = <24830, 36280) AND senergy = (-inf, 1500) AND nbumps2 = (-inf, 0.50) THEN class = {1}
-	IF goenergy = (-inf, 50) AND maxenergy = (-inf, 45000) AND genergy = <62050, 1158410) AND nbumps = (-inf, 3.50) THEN class = {1}
+	IF goenergy = (-inf, 9) AND maxenergy = (-inf, 6500) AND genergy = <18890, 314675) AND shift = {W} AND nbumps3 = <0.50, inf) THEN class = {1}

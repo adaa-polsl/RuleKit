@@ -5,7 +5,6 @@ import adaa.analytics.rules.rm.example.IExampleSet;
 public class ApproximateClassificationSnC extends ClassificationSnC {
     public ApproximateClassificationSnC(AbstractFinder finder, InductionParameters params) {
         super(finder, params);
-        numClassThreads = 1; // fix number of class threads
     }
 
     @Override
