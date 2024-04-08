@@ -849,7 +849,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
     protected void printArrays() {
 
-        if (false) {
+        if (true) {
             return;
         }
 
