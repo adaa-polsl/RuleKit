@@ -849,7 +849,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
     protected void printArrays() {
 
-        if (true) {
+        if (!Logger.getInstance().isLogLevelEnabled(Level.FINEST)) {
             return;
         }
 
@@ -904,24 +904,14 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
             Logger.log("" + attr.getName() + ": [" + ruleRanges[attribute_id][0] + "," + ruleRanges[attribute_id][1] + "],"
                     + "bin_p=" + bin_p + ", bin_n=" + bin_n + ", sum=" +  (bin_p + bin_n) + ", bin_new_p=" + bin_new_p + ", bin_outside=" + bin_outside
                     + ",\t\t p=" + p + ", n=" + n + ", sum=" +  (p + n) + ", new_p=" + new_p
-                    + "\n", Level.FINER);
+                    + "\n", Level.FINEST);
 
         }
 
         if (ok == false) {
-            Logger.log("Error\n", Level.FINER);
-         //   System.exit(0);
-
+            Logger.log("Error\n", Level.FINEST);
         }
 
-      /*
-        try {
-            System.in.read();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-       */
     }
 
     protected void updateMidpoint(IExampleSet dataset, ConditionCandidate candidate) {

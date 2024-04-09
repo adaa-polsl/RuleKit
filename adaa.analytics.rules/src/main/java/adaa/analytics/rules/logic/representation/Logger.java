@@ -70,7 +70,16 @@ public class Logger {
 	public static void log(String msg, Level lvl) {
 		instance.run(msg, lvl);
 	}
-	
+
+	public boolean isLogLevelEnabled(Level lvl)
+	{
+		for (LogStream s : streams) {
+			if (lvl.intValue() >= s.level.intValue()) {
+				return true;
+			}
+		}
+		return false;
+	}
 	/**
 	 * Logs a message on all streams with logging level smaller than the message level.
 	 * @param msg Message.
