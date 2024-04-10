@@ -7,7 +7,6 @@ import java.util.Iterator;
 
 public class ExampleIterator implements Iterator<Example> {
 
-//    private Iterator<Row> rowIterator;
     private DataTable dataTable;
     private IExampleSet es;
 
@@ -20,7 +19,7 @@ public class ExampleIterator implements Iterator<Example> {
 
     @Override
     public boolean hasNext() {
-        return index < dataTable.rowCount() - 1;
+        return index < dataTable.rowCount();
     }
 
     @Override
