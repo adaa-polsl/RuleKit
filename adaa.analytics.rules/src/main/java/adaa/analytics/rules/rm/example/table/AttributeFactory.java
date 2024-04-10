@@ -28,7 +28,7 @@ public class AttributeFactory {
     }
 
     public static IAttribute createAttribute(IAttribute attribute, String functionName) {
-        ColumnMetaData cmd = attribute.getColumnMetaData();
+        ColumnMetaData cmd = attribute.getColumnMetaData().clone();
         cmd.setRole(EColumnRole.regular.name());
         if (functionName == null) {
             cmd.setName(attribute.getName());
@@ -37,7 +37,7 @@ public class AttributeFactory {
 //            result.setConstruction(functionName + "(" + attribute.getName() + ")");
         }
 
-        return new TsAttribute(cmd.clone());
+        return new TsAttribute(cmd);
     }
 
 

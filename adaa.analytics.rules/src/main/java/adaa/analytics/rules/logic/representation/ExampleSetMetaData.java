@@ -53,7 +53,7 @@ public class ExampleSetMetaData {
     }
 
     public ColumnMetaData getLabelMetaData() {
-        return getSpecial(IAttributes.LABEL_NAME);
+        return getSpecial(EColumnRole.label.name());
     }
 
 }
