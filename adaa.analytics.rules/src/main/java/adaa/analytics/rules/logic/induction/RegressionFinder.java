@@ -300,8 +300,7 @@ public class RegressionFinder extends AbstractFinder {
 			Future<ConditionEvaluation> future = (Future<ConditionEvaluation>) pool.submit(() -> {
 			
 				ConditionEvaluation best = new ConditionEvaluation();
-				Logger.log("\tattribute: " + attr.getName() + "\n", Level.FINEST);
-				
+
 				// check if attribute is numerical or nominal
 				if (attr.isNumerical()) {
 					Map<Double, List<Integer>> values2ids = new TreeMap<Double, List<Integer>>();
@@ -361,8 +360,14 @@ public class RegressionFinder extends AbstractFinder {
 		try {
 			for (Future f : futures) {
 				ConditionEvaluation eval;
-			
 				eval = (ConditionEvaluation)f.get();
+
+				if (eval.condition != null) {
+					Logger.log("\tAttribute best: " + eval.condition + " (p=" + eval.covering.weighted_p + ", n=" + eval.covering.weighted_n +
+							", P=" + eval.covering.weighted_P + ", N=" + eval.covering.weighted_N +
+							", mean_y=" + eval.covering.mean_y + ", mean_y2=" + eval.covering.mean_y2 + ", stddev_y=" + eval.covering.stddev_y +
+							", quality=" + eval.quality + "\n", Level.FINEST);
+				}
 				if (best == null || eval.quality > best.quality || (eval.quality == best.quality && eval.covered > best.covered)) {
 					best = eval;
 				}
@@ -429,13 +434,13 @@ public class RegressionFinder extends AbstractFinder {
 
 			if (quality > currentBest.quality ||
 					(quality == currentBest.quality && (new_p + new_n > currentBest.covered || currentBest.opposite))) {
-
+/*
 				Logger.log("\t\tCurrent best: " + candidate + " (p=" + cov.weighted_p + ", n=" + cov.weighted_n +
 						", new_p=" + (double) new_p + ", new_n="+  new_n +
 						", P=" + cov.weighted_P + ", N=" + cov.weighted_N +
 						", mean_y=" + cov.mean_y + ", mean_y2=" + cov.mean_y2 + ", stddev_y=" + cov.stddev_y +
 						", quality=" + quality + "\n", Level.FINEST);
-
+*/
 				currentBest.quality = quality;
 				currentBest.condition = candidate;
 				currentBest.covered = new_p + new_n;

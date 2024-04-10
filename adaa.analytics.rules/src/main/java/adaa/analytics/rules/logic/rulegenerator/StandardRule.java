@@ -21,6 +21,7 @@ import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.rm.operator.Annotations;
 
 /**
  * The basic RuleKit learner operator. It enables inducing classification, regression,
@@ -48,8 +49,9 @@ public class StandardRule {
         AbstractFinder finder;
 
         IAttribute contrastAttr = null;
+        Annotations annotations = exampleSet.getAnnotations();
 
-        if (exampleSet.getAnnotations().containsKey(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
+        if (annotations != null && annotations.containsKey(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
             contrastAttr = exampleSet.getAttributes().get(exampleSet.getAnnotations().get(ContrastRule.CONTRAST_ATTRIBUTE_ROLE));
         }
 
