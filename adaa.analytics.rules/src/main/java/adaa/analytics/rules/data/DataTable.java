@@ -16,6 +16,8 @@ public class DataTable implements Cloneable {
     private Table table;
     private Map<String, ColumnMetaData> columnMetaData = new LinkedHashMap<>();
 
+    private Map<String, String> annotations = new LinkedHashMap<>();
+
     private DataTable(Table table) {
         this.table = table;
     }
@@ -328,6 +330,26 @@ public class DataTable implements Cloneable {
             DoubleColumn colNum = (DoubleColumn) table.column(colName);
             colNum.set(rowIndex, value);
         }
+    }
+
+    public void setAnnotation(String key, String value) {
+        annotations.put(key, value);
+    }
+
+    public String getAnnotation(String key) {
+        return annotations.get(key);
+    }
+
+    public int sizeAnnotations() {
+        return annotations.size();
+    }
+
+    public void clearAnnotations() {
+        annotations.clear();
+    }
+
+    public boolean containsAnnotationKey(String key) {
+        return annotations.containsKey(key);
     }
 
     private Selection addCondition(List<ICondition> conditions, int conditionIndex, EConditionsLogicOperator logicOp) {

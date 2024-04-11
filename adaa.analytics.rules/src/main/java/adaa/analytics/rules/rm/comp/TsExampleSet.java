@@ -98,7 +98,7 @@ public class TsExampleSet implements IExampleSet {
 
     @Override
     public Annotations getAnnotations() {
-        return null;
+        return new Annotations(dataTable);
     }
 
     @NotNull
