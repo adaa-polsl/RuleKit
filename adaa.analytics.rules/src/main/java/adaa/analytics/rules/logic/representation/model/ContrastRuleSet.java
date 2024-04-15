@@ -213,6 +213,7 @@ public class ContrastRuleSet extends ClassificationRuleSet {
         
         sb.replace(sb.length()-1, sb.length(), "\n");
 
+        /*
         sb.append("\nCoverage of training examples by contrast sets (1-based):\n");
         for (int eid = 0; eid < trainingSet.size(); ++eid){
             Example ex = trainingSet.getExample(eid);
@@ -240,6 +241,7 @@ public class ContrastRuleSet extends ClassificationRuleSet {
             sb.replace(sb.length() - 1, sb.length(), ";");
             //sb.append((bestRuleId > 0 ? bestRuleId : "-") + ",");
         }
+         */
 
         return sb.toString();
     }

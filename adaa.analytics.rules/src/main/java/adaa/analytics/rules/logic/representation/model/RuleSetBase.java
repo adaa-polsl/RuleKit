@@ -22,6 +22,7 @@ import adaa.analytics.rules.logic.representation.Knowledge;
 import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
+import adaa.analytics.rules.rm.example.IAttributes;
 import adaa.analytics.rules.rm.example.IExampleSet;
 import adaa.analytics.rules.rm.operator.OperatorException;
 
@@ -62,8 +63,8 @@ public abstract class RuleSetBase extends PredictionModel {
 
 	public static final String ANNOTATION_TEST_REPORT = "annotation_test_report";
 
-	/** Training set. */
-	protected IExampleSet trainingSet;
+	/** Collection of attributes */
+	protected List<String> attributes = new ArrayList<>();
 	
 	/** Collection of rules. */
 	protected List<Rule> rules = new ArrayList<Rule>();
@@ -297,10 +298,13 @@ public abstract class RuleSetBase extends PredictionModel {
 	 */
 	public RuleSetBase(IExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
 		super(exampleSet);
-		this.trainingSet = exampleSet;
 		this.isVoting = isVoting;
 		this.params = params;
 		this.knowledge = knowledge;
+
+		for (IAttribute attr: exampleSet.getAttributes()) {
+			attributes.add(attr.getName());
+		}
 	}
 
 	/**
@@ -331,8 +335,8 @@ public abstract class RuleSetBase extends PredictionModel {
 		sb.append("Rules:\n");
 		Map<String, AttributeRank> attributeCountsWeights = new LinkedHashMap<>(); // create attribute ranking
 		Map<String, Double> attributeWeights = new LinkedHashMap<>(); // create attribute ranking
-		for (IAttribute a: trainingSet.getAttributes()) {
-			attributeCountsWeights.put(a.getName(), new AttributeRank(0, 0.0));
+		for (String a: attributes) {
+			attributeCountsWeights.put(a, new AttributeRank(0, 0.0));
 		}
 		int rid = 1;
 
@@ -365,7 +369,7 @@ public abstract class RuleSetBase extends PredictionModel {
 			sb.append(e.getKey() + ": " + e.getValue().weight + "\n");
 		}
 
-
+		/*
 		sb.append("\nCoverage of training examples by rules (1-based):\n");
 		for (int eid = 0; eid < trainingSet.size(); ++eid){
 			Example ex = trainingSet.getExample(eid);
@@ -403,6 +407,7 @@ public abstract class RuleSetBase extends PredictionModel {
             sb.replace(sb.length() - 1, sb.length(), ";");
 			//sb.append((bestRuleId > 0 ? bestRuleId : "-") + ",");
 		}
+		 */
 
 		sb.replace(sb.length()-1, sb.length(), "\n");
 	//	sb.append("General information:\n");
