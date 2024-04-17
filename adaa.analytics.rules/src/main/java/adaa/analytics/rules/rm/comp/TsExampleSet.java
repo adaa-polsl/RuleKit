@@ -97,6 +97,11 @@ public class TsExampleSet implements IExampleSet {
     }
 
     @Override
+    public Object[] getValues(String colName) {
+        return dataTable.getValues(colName);
+    }
+
+    @Override
     public Annotations getAnnotations() {
         return new Annotations(dataTable);
     }

@@ -305,7 +305,8 @@ public class DataTable implements Cloneable {
         if(colMetaData.isNominal()) {
             StringColumn colStr = table.stringColumn(colName);
             String value = colStr.get(rowIndex);
-            return colMetaData.getMapping().getIndex(value);
+            Integer iVal = colMetaData.getMapping().getIndex(value);
+            return iVal == null ? defaultValue : iVal.doubleValue();
         }
 
         DoubleColumn colNum = (DoubleColumn) table.column(colName);
@@ -350,6 +351,24 @@ public class DataTable implements Cloneable {
 
     public boolean containsAnnotationKey(String key) {
         return annotations.containsKey(key);
+    }
+
+    public Object [] getValues(String colName) {
+        ColumnMetaData cmd = getColumn(colName);
+
+        if(cmd == null) {
+            throw new IllegalStateException(String.format("Column '%s' does not exist", colName));
+        }
+
+        if(cmd.isNumerical()) {
+            return table.doubleColumn(colName).asObjectArray();
+        }
+
+        if(cmd.isNominal()) {
+            return table.stringColumn(colName).asObjectArray();
+        }
+
+        return null;
     }
 
     private Selection addCondition(List<ICondition> conditions, int conditionIndex, EConditionsLogicOperator logicOp) {

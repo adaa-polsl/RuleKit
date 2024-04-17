@@ -35,13 +35,9 @@ public class NominalMapping implements Cloneable {
         return found.getValue();
     }
 
-    public int getIndex(String val) {
+    public Integer getIndex(String val) {
         NominalMap found = findByValue(val);
-        if(found == null) {
-            return -1;
-        }
-
-        return found.getIndex();
+        return found == null ? null : found.getIndex();
     }
 
     public boolean hasIndex(int index) {
