@@ -247,7 +247,7 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
                 return p * (P + N) / ((p + n) * P);
 
             case LogicalSufficiency:
-                return p * N / (n * P);
+                return p * N / (n * P + 1);
 
             case MEstimate:
                 double m = 2;
@@ -260,7 +260,7 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
                 return p / (P + N) - (P * (p + n) / ((P + N) * (P + N)));
 
             case OddsRatio:
-                return p * (N - n) / (n * (P - p));
+                return p * (N - n) / (n * (P - p) + 1);
 
             case OneWaySupport:
                 return p / (p + n) * Math.log(p * (P + N) / ((p + n) * P));
@@ -275,7 +275,7 @@ ClassificationMeasure implements IQualityMeasure, Serializable {
                 return p / (p + n);
 
             case RelativeRisk:
-                return (p / (p + n)) * ((P + N - p - n) / (P - p));
+                return (p / (p + n)) * ((P + N - p - n) / (P - p + 1));
 
             case Ripper:
                 return (p - n) / (p + n);

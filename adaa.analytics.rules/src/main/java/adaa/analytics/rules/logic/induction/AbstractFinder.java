@@ -105,14 +105,17 @@ public abstract class AbstractFinder implements AutoCloseable {
 		int initialConditionsCount = rule.getPremise().getSubconditions().size();
 		
 		// get current covering
-		ContingencyTable contingencyTable = new Covering();
-		IntegerBitSet positives = new IntegerBitSet(dataset.size());
-		IntegerBitSet negatives = new IntegerBitSet(dataset.size());
-		rule.covers(dataset, contingencyTable, positives, negatives);
+		Covering covering = new Covering();
+
+		// fixme: ugly workaround for having IntegerBitSet in Covering instance
+		covering.positives = new IntegerBitSet(dataset.size());
+		covering.negatives = new IntegerBitSet(dataset.size());
+
+		rule.covers(dataset, covering, covering.positives, covering.negatives);
 		//Set<Integer> covered = new HashSet<Integer>();
 		IntegerBitSet covered = new IntegerBitSet(dataset.size());
-		covered.addAll(positives);
-		covered.addAll(negatives);
+		covered.addAll(covering.positives);
+		covered.addAll(covering.negatives);
 		Set<Attribute> allowedAttributes = new TreeSet<Attribute>(new AttributeComparator());
 		for (Attribute a: dataset.getAttributes()) {
 			allowedAttributes.add(a);
@@ -132,18 +135,16 @@ public abstract class AbstractFinder implements AutoCloseable {
 
 				//recalculate covering only when needed
 				if (condition.getCovering() != null) {
-					positives.retainAll(condition.getCovering());
-					negatives.retainAll(condition.getCovering());
+					covering.positives.retainAll(condition.getCovering());
+					covering.negatives.retainAll(condition.getCovering());
 					covered.retainAll(condition.getCovering());
 				} else {
-					contingencyTable.clear();
-					positives.clear();
-					negatives.clear();
+					covering.clear();
 
-					rule.covers(dataset, contingencyTable, positives, negatives);
+					rule.covers(dataset, covering, covering.positives, covering.negatives);
 					covered.clear();
-					covered.addAll(positives);
-					covered.addAll(negatives);
+					covered.addAll(covering.positives);
+					covered.addAll(covering.negatives);
 				}
 
 
@@ -163,14 +164,9 @@ public abstract class AbstractFinder implements AutoCloseable {
 			
 		} while (carryOn);
 
-		// ugly
-		Covering covering = new Covering();
-		covering.positives = positives;
-		covering.negatives = negatives;
-
 		rule.setCoveringInformation(covering);
-		rule.getCoveredPositives().setAll(positives);
-		rule.getCoveredNegatives().setAll(negatives);
+		rule.getCoveredPositives().setAll(covering.positives);
+		rule.getCoveredNegatives().setAll(covering.negatives);
 
 		// if rule has been successfully grown
 		int addedConditionsCount = rule.getPremise().getSubconditions().size() - initialConditionsCount;
