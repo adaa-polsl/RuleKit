@@ -69,7 +69,8 @@ public class RegressionFinder extends AbstractFinder {
 			Future<ConditionEvaluation> future = (Future<ConditionEvaluation>) pool.submit(() -> {
 
 				ConditionEvaluation best = new ConditionEvaluation();
-				Logger.log("\tattribute: " + attr.getName() + "\n", Level.FINEST);
+				best.covering = new Covering();
+				//Logger.log("\tattribute: " + attr.getName() + "\n", Level.FINEST);
 
 				// check if attribute is numerical or nominal
 				if (attr.isNumerical()) {
@@ -188,15 +189,24 @@ public class RegressionFinder extends AbstractFinder {
 											(c == 0) ? Interval.create_le(midpoint) : Interval.create_geq(midpoint));
 
 									if (checkCandidate(candidate, p, n, new_p, new_n, P, N, uncovered.size(),rule.getRuleOrderNum())) {
+										/*
 										Logger.log("\t\tCurrent best: " + candidate + " (p=" + p + ", n=" + n +
 												", new_p=" + (double) new_p + ", new_n="+  new_n +
 												", P=" + P + ", N=" + N +
 												", mean_y=" + stats[c].mean_y + ", mean_y2=" + mean_y2 + ", stddev_y=" + stats[c].stddev_y +
 												", quality=" + quality + "\n", Level.FINEST);
+										*/
 										best.quality = quality;
 										best.covered = new_p + new_n;
 										best.condition = candidate;
 										best.opposite = false;
+										best.covering.weighted_p = p;
+										best.covering.weighted_n = n;
+										best.covering.weighted_P = P;
+										best.covering.weighted_N = N;
+										best.covering.mean_y = stats[c].mean_y;
+										best.covering.mean_y2 = mean_y2;
+										best.covering.stddev_y = stats[c].stddev_y;
 									}
 								}
 
@@ -253,8 +263,15 @@ public class RegressionFinder extends AbstractFinder {
 		try {
 			for (Future f : futures) {
 				ConditionEvaluation eval;
-
 				eval = (ConditionEvaluation)f.get();
+
+				if (eval.condition != null) {
+					Logger.log("\tAttribute best: " + eval.condition + " (p=" + eval.covering.weighted_p + ", n=" + eval.covering.weighted_n +
+							", P=" + eval.covering.weighted_P + ", N=" + eval.covering.weighted_N +
+							", mean_y=" + eval.covering.mean_y + ", mean_y2=" + eval.covering.mean_y2 + ", stddev_y=" + eval.covering.stddev_y +
+							", quality=" + eval.quality + "\n", Level.FINEST);
+				}
+
 				if (best == null || eval.quality > best.quality || (eval.quality == best.quality && eval.covered > best.covered)) {
 					best = eval;
 				}
@@ -434,7 +451,8 @@ public class RegressionFinder extends AbstractFinder {
 
 			if (quality > currentBest.quality ||
 					(quality == currentBest.quality && (new_p + new_n > currentBest.covered || currentBest.opposite))) {
-/*
+
+				/*
 				Logger.log("\t\tCurrent best: " + candidate + " (p=" + cov.weighted_p + ", n=" + cov.weighted_n +
 						", new_p=" + (double) new_p + ", new_n="+  new_n +
 						", P=" + cov.weighted_P + ", N=" + cov.weighted_N +
