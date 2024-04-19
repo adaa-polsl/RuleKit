@@ -2,6 +2,7 @@ package adaa.analytics.rules.data;
 
 import adaa.analytics.rules.data.condition.EConditionsLogicOperator;
 import adaa.analytics.rules.data.condition.ICondition;
+import adaa.analytics.rules.logic.representation.ContrastRule;
 import tech.tablesaw.api.*;
 import tech.tablesaw.columns.Column;
 import tech.tablesaw.io.csv.CsvReadOptions;
@@ -71,7 +72,8 @@ public class DataTable implements Cloneable {
     public DataTable(Object[][] values,
                      String[] attributesNames,
                      String decisionAttribute,
-                     String survivalTimeAttribute) {
+                     String survivalTimeAttribute,
+                     String contrastAttribute) {
 
         if (values.length == 0) {
             throw new RuntimeException("TsExampleSet: data matrix is not allowed to be empty.");
@@ -103,6 +105,9 @@ public class DataTable implements Cloneable {
             }
             else if(attName.equals(survivalTimeAttribute)) {
                 colRole = EColumnRole.survival_time.name();
+            }
+            else if(attName.equals(contrastAttribute)) {
+                colRole = ContrastRule.CONTRAST_ATTRIBUTE_ROLE;
             }
 
             String[] nomData = null;

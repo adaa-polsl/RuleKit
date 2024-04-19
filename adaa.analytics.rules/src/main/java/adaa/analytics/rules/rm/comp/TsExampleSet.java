@@ -26,21 +26,22 @@ public class TsExampleSet implements IExampleSet {
         this.dataTable = exampleSet.getDataTable();
     }
 
-    public TsExampleSet(
-            Object[][] values,
-            String[] attributesNames,
-            String decisionAttribute) {
-
-        this(values, attributesNames, decisionAttribute, null);
-    }
+//    public TsExampleSet(
+//            Object[][] values,
+//            String[] attributesNames,
+//            String decisionAttribute) {
+//
+//        this(values, attributesNames, decisionAttribute, null);
+//    }
 
     public TsExampleSet(
             Object[][] values,
             String[] attributesNames,
             String decisionAttribute,
-            String survivalTimeAttribute) {
+            String survivalTimeAttribute,
+            String contrastAttribute) {
 
-        dataTable = new DataTable(values, attributesNames, decisionAttribute, survivalTimeAttribute);
+        dataTable = new DataTable(values, attributesNames, decisionAttribute, survivalTimeAttribute, contrastAttribute);
     }
 
     @Override
