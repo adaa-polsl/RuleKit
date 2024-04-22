@@ -1,8 +1,9 @@
 package adaa.analytics.rules.data;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class MetaDataTable {
+public class MetaDataTable implements Serializable {
 
     private Map<String, ColumnMetaData> attributeMetaData = new LinkedHashMap<>();
 

@@ -1,8 +1,9 @@
 package adaa.analytics.rules.data;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class NominalMap implements Cloneable {
+public class NominalMap implements Cloneable, Serializable {
 
     private int index;
     private String value;

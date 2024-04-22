@@ -1,12 +1,13 @@
 package adaa.analytics.rules.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class NominalMapping implements Cloneable {
+public class NominalMapping implements Cloneable, Serializable {
 
     private List<NominalMap> mapping = new ArrayList<>();
 

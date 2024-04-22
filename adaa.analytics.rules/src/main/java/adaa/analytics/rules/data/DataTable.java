@@ -9,10 +9,14 @@ import tech.tablesaw.io.csv.CsvReadOptions;
 import tech.tablesaw.selection.Selection;
 import utils.AttributeInfo;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DataTable implements Cloneable {
+public class DataTable implements Cloneable, Serializable {
 
     private Table table;
     private Map<String, ColumnMetaData> columnMetaData = new LinkedHashMap<>();
@@ -26,6 +30,7 @@ public class DataTable implements Cloneable {
     public DataTable(CsvReadOptions options) {
 
         table = Table.read().usingOptions(options);
+
     }
 
     public DataTable(CsvReadOptions.Builder builder, List<AttributeInfo> attsInfo) {
@@ -492,5 +497,23 @@ public class DataTable implements Cloneable {
     @Override
     public int hashCode() {
         return Objects.hash(table, columnMetaData);
+    }
+
+
+    private void writeObject(ObjectOutputStream oos)
+            throws IOException {
+        Object[] data = new Object[3];
+        data[0] = table.write().toString("csv");
+        data[1] = columnMetaData;
+        data[2] = annotations;
+        oos.writeObject(data);
+    }
+
+    private void readObject(ObjectInputStream ois)
+            throws ClassNotFoundException, IOException {
+        Object[] data = (Object[])ois.readObject();
+        table = Table.read().string((String)data[0],"csv");
+        columnMetaData = (Map<String, ColumnMetaData>)data[1];
+        annotations = (Map<String, String>)data[2];
     }
 }

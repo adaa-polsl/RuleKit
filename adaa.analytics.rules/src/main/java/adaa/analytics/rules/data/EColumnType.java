@@ -3,7 +3,9 @@ package adaa.analytics.rules.data;
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.columns.Column;
 
-public enum EColumnType {
+import java.io.Serializable;
+
+public enum EColumnType implements Serializable {
     OTHER,
     NOMINAL,
     NUMERICAL,

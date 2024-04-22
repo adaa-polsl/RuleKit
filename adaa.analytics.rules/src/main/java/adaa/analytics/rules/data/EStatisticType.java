@@ -1,6 +1,8 @@
 package adaa.analytics.rules.data;
 
-public enum EStatisticType {
+import java.io.Serializable;
+
+public enum EStatisticType implements Serializable {
     AVERAGE("average"),
     AVERAGE_WEIGHTED("average_weighted"),
     VARIANCE("variance"),
