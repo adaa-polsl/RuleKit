@@ -63,7 +63,7 @@ public class NominalMapping implements Cloneable, Serializable {
             if(outNomMap == null) {
                 return false;
             }
-            if(nomMap.equals(outNomMap)) {
+            if(!nomMap.equals(outNomMap)) {
                 return false;
             }
         }
