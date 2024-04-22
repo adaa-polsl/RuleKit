@@ -60,5 +60,7 @@ public interface IExampleSet extends IResultObject, Cloneable, Iterable<Example>
 
     DataTable getDataTable();
 
+    Object [] getValues(String colName);
+
 //    double getStatistics(IAttribute var1, String var2, String var3);
 }

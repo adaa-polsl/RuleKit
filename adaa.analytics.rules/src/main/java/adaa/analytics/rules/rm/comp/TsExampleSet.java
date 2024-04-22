@@ -26,6 +26,24 @@ public class TsExampleSet implements IExampleSet {
         this.dataTable = exampleSet.getDataTable();
     }
 
+//    public TsExampleSet(
+//            Object[][] values,
+//            String[] attributesNames,
+//            String decisionAttribute) {
+//
+//        this(values, attributesNames, decisionAttribute, null);
+//    }
+
+    public TsExampleSet(
+            Object[][] values,
+            String[] attributesNames,
+            String decisionAttribute,
+            String survivalTimeAttribute,
+            String contrastAttribute) {
+
+        dataTable = new DataTable(values, attributesNames, decisionAttribute, survivalTimeAttribute, contrastAttribute);
+    }
+
     @Override
     public Object clone() {
         return new TsExampleSet(dataTable.clone());
@@ -94,6 +112,11 @@ public class TsExampleSet implements IExampleSet {
     @Override
     public DataTable getDataTable() {
         return dataTable;
+    }
+
+    @Override
+    public Object[] getValues(String colName) {
+        return dataTable.getValues(colName);
     }
 
     @Override

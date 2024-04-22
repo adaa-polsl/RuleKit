@@ -18,12 +18,12 @@ public class DataRow implements Serializable {
         return "";
     }
 
-    public double get(IAttribute attribute) {
+    public Double get(IAttribute attribute) {
         if (attribute == null) {
             return Double.NaN;
         } else {
             try {
-                return dataTable.getDoubleValue(attribute.getName(), rowIndex, 0.0);
+                return dataTable.getDoubleValue(attribute.getName(), rowIndex, Double.NaN);
             } catch (ArrayIndexOutOfBoundsException var3) {
                 throw new ArrayIndexOutOfBoundsException("DataRow: table index " + attribute.getTableIndex() + " of Attribute " + attribute.getName() + " is out of bounds.");
             }

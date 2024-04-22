@@ -1,100 +1,14 @@
 @relation ''
 
-@attribute 'Col 1' {'val_1','val 2'}
-@attribute 'Col_2' numeric
-@attribute 'Col 3' {'val 1','val_2','v a l 3'}
+@attribute 'd_att' numeric
+@attribute 't_att' {'val2','val1'}
+@attribute 'b_att' numeric
+@attribute 'att_1' numeric
+@attribute 'att_2' numeric
 
 @data
-'val_1',1.0,'val 1'
-'val 2',2.0,'val_2'
-'val 2',3.3,'v a l 3'
-@relation ''
-
-@attribute 'Col 1' {'val_1','val 2'}
-@attribute 'Col_2' numeric
-@attribute 'Col 3' {'val 1','val_2','v a l 3'}
-
-@data
-'val_1',1.0,'val 1'
-'val 2',2.0,'val_2'
-'val 2',3.3,'v a l 3'
-@relation ''
-
-@attribute 'Col 1' {'val_1','val 2'}
-@attribute 'Col_2' numeric
-@attribute 'Col 3' {'val 1','val_2','v a l 3'}
-
-@data
-'val_1',1.0,'val 1'
-'val 2',2.0,'val_2'
-'val 2',3.3,'v a l 3'
-@relation ''
-
-@attribute 'Col 1' {'val_1','val 2'}
-@attribute 'Col_2' numeric
-@attribute 'Col 3' {'val 1','val_2','v a l 3'}
-
-@data
-'val_1',1.0,'val 1'
-'val 2',2.0,'val_2'
-'val 2',3.3,'v a l 3'
-@relation ''
-
-@attribute 'Col 1' {'val_1','val 2'}
-@attribute 'Col_2' numeric
-@attribute 'Col 3' {'val 1','val_2','v a l 3'}
-
-@data
-'val_1',1.0,'val 1'
-'val 2',2.0,'val_2'
-'val 2',3.3,'v a l 3'
-@relation ''
-
-@attribute 'Col 1' {'val_1','val 2'}
-@attribute 'Col_2' numeric
-@attribute 'Col 3' {'val 1','val_2','v a l 3'}
-
-@data
-'val_1',1.0,'val 1'
-'val 2',2.0,'val_2'
-'val 2',3.3,'v a l 3'
-@relation ''
-
-@attribute 'Col 1' {'val_1','val 2'}
-@attribute 'Col_2' numeric
-@attribute 'Col 3' {'val 1','val_2','v a l 3'}
-
-@data
-'val_1',1.0,'val 1'
-'val 2',2.0,'val_2'
-'val 2',3.3,'v a l 3'
-@relation ''
-
-@attribute 'Col 1' {'val_1','val 2'}
-@attribute 'Col_2' numeric
-@attribute 'Col 3' {'val 1','val_2','v a l 3'}
-
-@data
-'val_1',1.0,'val 1'
-'val 2',2.0,'val_2'
-'val 2',3.3,'v a l 3'
-@relation ''
-
-@attribute 'Col 1' {'val_1','val 2'}
-@attribute 'Col_2' numeric
-@attribute 'Col 3' {'val 1','val_2','v a l 3'}
-
-@data
-'val_1',1.0,'val 1'
-'val 2',2.0,'val_2'
-'val 2',3.3,'v a l 3'
-@relation ''
-
-@attribute 'Col 1' {'val_1','val 2'}
-@attribute 'Col_2' numeric
-@attribute 'Col 3' {'val 1','val_2','v a l 3'}
-
-@data
-'val_1',1.0,'val 1'
-'val 2',2.0,'val_2'
-'val 2',3.3,'v a l 3'
+1.0,'val1',1.0,5.0,6.0
+2.0,'val2',0.0,4.0,3.0
+4.0,'val1',0.0,7.0,2.0
+10.0,'val1',1.0,1.0,6.0
+5.0,'val2',0.0,2.0,7.0

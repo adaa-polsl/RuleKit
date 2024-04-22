@@ -91,6 +91,11 @@ public class TsHeaderExampleSet implements IExampleSet {
     }
 
     @Override
+    public Object[] getValues(String colName) {
+        return null;
+    }
+
+    @Override
     public Annotations getAnnotations() {
         return null;
     }

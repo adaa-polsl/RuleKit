@@ -142,6 +142,10 @@ public class ColumnMetaData implements Cloneable {
 		return cloned;
     }
 
+	public Object [] getValues() {
+		return owner.getValues(name);
+	}
+
     @Override
     public ColumnMetaData clone() {
         ColumnMetaData cloned = null;

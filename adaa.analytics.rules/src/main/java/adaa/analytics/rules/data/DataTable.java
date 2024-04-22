@@ -2,6 +2,7 @@ package adaa.analytics.rules.data;
 
 import adaa.analytics.rules.data.condition.EConditionsLogicOperator;
 import adaa.analytics.rules.data.condition.ICondition;
+import adaa.analytics.rules.logic.representation.ContrastRule;
 import tech.tablesaw.api.*;
 import tech.tablesaw.columns.Column;
 import tech.tablesaw.io.csv.CsvReadOptions;
@@ -65,6 +66,83 @@ public class DataTable implements Cloneable {
                     attInfo.getName(),
                     new ColumnMetaData(attInfo.getName(), attInfo.getCellType(), EColumnRole.regular.name(), attInfo.getValues(), this)
             );
+        }
+    }
+
+    public DataTable(Object[][] values,
+                     String[] attributesNames,
+                     String decisionAttribute,
+                     String survivalTimeAttribute,
+                     String contrastAttribute) {
+
+        if (values.length == 0) {
+            throw new RuntimeException("TsExampleSet: data matrix is not allowed to be empty.");
+        }
+
+        if(values[0].length != attributesNames.length) {
+            throw new RuntimeException("TsExampleSet: number of columns in matrix is not equal to number of attributes");
+        }
+
+        table = Table.create("");
+
+        for(int i=0 ; i<attributesNames.length ; i++) {
+            String attName = attributesNames[i];
+            Object obj = values[0][i];
+            EColumnType colType = EColumnType.OTHER;
+            if(obj instanceof String) {
+                colType = EColumnType.NOMINAL;
+            }
+            else if(obj instanceof Boolean ||
+                    obj instanceof Integer ||
+                    obj instanceof Long ||
+                    obj instanceof Float ||
+                    obj instanceof Double) {
+                colType = EColumnType.NUMERICAL;
+            }
+            String colRole = EColumnRole.regular.name();
+            if(attName.equals(decisionAttribute)) {
+                colRole = EColumnRole.label.name();
+            }
+            else if(attName.equals(survivalTimeAttribute)) {
+                colRole = EColumnRole.survival_time.name();
+            }
+            else if(attName.equals(contrastAttribute)) {
+                colRole = ContrastRule.CONTRAST_ATTRIBUTE_ROLE;
+            }
+
+            String[] nomData = null;
+            Double[] numData = null;
+
+            Set<String> nomMapValues = new HashSet<>();
+
+            if(colType == EColumnType.NOMINAL) {
+                nomData = new String[values.length];
+            }
+            else if(colType == EColumnType.NUMERICAL) {
+                numData = new Double[values.length];
+            }
+
+            for(int j=0 ; j<values.length ; j++) {
+                if(colType == EColumnType.NOMINAL) {
+                    nomData[j] = (String) values[j][i];
+                    nomMapValues.add(nomData[j]);
+                }
+                else if(colType == EColumnType.NUMERICAL) {
+                    numData[j] = convertToDouble(values[j][i]);
+                }
+            }
+
+            ColumnMetaData colMetaData = new ColumnMetaData(attName, colType, colRole, new ArrayList<>(nomMapValues), this);
+
+            Column<?> col = null;
+            if(colType == EColumnType.NOMINAL) {
+                col = StringColumn.create(attName, nomData);
+            }
+            else if(colType == EColumnType.NUMERICAL) {
+                col = DoubleColumn.create(attName, numData);
+            }
+            table.addColumns(col);
+            columnMetaData.put(attName, colMetaData);
         }
     }
 
@@ -305,7 +383,8 @@ public class DataTable implements Cloneable {
         if(colMetaData.isNominal()) {
             StringColumn colStr = table.stringColumn(colName);
             String value = colStr.get(rowIndex);
-            return colMetaData.getMapping().getIndex(value);
+            Integer iVal = colMetaData.getMapping().getIndex(value);
+            return iVal == null ? defaultValue : iVal.doubleValue();
         }
 
         DoubleColumn colNum = (DoubleColumn) table.column(colName);
@@ -352,6 +431,24 @@ public class DataTable implements Cloneable {
         return annotations.containsKey(key);
     }
 
+    public Object [] getValues(String colName) {
+        ColumnMetaData cmd = getColumn(colName);
+
+        if(cmd == null) {
+            throw new IllegalStateException(String.format("Column '%s' does not exist", colName));
+        }
+
+        if(cmd.isNumerical()) {
+            return table.doubleColumn(colName).asObjectArray();
+        }
+
+        if(cmd.isNominal()) {
+            return table.stringColumn(colName).asObjectArray();
+        }
+
+        return null;
+    }
+
     private Selection addCondition(List<ICondition> conditions, int conditionIndex, EConditionsLogicOperator logicOp) {
 
         ICondition condition = conditions.get(conditionIndex);
@@ -361,6 +458,22 @@ public class DataTable implements Cloneable {
         else {
             Selection selection = addCondition(conditions, conditionIndex+1, logicOp);
             return selection.or(condition.createSelection(table));
+        }
+    }
+
+    private Double convertToDouble(Object variable) {
+        if (variable instanceof Boolean) {
+            return (Boolean) variable ? 1.0 : 0.0;
+        } else if (variable instanceof Double) {
+            return (Double) variable;
+        } else if (variable instanceof Float) {
+            return ((Float) variable).doubleValue();
+        } else if (variable instanceof Integer) {
+            return ((Integer) variable).doubleValue();
+        } else if (variable instanceof Long) {
+            return ((Long) variable).doubleValue();
+        } else {
+            return Double.NaN;
         }
     }
 
