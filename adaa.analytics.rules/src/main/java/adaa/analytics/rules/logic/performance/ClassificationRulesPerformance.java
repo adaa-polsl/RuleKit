@@ -22,7 +22,7 @@ import java.util.BitSet;
 
 /**
  * Class gathering additional performance measures for classification models (avg. number of rules covering an
- * example, number of voting conflicts, balanced accuracy).
+ * example, number of voting conflicts).
  *
  * @author Adam Gudys
  */
@@ -34,11 +34,9 @@ public class ClassificationRulesPerformance extends AbstractPerformanceCounter {
 
     public static final int NEGATIVE_VOTING_CONFLICTS = 3;
 
-    public static final int BALANCED_ACCURACY = 4;
 
     private int type;
 
-    private double value = 0;
 
     public ClassificationRulesPerformance(int type) {
         this.type = type;
@@ -50,19 +48,10 @@ public class ClassificationRulesPerformance extends AbstractPerformanceCounter {
         int conflictCount = 0;
         int negativeConflictCount = 0;
         int covCounts = 0;
-
-        int numClasses = testSet.getAttributes().getLabel().getMapping().size();
-
-        int[] good = new int[numClasses];
-        int[] bad = new int[numClasses];
+        double value = 0;
 
         for (Example e : testSet) {
             int label = (int) e.getLabel();
-            if (label == (int) e.getPredictedLabel()) {
-                ++good[label];
-            } else {
-                ++bad[label];
-            }
 
             // get conflict measures
             String[] counts = e.getValueAsString(e.getAttributes().getSpecial(ClassificationRuleSet.ATTRIBUTE_VOTING_RESULTS_COUNTS)).split(" ");
@@ -86,15 +75,6 @@ public class ClassificationRulesPerformance extends AbstractPerformanceCounter {
             }
         }
 
-        double bacc = 0;
-        double denominator = 0;
-        for (int i = 0; i < numClasses; ++i) {
-            if (good[i] + bad[i] > 0) {
-                bacc += (double) good[i] / (good[i] + bad[i]);
-                denominator += 1.0;
-            }
-        }
-        bacc /= denominator;
 
         if (type == VOTING_CONFLICTS) {
             value = (double) conflictCount;
@@ -102,8 +82,6 @@ public class ClassificationRulesPerformance extends AbstractPerformanceCounter {
             value = (double) negativeConflictCount;
         } else if (type == RULES_PER_EXAMPLE) {
             value = (double) covCounts / testSet.size();
-        } else if (type == BALANCED_ACCURACY) {
-            value = bacc;
         }
         PerformanceResult ret = new PerformanceResult();
         switch (type) {
@@ -115,9 +93,6 @@ public class ClassificationRulesPerformance extends AbstractPerformanceCounter {
                 break;
             case NEGATIVE_VOTING_CONFLICTS:
                 ret.setName("#negative_voting_conflicts");
-                break;
-            case BALANCED_ACCURACY:
-                ret.setName("balanced_accuracy");
                 break;
             default:
                 ret.setName("unspecified_name");

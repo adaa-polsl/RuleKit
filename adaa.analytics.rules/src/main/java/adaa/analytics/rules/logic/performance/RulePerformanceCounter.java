@@ -19,7 +19,7 @@ public class RulePerformanceCounter {
             new MultiClassificationPerformance(MultiClassificationPerformance.ACCURACY),
             new MultiClassificationPerformance(MultiClassificationPerformance.ERROR),
             new MultiClassificationPerformance(MultiClassificationPerformance.KAPPA),
-            new ClassificationRulesPerformance(ClassificationRulesPerformance.BALANCED_ACCURACY),
+            new BalancedAccuracyPerformance(),
             new ClassificationRulesPerformance(ClassificationRulesPerformance.RULES_PER_EXAMPLE),
             new ClassificationRulesPerformance(ClassificationRulesPerformance.VOTING_CONFLICTS),
             new ClassificationRulesPerformance(ClassificationRulesPerformance.NEGATIVE_VOTING_CONFLICTS)
