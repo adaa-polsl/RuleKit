@@ -1,5 +1,7 @@
 package adaa.analytics.rules.logic.induction;
 
+import adaa.analytics.rules.data.ColumnMetaData;
+import adaa.analytics.rules.data.EColumnRole;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.OperatorCommandProxy;
 import adaa.analytics.rules.rm.example.IAttribute;
@@ -87,5 +89,20 @@ public class ClassificationSnCTest {
 
         this.writeReport(testCase, ruleSet);
         RuleSetComparator.assertRulesAreEqual(testCase.getReferenceReport().getRules(), ruleSet.getRules());
+    }
+
+    @Theory
+    public void testGetConfidence(@FromDataPoints("Test cases") TestCase testCase) throws OperatorException, IOException {
+        ClassificationFinder finder = new ClassificationFinder(testCase.getParameters());
+        ClassificationSnC snc = new ClassificationSnC(finder, testCase.getParameters());
+        snc.setOperatorCommandProxy(new OperatorCommandProxy());
+        RuleSetBase ruleSet = snc.run(testCase.getExampleSet());
+
+        IExampleSet prediction = ruleSet.apply(testCase.getExampleSet());
+        ColumnMetaData confidenceMetaData = prediction.getDataTable().getColumnByRole(EColumnRole.confidence.toString());
+        Assert.assertNotNull(confidenceMetaData);
+        Assert.assertTrue(confidenceMetaData.getValues().length>0);
+        Assert.assertTrue(confidenceMetaData.getValues() instanceof Double[]);
+
     }
 }
