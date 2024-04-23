@@ -149,6 +149,10 @@ public abstract class PredictionModel implements Serializable {
 				table.addAttribute(confidence);
 				exampleSet.getAttributes().setSpecialAttribute(confidence, IAttributes.CONFIDENCE_NAME + "_" + value);
 			}
+			IAttribute confidence = AttributeFactory.createAttribute(IAttributes.CONFIDENCE_NAME,
+					Ontology.REAL);
+			table.addAttribute(confidence);
+			exampleSet.getAttributes().setSpecialAttribute(confidence, IAttributes.CONFIDENCE_NAME);
 		}
 		return predictedLabel;
 	}

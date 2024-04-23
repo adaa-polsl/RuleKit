@@ -139,6 +139,7 @@ public class ClassificationRuleSet extends RuleSetBase {
         IAttribute label = example.getAttributes().getLabel();
         List<String> labelValues = label.getMapping().getValues();
         int i = 0;
+        double maxConfidence = Double.NaN;
         for (String labelValue : labelValues) {
             double confidence;
             if (votesSum == 0) {
@@ -147,8 +148,13 @@ public class ClassificationRuleSet extends RuleSetBase {
                 confidence = votes[i] / votesSum;
             }
             example.setValue(example.getAttributes().get("confidence_" + labelValue), confidence);
+            if (Double.isNaN(maxConfidence) || maxConfidence<confidence)
+            {
+                maxConfidence = confidence;
+            }
             i++;
         }
+        example.setValue(example.getAttributes().get("confidence"), maxConfidence);
     }
 
     /**
