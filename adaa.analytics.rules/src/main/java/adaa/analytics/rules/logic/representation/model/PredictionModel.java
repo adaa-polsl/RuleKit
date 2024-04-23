@@ -213,7 +213,9 @@ public abstract class PredictionModel implements Serializable {
 					}
 				}
 			}
+
 			IAttribute copyOfPredictedLabel = AttributeFactory.createAttribute(predictedLabel);
+			destination.getExampleTable().addAttribute(copyOfPredictedLabel);
 			destination.getAttributes().setPredictedLabel(copyOfPredictedLabel);
 		}
 
