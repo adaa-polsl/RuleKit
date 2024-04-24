@@ -45,6 +45,7 @@ public abstract class PredictionModel implements Serializable {
 
 	public IExampleSet apply(IExampleSet exampleSet) throws OperatorException
 	{
+
 //		IExampleSet mappedExampleSet = RemappedExampleSet.create(exampleSet, getTrainingHeader(), false, true);
 		IExampleSet mappedExampleSet = exampleSet.updateMapping(getTrainingHeader());
 		checkCompatibility(mappedExampleSet);
@@ -53,10 +54,12 @@ public abstract class PredictionModel implements Serializable {
 
 		// Copy in order to avoid RemappedExampleSets wrapped around each other accumulating over
 		// time
+		/*MK-WG instead of copying just return result exampleset
 		exampleSet = (IExampleSet) exampleSet.clone();
 		copyPredictedLabel(result, exampleSet);
-
 		return exampleSet;
+	*/
+		return result;
 	}
 
 	/** Returns the label attribute. */
@@ -215,7 +218,6 @@ public abstract class PredictionModel implements Serializable {
 			}
 
 			IAttribute copyOfPredictedLabel = AttributeFactory.createAttribute(predictedLabel);
-			destination.getExampleTable().addAttribute(copyOfPredictedLabel);
 			destination.getAttributes().setPredictedLabel(copyOfPredictedLabel);
 		}
 
