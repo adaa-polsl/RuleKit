@@ -21,33 +21,21 @@ import adaa.analytics.rules.rm.example.IExampleSet;
 import java.util.BitSet;
 
 /**
- * Class gathering additional performance measures for classification models (avg. number of rules covering an
- * example, number of voting conflicts).
+ * Class gathering  number of negative voting conflicts).
  *
  * @author Adam Gudys
  */
-public class ClassificationRulesPerformance extends AbstractPerformanceCounter {
-
-    public static final int RULES_PER_EXAMPLE = 1;
-
-    public static final int VOTING_CONFLICTS = 2;
-
-
-    private int type;
-
-
-    public ClassificationRulesPerformance(int type) {
-        this.type = type;
-    }
+public class NegativeVotingConflictsPerformance extends AbstractPerformanceCounter {
 
 
     @Override
     public PerformanceResult countExample(IExampleSet testSet) {
-        int conflictCount = 0;
-        int covCounts = 0;
-        double value = 0;
+
+        int negativeConflictCount = 0;
 
         for (Example e : testSet) {
+            int label = (int) e.getLabel();
+
             // get conflict measures
             String[] counts = e.getValueAsString(e.getAttributes().getSpecial(ClassificationRuleSet.ATTRIBUTE_VOTING_RESULTS_COUNTS)).split(" ");
 
@@ -55,7 +43,6 @@ public class ClassificationRulesPerformance extends AbstractPerformanceCounter {
 
             for (int i = 0; i < counts.length; ++i) {
                 int k = Integer.parseInt(counts[i]);
-                covCounts += k;
                 if (k > 0) {
                     mask.set(i);
                 }
@@ -63,29 +50,15 @@ public class ClassificationRulesPerformance extends AbstractPerformanceCounter {
 
             // when more than one bit is set - conflict
             if (mask.cardinality() > 1) {
-                ++conflictCount;
+                if (label != (int) e.getPredictedLabel()) {
+                    ++negativeConflictCount;
+                }
             }
         }
 
-
-        if (type == VOTING_CONFLICTS) {
-            value = (double) conflictCount;
-        } else if (type == RULES_PER_EXAMPLE) {
-            value = (double) covCounts / testSet.size();
-        }
         PerformanceResult ret = new PerformanceResult();
-        switch (type) {
-            case RULES_PER_EXAMPLE:
-                ret.setName("#rules_per_example");
-                break;
-            case VOTING_CONFLICTS:
-                ret.setName("#voting_conflicts");
-                break;
-            default:
-                ret.setName("unspecified_name");
-        }
-
-        ret.setValue(value);
+        ret.setName("#negative_voting_conflicts");
+        ret.setValue(negativeConflictCount);
         return ret;
     }
 

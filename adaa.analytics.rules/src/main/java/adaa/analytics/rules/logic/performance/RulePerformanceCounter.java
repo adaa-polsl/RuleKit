@@ -22,7 +22,7 @@ public class RulePerformanceCounter {
             new BalancedAccuracyPerformance(),
             new ClassificationRulesPerformance(ClassificationRulesPerformance.RULES_PER_EXAMPLE),
             new ClassificationRulesPerformance(ClassificationRulesPerformance.VOTING_CONFLICTS),
-            new ClassificationRulesPerformance(ClassificationRulesPerformance.NEGATIVE_VOTING_CONFLICTS)
+            new NegativeVotingConflictsPerformance()
     };
 
     private static final AbstractPerformanceCounter[] BINARY_CRITERIA_CLASSES = {
