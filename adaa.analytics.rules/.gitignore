@@ -6,13 +6,9 @@ out/
 .classpath
 .project
 target/
-config/checkstyle/checkstyle.xml
-config/checkstyle/checkstyle.xsl
-config/codenarc/codenarc.conf
-config/pmd/ruleset.xml
 .idea/
 *.iml
 .checkstyle
 .pmd
-results-minimal/
 test_out/
+results-deals/
