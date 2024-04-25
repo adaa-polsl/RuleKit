@@ -2,6 +2,7 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.OperatorCommandProxy;
+import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.FromDataPoints;
 import org.junit.experimental.theories.Theories;
@@ -45,7 +46,6 @@ public class SurvivalLogRankExpertSnCTest {
     }
 
     private void writeReport(TestCase testCase, RuleSetBase ruleSet) {
-        if (!testCase.isUsingExistingReportFile()) {
             try {
                 TestReportWriter reportWriter = new TestReportWriter(CLASS_NAME + '/' + testCase.getName());
                 reportWriter.write(ruleSet);
@@ -53,15 +53,13 @@ public class SurvivalLogRankExpertSnCTest {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
     }
 
     @Theory
     public void runTestCase(@FromDataPoints("Test cases") TestCase testCase) throws IOException {
-        SurvivalLogRankExpertFinder finder = new SurvivalLogRankExpertFinder(testCase.getParameters());
-        SurvivalLogRankExpertSnC snc = new SurvivalLogRankExpertSnC(finder, testCase.getParameters(), testCase.getKnowledge());
-        snc.setOperatorCommandProxy(new OperatorCommandProxy());
-        RuleSetBase ruleSet = snc.run(testCase.getExampleSet());
+        RuleGenerator rg = new RuleGenerator();
+        rg.setRuleGeneratorParams(testCase.getRuleGeneratorParams());
+        RuleSetBase ruleSet = rg.learn(testCase.getExampleSet());
 
         this.writeReport(testCase, ruleSet);
         RuleSetComparator.assertRulesAreEqual(testCase.getReferenceReport().getRules(), ruleSet.getRules());

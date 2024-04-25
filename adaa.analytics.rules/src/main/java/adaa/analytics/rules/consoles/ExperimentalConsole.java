@@ -73,7 +73,7 @@ public class ExperimentalConsole {
             Logger.log("Loading XML experiment file: " + configFile, Level.INFO);
 
             //Paramset
-            List<ParamSetWrapper> paramSets = ParamSetWrapper.readParamSets(doc);
+            List<ParamSetConfiguration> paramSets = ParamSetConfiguration.readParamSetConfigurations(doc);
 
             // Dataset
             List<DatasetConfiguration> datasetConfigurationList = DatasetConfiguration.readConfigurations(doc);
@@ -136,14 +136,14 @@ public class ExperimentalConsole {
         return doc;
     }
 
-    private List<Future> executeExperiments(List<ParamSetWrapper> paramSets, List<DatasetConfiguration> datasetConfigurationList) throws ParserConfigurationException, SAXException, IOException, InterruptedException, ExecutionException {
+    private List<Future> executeExperiments(List<ParamSetConfiguration> paramSets, List<DatasetConfiguration> datasetConfigurationList) throws ParserConfigurationException, SAXException, IOException, InterruptedException, ExecutionException {
         List<Future> futures = new ArrayList<>();
         String lineSeparator = System.getProperty("line.separator");
         pool = Executors.newFixedThreadPool(experimentalThreads);
 
         for (DatasetConfiguration dc : datasetConfigurationList) {
             // create experiments for all params sets
-            for (ParamSetWrapper wrapper : paramSets) {
+            for (ParamSetConfiguration wrapper : paramSets) {
 
                 String outDirPath = dc.outDirectory + "/" + wrapper.getName();
 

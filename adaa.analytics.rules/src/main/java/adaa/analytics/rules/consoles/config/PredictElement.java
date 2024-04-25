@@ -10,8 +10,8 @@ public class PredictElement {
 
     public PredictElement(Element predict) {
 
-        modelFile = predict.getElementsByTagName("model_file").item(0).getTextContent();
-        testFile = predict.getElementsByTagName("test_file").item(0).getTextContent();
-        predictionsFile = predict.getElementsByTagName("predictions_file").item(0).getTextContent();
+        modelFile = ElementUtils.getXmlParameterValue(predict,"model_file");
+        testFile = ElementUtils.getXmlParameterValue(predict,"test_file");
+        predictionsFile = ElementUtils.getXmlParameterValue(predict,"predictions_file");
     }
 }

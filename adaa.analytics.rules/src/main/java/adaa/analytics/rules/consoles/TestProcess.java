@@ -1,9 +1,8 @@
 package adaa.analytics.rules.consoles;
 
 import adaa.analytics.rules.consoles.config.DatasetConfiguration;
-import adaa.analytics.rules.consoles.config.ParamSetWrapper;
+import adaa.analytics.rules.consoles.config.ParamSetConfiguration;
 import adaa.analytics.rules.consoles.config.PredictElement;
-import adaa.analytics.rules.logic.performance.AbstractPerformanceCounter;
 import adaa.analytics.rules.logic.performance.PerformanceResult;
 import adaa.analytics.rules.logic.performance.RulePerformanceCounter;
 import adaa.analytics.rules.logic.representation.ContrastRule;
@@ -25,11 +24,9 @@ import java.util.logging.Level;
 public class TestProcess {
     private static final DateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd_HH.mm.ss");
 
-    private RoleConfigurator roleConfigurator;
-
     private DatasetConfiguration datasetConfiguration;
 
-    private ParamSetWrapper paramSetWrapper;
+    private ParamSetConfiguration paramSetWrapper;
 
     private SynchronizedReport testingReport;
 
@@ -38,7 +35,7 @@ public class TestProcess {
     private String outDirPath;
 
 
-    public TestProcess(DatasetConfiguration datasetConfiguration, ParamSetWrapper paramSetWrapper, SynchronizedReport testingReport, SynchronizedReport performanceTable, String outDirPath) {
+    public TestProcess(DatasetConfiguration datasetConfiguration, ParamSetConfiguration paramSetWrapper, SynchronizedReport testingReport, SynchronizedReport performanceTable, String outDirPath) {
         this.datasetConfiguration = datasetConfiguration;
         this.paramSetWrapper = paramSetWrapper;
         this.testingReport = testingReport;
@@ -46,24 +43,6 @@ public class TestProcess {
         this.outDirPath = outDirPath;
     }
 
-
-    public void configure() {
-
-        roleConfigurator = new RoleConfigurator(datasetConfiguration.label);
-
-        List<String[]> roles = datasetConfiguration.generateRoles();
-
-        if (datasetConfiguration.hasOptionParameter(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
-            String contrastAttr = datasetConfiguration.getOptionParameter(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
-
-            // use annotation for storing contrast attribute info
-            roleConfigurator.configureContrast(contrastAttr);
-        }
-
-        if (roles.size() > 0) {
-            roleConfigurator.configureRoles(roles);
-        }
-    }
 
     public void executeProcess() throws OperatorException, IOException, ClassNotFoundException {
 
@@ -90,7 +69,8 @@ public class TestProcess {
 
                 long t1 = System.nanoTime();
                 IExampleSet testEs = new ArffFileLoader().load(testFilePath, datasetConfiguration.label);
-                roleConfigurator.apply(testEs);
+                datasetConfiguration.applyParametersToExempleSet(testEs);
+
                 RuleSetBase model = ModelFileInOut.read(modelFilePath);
                 IExampleSet appliedEs = model.apply(testEs);
 

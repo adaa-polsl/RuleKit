@@ -1,11 +1,14 @@
 package utils.config;
 
+import adaa.analytics.rules.consoles.config.DatasetConfiguration;
+import adaa.analytics.rules.consoles.config.ParamSetConfiguration;
+import adaa.analytics.rules.logic.rulegenerator.RuleGeneratorParams;
+
 import java.util.HashMap;
 import java.util.List;
 
 public class TestConfig {
     public String name;
-    public HashMap<String, HashMap<String, Object>> parametersConfigs;
-    public List<TestDataSetConfig> datasets;
-    public String survivalTime;
+    public List<ParamSetConfiguration> paramSetConfigurations;
+    public List<DatasetConfiguration> datasets;
 }

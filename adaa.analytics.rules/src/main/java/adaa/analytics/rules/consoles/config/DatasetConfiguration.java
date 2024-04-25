@@ -3,10 +3,16 @@ package adaa.analytics.rules.consoles.config;
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
+import adaa.analytics.rules.rm.example.IExampleSet;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,31 +36,15 @@ public class DatasetConfiguration {
 
     public java.util.List<PredictElement> predictElements = new ArrayList<>();
 
-    public void readConfiguration(Element node)
-    {
+    private void readConfiguration(Element node) {
         String lineSeparator = System.getProperty("line.separator");
-        label = node.getElementsByTagName("label").item(0).getTextContent();
-        outDirectory = node.getElementsByTagName("out_directory").item(0).getTextContent();
+        label = ElementUtils.getXmlParameterValue(node, "label");
 
-        NodeList ignoreNodes = node.getElementsByTagName("ignore");
-        if (ignoreNodes.getLength() > 0) {
-            options.put("ignore", ignoreNodes.item(0).getTextContent());
-        }
-
-        if (node.getElementsByTagName(SurvivalRule.SURVIVAL_TIME_ROLE).getLength() > 0) {
-            String val = node.getElementsByTagName(SurvivalRule.SURVIVAL_TIME_ROLE).item(0).getTextContent();
-            options.put(SurvivalRule.SURVIVAL_TIME_ROLE, val);
-        }
-
-        if (node.getElementsByTagName(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getLength() > 0) {
-            String val = node.getElementsByTagName(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).item(0).getTextContent();
-            options.put(ContrastRule.CONTRAST_ATTRIBUTE_ROLE, val);
-        }
-
-        if (node.getElementsByTagName(WEIGHT_NAME).getLength() > 0) {
-            String val = node.getElementsByTagName(WEIGHT_NAME).item(0).getTextContent();
-            options.put(WEIGHT_NAME, val);
-        }
+        outDirectory = ElementUtils.getXmlParameterValue(node, "out_directory");
+        addOptionIfValueExist(node, "ignore");
+        addOptionIfValueExist(node, SurvivalRule.SURVIVAL_TIME_ROLE);
+        addOptionIfValueExist(node, ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+        addOptionIfValueExist(node, WEIGHT_NAME);
 
         Logger.log("Out directory " + outDirectory + lineSeparator +
                 "Label " + label + lineSeparator, Level.FINE);
@@ -62,10 +52,10 @@ public class DatasetConfiguration {
         // Training
 
         NodeList trainingNodes = node.getElementsByTagName("training");
-        if (trainingNodes.getLength() == 1) {
+        if (trainingNodes.getLength() > 0) {
             Element trainingElement = (Element) trainingNodes.item(0);
 
-            trainingReportFilePath = trainingElement.getElementsByTagName("report_file").item(0).getTextContent();
+            trainingReportFilePath = ElementUtils.getXmlParameterValue(trainingElement, "report_file");
 
             Logger.log("Report file " + trainingReportFilePath + lineSeparator, Level.FINE);
 
@@ -83,7 +73,7 @@ public class DatasetConfiguration {
         // Prediction
 
         NodeList predictionNodes = node.getElementsByTagName("prediction");
-        if (predictionNodes.getLength() == 1) {
+        if (predictionNodes.getLength() > 0) {
             Element predictionElement = (Element) predictionNodes.item(0);
 
             predictionPerformanceFilePath = ElementUtils.getXmlParameterValue(predictionElement, "performance_file");
@@ -107,12 +97,36 @@ public class DatasetConfiguration {
         Logger.log(" [OK]\n", Level.INFO);
     }
 
-    public static List<DatasetConfiguration> readConfigurations(Document doc)
-    {
+    private void addOptionIfValueExist(Element searchedElement, String optionName) {
+        String value = ElementUtils.getXmlParameterValue(searchedElement, optionName);
+        if (value != null)
+            options.put(optionName, value);
+    }
+
+    private static Document readXmlDocument(String configFile) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document doc = dBuilder.parse(configFile);
+        return doc;
+    }
+
+    public static List<DatasetConfiguration> readConfigurations(String filePath) throws ParserConfigurationException, IOException, SAXException {
+        Document doc = readXmlDocument(filePath);
+        return readConfigurations(doc);
+    }
+
+    public static List<DatasetConfiguration> readConfigurations(Document doc) {
         String lineSeparator = System.getProperty("line.separator");
         List<DatasetConfiguration> ret = new ArrayList<>();
         Logger.log("Processing datasets" + lineSeparator, Level.FINE);
-        NodeList datasetNodes = doc.getElementsByTagName("dataset");
+        NodeList datasetNodes = doc.getElementsByTagName("datasets");
+        return readConfigurations((Element) datasetNodes.item(0));
+    }
+
+    public static List<DatasetConfiguration> readConfigurations(Element datasetsElement) {
+        String lineSeparator = System.getProperty("line.separator");
+        List<DatasetConfiguration> ret = new ArrayList<>();
+        NodeList datasetNodes = datasetsElement.getElementsByTagName("dataset");
         for (int datasetId = 0; datasetId < datasetNodes.getLength(); datasetId++) {
             Logger.log("Processing dataset" + datasetId + lineSeparator, Level.FINE);
             Element node = (Element) datasetNodes.item(datasetId);
@@ -123,18 +137,11 @@ public class DatasetConfiguration {
         return ret;
     }
 
-    public boolean hasOptionParameter(String param)
-    {
+    public boolean hasOptionParameter(String param) {
         return options.containsKey(param);
     }
 
-    public String getOptionParameter(String param)
-    {
-        return options.get(param);
-    }
-
-    public List<String[]> generateRoles()
-    {
+    private List<String[]> generateRoles() {
         List<String[]> roles = new ArrayList<>();
 
         // add custom roles to mask ignored attributes
@@ -157,5 +164,23 @@ public class DatasetConfiguration {
         }
 
         return roles;
+    }
+
+    public void applyParametersToExempleSet(IExampleSet exampleSet){
+        RoleConfigurator roleConfigurator = new RoleConfigurator(label);
+
+        List<String[]> roles = generateRoles();
+
+        if (hasOptionParameter(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
+            String contrastAttr = options.get(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+
+            // use annotation for storing contrast attribute info
+            roleConfigurator.configureContrast(contrastAttr);
+        }
+
+        if (roles.size() > 0) {
+            roleConfigurator.configureRoles(roles);
+        }
+        roleConfigurator.apply(exampleSet);
     }
 }

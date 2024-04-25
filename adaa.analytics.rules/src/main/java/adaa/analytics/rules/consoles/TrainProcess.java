@@ -1,9 +1,8 @@
 package adaa.analytics.rules.consoles;
 
 import adaa.analytics.rules.consoles.config.DatasetConfiguration;
-import adaa.analytics.rules.consoles.config.ParamSetWrapper;
+import adaa.analytics.rules.consoles.config.ParamSetConfiguration;
 import adaa.analytics.rules.consoles.config.TrainElement;
-import adaa.analytics.rules.logic.performance.AbstractPerformanceCounter;
 import adaa.analytics.rules.logic.performance.PerformanceResult;
 import adaa.analytics.rules.logic.performance.RulePerformanceCounter;
 import adaa.analytics.rules.logic.representation.ContrastRule;
@@ -19,23 +18,21 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.logging.Level;
 
 public class TrainProcess {
-    private RoleConfigurator roleConfigurator;
     private RuleGenerator ruleGenerator = null;
 
     private DatasetConfiguration datasetConfiguration;
 
-    private ParamSetWrapper paramSetWrapper;
+    private ParamSetConfiguration paramSetWrapper;
 
     private SynchronizedReport trainingReport;
 
     private String outDirPath;
 
-    public TrainProcess(DatasetConfiguration datasetConfiguration, ParamSetWrapper paramSetWrapper, SynchronizedReport trainingReport, String outDirPath) {
+    public TrainProcess(DatasetConfiguration datasetConfiguration, ParamSetConfiguration paramSetWrapper, SynchronizedReport trainingReport, String outDirPath) {
         this.datasetConfiguration = datasetConfiguration;
         this.paramSetWrapper = paramSetWrapper;
         this.trainingReport = trainingReport;
@@ -43,47 +40,10 @@ public class TrainProcess {
     }
 
 
-    public void configure() {
-
-        ruleGenerator = new RuleGenerator();
-
-        // configure role setter
-        roleConfigurator = new RoleConfigurator(datasetConfiguration.label);
-
-        List<String[]> roles = datasetConfiguration.generateRoles();
-
-        if (datasetConfiguration.hasOptionParameter(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
-            String contrastAttr = datasetConfiguration.getOptionParameter(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
-
-            // use annotation for storing contrast attribute info
-            roleConfigurator.configureContrast(contrastAttr);
-        }
-
-        if (roles.size() > 0) {
-            roleConfigurator.configureRoles(roles);
-        }
-
-        for (String key : paramSetWrapper.listKeys()) {
-            Object o = paramSetWrapper.getParam(key);
-            boolean paramOk = ruleGenerator.containsParameter(key);
-
-            if (paramOk)
-                if (o instanceof String) {
-                    ruleGenerator.setParameter(key, (String) o);
-                } else if (o instanceof List) {
-                    ruleGenerator.setListParameter(key, (List<String[]>) o);
-                } else {
-                    throw new InvalidParameterException("Invalid paramter type: " + key);
-                }
-            else {
-                throw new InvalidParameterException("Undefined parameter: " + key);
-            }
-        }
-
-
-    }
-
     public void executeProcess() throws IOException, OperatorException {
+        ruleGenerator = new RuleGenerator();
+        ruleGenerator.setRuleGeneratorParams(paramSetWrapper.generateRuleGeneratorParams());
+
 
         // Train process
         if (datasetConfiguration.trainElements.size() > 0) {
@@ -104,7 +64,7 @@ public class TrainProcess {
                         "   Input file path: " + inFilePath + "\n", Level.FINE);
 
                 IExampleSet sourceEs = new ArffFileLoader().load(inFilePath, datasetConfiguration.label);
-                roleConfigurator.apply(sourceEs);
+                datasetConfiguration.applyParametersToExempleSet(sourceEs);
 
                 RuleSetBase learnedModel = ruleGenerator.learn(sourceEs);
                 ModelFileInOut.write(learnedModel, modelFilePath);

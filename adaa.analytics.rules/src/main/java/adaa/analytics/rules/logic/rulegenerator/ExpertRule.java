@@ -40,85 +40,16 @@ public class ExpertRule {
 
     private OperatorCommandProxy operatorCommandProxy;
 
+    private AbstractSeparateAndConquer snc;
+    private AbstractFinder finder;
+
     public ExpertRule(RuleGeneratorParams ruleGeneratorParams, OperatorCommandProxy operatorCommandProxy) {
         this.ruleGeneratorParams = ruleGeneratorParams;
         this.operatorCommandProxy = operatorCommandProxy;
     }
 
-
-    public RuleSetBase learnWithExpert(IExampleSet exampleSet) {
-
-        MultiSet<Rule> rules = new MultiSet<Rule>();
-        MultiSet<Rule> preferredConditions = new MultiSet<Rule>();
-        MultiSet<Rule> forbiddenConditions = new MultiSet<Rule>();
-
-        ExampleSetMetaData setMeta = new ExampleSetMetaData(exampleSet);
-
-        Logger.log("Loading initial rules:\n", Level.FINER);
-        List<String[]> ruleList = ruleGeneratorParams.getParameterList(RuleGeneratorParams.PARAMETER_EXPERT_RULES);
-        for (String[] e : ruleList) {
-
-            Rule r = RuleParser.parseRule(e[1], setMeta);
-            if (r != null) {
-                // set all subconditions in rules as forced no matter how they were specified
-                for (ConditionBase cnd : r.getPremise().getSubconditions()) {
-                    cnd.setType(Type.FORCED);
-                }
-                rules.add(r);
-                Logger.log(r.toString() + "\n", Level.FINER);
-            }
-        }
-
-        Logger.log("Loading preferred conditions/attributes:\n", Level.FINER);
-        Pattern pattern = Pattern.compile("(?<number>(\\d+)|(inf)):\\s*(?<rule>.*)");
-        ruleList = ruleGeneratorParams.getParameterList(RuleGeneratorParams.PARAMETER_EXPERT_PREFERRED_CONDITIONS);
-        for (String[] e : ruleList) {
-            Matcher matcher = pattern.matcher(e[1]);
-            matcher.find();
-            String count = matcher.group("number");
-            String ruleDesc = matcher.group("rule");
-            Rule r = RuleParser.parseRule(ruleDesc, setMeta);
-            if (r != null) {
-                r.getPremise().setType(ConditionBase.Type.PREFERRED); // set entire compound condition as preferred and all subconditions as normal
-                for (ConditionBase cnd : r.getPremise().getSubconditions()) {
-                    cnd.setType(Type.NORMAL);
-                }
-                int parsedCount = (count.equals("inf")) ? Integer.MAX_VALUE : Integer.parseInt(count);
-                preferredConditions.add(r, parsedCount);
-                Logger.log(r.toString() + "\n", Level.FINER);
-            }
-        }
-
-        Logger.log("Loading forbidden conditions/attributes:\n", Level.FINER);
-        ruleList = ruleGeneratorParams.getParameterList(RuleGeneratorParams.PARAMETER_EXPERT_FORBIDDEN_CONDITIONS);
-        for (String[] e : ruleList) {
-            Rule r = RuleParser.parseRule(e[1], setMeta);
-            for (ConditionBase cnd : r.getPremise().getSubconditions()) {
-                cnd.setType(Type.NORMAL);
-            }
-            forbiddenConditions.add(r);
-            Logger.log(r.toString() + "\n", Level.FINER);
-        }
-
-        fixMappings(rules, exampleSet);
-        fixMappings(preferredConditions, exampleSet);
-        fixMappings(forbiddenConditions, exampleSet);
-
-        Knowledge knowledge = new Knowledge(exampleSet, rules, preferredConditions, forbiddenConditions);
-
-        knowledge.setExtendUsingPreferred(ruleGeneratorParams.getParameterAsBoolean(RuleGeneratorParams.PARAMETER_EXTEND_USING_PREFERRED));
-        knowledge.setExtendUsingAutomatic(ruleGeneratorParams.getParameterAsBoolean(RuleGeneratorParams.PARAMETER_EXTEND_USING_AUTOMATIC));
-        knowledge.setInduceUsingPreferred(ruleGeneratorParams.getParameterAsBoolean(RuleGeneratorParams.PARAMETER_INDUCE_USING_PREFERRED));
-        knowledge.setInduceUsingAutomatic(ruleGeneratorParams.getParameterAsBoolean(RuleGeneratorParams.PARAMETER_INDUCE_USING_AUTOMATIC));
-        knowledge.setConsiderOtherClasses(ruleGeneratorParams.getParameterAsBoolean(RuleGeneratorParams.PARAMETER_CONSIDER_OTHER_CLASSES));
-        knowledge.setPreferredConditionsPerRule(ruleGeneratorParams.getParameterAsInt(RuleGeneratorParams.PARAMETER_PREFERRED_CONDITIONS_PER_RULE));
-        knowledge.setPreferredAttributesPerRule(ruleGeneratorParams.getParameterAsInt(RuleGeneratorParams.PARAMETER_PREFERRED_ATTRIBUTES_PER_RULE));
-
-        InductionParameters params = ruleGeneratorParams.fillParameters();
-
-        AbstractFinder finder = null;
-        AbstractSeparateAndConquer snc = null;
-
+    private void prepareSncAndFinder(IExampleSet exampleSet, Knowledge knowledge, InductionParameters params)
+    {
         if (exampleSet.getAttributes().findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
             // survival problem
             params.setInductionMeasure(new LogRank());
@@ -135,8 +66,121 @@ public class ExpertRule {
             finder = new RegressionExpertFinder(params);
             snc = new RegressionExpertSnC((RegressionExpertFinder) finder, params, knowledge);
         }
-
         snc.setOperatorCommandProxy(operatorCommandProxy);
+    }
+
+    private MultiSet<Rule> generateForbiddenConditions(IExampleSet exampleSet)
+    {
+        ExampleSetMetaData setMeta = new ExampleSetMetaData(exampleSet);
+        MultiSet<Rule> forbiddenConditions = new MultiSet<Rule>();
+        Logger.log("Loading forbidden conditions/attributes:\n", Level.FINER);
+        List<String[]> ruleList = ruleGeneratorParams.getParameterList(RuleGeneratorParams.PARAMETER_EXPERT_FORBIDDEN_CONDITIONS);
+        if (ruleList!=null) {
+            for (String[] e : ruleList) {
+                Rule r = RuleParser.parseRule(e[1], setMeta);
+                for (ConditionBase cnd : r.getPremise().getSubconditions()) {
+                    cnd.setType(Type.NORMAL);
+                }
+                forbiddenConditions.add(r);
+                Logger.log(r.toString() + "\n", Level.FINER);
+            }
+        }
+        fixMappings(forbiddenConditions, exampleSet);
+        return forbiddenConditions;
+    }
+
+    private MultiSet<Rule> generatePreferredConditions(IExampleSet exampleSet)
+    {
+        ExampleSetMetaData setMeta = new ExampleSetMetaData(exampleSet);
+        MultiSet<Rule> preferredConditions = new MultiSet<Rule>();
+        Logger.log("Loading preferred conditions/attributes:\n", Level.FINER);
+        Pattern pattern = Pattern.compile("(?<number>(\\d+)|(inf)):\\s*(?<rule>.*)");
+        List<String[]> ruleList = ruleGeneratorParams.getParameterList(RuleGeneratorParams.PARAMETER_EXPERT_PREFERRED_CONDITIONS);
+        if (ruleList!=null) {
+            for (String[] e : ruleList) {
+                Matcher matcher = pattern.matcher(e[1]);
+                matcher.find();
+                String count = matcher.group("number");
+                String ruleDesc = matcher.group("rule");
+                Rule r = RuleParser.parseRule(ruleDesc, setMeta);
+                if (r != null) {
+                    r.getPremise().setType(ConditionBase.Type.PREFERRED); // set entire compound condition as preferred and all subconditions as normal
+                    for (ConditionBase cnd : r.getPremise().getSubconditions()) {
+                        cnd.setType(Type.NORMAL);
+                    }
+                    int parsedCount = (count.equals("inf")) ? Integer.MAX_VALUE : Integer.parseInt(count);
+                    preferredConditions.add(r, parsedCount);
+                    Logger.log(r.toString() + "\n", Level.FINER);
+                }
+            }
+        }
+
+        fixMappings(preferredConditions, exampleSet);
+        return preferredConditions;
+    }
+
+    private MultiSet<Rule> generateInitialRules(IExampleSet exampleSet)
+    {
+        ExampleSetMetaData setMeta = new ExampleSetMetaData(exampleSet);
+
+        MultiSet<Rule> rules = new MultiSet<Rule>();
+
+        Logger.log("Loading initial rules:\n", Level.FINER);
+        List<String[]> ruleList = ruleGeneratorParams.getParameterList(RuleGeneratorParams.PARAMETER_EXPERT_RULES);
+        if (ruleList!=null) {
+            for (String[] e : ruleList) {
+
+                Rule r = RuleParser.parseRule(e[1], setMeta);
+                if (r != null) {
+                    // set all subconditions in rules as forced no matter how they were specified
+                    for (ConditionBase cnd : r.getPremise().getSubconditions()) {
+                        cnd.setType(Type.FORCED);
+                    }
+                    rules.add(r);
+                    Logger.log(r.toString() + "\n", Level.FINER);
+                }
+            }
+        }
+        fixMappings(rules, exampleSet);
+        return rules;
+    }
+
+    private Knowledge prepareKnowledge(IExampleSet exampleSet)
+    {
+        MultiSet<Rule> rules = generateInitialRules(exampleSet);
+        MultiSet<Rule> preferredConditions = generatePreferredConditions(exampleSet);
+        MultiSet<Rule> forbiddenConditions = generateForbiddenConditions(exampleSet);
+
+        Knowledge knowledge = new Knowledge(exampleSet, rules, preferredConditions, forbiddenConditions);
+        knowledge.setExtendUsingPreferred(ruleGeneratorParams.getParameterAsBoolean(RuleGeneratorParams.PARAMETER_EXTEND_USING_PREFERRED));
+        knowledge.setExtendUsingAutomatic(ruleGeneratorParams.getParameterAsBoolean(RuleGeneratorParams.PARAMETER_EXTEND_USING_AUTOMATIC));
+        knowledge.setInduceUsingPreferred(ruleGeneratorParams.getParameterAsBoolean(RuleGeneratorParams.PARAMETER_INDUCE_USING_PREFERRED));
+        knowledge.setInduceUsingAutomatic(ruleGeneratorParams.getParameterAsBoolean(RuleGeneratorParams.PARAMETER_INDUCE_USING_AUTOMATIC));
+        knowledge.setConsiderOtherClasses(ruleGeneratorParams.getParameterAsBoolean(RuleGeneratorParams.PARAMETER_CONSIDER_OTHER_CLASSES));
+        knowledge.setPreferredConditionsPerRule(ruleGeneratorParams.getParameterAsInt(RuleGeneratorParams.PARAMETER_PREFERRED_CONDITIONS_PER_RULE));
+        knowledge.setPreferredAttributesPerRule(ruleGeneratorParams.getParameterAsInt(RuleGeneratorParams.PARAMETER_PREFERRED_ATTRIBUTES_PER_RULE));
+        return knowledge;
+    }
+
+    private InductionParameters prepareInductionParameters(IExampleSet exampleSet)
+    {
+        InductionParameters inductionParameters = ruleGeneratorParams.generateInductionParameters();
+
+        if (exampleSet.getAttributes().findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
+            // survival problem
+            inductionParameters.setInductionMeasure(new LogRank());
+            inductionParameters.setPruningMeasure(new LogRank());
+            inductionParameters.setVotingMeasure(new LogRank());
+        }
+        return inductionParameters;
+    }
+
+    public RuleSetBase learnWithExpert(IExampleSet exampleSet) {
+        Knowledge knowledge = prepareKnowledge(exampleSet);
+        InductionParameters inductionParameters = prepareInductionParameters(exampleSet);
+
+        prepareSncAndFinder(exampleSet, knowledge, inductionParameters);
+
         double beginTime = System.nanoTime();
         RuleSetBase rs = snc.run(exampleSet);
         rs.setTotalTime((System.nanoTime() - beginTime) / 1e9);
@@ -154,7 +198,7 @@ public class ExpertRule {
      * @param rules Rules to be fixed.
      * @param set   Reference example set.
      */
-    protected void fixMappings(Iterable<Rule> rules, IExampleSet set) {
+    private void fixMappings(Iterable<Rule> rules, IExampleSet set) {
 
         for (Rule r : rules) {
             List<ConditionBase> toCheck = new ArrayList<ConditionBase>(); // list of elementary conditions to check

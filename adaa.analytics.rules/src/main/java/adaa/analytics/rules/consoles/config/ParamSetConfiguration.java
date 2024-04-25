@@ -6,11 +6,17 @@ import adaa.analytics.rules.logic.rulegenerator.RuleGeneratorParams;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.logging.Level;
 
-public class ParamSetWrapper {
+public class ParamSetConfiguration {
 
     private static final String RULES_SIGNIFICANT_FIGURES = "rules_significant_figures";
     /**
@@ -23,21 +29,34 @@ public class ParamSetWrapper {
      */
     private final Map<String, Object> map = new TreeMap<>();
 
-    public static List<ParamSetWrapper> readParamSets(Document doc) {
+    public static List<ParamSetConfiguration> readParamSetConfigurations(String filePath) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document doc = dBuilder.parse(filePath);
+        return readParamSetConfigurations(doc);
+    }
 
-        List<ParamSetWrapper> paramSets = new ArrayList<>();
-        NodeList paramSetNodes = doc.getElementsByTagName("parameter_set");
+    public static List<ParamSetConfiguration> readParamSetConfigurations(Document doc) {
 
+        List<ParamSetConfiguration> paramSets = new ArrayList<>();
+        Element paramSetsNode = (Element)doc.getElementsByTagName("parameter_sets").item(0);
+        return readParamSetConfigurations(paramSetsNode);
+    }
+
+    public static List<ParamSetConfiguration> readParamSetConfigurations(Element parametresSetsElement) {
+
+        List<ParamSetConfiguration> paramSets = new ArrayList<>();
+        NodeList paramSetNodes = parametresSetsElement.getElementsByTagName("parameter_set");
         for (int setId = 0; setId < paramSetNodes.getLength(); setId++) {
-            ParamSetWrapper wrapper = new ParamSetWrapper();
+            ParamSetConfiguration wrapper = new ParamSetConfiguration();
             Element setNode = (Element) paramSetNodes.item(setId);
-            wrapper.readParamSet(setNode);
+            wrapper.readParamSetConfiguration(setNode);
             paramSets.add(wrapper);
         }
         return paramSets;
     }
 
-    public void readParamSet(Element setNode)
+    void readParamSetConfiguration(Element setNode)
     {
         String lineSeparator = System.getProperty("line.separator");
         this.name = setNode.getAttribute("name");
@@ -88,18 +107,11 @@ public class ParamSetWrapper {
     }
 
     public String getName() {
+
         return name;
     }
 
-    public Object getParam(String key)
-    {
-        return this.map.get(key);
-    }
 
-    public Set<String> listKeys()
-    {
-        return this.map.keySet();
-    }
     private void prepareParams()
     {
         // set rule generator parameters
@@ -112,5 +124,29 @@ public class ParamSetWrapper {
         } else {
             DoubleFormatter.defaultConfigure();
         }
+    }
+
+    public RuleGeneratorParams generateRuleGeneratorParams()
+    {
+        RuleGeneratorParams ret = new RuleGeneratorParams();
+        for (String key : map.keySet()) {
+            Object o = map.get(key);
+            boolean paramOk = ret.contains(key);
+
+            if (paramOk)
+                if (o instanceof String) {
+                    ret.setParameter(key, (String) o);
+                } else if (o instanceof List) {
+                    ret.setListParameter(key, (List<String[]>) o);
+                } else {
+                    throw new InvalidParameterException("Invalid paramter type: " + key);
+                }
+            else {
+                throw new InvalidParameterException("Undefined parameter: " + key);
+            }
+        }
+
+
+        return ret;
     }
 }

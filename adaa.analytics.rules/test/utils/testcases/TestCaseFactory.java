@@ -1,66 +1,46 @@
 package utils.testcases;
 
-import adaa.analytics.rules.logic.induction.InductionParameters;
-import adaa.analytics.rules.logic.quality.LogRank;
+import adaa.analytics.rules.consoles.config.DatasetConfiguration;
+import adaa.analytics.rules.consoles.config.ParamSetConfiguration;
 import utils.TestResourcePathFactory;
 import utils.config.TestConfig;
-import utils.config.TestDataSetConfig;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class TestCaseFactory {
 
-    private static final String USE_REPORT_KEY = "use_report";
-
-    private static TestCase makeTestCase(TestConfig testConfig, String testCaseName, HashMap<String, Object> params, TestDataSetConfig dataSetConfig) {
-        TestCase testCase = new TestCase();
-        InductionParameters inductionParameters = InductionParametersFactory.make(params);
-        if (testConfig.survivalTime != null) {
-            inductionParameters.setInductionMeasure(new LogRank());
-            inductionParameters.setPruningMeasure(new LogRank());
-            inductionParameters.setVotingMeasure(new LogRank());
-        }
-        testCase.setParameters(inductionParameters);
-        String dataSetFilePath = TestResourcePathFactory.get(dataSetConfig.trainFileName).toString();
-        testCase.setDataSetFilePath(dataSetFilePath);
-        testCase.setLabelAttribute(dataSetConfig.labelAttribute);
-        testCase.setName(testCaseName);
-        testCase.setParametersConfigs(params);
-
-        return testCase;
-    }
-
-    public static List<TestCase> make(HashMap<String, TestConfig> testsConfig, String reportDirectoryPath) {
+    public static List<TestCase> make(HashMap<String, TestConfig> testsConfigMap, String reportDirectoryPath) {
         List<TestCase> testCases = new ArrayList<>();
         TestConfig testConfig;
-        TestCase testCase;
-        for (String key : testsConfig.keySet()) {
-            testConfig = testsConfig.get(key);
-            for (String configName : testConfig.parametersConfigs.keySet()) {
-                for (TestDataSetConfig dataSetConfig : testConfig.datasets) {
-                    HashMap<String, Object> parameters = testConfig.parametersConfigs.get(configName);
-                    String testCaseName = String.format("%s.%s.%s.txt", key, configName, dataSetConfig.name);
-                    testCase = makeTestCase(testConfig, testCaseName, testConfig.parametersConfigs.get(configName), dataSetConfig);
+        for (String key : testsConfigMap.keySet()) {
+            testConfig = testsConfigMap.get(key);
+            for (ParamSetConfiguration paramSetConfiguration: testConfig.paramSetConfigurations) {
+                for (DatasetConfiguration dataSetConfig : testConfig.datasets) {
+                    String dataSetConfigName = getDatasetConfigName(dataSetConfig);
+                    String testCaseName = String.format("%s.%s.%s.txt", key, paramSetConfiguration.getName(), dataSetConfigName);
 
-                    String reportFileName;
-                    if (parameters.containsKey(USE_REPORT_KEY)) {
-                        reportFileName = (String) parameters.get(USE_REPORT_KEY);
-                        reportFileName = String.format("%s.%s.%s.txt", key, reportFileName, dataSetConfig.name);
-                        testCase.setUsingExistingReportFile(true);
-                    } else {
-                        reportFileName = testCaseName;
-                        testCase.setUsingExistingReportFile(false);
-                    }
-                    String reportPath = TestResourcePathFactory.get(reportDirectoryPath + reportFileName).toString();
+                    TestCase testCase = new TestCase();
+                    testCase.setDatasetConfiguration(dataSetConfig);
+                    testCase.setName(testCaseName);
+                    testCase.setRuleGeneratorParams( paramSetConfiguration.generateRuleGeneratorParams());
+
+                    String reportPath = TestResourcePathFactory.get(reportDirectoryPath + testCaseName).toString();
                     testCase.setReportFilePath(reportPath);
-                    testCase.setSurvivalTime(testConfig.survivalTime);
-
                     testCases.add(testCase);
                 }
             }
         }
         return testCases;
+    }
+
+    private static String getDatasetConfigName(DatasetConfiguration dataSetConfig)
+    {
+        Path path = Paths.get(dataSetConfig.trainElements.get(0).inFile);
+        String ret = path.getFileName().toString();
+        return ret.substring(0, ret.lastIndexOf('.'));
     }
 }

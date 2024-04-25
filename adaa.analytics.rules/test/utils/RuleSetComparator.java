@@ -12,7 +12,7 @@ public class RuleSetComparator {
         return ruleString.replaceAll("(\\[)|(\\])|(\\()|(\\))", "");
     }
 
-    public static boolean assertRulesAreEqual(List<Rule> expected, List<Rule> actual) {
+    public static void assertRulesAreEqual(List<Rule> expected, List<Rule> actual) {
         HashMap<String, Integer> rulesOccurrencesCount = new HashMap<>();
 
         if (expected.size() != actual.size()) {
@@ -38,6 +38,5 @@ public class RuleSetComparator {
                 throw new AssertionError("Somes rules were duplicated");
             }
         }
-        return true;
     }
 }

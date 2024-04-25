@@ -35,45 +35,22 @@ public class StandardRule {
 
     private OperatorCommandProxy operatorCommandProxy;
 
+    private AbstractSeparateAndConquer snc;
+    private AbstractFinder finder;
+
     public StandardRule(RuleGeneratorParams ruleGeneratorParams, OperatorCommandProxy operatorCommandProxy) {
         this.ruleGeneratorParams = ruleGeneratorParams;
         this.operatorCommandProxy = operatorCommandProxy;
     }
 
-
-    public RuleSetBase learnStarndard(IExampleSet exampleSet) {
-
-        InductionParameters params = ruleGeneratorParams.fillParameters();
-
-        AbstractSeparateAndConquer snc;
-        AbstractFinder finder;
-
-        IAttribute contrastAttr = null;
-        Annotations annotations = exampleSet.getAnnotations();
-
-        if (annotations != null && annotations.containsKey(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
-            contrastAttr = exampleSet.getAttributes().get(exampleSet.getAnnotations().get(ContrastRule.CONTRAST_ATTRIBUTE_ROLE));
-        }
-
-        // set role only when not null and different than label attribute
-        if (contrastAttr != null && contrastAttr != exampleSet.getAttributes().getLabel()) {
-            exampleSet.getAttributes().setSpecialAttribute(contrastAttr, ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
-        }
-
+    private void prepareSncAndFinder(IExampleSet exampleSet, IAttribute contrastAttr, InductionParameters params)
+    {
         if (exampleSet.getAttributes().findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
             // survival problem
-            //	if (getParameterAsBoolean(PARAMETER_LOGRANK_SURVIVAL)) {
-            params.setInductionMeasure(new LogRank());
-            params.setPruningMeasure(new LogRank());
-            params.setVotingMeasure(new LogRank());
             finder = contrastAttr != null
                     ? new ContrastSurvivalFinder(params)
                     : new SurvivalLogRankFinder(params);
             snc = new SurvivalLogRankSnC((SurvivalLogRankFinder) finder, params);
-            //	} else {
-            //		ClassificationFinder finder = new ClassificationFinder(params);
-            //		snc = new SurvivalClassificationSnC(finder, params);
-            //	}
         } else if (exampleSet.getAttributes().getLabel().isNumerical()) {
             // regression problem
             finder = contrastAttr != null
@@ -101,12 +78,57 @@ public class StandardRule {
 
         // overwrite snc for contrast sets
         if (contrastAttr != null) {
-            params.setConditionComplementEnabled(true);
-            params.setSelectBestCandidate(true);
             snc = new ContrastSnC(finder, params);
         }
 
         snc.setOperatorCommandProxy(operatorCommandProxy);
+    }
+
+    private IAttribute prepareContrastAttribute(IExampleSet exampleSet)
+    {
+        IAttribute contrastAttr = null;
+        Annotations annotations = exampleSet.getAnnotations();
+
+        if (annotations != null && annotations.containsKey(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
+            contrastAttr = exampleSet.getAttributes().get(exampleSet.getAnnotations().get(ContrastRule.CONTRAST_ATTRIBUTE_ROLE));
+        }
+
+        // set role only when not null and different than label attribute
+        if (contrastAttr != null && contrastAttr != exampleSet.getAttributes().getLabel()) {
+            exampleSet.getAttributes().setSpecialAttribute(contrastAttr, ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+        }
+
+        return contrastAttr;
+    }
+
+    private InductionParameters prepareInductionParams(IExampleSet exampleSet,IAttribute contrastAttr)
+    {
+        InductionParameters params = ruleGeneratorParams.generateInductionParameters();
+
+        if (exampleSet.getAttributes().findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
+            // survival problem
+            //	if (getParameterAsBoolean(PARAMETER_LOGRANK_SURVIVAL)) {
+            params.setInductionMeasure(new LogRank());
+            params.setPruningMeasure(new LogRank());
+            params.setVotingMeasure(new LogRank());
+
+        }
+
+        // overwrite snc for contrast sets
+        if (contrastAttr != null) {
+            params.setConditionComplementEnabled(true);
+            params.setSelectBestCandidate(true);
+        }
+        return params;
+    }
+    public RuleSetBase learnStarndard(IExampleSet exampleSet) {
+
+        IAttribute contrastAttr = prepareContrastAttribute(exampleSet);
+
+        InductionParameters params =  prepareInductionParams(exampleSet,contrastAttr);
+
+        prepareSncAndFinder(exampleSet,contrastAttr,params);
+
         double beginTime = System.nanoTime();
         RuleSetBase rs = snc.run(exampleSet);
         rs.setTotalTime((System.nanoTime() - beginTime) / 1e9);

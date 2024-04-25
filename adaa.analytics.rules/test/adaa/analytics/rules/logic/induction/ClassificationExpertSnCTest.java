@@ -1,7 +1,10 @@
 package adaa.analytics.rules.logic.induction;
 
+import adaa.analytics.rules.consoles.config.ParamSetConfiguration;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.OperatorCommandProxy;
+import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
+import adaa.analytics.rules.logic.rulegenerator.RuleGeneratorParams;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.FromDataPoints;
 import org.junit.experimental.theories.Theories;
@@ -39,29 +42,28 @@ public class ClassificationExpertSnCTest {
 
     public ClassificationExpertSnCTest() {
         File directory = new File(Const.REPORTS_OUT_DIRECTORY_PATH + CLASS_NAME);
-        if (! directory.exists()){
+        if (!directory.exists()) {
             directory.mkdir();
         }
     }
 
     private void writeReport(TestCase testCase, RuleSetBase ruleSet) {
-        if (!testCase.isUsingExistingReportFile()) {
-            try {
-                TestReportWriter reportWriter = new TestReportWriter(CLASS_NAME + '/' + testCase.getName());
-                reportWriter.write(ruleSet);
-                reportWriter.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            TestReportWriter reportWriter = new TestReportWriter(CLASS_NAME + '/' + testCase.getName());
+            reportWriter.write(ruleSet);
+            reportWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
     }
 
     @Theory
-    public void runTestCase(@FromDataPoints("Test cases") TestCase testCase) throws  IOException {
-        ClassificationExpertFinder finder = new ClassificationExpertFinder(testCase.getParameters(), testCase.getKnowledge());
-        ClassificationExpertSnC snc = new ClassificationExpertSnC(finder, testCase.getParameters(), testCase.getKnowledge());
-        snc.setOperatorCommandProxy(new OperatorCommandProxy());
-        RuleSetBase ruleSet = snc.run(testCase.getExampleSet());
+    public void runTestCase(@FromDataPoints("Test cases") TestCase testCase) throws IOException {
+
+        RuleGenerator rg = new RuleGenerator();
+        rg.setRuleGeneratorParams(testCase.getRuleGeneratorParams());
+        RuleSetBase ruleSet = rg.learn(testCase.getExampleSet());
 
         this.writeReport(testCase, ruleSet);
         RuleSetComparator.assertRulesAreEqual(testCase.getReferenceReport().getRules(), ruleSet.getRules());

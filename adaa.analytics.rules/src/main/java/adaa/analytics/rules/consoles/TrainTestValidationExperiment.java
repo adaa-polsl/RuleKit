@@ -15,7 +15,7 @@
 package adaa.analytics.rules.consoles;
 
 import adaa.analytics.rules.consoles.config.DatasetConfiguration;
-import adaa.analytics.rules.consoles.config.ParamSetWrapper;
+import adaa.analytics.rules.consoles.config.ParamSetConfiguration;
 import adaa.analytics.rules.logic.representation.Logger;
 
 import java.io.File;
@@ -30,7 +30,7 @@ public class TrainTestValidationExperiment implements Runnable {
 
     private boolean logsVerbose = false;
 
-    public TrainTestValidationExperiment(DatasetConfiguration datasetConfiguration, ParamSetWrapper paramSet,
+    public TrainTestValidationExperiment(DatasetConfiguration datasetConfiguration, ParamSetConfiguration paramSet,
                                          String outDirPath, boolean verbose) throws IOException {
         VersionService versionService = new VersionService();
 
@@ -51,11 +51,7 @@ public class TrainTestValidationExperiment implements Runnable {
 
         try {
 
-            this.trainProcess.configure();
             this.trainProcess.executeProcess();
-
-
-            this.testProcess.configure();
             this.testProcess.executeProcess();
 
         } catch (Exception e) {

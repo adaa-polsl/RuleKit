@@ -317,7 +317,7 @@ public class RuleGeneratorParams {
      * @return New quality measure.
      * @throws IllegalAccessException
      */
-    protected IQualityMeasure createMeasure(MeasureDestination destination, IQualityMeasure defaultMeasure)  {
+    private IQualityMeasure generateQualityMeasure(MeasureDestination destination, IQualityMeasure defaultMeasure)  {
         String measureName;
         if (destination == MeasureDestination.INDUCTION) {
             measureName = getParameterAsString(PARAMETER_INDUCTION_MEASURE);
@@ -376,11 +376,11 @@ public class RuleGeneratorParams {
         }
     }
 
-    protected InductionParameters fillParameters()  {
+    InductionParameters generateInductionParameters()  {
         InductionParameters params = new InductionParameters();
-        params.setInductionMeasure(createMeasure(MeasureDestination.INDUCTION, new ClassificationMeasure(ClassificationMeasure.Correlation)));
-        params.setPruningMeasure(createMeasure(MeasureDestination.PRUNING, params.getInductionMeasure()));
-        params.setVotingMeasure(createMeasure(MeasureDestination.VOTING, params.getInductionMeasure()));
+        params.setInductionMeasure(generateQualityMeasure(MeasureDestination.INDUCTION, new ClassificationMeasure(ClassificationMeasure.Correlation)));
+        params.setPruningMeasure(generateQualityMeasure(MeasureDestination.PRUNING, params.getInductionMeasure()));
+        params.setVotingMeasure(generateQualityMeasure(MeasureDestination.VOTING, params.getInductionMeasure()));
 
         params.setMaximumUncoveredFraction(getParameterAsDouble(PARAMETER_MAX_UNCOVERED_FRACTION));
 

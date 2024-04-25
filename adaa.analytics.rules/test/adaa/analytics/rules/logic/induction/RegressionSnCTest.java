@@ -4,6 +4,7 @@ import adaa.analytics.rules.data.ColumnMetaData;
 import adaa.analytics.rules.data.EColumnRole;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.OperatorCommandProxy;
+import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
 import adaa.analytics.rules.rm.example.IExampleSet;
 import adaa.analytics.rules.rm.operator.OperatorException;
 import org.junit.Assert;
@@ -50,7 +51,6 @@ public class RegressionSnCTest {
     }
 
     private void writeReport(TestCase testCase, RuleSetBase ruleSet) {
-        if (!testCase.isUsingExistingReportFile()) {
             try {
                 TestReportWriter reportWriter = new TestReportWriter(CLASS_NAME + '/' + testCase.getName());
                 reportWriter.write(ruleSet);
@@ -58,25 +58,18 @@ public class RegressionSnCTest {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
     }
 
     @Theory
-    public void runTestCase(@FromDataPoints("Test cases") TestCase testCase) throws IOException {
-        RegressionFinder finder = new RegressionFinder(testCase.getParameters());
-        RegressionSnC snc = new RegressionSnC(finder, testCase.getParameters());
-        snc.setOperatorCommandProxy(new OperatorCommandProxy());
-        RuleSetBase ruleSet = snc.run(testCase.getExampleSet());
+    public void runTestCase(@FromDataPoints("Test cases") TestCase testCase) throws IOException, OperatorException {
+        RuleGenerator rg = new RuleGenerator();
+        rg.setRuleGeneratorParams(testCase.getRuleGeneratorParams());
+        RuleSetBase ruleSet = rg.learn(testCase.getExampleSet());
+
 
         this.writeReport(testCase, ruleSet);
         RuleSetComparator.assertRulesAreEqual(testCase.getReferenceReport().getRules(), ruleSet.getRules());
-    }
-    @Theory
-    public void testPredictionColumn(@FromDataPoints("Test cases") TestCase testCase) throws IOException, OperatorException {
-        RegressionFinder finder = new RegressionFinder(testCase.getParameters());
-        RegressionSnC snc = new RegressionSnC(finder, testCase.getParameters());
-        snc.setOperatorCommandProxy(new OperatorCommandProxy());
-        RuleSetBase ruleSet = snc.run(testCase.getExampleSet());
+
 
         IExampleSet prediction = ruleSet.apply(testCase.getExampleSet());
         ColumnMetaData pa = prediction.getDataTable().getColumnByRole(EColumnRole.prediction.name());
@@ -85,6 +78,6 @@ public class RegressionSnCTest {
         Assert.assertNotNull(predictionValues);
         Assert.assertTrue(predictionValues.length>0);
         Assert.assertTrue(predictionValues instanceof  Double[]);
-
     }
+
 }

@@ -1,6 +1,7 @@
 package adaa.analytics.rules.consoles.config;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 public class TrainElement {
 
@@ -10,8 +11,8 @@ public class TrainElement {
 
     public TrainElement(Element train) {
 
-        inFile = train.getElementsByTagName("in_file").item(0).getTextContent();
-        modelFile = train.getElementsByTagName("model_file").item(0).getTextContent();
+        inFile = ElementUtils.getXmlParameterValue(train, "in_file");
+        modelFile = ElementUtils.getXmlParameterValue(train, "model_file");
         modelCsvFile = ElementUtils.getXmlParameterValue(train, "model_csv");
     }
 }

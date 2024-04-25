@@ -4,6 +4,7 @@ import adaa.analytics.rules.data.ColumnMetaData;
 import adaa.analytics.rules.data.EColumnRole;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.OperatorCommandProxy;
+import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IExampleSet;
@@ -52,7 +53,6 @@ public class ClassificationSnCTest {
     }
 
     private void writeReport(TestCase testCase, RuleSetBase ruleSet) {
-        if (!testCase.isUsingExistingReportFile()) {
             try {
                 TestReportWriter reportWriter = new TestReportWriter(CLASS_NAME + '/' + testCase.getName());
                 reportWriter.write(ruleSet);
@@ -60,7 +60,6 @@ public class ClassificationSnCTest {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
     }
 
     private void test_confidence(IExampleSet prediction) {
@@ -79,30 +78,19 @@ public class ClassificationSnCTest {
 
     @Theory
     public void runTestCase(@FromDataPoints("Test cases") TestCase testCase) throws OperatorException, IOException {
-        ClassificationFinder finder = new ClassificationFinder(testCase.getParameters());
-        ClassificationSnC snc = new ClassificationSnC(finder, testCase.getParameters());
-        snc.setOperatorCommandProxy(new OperatorCommandProxy());
-        RuleSetBase ruleSet = snc.run(testCase.getExampleSet());
+        RuleGenerator rg = new RuleGenerator();
+        rg.setRuleGeneratorParams(testCase.getRuleGeneratorParams());
+        RuleSetBase ruleSet = rg.learn(testCase.getExampleSet());
 
         IExampleSet prediction = ruleSet.apply(testCase.getExampleSet());
         test_confidence(prediction);
 
         this.writeReport(testCase, ruleSet);
         RuleSetComparator.assertRulesAreEqual(testCase.getReferenceReport().getRules(), ruleSet.getRules());
-    }
 
-    @Theory
-    public void testGetConfidence(@FromDataPoints("Test cases") TestCase testCase) throws OperatorException, IOException {
-        ClassificationFinder finder = new ClassificationFinder(testCase.getParameters());
-        ClassificationSnC snc = new ClassificationSnC(finder, testCase.getParameters());
-        snc.setOperatorCommandProxy(new OperatorCommandProxy());
-        RuleSetBase ruleSet = snc.run(testCase.getExampleSet());
-
-        IExampleSet prediction = ruleSet.apply(testCase.getExampleSet());
         ColumnMetaData confidenceMetaData = prediction.getDataTable().getColumnByRole(EColumnRole.confidence.toString());
         Assert.assertNotNull(confidenceMetaData);
         Assert.assertTrue(confidenceMetaData.getValues().length>0);
         Assert.assertTrue(confidenceMetaData.getValues() instanceof Double[]);
-
     }
 }

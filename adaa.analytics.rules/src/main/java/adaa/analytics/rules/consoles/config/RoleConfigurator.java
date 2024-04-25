@@ -1,4 +1,4 @@
-package adaa.analytics.rules.consoles;
+package adaa.analytics.rules.consoles.config;
 
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.rm.example.IAttribute;
@@ -6,7 +6,7 @@ import adaa.analytics.rules.rm.example.IExampleSet;
 
 import java.util.List;
 
-public class RoleConfigurator {
+class RoleConfigurator {
 
     private String labelValue;
 

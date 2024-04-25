@@ -35,7 +35,6 @@ public class RuleGenerator {
     protected OperatorCommandProxy operatorCommandProxy;
     private boolean useExpert = false;
     public RuleGenerator() {
-        useExpert = ruleGeneratorParams.getParameterAsBoolean(RuleGeneratorParams.PARAMETER_USE_EXPERT);
         operatorCommandProxy = new OperatorCommandProxy();
     }
 
@@ -50,6 +49,7 @@ public class RuleGenerator {
 
     public RuleSetBase learn(IExampleSet exampleSet) {
         RuleSetBase m;
+        useExpert = ruleGeneratorParams.getParameterAsBoolean(RuleGeneratorParams.PARAMETER_USE_EXPERT);
         // do not use expert knowledge in when option is not set
         if (useExpert) {
             ExpertRule ruleGenerator = new ExpertRule(ruleGeneratorParams, operatorCommandProxy);
@@ -63,6 +63,10 @@ public class RuleGenerator {
 
     public boolean containsParameter(String key) {
         return ruleGeneratorParams.contains(key);
+    }
+
+    public void setRuleGeneratorParams(RuleGeneratorParams ruleGeneratorParams) {
+        this.ruleGeneratorParams = ruleGeneratorParams;
     }
 
     public void setParameter(String key, String o) {
