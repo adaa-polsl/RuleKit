@@ -12,6 +12,7 @@ public class NominalMapping implements Cloneable, Serializable {
     private List<NominalMap> mapping = new ArrayList<>();
 
     public int addValue(String val) {
+        val = val.replace("\"","");
         NominalMap found = findByValue(val);
         if(found != null) {
             return found.getIndex();
