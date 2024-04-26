@@ -119,7 +119,7 @@ public class DatasetConfiguration {
         String lineSeparator = System.getProperty("line.separator");
         List<DatasetConfiguration> ret = new ArrayList<>();
         Logger.log("Processing datasets" + lineSeparator, Level.FINE);
-        NodeList datasetNodes = doc.getElementsByTagName("datasets");
+        NodeList datasetNodes = doc.getChildNodes();
         return readConfigurations((Element) datasetNodes.item(0));
     }
 
