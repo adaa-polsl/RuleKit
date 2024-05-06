@@ -98,7 +98,8 @@ public class NominalMapping implements Cloneable, Serializable {
     }
 
     private NominalMap findByValue(String val) {
-        return mapping.stream().filter(e -> e.getValue().equals(val)).findFirst().orElse(null);
+        String rval = val.replace("\"","");
+        return mapping.stream().filter(e -> e.getValue().equals(rval)).findFirst().orElse(null);
     }
 
     @Override
