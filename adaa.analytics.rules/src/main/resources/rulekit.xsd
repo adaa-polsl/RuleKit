@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2012 sp1 (x64) (http://www.altova.com) by Emag (Instytut Technik Innowacyjnych EMAG) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:altova="http://www.altova.com/xml-schema-extensions" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:complexType name="ParameterSet">
+		<xs:annotation>
+			<xs:documentation>This section allows user to specify induction parameters. The package enables testing multiple parameter sets in a single run. The definition of a single parameter is presented below. Every parameter has its default value, thus only selected may be specified by the user.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="param" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType mixed="true">
+					<xs:sequence>
+						<xs:element name="entry" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="name" type="xs:string"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="name" use="required">
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="min_rule_covered"/>
+								<xs:enumeration value="minsupp_new"/>
+								<xs:enumeration value="mincov_new"/>
+								<xs:enumeration value="max_uncovered_fraction"/>
+								<xs:enumeration value="max_growing"/>
+								<xs:enumeration value="induction_measure"/>
+								<xs:enumeration value="pruning_measure"/>
+								<xs:enumeration value="voting_measure"/>
+								<xs:enumeration value="user_induction_equation"/>
+								<xs:enumeration value="user_pruning_equation"/>
+								<xs:enumeration value="user_voting_equation"/>
+								<xs:enumeration value="user_induction_class"/>
+								<xs:enumeration value="user_pruning_class"/>
+								<xs:enumeration value="user_voting_class"/>
+								<xs:enumeration value="ignore_missing"/>
+								<xs:enumeration value="select_best_candidate"/>
+								<xs:enumeration value="complementary_conditions"/>
+								<xs:enumeration value="mean_based_regression"/>
+								<xs:enumeration value="control_apriori_precision"/>
+								<xs:enumeration value="max_rule_count"/>
+								<xs:enumeration value="use_expert"/>
+								<xs:enumeration value="expert_config"/>
+								<xs:enumeration value="expert_rules"/>
+								<xs:enumeration value="approximate_induction"/>
+								<xs:enumeration value="approximate_bins_count"/>
+								<xs:enumeration value="expert_preferred_conditions"/>
+<xs:enumeration value="expert_forbidden_conditions"/>
+<xs:enumeration value="export_key"/>
+<xs:enumeration value="export_value"/>
+<xs:enumeration value="extend_using_preferred"/>
+<xs:enumeration value="extend_using_automatic"/>
+<xs:enumeration value="induce_using_preferred"/>
+<xs:enumeration value="induce_using_automatic"/>
+<xs:enumeration value="consider_other_classes"/>
+<xs:enumeration value="preferred_conditions_per_rule"/>
+<xs:enumeration value="preferred_attributes_per_rule"/>
+<xs:enumeration value="minsupp_all"/>
+<xs:enumeration value="enable_pruning"/>
+<xs:enumeration value="max_neg2pos"/>
+<xs:enumeration value="penalty_strength"/>
+<xs:enumeration value="penalty_saturationmax_passes_count"/>
+<xs:enumeration value="include_binary_contrast"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="DataSet">
+		<xs:annotation>
+			<xs:documentation>Definition of a dataset has the following form.</xs:documentation>
+		</xs:annotation>
+		<xs:all>
+			<xs:element name="label" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="weight" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="survival_time" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="contrast_attribute" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="ignore" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="out_directory" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="training">
+				<xs:complexType mixed="true">
+					<xs:sequence>
+						<xs:element name="report_file" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="train" minOccurs="1" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="in_file" minOccurs="1" maxOccurs="1"/>
+									<xs:element name="model_file" minOccurs="0" maxOccurs="1"/>
+									<xs:element name="model_csv" minOccurs="0" maxOccurs="1"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="prediction" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="report_file" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="performance_file" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="predict" minOccurs="1" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="model_file" minOccurs="1" maxOccurs="1"/>
+									<xs:element name="test_file" minOccurs="1" maxOccurs="1"/>
+									<xs:element name="predictions_file" minOccurs="1" maxOccurs="1"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:all>
+	</xs:complexType>
+	<xs:element name="experiment">
+		<xs:annotation>
+			<xs:documentation>Experiment schema</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="parameter_sets" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="parameter_set" type="ParameterSet" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="datasets">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="dataset" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="DataSet"/>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="test">
+		<xs:annotation>
+			<xs:documentation>Test schema</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="parameter_sets" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="parameter_set" type="ParameterSet" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="datasets">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="dataset" type="DataSet" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

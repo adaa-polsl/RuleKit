@@ -16,6 +16,7 @@ package adaa.analytics.rules.consoles;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -24,9 +25,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import adaa.analytics.rules.consoles.config.*;
 
@@ -69,9 +75,9 @@ public class ExperimentalConsole {
         try {
             initLogs();
 
+            Logger.log("Loading XML experiment file: " + configFile+"\n", Level.INFO);
             Document doc = readXmlDocument(this.configFile);
-            Logger.log("Loading XML experiment file: " + configFile, Level.INFO);
-
+            validate(doc);
             //Paramset
             List<ParamSetConfiguration> paramSets = ParamSetConfiguration.readParamSetConfigurations(doc);
 
@@ -133,7 +139,18 @@ public class ExperimentalConsole {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(configFile);
+
+
         return doc;
+    }
+
+    private void validate(Document doc) throws IOException, SAXException {
+        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        URL schemaURL = this.getClass().getClassLoader().getResource("rulekit.xsd");
+        Schema schema = sf.newSchema(schemaURL);
+        Validator validator = schema.newValidator();
+        DOMSource source = new DOMSource(doc);
+        validator.validate(source);
     }
 
     private List<Future> executeExperiments(List<ParamSetConfiguration> paramSets, List<DatasetConfiguration> datasetConfigurationList) throws ParserConfigurationException, SAXException, IOException, InterruptedException, ExecutionException {
