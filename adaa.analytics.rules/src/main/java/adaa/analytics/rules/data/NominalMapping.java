@@ -1,45 +1,38 @@
 package adaa.analytics.rules.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class NominalMapping implements Cloneable, Serializable {
 
-    private List<NominalMap> mapping = new ArrayList<>();
-
+    Map<String,Integer> stringToIdx = new HashMap<>();
+    List<String> idxToString = new ArrayList<>();
     public int addValue(String val) {
         val = val.replace("\"","");
-        NominalMap found = findByValue(val);
-        if(found != null) {
-            return found.getIndex();
+        if (stringToIdx.containsKey(val))
+        {
+            return stringToIdx.get(val);
         }
 
-        int firstFreeIndex = 0;
-        while (findByIndex(firstFreeIndex) != null) {
-            firstFreeIndex++;
-        }
-
-        mapping.add(new NominalMap(firstFreeIndex, val));
+        int firstFreeIndex = idxToString.size();
+        idxToString.add(val);
+        stringToIdx.put(val,firstFreeIndex);
 
         return firstFreeIndex;
     }
 
     public String getValue(int index) {
-        NominalMap found = findByIndex(index);
-        if(found == null) {
+        String value = findByIndex(index);
+        if(value == null) {
             throw new IllegalStateException(String.format("Index '%d' does not exist in mapping", index));
         }
 
-        return found.getValue();
+        return value;
     }
 
     public Integer getIndex(String val) {
-        NominalMap found = findByValue(val);
-        return found == null ? null : found.getIndex();
+        return findByValue(val);
     }
 
     public boolean hasIndex(int index) {
@@ -47,7 +40,7 @@ public class NominalMapping implements Cloneable, Serializable {
     }
 
     public int size() {
-        return mapping.size();
+        return stringToIdx.size();
     }
 
     public boolean containesValue(String val) {
@@ -55,33 +48,29 @@ public class NominalMapping implements Cloneable, Serializable {
     }
 
     public boolean equal(NominalMapping outMapping) {
-        if(mapping.size() != outMapping.size()) {
+        if(stringToIdx.size() != outMapping.size()) {
             return false;
         }
-
-        for(NominalMap nomMap : mapping) {
-            NominalMap outNomMap = outMapping.findByValue(nomMap.getValue());
-            if(outNomMap == null) {
+        for(String keyVal: stringToIdx.keySet())
+        {
+            if (!outMapping.stringToIdx.containsKey(keyVal))
+            {
                 return false;
             }
-            if(!nomMap.equals(outNomMap)) {
+            if (!outMapping.stringToIdx.get(keyVal).equals(outMapping.stringToIdx.get(keyVal)))
                 return false;
-            }
         }
+
 
         return true;
     }
 
     public void clear() {
-        mapping.clear();
+        stringToIdx.clear();idxToString.clear();
     }
 
     public List<String> getValues() {
-
-        return mapping.stream()
-                .sorted(Comparator.comparingInt(NominalMap::getIndex))
-                .map(NominalMap::getValue)
-                .collect(Collectors.toList());
+        return idxToString;
     }
 
     public String getPositiveValue() {
@@ -93,23 +82,23 @@ public class NominalMapping implements Cloneable, Serializable {
         return sortedByIndex.get(1);
     }
 
-    private NominalMap findByIndex(int index) {
-        return mapping.stream().filter(e -> e.getIndex() == index).findFirst().orElse(null);
+    private String findByIndex(int index) {
+        if (index>=idxToString.size())
+            return null;
+        return idxToString.get(index);
     }
 
-    private NominalMap findByValue(String val) {
-        String rval = val.replace("\"","");
-        return mapping.stream().filter(e -> e.getValue().equals(rval)).findFirst().orElse(null);
+    private Integer findByValue(String val) {
+        return  stringToIdx.get(val.replace("\"",""));
     }
 
     @Override
     public NominalMapping clone() {
         try {
             NominalMapping cloned = (NominalMapping) super.clone();
-            cloned.mapping = new ArrayList<>(mapping.size());
-            for(NominalMap nomMap : mapping) {
-                cloned.mapping.add(nomMap.clone());
-            }
+
+            cloned.stringToIdx =  new HashMap<String, Integer>(stringToIdx);
+            cloned.idxToString = new ArrayList<>(idxToString);
             return cloned;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
@@ -118,6 +107,6 @@ public class NominalMapping implements Cloneable, Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(mapping);
+        return Objects.hash(stringToIdx, idxToString);
     }
 }
