@@ -14,6 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
+import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
@@ -104,11 +105,11 @@ public class ElementaryCondition extends ConditionBase {
 			}
 			++id;
 		}*/
-
+		DataColumnDoubleAdapter dataColumnDoubleAdapter = set.getDataTable().getDataColumnDoubleAdapter(a,Double.NaN);
 		for (int id = 0; id < set.size(); ++id) {
-			Example e = set.getExample(id);
-			double v = e.getValue(a);
-
+//			Example e = set.getExample(id);
+//			double v = e.getValue(a);
+			double v = dataColumnDoubleAdapter.getDoubleValue(id);
 			if (valueSet.contains(v)) {
 				outIndices.add(id);
 			}

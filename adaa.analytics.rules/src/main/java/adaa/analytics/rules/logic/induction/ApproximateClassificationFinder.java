@@ -1,5 +1,6 @@
 package adaa.analytics.rules.logic.induction;
 
+import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.IExampleSet;
@@ -311,6 +312,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
         // iterate over all allowed decision attributes
         for (IAttribute attr : dataset.getAttributes()) {
+            DataColumnDoubleAdapter attrDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(attr, Double.NaN);
 
             if (!allowedAttributes.contains(attr)) {
                 continue;
@@ -387,7 +389,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
                                         int left_id = (int) (cur_descriptions[cur_begins[bid] - 1] & MASK_IDENTIFIER);
                                         int right_id = (int) (cur_descriptions[cur_begins[bid]] & MASK_IDENTIFIER);
 
-                                        double midpoint = (dataset.getExample(left_id).getValue(attr) + dataset.getExample(right_id).getValue(attr)) / 2;
+                                        double midpoint = (attrDataColumnDoubleAdapter.getDoubleValue(left_id) + attrDataColumnDoubleAdapter.getDoubleValue(right_id)) / 2;
 
                                         IValueSet interval = (c == 0)
                                                 ? Interval.create_le(midpoint)
@@ -559,13 +561,14 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
 
         Logger.log("Establishing bins: " + attr.getName() + "\n", Level.FINER);
+        DataColumnDoubleAdapter attrDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(attr, Double.NaN);
 
         double [] vals = new double[dataset.size()];
         Integer[] sortedIds = new Integer[dataset.size()];
 
         for (int i = 0; i < dataset.size(); ++i) {
             sortedIds[i] = i;
-            vals[i] = dataset.getExample(i).getValue(attr);
+            vals[i] = attrDataColumnDoubleAdapter.getDoubleValue(i);
         }
 
 
@@ -794,6 +797,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
         int n_examples = dataset.size();
 
         int[][] copy_ranges = (int[][])arrayCopies.get("ruleRanges");
+        DataColumnDoubleAdapter labelDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(dataset.getAttributes().getLabel(), Double.NaN);
 
         for (IAttribute attr: dataset.getAttributes()) {
             int attribute_id = attr.getTableIndex();
@@ -817,7 +821,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
                 int example_id = (int)(descriptions_row[i] & MASK_IDENTIFIER);
                 int bid = (int)((descriptions_row[i] & MASK_BIN) >> OFFSET_BIN);
 
-                int label = (int)dataset.getExample(example_id).getLabel();
+                int label = (int)labelDataColumnDoubleAdapter.getDoubleValue(example_id);
 
                 descriptions_row[i] |= FLAG_NEW; // mark as new
                 descriptions_row[i] |= FLAG_COVERED; // mark as covered (empty rule)
@@ -917,6 +921,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
     protected void updateMidpoint(IExampleSet dataset, ConditionCandidate candidate) {
         IAttribute bestAttr = dataset.getAttributes().get(candidate.getAttribute());
 
+        DataColumnDoubleAdapter bestAttrDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(bestAttr, Double.NaN);
 
         // alter midpoint
         int attribute_id = bestAttr.getTableIndex();
@@ -947,7 +952,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
         int right_id = (int) (cur_descriptions[i] & MASK_IDENTIFIER);
 
         // recalculate interval
-        double midpoint = (dataset.getExample(left_id).getValue(bestAttr) + dataset.getExample(right_id).getValue(bestAttr)) / 2;
+        double midpoint = (bestAttrDataColumnDoubleAdapter.getDoubleValue(left_id) + bestAttrDataColumnDoubleAdapter.getDoubleValue(right_id)) / 2;
 
         IValueSet interval = (candidate.opposite == false)
                 ? Interval.create_le(midpoint)

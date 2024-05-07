@@ -14,6 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
+import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.model.RegressionRuleSet;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
@@ -70,10 +71,11 @@ public class RegressionExpertSnC extends RegressionSnC {
 		Set<Integer> uncovered = new IntegerBitSet(dataset.size());
 		double weighted_PN = 0;
 		// at the beginning rule set does not cover any examples
+		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = sortedDataset.getDataTable().getDataColumnDoubleAdapter(sortedDataset.getAttributes().getWeight(), Double.NaN);
+
 		for (int id = 0; id < sortedDataset.size(); ++id) {
 			uncovered.add(id);
-			Example ex = sortedDataset.getExample(id);
-			double w = sortedDataset.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
+			double w = sortedDataset.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDoubleValue(id);
 			weighted_PN += w;
 		}
 		
@@ -125,8 +127,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 			uncovered.removeAll(rule.getCoveredNegatives());
 			uncovered_pn = 0;
 			for (int id : uncovered) {
-				Example e = sortedDataset.getExample(id);
-				uncovered_pn += sortedDataset.getAttributes().getWeight() == null ? 1.0 : e.getWeight();
+				uncovered_pn += sortedDataset.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDoubleValue(id);
 			}
 		}
 		
@@ -173,8 +174,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 				
 				uncovered_pn = 0;
 				for (int id : uncovered) {
-					Example e = sortedDataset.getExample(id);
-					uncovered_pn += sortedDataset.getAttributes().getWeight() == null ? 1.0 : e.getWeight();
+					uncovered_pn += sortedDataset.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDoubleValue(id);
 				}
 				
 				// stop if number of examples remaining is less than threshold

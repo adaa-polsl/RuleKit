@@ -14,6 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
+import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.model.RegressionRuleSet;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
@@ -61,11 +62,12 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 		//Set<Integer> uncovered = new HashSet<Integer>();
 		Set<Integer> uncovered = new IntegerBitSet(sortedDataset.size());
 		double weighted_PN = 0;
+		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = sortedDataset.getDataTable().getDataColumnDoubleAdapter(sortedDataset.getAttributes().getWeight(), Double.NaN);
+
 		// at the beginning rule set does not cover any examples
 		for (int id = 0; id < sortedDataset.size(); ++id) {
 			uncovered.add(id);
-			Example ex = sortedDataset.getExample(id);
-			double w = sortedDataset.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
+			double w = sortedDataset.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDoubleValue(id);
 			weighted_PN += w;
 		}
 		
@@ -115,8 +117,7 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 				
 				uncovered_pn = 0;
 				for (int id : uncovered) {
-					Example e = sortedDataset.getExample(id);
-					uncovered_pn += dataset.getAttributes().getWeight() == null ? 1.0 : e.getWeight();
+					uncovered_pn += dataset.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDoubleValue(id);
 				}
 				
 				// stop if number of examples remaining is less than threshold

@@ -32,6 +32,8 @@ public interface IAttribute extends Cloneable, Serializable {
 
     boolean isNumerical();
 
+    String getAsString(double value);
+
     String getAsString(double value, int fractionDigits, boolean quoteNominal);
 
     ColumnMetaData getColumnMetaData();

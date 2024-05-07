@@ -1,5 +1,6 @@
 package adaa.analytics.rules.logic.induction;
 
+import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.NegativeControlledMeasure;
 import adaa.analytics.rules.logic.representation.*;
@@ -33,11 +34,13 @@ public class ContrastRegressionFinder extends RegressionFinder implements IPenal
             double sum = 0;
 
             int i = 0;
+            DataColumnDoubleAdapter labelDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(dataset.getAttributes().getLabel(), Double.NaN);
+
             for (int e : cov.positives) {
-                sum += dataset.getExample(e).getLabel();
+                sum += labelDataColumnDoubleAdapter.getDoubleValue(e);
             }
             for (int e : cov.negatives) {
-                sum += dataset.getExample(e).getLabel();
+                sum += labelDataColumnDoubleAdapter.getDoubleValue(e);
             }
 
             // the smaller the difference in means, the better the contrast set
@@ -115,10 +118,11 @@ public class ContrastRegressionFinder extends RegressionFinder implements IPenal
         ContingencyTable ct = new ContingencyTable();
         rule.covers(dataset, ct, covered, negatives);
         covered.addAll(negatives);
+        DataColumnDoubleAdapter labelDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(dataset.getAttributes().getLabel(), Double.NaN);
 
         double sum = 0;
         for (int e : covered) {
-            sum += dataset.getExample(e).getLabel();
+            sum += labelDataColumnDoubleAdapter.getDoubleValue(e);
         }
         ((ContrastRegressionRule)rule).setMeanLabel(sum / covered.size());
 

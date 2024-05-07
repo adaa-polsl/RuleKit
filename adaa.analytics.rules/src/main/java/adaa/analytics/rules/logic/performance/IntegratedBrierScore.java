@@ -14,6 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.performance;
 
+import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.logic.representation.model.SurvivalRuleSet;
@@ -44,14 +45,17 @@ public class IntegratedBrierScore extends AbstractPerformanceCounter {
 
 		 IAttribute survTime = testSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
 		 IAttribute survStat = testSet.getAttributes().getLabel();
+		 IAttribute specialAttr = testSet.getAttributes().getSpecial(SurvivalRuleSet.ATTRIBUTE_ESTIMATOR);
+		 DataColumnDoubleAdapter survStatDataColumnDoubleAdapter = testSet.getDataTable().getDataColumnDoubleAdapter(survStat, Double.NaN);
+		 DataColumnDoubleAdapter survTimeDataColumnDoubleAdapter = testSet.getDataTable().getDataColumnDoubleAdapter(survTime, Double.NaN);
+		 DataColumnDoubleAdapter specialAttrDataColumnDoubleAdapter = testSet.getDataTable().getDataColumnDoubleAdapter(specialAttr, Double.NaN);
 
 		 List<SurvInfo> info = new ArrayList<SurvInfo>();
 		 for (int i = 0; i < testSet.size(); i++) {
-			 Example e = testSet.getExample(i);
-			 double t = e.getValue(survTime);
-			 boolean isCensored = e.getValue(survStat) == 0;
+			 double t = survTimeDataColumnDoubleAdapter.getDoubleValue(i);
+			 boolean isCensored = survStatDataColumnDoubleAdapter.getDoubleValue(i) == 0;
 
-			 String textKaplan = e.getValueAsString(e.getAttributes().getSpecial(SurvivalRuleSet.ATTRIBUTE_ESTIMATOR));
+			 String textKaplan = specialAttr.getAsString(specialAttrDataColumnDoubleAdapter.getDoubleValue(i));
 			 KaplanMeierEstimator kaplan = new KaplanMeierEstimator();
 			 kaplan.load(textKaplan);
 

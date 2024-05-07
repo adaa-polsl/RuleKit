@@ -14,6 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
+import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.data.EColumnSortDirections;
 import adaa.analytics.rules.logic.representation.*;
 
@@ -65,6 +66,7 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 
 				double p = 0;
 				double new_p = 0;
+				DataColumnDoubleAdapter weightDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(dataset.getAttributes().getWeight(), Double.NaN);
 
 				if (dataset.getAttributes().getWeight() == null) {
 					// unweighted examples
@@ -75,7 +77,7 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 					// calculate weights of newly covered examples
 					for (int id : conditionCovered) {
 						if (covered.contains(id)) {
-							double w = dataset.getExample(id).getWeight();
+							double w = weightDataColumnDoubleAdapter.getDoubleValue(id);
 							p += w;
 							if (uncovered.contains(id)) {
 								new_p += w;

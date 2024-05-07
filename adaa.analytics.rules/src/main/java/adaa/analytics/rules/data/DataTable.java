@@ -3,7 +3,9 @@ package adaa.analytics.rules.data;
 import adaa.analytics.rules.data.condition.EConditionsLogicOperator;
 import adaa.analytics.rules.data.condition.ICondition;
 import adaa.analytics.rules.logic.representation.ContrastRule;
+import adaa.analytics.rules.rm.example.IAttribute;
 import tech.tablesaw.api.*;
+import tech.tablesaw.columns.AbstractColumn;
 import tech.tablesaw.columns.Column;
 import tech.tablesaw.io.csv.CsvReadOptions;
 import tech.tablesaw.selection.Selection;
@@ -230,8 +232,18 @@ public class DataTable implements Cloneable, Serializable {
         return table.row(index);
     }
 
+    //local cache to optimize access to column idx
+    Map<String,Integer> columnIdxMap = new HashMap<>();
+
     public int getColumnIndex(String attributeName) {
-        return table.columnIndex(attributeName);
+        if (columnIdxMap.containsKey(attributeName))
+        {
+            return columnIdxMap.get(attributeName).intValue();
+        }else {
+            int idx = table.columnIndex(attributeName);
+            columnIdxMap.put(attributeName,idx);
+            return idx;
+        }
     }
 
     public boolean setRole(String columnName, String role) {
@@ -379,21 +391,29 @@ public class DataTable implements Cloneable, Serializable {
         }
     }
 
-    public double getDoubleValue(String colName, int rowIndex, double defaultValue) {
-        ColumnMetaData colMetaData = columnMetaData.get(colName);
-        if(colMetaData == null) {
-            return defaultValue;
-        }
-
-        if(colMetaData.isNominal()) {
-            StringColumn colStr = table.stringColumn(colName);
+    public double getDoubleValue(String colName,int colIdx, int rowIndex, double defaultValue) {
+        Column col = table.column(colIdx);
+        if (col.type().equals(ColumnType.DOUBLE))
+        {
+            DoubleColumn colNum = (DoubleColumn) col;
+            return colNum.getDouble(rowIndex);
+        }else {
+            StringColumn colStr = (StringColumn) col;
             String value = colStr.get(rowIndex);
+            ColumnMetaData colMetaData = columnMetaData.get(colName);
+            if (colMetaData==null)
+                return defaultValue;
             Integer iVal = colMetaData.getMapping().getIndex(value);
             return iVal == null ? defaultValue : iVal.doubleValue();
         }
 
-        DoubleColumn colNum = (DoubleColumn) table.column(colName);
-        return colNum.getDouble(rowIndex);
+    }
+
+
+
+    public DataColumnDoubleAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue)
+    {
+        return new DataColumnDoubleAdapter(table, columnMetaData, attr, defaultValue);
     }
 
     public void setDoubleValue(String colName, int rowIndex, double value) {

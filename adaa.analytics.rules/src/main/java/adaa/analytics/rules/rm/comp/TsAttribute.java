@@ -10,7 +10,6 @@ import java.util.Objects;
 public class TsAttribute implements IAttribute {
 
     ColumnMetaData columnMetaData;
-
     public TsAttribute(ColumnMetaData columnMetaData) {
 
         this.columnMetaData = columnMetaData;
@@ -64,6 +63,10 @@ public class TsAttribute implements IAttribute {
         return columnMetaData.isNumerical();
     }
 
+    @Override
+    public String getAsString(double value) {
+        return this.getAsString(value,-2, false);
+    }
     @Override
     public String getAsString(double value, int fractionDigits, boolean quoteNominal) {
         if (Double.isNaN(value)) {

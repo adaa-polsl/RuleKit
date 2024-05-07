@@ -19,13 +19,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 
+import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.logic.representation.*;
 
 import adaa.analytics.rules.rm.example.IAttribute;
 import adaa.analytics.rules.rm.example.Example;
 import adaa.analytics.rules.rm.example.IAttributes;
 import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.table.DataRow;
 
 
 /**
@@ -76,6 +76,7 @@ public class ClassificationFinder extends AbstractFinder {
 
 		// iterate over all allowed decision attributes
 		for (IAttribute attr : attributes) {
+			DataColumnDoubleAdapter attDataColumnDoubleAdapter = trainSet.getDataTable().getDataColumnDoubleAdapter(attr, Double.NaN);
 
 			Future f = pool.submit( () -> {
 				Map<Double, IntegerBitSet> attributeCovering = new TreeMap<Double, IntegerBitSet>();
@@ -101,8 +102,9 @@ public class ClassificationFinder extends AbstractFinder {
 					// get all distinctive values of attribute
 					int id = 0;
 					for (Example e : trainSet) {
-						DataRow dr = e.getDataRow();
-						double value = dr.get(attr);
+//						DataRow dr = e.getDataRow();
+//						double value = dr.get(attr);
+						double value = attDataColumnDoubleAdapter.getDoubleValue(id);
 
 						// omit missing values
 						if (!Double.isNaN(value)) {
@@ -228,7 +230,8 @@ public class ClassificationFinder extends AbstractFinder {
 	 */
 	public void prune(final Rule rule, final IExampleSet trainSet, final Set<Integer> uncovered) {
 		Logger.log("ClassificationFinder.prune()\n", Level.FINE);
-		
+		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = trainSet.getDataTable().getDataColumnDoubleAdapter(trainSet.getAttributes().getWeight(), Double.NaN);
+
 		// check preconditions
 		if (rule.getWeighted_p() == Double.NaN || rule.getWeighted_p() == Double.NaN ||
 			rule.getWeighted_P() == Double.NaN || rule.getWeighted_N() == Double.NaN) {
@@ -351,9 +354,9 @@ public class ClassificationFinder extends AbstractFinder {
 							// weighted - iterate over bits and sum weights
 							for (int wordOffset = 0; wordOffset < Long.SIZE; ++wordOffset) {
 								if ((posWord & (1L << wordOffset)) != 0) {
-									p += trainSet.getExample(wordId * Long.SIZE + wordOffset).getWeight();
+									p += weightDataColumnDoubleAdapter.getDoubleValue(wordId * Long.SIZE + wordOffset);
 								} else if ((negWord & (1L << wordOffset)) != 0) {
-									n += trainSet.getExample(wordId * Long.SIZE + wordOffset).getWeight();
+									n += weightDataColumnDoubleAdapter.getDoubleValue(wordId * Long.SIZE + wordOffset);
 								}
 							}
 						} else {
@@ -493,6 +496,8 @@ public class ClassificationFinder extends AbstractFinder {
 
 		double classId = ((SingletonSet)rule.getConsequence().getValueSet()).getValue();
 		IAttribute weightAttr = trainSet.getAttributes().getWeight();
+		DataColumnDoubleAdapter weightDataRowDoubleAdapter = trainSet.getDataTable().getDataColumnDoubleAdapter(weightAttr, Double.NaN);
+
 		Set<Integer> positives = rule.getCoveredPositives();
 		double P = rule.getWeighted_P();
 		double N = rule.getWeighted_N();
@@ -510,7 +515,7 @@ public class ClassificationFinder extends AbstractFinder {
 			Future<ConditionEvaluation> future = (Future<ConditionEvaluation>) pool.submit(() -> {
 				
 				ConditionEvaluation best = new ConditionEvaluation();
-
+				DataColumnDoubleAdapter attDataRowDoubleAdapter = trainSet.getDataTable().getDataColumnDoubleAdapter(attr, Double.NaN);
 				// check if attribute is numerical or nominal
 				if (attr.isNumerical()) {
 					// statistics from all points
@@ -533,8 +538,9 @@ public class ClassificationFinder extends AbstractFinder {
 
 					// get all distinctive values of attribute
 					for (int id : coveredByRule) {
-						DataRow dr = trainSet.getExample(id).getDataRow();
-						double val = dr.get(attr) + 0.0; // to eliminate -0.0
+//						DataRow dr = trainSet.getExample(id).getDataRow();
+//						double val = dr.get(attr) + 0.0; // to eliminate -0.0
+						double val = attDataRowDoubleAdapter.getDoubleValue(id) + 0.0;
 
 						// exclude missing values from keypoints
 						if (Double.isNaN(val)) {
@@ -542,7 +548,8 @@ public class ClassificationFinder extends AbstractFinder {
 						}
 
 						TotalPosNeg tot = totals.computeIfAbsent(val, (k) -> new TotalPosNeg());
-						double w = (weightAttr != null) ? dr.get(weightAttr) : 1.0;
+//						double w = (weightAttr != null) ? dr.get(weightAttr) : 1.0;
+						double w = (weightAttr != null) ? weightDataRowDoubleAdapter.getDoubleValue(id) : 1.0;
 
 						// put to proper bin depending of class label
 						if (positives.contains(id)) {
@@ -633,17 +640,17 @@ public class ClassificationFinder extends AbstractFinder {
 
 						// get all distinctive values of attribute
 						for (int id : coveredByRule) {
-							DataRow dr = trainSet.getExample(id).getDataRow();
-							double value = dr.get(attr);
-
+//							DataRow dr = trainSet.getExample(id).getDataRow();
+//							double value = dr.get(attr);
+							double value = attDataRowDoubleAdapter.getDoubleValue(id);
 							// omit missing values
 							if (Double.isNaN(value)) {
 								continue;
 							}
 
 							int castedValue = (int) value;
-							double w = (weightAttr != null) ? dr.get(weightAttr) : 1.0;
-
+//							double w = (weightAttr != null) ? dr.get(weightAttr) : 1.0;
+							double w = (weightAttr != null) ? weightDataRowDoubleAdapter.getDoubleValue(id) : 1.0;
 							if (positives.contains(id)) {
 								p[castedValue] += w;
 								if (uncoveredPositives.contains(id)) {

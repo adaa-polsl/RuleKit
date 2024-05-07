@@ -14,6 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
+import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.model.ClassificationRuleSet;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
@@ -59,6 +60,8 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 		final IAttribute outputAttr = (dataset.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE) == null)
 				? dataset.getAttributes().getLabel()
 				: dataset.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(dataset.getAttributes().getWeight(), Double.NaN);
+		DataColumnDoubleAdapter outputAttrrDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(outputAttr, Double.NaN);
 
 		INominalMapping mapping = outputAttr.getMapping();
 		List<String> labels = new ArrayList<>();
@@ -91,10 +94,10 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 
 			// at the beginning rule set does not cover any examples
 			for (int id = 0; id < dataset.size(); ++id) {
-				Example e = dataset.getExample(id);
-				double w = !weighted ? 1.0 : e.getWeight();
 
-				if ((double)e.getValue(outputAttr) == classId) {
+				double w = !weighted ? 1.0 : weightDataColumnDoubleAdapter.getDoubleValue(id);
+
+				if ((double)outputAttrrDataColumnDoubleAdapter.getDoubleValue(id) == classId) {
 					weighted_P += w;
 					positives.add(id);
 				} else {
@@ -158,9 +161,9 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 					uncovered.removeAll(rule.getCoveredNegatives());
 
 					uncovered_p = 0;
+
 					for (int id : uncoveredPositives) {
-						Example e = dataset.getExample(id);
-						uncovered_p += dataset.getAttributes().getWeight() == null ? 1.0 : e.getWeight();
+						uncovered_p += dataset.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDoubleValue(id);
 					}
 
 					Logger.log("Uncovered positives" + uncovered_p + "\n", Level.FINER);

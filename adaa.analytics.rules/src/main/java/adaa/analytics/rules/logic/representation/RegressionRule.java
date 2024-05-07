@@ -14,6 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
+import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.quality.ChiSquareVarianceTest;
@@ -130,6 +131,8 @@ public class RegressionRule extends Rule {
 
 	@Override
 	public void covers(IExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
+		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = set.getDataTable().getDataColumnDoubleAdapter(set.getAttributes().getWeight(), Double.NaN);
+
 		SortedExampleSetEx ses = (set instanceof SortedExampleSetEx) ? (SortedExampleSetEx)set : null;
 		if (ses == null) {
 			throw new InvalidParameterException("RegressionRules support only ListedExampleSet example sets");
@@ -170,10 +173,9 @@ public class RegressionRule extends Rule {
 			Iterator<Integer> it = negatives.iterator();
 			while (it.hasNext()) {
 				int id = it.next();
-				Example ex = set.getExample(id);
 
 				// if example covered
-				cur += set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
+				cur += set.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDoubleValue(id);
 				if (cur > ct.weighted_n / 2) {
 					break;
 				}
