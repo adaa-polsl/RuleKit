@@ -1,7 +1,8 @@
 package utils;
 
-import adaa.analytics.rules.rm.comp.TsExampleSet;
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.DataTable;
+import adaa.analytics.rules.data.IExampleSet;
+import ioutils.ArffFileWriter;
 import org.junit.Test;
 
 import java.nio.file.Paths;
@@ -24,7 +25,7 @@ public class ArffFileWriterTest {
 
         String[] attsName = new String[]{ "d_att", "t_att", "b_att", "att_1", "att_2" };
 
-        IExampleSet es = new TsExampleSet(values, attsName, "t_att", "d_att", null);
+        IExampleSet es = new DataTable(values, attsName, "t_att", "d_att", null);
 
         ArffFileWriter.write(es, dataDir);
     }

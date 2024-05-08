@@ -15,12 +15,11 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
-import adaa.analytics.rules.data.EColumnSortDirections;
+import adaa.analytics.rules.data.metadata.EColumnSortDirections;
 import adaa.analytics.rules.logic.representation.*;
 
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.Example;
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IExampleSet;
 
 import java.security.InvalidParameterException;
 import java.util.*;
@@ -65,7 +64,7 @@ public class RegressionFinder extends AbstractFinder {
 
 		// iterate over all possible decision attributes
 		for (IAttribute attr : allowedAttributes) {
-			DataColumnDoubleAdapter attDataColumnDoubleAdapter = set.getDataTable().getDataColumnDoubleAdapter(attr, Double.NaN);
+			DataColumnDoubleAdapter attDataColumnDoubleAdapter = set.getDataColumnDoubleAdapter(attr, Double.NaN);
 
 			// consider attributes in parallel
 			Future<ConditionEvaluation> future = (Future<ConditionEvaluation>) pool.submit(() -> {
@@ -314,7 +313,7 @@ public class RegressionFinder extends AbstractFinder {
 				
 		// iterate over all possible decision attributes
 		for (IAttribute attr : allowedAttributes) {
-			DataColumnDoubleAdapter attDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(attr, Double.NaN);
+			DataColumnDoubleAdapter attDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(attr, Double.NaN);
 
 			// consider attributes in parallel
 			Future<ConditionEvaluation> future = (Future<ConditionEvaluation>) pool.submit(() -> {
@@ -436,7 +435,7 @@ public class RegressionFinder extends AbstractFinder {
 			new_p = SetHelper.intersectionSize(uncovered, cov.positives);
 			new_n =	SetHelper.intersectionSize(uncovered, cov.negatives);
 		} else {
-			DataColumnDoubleAdapter weightDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(dataset.getAttributes().getWeight(), Double.NaN);
+			DataColumnDoubleAdapter weightDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getWeight(), Double.NaN);
 
 			// calculate weights of newly covered examples
 			for (int id : cov.positives) {

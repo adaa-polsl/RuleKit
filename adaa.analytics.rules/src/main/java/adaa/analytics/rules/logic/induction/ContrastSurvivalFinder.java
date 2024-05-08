@@ -4,8 +4,8 @@ import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.quality.NegativeControlledMeasure;
 import adaa.analytics.rules.logic.representation.*;
-import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.tools.container.Pair;
+import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.utils.Pair;
 
 import java.io.Serializable;
 import java.security.InvalidParameterException;

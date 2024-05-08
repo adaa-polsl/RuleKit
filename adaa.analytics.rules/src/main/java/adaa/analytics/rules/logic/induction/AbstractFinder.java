@@ -23,8 +23,8 @@ import adaa.analytics.rules.logic.quality.IQualityModifier;
 import adaa.analytics.rules.logic.quality.NoneQualityModifier;
 import adaa.analytics.rules.logic.representation.*;
 
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IExampleSet;
 
 /**
  * Abstract base class for growing and pruning procedures for all types of rules (classification, regression, survival).

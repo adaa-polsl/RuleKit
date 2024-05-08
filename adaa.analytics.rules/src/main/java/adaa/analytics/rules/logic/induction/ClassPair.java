@@ -14,7 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import adaa.analytics.rules.rm.example.table.INominalMapping;
+import adaa.analytics.rules.data.INominalMapping;
 
 public class ClassPair {
 

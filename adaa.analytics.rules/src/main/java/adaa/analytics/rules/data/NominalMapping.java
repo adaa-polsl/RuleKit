@@ -1,10 +1,11 @@
 package adaa.analytics.rules.data;
 
+import adaa.analytics.rules.data.INominalMapping;
+
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
 
-public class NominalMapping implements Cloneable, Serializable {
+public class NominalMapping implements Serializable, INominalMapping {
 
     Map<String,Integer> stringToIdx = new HashMap<>();
     List<String> idxToString = new ArrayList<>();
@@ -35,6 +36,7 @@ public class NominalMapping implements Cloneable, Serializable {
         return findByValue(val);
     }
 
+
     public boolean hasIndex(int index) {
         return findByIndex(index) != null;
     }
@@ -43,21 +45,19 @@ public class NominalMapping implements Cloneable, Serializable {
         return stringToIdx.size();
     }
 
-    public boolean containesValue(String val) {
-        return findByValue(val) != null;
-    }
 
-    public boolean equal(NominalMapping outMapping) {
+    public boolean equals(INominalMapping outMapping) {
         if(stringToIdx.size() != outMapping.size()) {
             return false;
         }
         for(String keyVal: stringToIdx.keySet())
         {
-            if (!outMapping.stringToIdx.containsKey(keyVal))
+            Integer outIdx = outMapping.getIndex(keyVal);
+            if (outIdx==null)
             {
                 return false;
             }
-            if (!outMapping.stringToIdx.get(keyVal).equals(outMapping.stringToIdx.get(keyVal)))
+            if (!outIdx.equals(stringToIdx.get(keyVal)))
                 return false;
         }
 
@@ -68,6 +68,7 @@ public class NominalMapping implements Cloneable, Serializable {
     public void clear() {
         stringToIdx.clear();idxToString.clear();
     }
+
 
     public List<String> getValues() {
         return idxToString;
@@ -92,6 +93,7 @@ public class NominalMapping implements Cloneable, Serializable {
         return  stringToIdx.get(val.replace("\"",""));
     }
 
+
     @Override
     public NominalMapping clone() {
         try {
@@ -103,6 +105,25 @@ public class NominalMapping implements Cloneable, Serializable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    @Override
+    public String getPositiveString() {
+        return getPositiveValue();
+    }
+
+    @Override
+    public Integer mapString(String str) {
+        if (str == null) {
+            return -1;
+        } else {
+            return addValue(str);
+        }
+    }
+
+    @Override
+    public String mapIndex(int idx) {
+        return getValue(idx);
     }
 
     @Override

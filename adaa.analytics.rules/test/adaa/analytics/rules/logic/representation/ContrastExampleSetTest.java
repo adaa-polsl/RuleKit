@@ -1,8 +1,7 @@
 package adaa.analytics.rules.logic.representation;
 
-import adaa.analytics.rules.data.EColumnRole;
-import adaa.analytics.rules.rm.comp.TsExampleSet;
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.DataTable;
+import adaa.analytics.rules.data.metadata.EColumnRole;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -25,7 +24,7 @@ public class ContrastExampleSetTest {
     @Test
     public void CreateTsExampleSetContrastTest() {
 
-        TsExampleSet tsExampleSet = new TsExampleSet(crateValues(), crateAttsNames(), null, null, "c_att");
+        DataTable tsExampleSet = new DataTable(crateValues(), crateAttsNames(), null, null, "c_att");
         ContrastExampleSet cExampleSet = new ContrastExampleSet(tsExampleSet);
 
         Assert.assertEquals(5, cExampleSet.getAttributes().size());

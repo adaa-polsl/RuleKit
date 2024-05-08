@@ -1,14 +1,12 @@
 package adaa.analytics.rules.logic.induction;
 
-import adaa.analytics.rules.data.ColumnMetaData;
-import adaa.analytics.rules.data.EColumnRole;
+import adaa.analytics.rules.data.metadata.EColumnRole;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
-import adaa.analytics.rules.logic.rulegenerator.OperatorCommandProxy;
 import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.Example;
-import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.operator.OperatorException;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.row.Example;
+import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.utils.OperatorException;
 import org.junit.Assert;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.FromDataPoints;
@@ -88,7 +86,7 @@ public class ClassificationSnCTest {
         this.writeReport(testCase, ruleSet);
         RuleSetComparator.assertRulesAreEqual(testCase.getReferenceReport().getRules(), ruleSet.getRules());
 
-        ColumnMetaData confidenceMetaData = prediction.getDataTable().getColumnByRole(EColumnRole.confidence.toString());
+        IAttribute confidenceMetaData = prediction.getColumnByRole(EColumnRole.confidence.toString());
         Assert.assertNotNull(confidenceMetaData);
         Assert.assertTrue(confidenceMetaData.getValues().length>0);
         Assert.assertTrue(confidenceMetaData.getValues() instanceof Double[]);

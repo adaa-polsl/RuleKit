@@ -15,11 +15,11 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
-import adaa.analytics.rules.data.EColumnSortDirections;
+import adaa.analytics.rules.data.metadata.EColumnSortDirections;
 import adaa.analytics.rules.logic.representation.*;
 
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IExampleSet;
 
 import java.util.Set;
 import java.util.logging.Level;
@@ -66,7 +66,7 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 
 				double p = 0;
 				double new_p = 0;
-				DataColumnDoubleAdapter weightDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(dataset.getAttributes().getWeight(), Double.NaN);
+				DataColumnDoubleAdapter weightDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getWeight(), Double.NaN);
 
 				if (dataset.getAttributes().getWeight() == null) {
 					// unweighted examples

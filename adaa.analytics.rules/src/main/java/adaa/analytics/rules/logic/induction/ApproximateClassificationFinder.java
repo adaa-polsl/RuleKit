@@ -2,8 +2,8 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.logic.representation.*;
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IExampleSet;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -312,7 +312,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
         // iterate over all allowed decision attributes
         for (IAttribute attr : dataset.getAttributes()) {
-            DataColumnDoubleAdapter attrDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(attr, Double.NaN);
+            DataColumnDoubleAdapter attrDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(attr, Double.NaN);
 
             if (!allowedAttributes.contains(attr)) {
                 continue;
@@ -493,6 +493,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
                 if (best == null || current.quality > best.quality || (current.quality == best.quality && current.p > best.p)) {
                     best = current;
                 }
+
             }
         } catch (InterruptedException | ExecutionException e) {
             // TODO Auto-generated catch block
@@ -500,6 +501,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
         }
 
         if (best != null) {
+
             IAttribute bestAttr = dataset.getAttributes().get(best.getAttribute());
 
             if (bestAttr == null) {
@@ -561,7 +563,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
 
         Logger.log("Establishing bins: " + attr.getName() + "\n", Level.FINER);
-        DataColumnDoubleAdapter attrDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(attr, Double.NaN);
+        DataColumnDoubleAdapter attrDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(attr, Double.NaN);
 
         double [] vals = new double[dataset.size()];
         Integer[] sortedIds = new Integer[dataset.size()];
@@ -797,7 +799,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
         int n_examples = dataset.size();
 
         int[][] copy_ranges = (int[][])arrayCopies.get("ruleRanges");
-        DataColumnDoubleAdapter labelDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(dataset.getAttributes().getLabel(), Double.NaN);
+        DataColumnDoubleAdapter labelDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getLabel(), Double.NaN);
 
         for (IAttribute attr: dataset.getAttributes()) {
             int attribute_id = attr.getTableIndex();
@@ -921,7 +923,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
     protected void updateMidpoint(IExampleSet dataset, ConditionCandidate candidate) {
         IAttribute bestAttr = dataset.getAttributes().get(candidate.getAttribute());
 
-        DataColumnDoubleAdapter bestAttrDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(bestAttr, Double.NaN);
+        DataColumnDoubleAdapter bestAttrDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(bestAttr, Double.NaN);
 
         // alter midpoint
         int attribute_id = bestAttr.getTableIndex();

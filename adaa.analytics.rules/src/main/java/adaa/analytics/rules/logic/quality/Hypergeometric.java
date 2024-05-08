@@ -16,7 +16,7 @@ package adaa.analytics.rules.logic.quality;
 
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 
-import adaa.analytics.rules.rm.tools.container.Pair;
+import adaa.analytics.rules.utils.Pair;
 import org.apache.commons.math3.distribution.HypergeometricDistribution;
 
 /**

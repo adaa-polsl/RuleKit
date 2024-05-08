@@ -3,9 +3,9 @@ package adaa.analytics.rules.logic.representation.model;
 import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.induction.SetHelper;
 import adaa.analytics.rules.logic.representation.*;
-import adaa.analytics.rules.rm.example.Example;
-import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.operator.OperatorException;
+import adaa.analytics.rules.data.row.Example;
+import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.utils.OperatorException;
 
 import java.util.*;
 

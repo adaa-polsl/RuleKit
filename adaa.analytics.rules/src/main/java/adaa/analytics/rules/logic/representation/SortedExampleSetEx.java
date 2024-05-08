@@ -1,16 +1,23 @@
 package adaa.analytics.rules.logic.representation;
 
+import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.data.DataTable;
-import adaa.analytics.rules.data.EColumnSortDirections;
-import adaa.analytics.rules.rm.comp.TsExampleSet;
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.Example;
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.metadata.EColumnSortDirections;
+import adaa.analytics.rules.data.metadata.MetaDataTable;
+import adaa.analytics.rules.data.condition.ICondition;
+import adaa.analytics.rules.data.row.Example;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IAttributes;
+import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.data.DataTableAnnotations;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
 
-public class SortedExampleSetEx extends TsExampleSet {
+public class SortedExampleSetEx implements IExampleSet {
+
+    private IExampleSet delegateExampleSet;
 
     public double[] labels;
     public double[] weights;
@@ -23,8 +30,8 @@ public class SortedExampleSetEx extends TsExampleSet {
     public Map<IAttribute, IntegerBitSet> nonMissingVals = new HashMap<>();
 
     public SortedExampleSetEx(IExampleSet parent, IAttribute sortingAttribute, EColumnSortDirections sortingDirection) {
-        super(parent);
-        dataTable.sortBy(sortingAttribute.getName(), sortingDirection);
+        this.delegateExampleSet = parent;
+        sortBy(sortingAttribute.getName(), sortingDirection);
         fillLabelsAndWeights();
     }
 
@@ -74,5 +81,115 @@ public class SortedExampleSetEx extends TsExampleSet {
 
         totalWeightsBefore[size()] = sumWeights;
         meanLabel /= size();
+    }
+
+
+
+
+    @Override
+    public DataTableAnnotations getAnnotations() {
+        return delegateExampleSet.getAnnotations();
+    }
+
+    @Override
+    public Object clone() {
+        return delegateExampleSet.clone();
+    }
+
+    @Override
+    public boolean equals(Object var1) {
+        return delegateExampleSet.equals(var1);
+    }
+
+    @Override
+    public int hashCode() {
+        return delegateExampleSet.hashCode();
+    }
+
+    @Override
+    public IAttributes getAttributes() {
+        return delegateExampleSet.getAttributes();
+    }
+
+    @Override
+    public int size() {
+        return delegateExampleSet.size();
+    }
+
+    @Override
+    public Example getExample(int var1) {
+        return delegateExampleSet.getExample(var1);
+    }
+
+    @Override
+    public void recalculateAttributeStatistics(IAttribute var1) {
+        delegateExampleSet.recalculateAttributeStatistics(var1);
+    }
+
+    @Override
+    public double getStatistics(IAttribute var1, String var2) {
+        return delegateExampleSet.getStatistics(var1, var2);
+    }
+
+    @Override
+    public IExampleSet filter(ICondition cnd) {
+        return delegateExampleSet.filter(cnd);
+    }
+
+    @Override
+    public IExampleSet filterWithOr(List<ICondition> cndList) {
+        return delegateExampleSet.filterWithOr(cndList);
+    }
+
+    @Override
+    public IExampleSet updateMapping(IExampleSet mappingSource) {
+        return delegateExampleSet.updateMapping(mappingSource);
+    }
+
+    @Override
+    public MetaDataTable getMetaDataTable() {
+        return delegateExampleSet.getMetaDataTable();
+    }
+
+    @Override
+    public Object[] getValues(String colName) {
+        return delegateExampleSet.getValues(colName);
+    }
+
+    @NotNull
+    @Override
+    public Iterator<Example> iterator() {
+        return delegateExampleSet.iterator();
+    }
+
+    @Override
+    public void forEach(Consumer<? super Example> action) {
+        delegateExampleSet.forEach(action);
+    }
+
+    @Override
+    public Spliterator<Example> spliterator() {
+        return delegateExampleSet.spliterator();
+    }
+
+
+    @Override
+    public void sortBy(String columnName, EColumnSortDirections sortDir) {
+        delegateExampleSet.sortBy(columnName, sortDir);
+    }
+
+    @Override
+    public int addAttribute(IAttribute var1) {
+        return delegateExampleSet.addAttribute(var1);
+    }
+
+    @Override
+    public DataColumnDoubleAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue) {
+        return delegateExampleSet.getDataColumnDoubleAdapter(attr, defaultValue);
+    }
+
+    @Override
+    public IAttribute getColumnByRole(String role) {
+        return delegateExampleSet.getColumnByRole(role);
     }
 }

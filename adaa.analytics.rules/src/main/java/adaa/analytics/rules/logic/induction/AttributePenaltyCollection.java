@@ -1,9 +1,9 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.ContrastRule;
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.table.INominalMapping;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.data.INominalMapping;
 
 import java.util.Map;
 import java.util.TreeMap;

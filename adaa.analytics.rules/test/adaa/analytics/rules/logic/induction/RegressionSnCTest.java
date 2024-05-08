@@ -1,12 +1,11 @@
 package adaa.analytics.rules.logic.induction;
 
-import adaa.analytics.rules.data.ColumnMetaData;
-import adaa.analytics.rules.data.EColumnRole;
+import adaa.analytics.rules.data.metadata.EColumnRole;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
-import adaa.analytics.rules.logic.rulegenerator.OperatorCommandProxy;
 import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
-import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.operator.OperatorException;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.utils.OperatorException;
 import org.junit.Assert;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.FromDataPoints;
@@ -72,7 +71,7 @@ public class RegressionSnCTest {
 
 
         IExampleSet prediction = ruleSet.apply(testCase.getExampleSet());
-        ColumnMetaData pa = prediction.getDataTable().getColumnByRole(EColumnRole.prediction.name());
+        IAttribute pa = prediction.getColumnByRole(EColumnRole.prediction.name());
         Assert.assertNotNull(pa);
         Object[] predictionValues = pa.getValues();
         Assert.assertNotNull(predictionValues);

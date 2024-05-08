@@ -18,16 +18,12 @@ import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.model.ClassificationRuleSet;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
-import adaa.analytics.rules.rm.example.Example;
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.table.INominalMapping;
-import adaa.analytics.rules.rm.tools.container.Pair;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.data.INominalMapping;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 /**
@@ -60,8 +56,8 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 		final IAttribute outputAttr = (dataset.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE) == null)
 				? dataset.getAttributes().getLabel()
 				: dataset.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
-		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(dataset.getAttributes().getWeight(), Double.NaN);
-		DataColumnDoubleAdapter outputAttrrDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(outputAttr, Double.NaN);
+		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getWeight(), Double.NaN);
+		DataColumnDoubleAdapter outputAttrrDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(outputAttr, Double.NaN);
 
 		INominalMapping mapping = outputAttr.getMapping();
 		List<String> labels = new ArrayList<>();

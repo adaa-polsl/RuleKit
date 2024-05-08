@@ -18,9 +18,8 @@ import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.logic.representation.model.SurvivalRuleSet;
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.Example;
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IExampleSet;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -46,9 +45,9 @@ public class IntegratedBrierScore extends AbstractPerformanceCounter {
 		 IAttribute survTime = testSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
 		 IAttribute survStat = testSet.getAttributes().getLabel();
 		 IAttribute specialAttr = testSet.getAttributes().getSpecial(SurvivalRuleSet.ATTRIBUTE_ESTIMATOR);
-		 DataColumnDoubleAdapter survStatDataColumnDoubleAdapter = testSet.getDataTable().getDataColumnDoubleAdapter(survStat, Double.NaN);
-		 DataColumnDoubleAdapter survTimeDataColumnDoubleAdapter = testSet.getDataTable().getDataColumnDoubleAdapter(survTime, Double.NaN);
-		 DataColumnDoubleAdapter specialAttrDataColumnDoubleAdapter = testSet.getDataTable().getDataColumnDoubleAdapter(specialAttr, Double.NaN);
+		 DataColumnDoubleAdapter survStatDataColumnDoubleAdapter = testSet.getDataColumnDoubleAdapter(survStat, Double.NaN);
+		 DataColumnDoubleAdapter survTimeDataColumnDoubleAdapter = testSet.getDataColumnDoubleAdapter(survTime, Double.NaN);
+		 DataColumnDoubleAdapter specialAttrDataColumnDoubleAdapter = testSet.getDataColumnDoubleAdapter(specialAttr, Double.NaN);
 
 		 List<SurvInfo> info = new ArrayList<SurvInfo>();
 		 for (int i = 0; i < testSet.size(); i++) {

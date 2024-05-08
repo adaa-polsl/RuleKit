@@ -14,7 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.IExampleSet;
 
 import java.io.Serializable;
 import java.util.ArrayList;

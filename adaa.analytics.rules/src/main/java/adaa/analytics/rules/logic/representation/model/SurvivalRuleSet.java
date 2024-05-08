@@ -15,18 +15,16 @@
 package adaa.analytics.rules.logic.representation.model;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
-
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 import adaa.analytics.rules.logic.representation.Knowledge;
 import adaa.analytics.rules.logic.representation.Rule;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.Example;
-import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.table.AttributeFactory;
-import adaa.analytics.rules.rm.example.table.IExampleTable;
-import adaa.analytics.rules.rm.operator.OperatorException;
-import adaa.analytics.rules.rm.tools.Ontology;
+import adaa.analytics.rules.data.row.Example;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.data.attributes.AttributeFactory;
+import adaa.analytics.rules.utils.OperatorException;
+import adaa.analytics.rules.utils.Ontology;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,10 +138,9 @@ public class SurvivalRuleSet extends RuleSetBase {
 	@Override
 	protected IAttribute createPredictionAttributes(IExampleSet exampleSet, IAttribute label) {
 		IAttribute predictedLabel = super.createPredictionAttributes(exampleSet, label);
-		
-		IExampleTable table = exampleSet.getExampleTable();
+
 		IAttribute attr = AttributeFactory.createAttribute(ATTRIBUTE_ESTIMATOR, Ontology.STRING);
-		table.addAttribute(attr);
+		exampleSet.addAttribute(attr);
 		exampleSet.getAttributes().setSpecialAttribute(attr, attr.getName());
 		
 		return predictedLabel;

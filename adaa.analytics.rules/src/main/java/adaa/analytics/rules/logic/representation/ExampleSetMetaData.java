@@ -1,10 +1,8 @@
 package adaa.analytics.rules.logic.representation;
 
-import adaa.analytics.rules.data.ColumnMetaData;
-import adaa.analytics.rules.data.EColumnRole;
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.IAttributes;
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.metadata.EColumnRole;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IExampleSet;
 
 import java.util.*;
 
@@ -23,16 +21,16 @@ public class ExampleSetMetaData {
         es = exampleSet;
     }
 
-    public ColumnMetaData getAttributeByName(String name) {
-        return es.getAttributes().get(name).getColumnMetaData();
+    public IAttribute getAttributeByName(String name) {
+        return es.getAttributes().get(name);
     }
 
-    public ColumnMetaData getAttributeByRole(String role) {
+    public IAttribute getAttributeByRole(String role) {
         Iterator<IAttribute> iAtts = es.getAttributes().allAttributes();
         while(iAtts.hasNext()) {
             IAttribute att = iAtts.next();
-            if(att.getColumnMetaData().getRole().equals(role)) {
-                return att.getColumnMetaData();
+            if(att.getRole().equals(role)) {
+                return att;
             }
         }
         return null;
@@ -48,11 +46,11 @@ public class ExampleSetMetaData {
 //    }
 
 
-    public ColumnMetaData getSpecial(String role) {
+    public IAttribute getSpecial(String role) {
         return getAttributeByRole(role);
     }
 
-    public ColumnMetaData getLabelMetaData() {
+    public IAttribute getLabelMetaData() {
         return getSpecial(EColumnRole.label.name());
     }
 

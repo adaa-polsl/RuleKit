@@ -16,7 +16,7 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.OperatorCommandProxy;
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.IExampleSet;
 
 /***
  * Abstract base class for all separate and conquer algorithms for induction of rule-based models

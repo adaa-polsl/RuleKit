@@ -1,7 +1,8 @@
 package utils;
 
 import adaa.analytics.rules.logic.representation.SurvivalRule;
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.IExampleSet;
+import ioutils.ArffFileLoader;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,7 +17,7 @@ public class ArffFileLoaderTest {
         String dataDir = Paths.get(workingDir, "/test/resources/data/deals-train.arff").toString();
 
         ArffFileLoader arffFileLoader = new ArffFileLoader();
-        IExampleSet es = arffFileLoader.loadExampleSet(dataDir, "Future Customer", "");
+        IExampleSet es = arffFileLoader.loadDataTable(dataDir, "Future Customer", "");
 
         Assert.assertEquals(3, es.getAttributes().size());
         Assert.assertEquals(1000, es.size());

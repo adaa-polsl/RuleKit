@@ -14,7 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation;
 
-import adaa.analytics.rules.data.ColumnMetaData;
+import adaa.analytics.rules.data.IAttribute;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.ArrayList;
@@ -148,7 +148,7 @@ public class RuleParser {
 	    	
 	    	IValueSet valueSet = null;
 
-	    	ColumnMetaData attributeMeta = meta.getAttributeByName(attribute);
+	    	IAttribute attributeMeta = meta.getAttributeByName(attribute);
 	    	if (attributeMeta == null) {
 				Logger.log("Attribute <" + attribute + "> not found"+ "\n", Level.WARNING);
 				return null;

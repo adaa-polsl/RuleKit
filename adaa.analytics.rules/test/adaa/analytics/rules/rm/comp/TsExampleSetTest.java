@@ -1,8 +1,9 @@
 package adaa.analytics.rules.rm.comp;
 
-import adaa.analytics.rules.data.EColumnRole;
+import adaa.analytics.rules.data.DataTable;
+import adaa.analytics.rules.data.metadata.EColumnRole;
 import adaa.analytics.rules.logic.representation.ContrastRule;
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.IExampleSet;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,7 +32,7 @@ public class TsExampleSetTest {
     @Test
     public void CreateTsExampleSetAllTest() {
 
-        IExampleSet es = new TsExampleSet(crateValues(), crateAttsNames(), "l_att", "s_att", "c_att");
+        IExampleSet es = new DataTable(crateValues(), crateAttsNames(), "l_att", "s_att", "c_att");
 
         Assert.assertEquals(3, es.getAttributes().size());
         Assert.assertEquals("l_att", es.getAttributes().getLabel().getName());
@@ -55,7 +56,7 @@ public class TsExampleSetTest {
     @Test
     public void CreateTsExampleSetLabelTest() {
 
-        IExampleSet es = new TsExampleSet(crateValues(), crateAttsNames(), "l_att", null, null);
+        IExampleSet es = new DataTable(crateValues(), crateAttsNames(), "l_att", null, null);
 
         Assert.assertEquals(5, es.getAttributes().size());
         Assert.assertEquals("l_att", es.getAttributes().getLabel().getName());
@@ -78,7 +79,7 @@ public class TsExampleSetTest {
     @Test
     public void CreateTsExampleSetSurvivalTest() {
 
-        IExampleSet es = new TsExampleSet(crateValues(), crateAttsNames(), null, "s_att", null);
+        IExampleSet es = new DataTable(crateValues(), crateAttsNames(), null, "s_att", null);
 
         Assert.assertEquals(5, es.getAttributes().size());
         Assert.assertNull(es.getAttributes().getLabel());
@@ -102,7 +103,7 @@ public class TsExampleSetTest {
     @Test
     public void CreateTsExampleSetContrastTest() {
 
-        IExampleSet es = new TsExampleSet(crateValues(), crateAttsNames(), null, null, "c_att");
+        IExampleSet es = new DataTable(crateValues(), crateAttsNames(), null, null, "c_att");
 
         Assert.assertEquals(5, es.getAttributes().size());
         Assert.assertNull(es.getAttributes().getLabel());
@@ -127,7 +128,7 @@ public class TsExampleSetTest {
     @Test
     public void CreateTsExampleSetLabelSurvivalTest() {
 
-        IExampleSet es = new TsExampleSet(crateValues(), crateAttsNames(), "l_att", "s_att", null);
+        IExampleSet es = new DataTable(crateValues(), crateAttsNames(), "l_att", "s_att", null);
 
         Assert.assertEquals(4, es.getAttributes().size());
         Assert.assertEquals("l_att", es.getAttributes().getLabel().getName());
@@ -152,7 +153,7 @@ public class TsExampleSetTest {
     @Test
     public void CreateTsExampleSetLabelContrastTest() {
 
-        IExampleSet es = new TsExampleSet(crateValues(), crateAttsNames(), "l_att", null, "c_att");
+        IExampleSet es = new DataTable(crateValues(), crateAttsNames(), "l_att", null, "c_att");
 
         Assert.assertEquals(4, es.getAttributes().size());
         Assert.assertEquals("l_att", es.getAttributes().getLabel().getName());
@@ -177,7 +178,7 @@ public class TsExampleSetTest {
     @Test
     public void CreateTsExampleSetSurvivalContrastTest() {
 
-        IExampleSet es = new TsExampleSet(crateValues(), crateAttsNames(), null, "s_att", "c_att");
+        IExampleSet es = new DataTable(crateValues(), crateAttsNames(), null, "s_att", "c_att");
 
         Assert.assertEquals(4, es.getAttributes().size());
         Assert.assertNull(es.getAttributes().getLabel());

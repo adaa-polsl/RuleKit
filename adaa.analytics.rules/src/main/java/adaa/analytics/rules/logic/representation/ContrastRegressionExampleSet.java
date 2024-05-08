@@ -3,11 +3,10 @@ package adaa.analytics.rules.logic.representation;
 import adaa.analytics.rules.data.condition.AbstractCondition;
 import adaa.analytics.rules.data.condition.ICondition;
 import adaa.analytics.rules.data.condition.StringCondition;
-import adaa.analytics.rules.rm.comp.TsExampleSet;
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.IStatistics;
-import adaa.analytics.rules.rm.example.table.INominalMapping;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.data.IStatistics;
+import adaa.analytics.rules.data.INominalMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,7 @@ public class ContrastRegressionExampleSet extends ContrastExampleSet {
     /** Gets {@link #trainingEstimator}}. */
     public double getTrainingEstimator() { return trainingEstimator; }
 
-    public ContrastRegressionExampleSet(TsExampleSet exampleSet) {
+    public ContrastRegressionExampleSet(IExampleSet exampleSet) {
         super(exampleSet);
 
         String averageName = (exampleSet.getAttributes().getWeight() != null)

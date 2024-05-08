@@ -19,10 +19,10 @@ import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.quality.ChiSquareVarianceTest;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
-import adaa.analytics.rules.rm.example.Example;
-import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.IStatistics;
-import adaa.analytics.rules.rm.tools.container.Pair;
+import adaa.analytics.rules.data.row.Example;
+import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.data.IStatistics;
+import adaa.analytics.rules.utils.Pair;
 
 import java.security.InvalidParameterException;
 import java.util.*;
@@ -131,7 +131,7 @@ public class RegressionRule extends Rule {
 
 	@Override
 	public void covers(IExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
-		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = set.getDataTable().getDataColumnDoubleAdapter(set.getAttributes().getWeight(), Double.NaN);
+		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = set.getDataColumnDoubleAdapter(set.getAttributes().getWeight(), Double.NaN);
 
 		SortedExampleSetEx ses = (set instanceof SortedExampleSetEx) ? (SortedExampleSetEx)set : null;
 		if (ses == null) {

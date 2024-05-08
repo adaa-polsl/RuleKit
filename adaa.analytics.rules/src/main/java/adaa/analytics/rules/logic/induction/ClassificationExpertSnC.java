@@ -23,10 +23,9 @@ import adaa.analytics.rules.logic.representation.model.ClassificationRuleSet;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.Example;
-import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.table.INominalMapping;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.data.INominalMapping;
 
 /**
  * User-guided separate'n'conquer algorithm for generating classification rule sets.
@@ -60,8 +59,8 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 		Logger.log("ClassificationExpertSnC.run()\n", Level.FINE);
 		double beginTime;
 		beginTime = System.nanoTime();
-		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(dataset.getAttributes().getWeight(), Double.NaN);
-		DataColumnDoubleAdapter labelDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(dataset.getAttributes().getLabel(), Double.NaN);
+		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getWeight(), Double.NaN);
+		DataColumnDoubleAdapter labelDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getLabel(), Double.NaN);
 
 		ClassificationRuleSet ruleset = (ClassificationRuleSet)factory.create(dataset);
 		IAttribute outputAttr = dataset.getAttributes().getLabel();

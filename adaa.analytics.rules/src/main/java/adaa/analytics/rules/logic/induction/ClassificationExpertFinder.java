@@ -18,8 +18,8 @@ import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.ConditionBase.Type;
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IExampleSet;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.util.HashSet;
@@ -173,7 +173,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 		double classId = ((SingletonSet)rule.getConsequence().getValueSet()).getValue();
 		double apriori_prec = rule.getWeighted_P() / (rule.getWeighted_P() + rule.getWeighted_N());
 		IAttribute weightAttr = dataset.getAttributes().getWeight();
-		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = dataset.getDataTable().getDataColumnDoubleAdapter(weightAttr, Double.NaN);
+		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(weightAttr, Double.NaN);
 
 		// get current covering
 		Set<Integer> covered = new IntegerBitSet(dataset.size());

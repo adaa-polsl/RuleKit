@@ -2,7 +2,7 @@ package adaa.analytics.rules.logic.representation.model;
 
 import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.representation.*;
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.IExampleSet;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;

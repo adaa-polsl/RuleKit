@@ -16,7 +16,7 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.model.*;
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.IExampleSet;
 
 /**
  * A factory class for creating instances of rules and rule sets of different types (classification/regression,/survival).

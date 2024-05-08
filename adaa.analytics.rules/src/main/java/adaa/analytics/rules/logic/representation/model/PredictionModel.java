@@ -1,14 +1,13 @@
 package adaa.analytics.rules.logic.representation.model;
 
 import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.IAttributes;
-import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.table.AttributeFactory;
-import adaa.analytics.rules.rm.example.table.IExampleTable;
-import adaa.analytics.rules.rm.example.table.INominalMapping;
-import adaa.analytics.rules.rm.operator.OperatorException;
-import adaa.analytics.rules.rm.tools.Ontology;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IAttributes;
+import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.data.attributes.AttributeFactory;
+import adaa.analytics.rules.data.INominalMapping;
+import adaa.analytics.rules.utils.OperatorException;
+import adaa.analytics.rules.utils.Ontology;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -23,9 +22,7 @@ public abstract class PredictionModel implements Serializable {
 	private IExampleSet headerExampleSet;
 
 	protected PredictionModel(IExampleSet trainingExampleSet) {
-		if (trainingExampleSet != null) {
-			this.headerExampleSet = trainingExampleSet.getMetaData();
-		}
+			this.headerExampleSet = trainingExampleSet;
 	}
 
 	public IExampleSet getTrainingHeader() {
@@ -140,8 +137,7 @@ public abstract class PredictionModel implements Serializable {
 	protected IAttribute createPredictionAttributes(IExampleSet exampleSet, IAttribute label) {
 		// create and add prediction attribute
 		IAttribute predictedLabel = AttributeFactory.createAttribute(label, IAttributes.PREDICTION_NAME);
-		IExampleTable table = exampleSet.getExampleTable();
-		table.addAttribute(predictedLabel);
+		exampleSet.addAttribute(predictedLabel);
 		exampleSet.getAttributes().setPredictedLabel(predictedLabel);
 
 		// check whether confidence labels should be constructed
@@ -149,12 +145,12 @@ public abstract class PredictionModel implements Serializable {
 			for (String value : predictedLabel.getMapping().getValues()) {
 				IAttribute confidence = AttributeFactory.createAttribute(IAttributes.CONFIDENCE_NAME + "(" + value + ")",
 						Ontology.REAL);
-				table.addAttribute(confidence);
+				exampleSet.addAttribute(confidence);
 				exampleSet.getAttributes().setSpecialAttribute(confidence, IAttributes.CONFIDENCE_NAME + "_" + value);
 			}
 			IAttribute confidence = AttributeFactory.createAttribute(IAttributes.CONFIDENCE_NAME,
 					Ontology.REAL);
-			table.addAttribute(confidence);
+			exampleSet.addAttribute(confidence);
 			exampleSet.getAttributes().setSpecialAttribute(confidence, IAttributes.CONFIDENCE_NAME);
 		}
 		return predictedLabel;

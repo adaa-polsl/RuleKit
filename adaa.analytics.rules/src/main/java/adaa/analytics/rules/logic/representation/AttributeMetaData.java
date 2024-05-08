@@ -1,8 +1,8 @@
 package adaa.analytics.rules.logic.representation;
 //
 //import adaa.analytics.rules.rm.example.AttributeRole;
-//import adaa.analytics.rules.rm.example.IAttribute;
-//import adaa.analytics.rules.rm.tools.Ontology;
+//import adaa.analytics.rules.data.IAttribute;
+//import adaa.analytics.rules.utils.Ontology;
 //
 //import java.util.Set;
 //import java.util.TreeSet;

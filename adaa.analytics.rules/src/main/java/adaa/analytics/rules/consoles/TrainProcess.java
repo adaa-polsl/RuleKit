@@ -9,10 +9,10 @@ import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
-import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.operator.OperatorException;
+import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.utils.OperatorException;
 import org.apache.commons.lang3.StringUtils;
-import utils.ArffFileLoader;
+import ioutils.ArffFileLoader;
 
 import java.io.BufferedWriter;
 import java.io.File;

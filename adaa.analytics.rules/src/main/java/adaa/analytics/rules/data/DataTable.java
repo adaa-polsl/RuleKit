@@ -1,15 +1,19 @@
 package adaa.analytics.rules.data;
 
+import adaa.analytics.rules.data.attributes.DataTableAttributes;
 import adaa.analytics.rules.data.condition.EConditionsLogicOperator;
 import adaa.analytics.rules.data.condition.ICondition;
+import adaa.analytics.rules.data.metadata.*;
+import adaa.analytics.rules.data.row.DataRow;
+import adaa.analytics.rules.data.row.Example;
+import adaa.analytics.rules.data.row.ExampleIterator;
 import adaa.analytics.rules.logic.representation.ContrastRule;
-import adaa.analytics.rules.rm.example.IAttribute;
+import ioutils.AttributeInfo;
+import org.jetbrains.annotations.NotNull;
 import tech.tablesaw.api.*;
-import tech.tablesaw.columns.AbstractColumn;
 import tech.tablesaw.columns.Column;
 import tech.tablesaw.io.csv.CsvReadOptions;
 import tech.tablesaw.selection.Selection;
-import utils.AttributeInfo;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -18,7 +22,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DataTable implements Cloneable, Serializable {
+public class DataTable implements Serializable, IExampleSet {
 
     private Table table;
     private Map<String, ColumnMetaData> columnMetaData = new LinkedHashMap<>();
@@ -34,6 +38,7 @@ public class DataTable implements Cloneable, Serializable {
         table = Table.read().usingOptions(options);
 
     }
+
 
     public DataTable(CsvReadOptions.Builder builder, List<AttributeInfo> attsInfo) {
 
@@ -83,11 +88,11 @@ public class DataTable implements Cloneable, Serializable {
                      String contrastAttribute) {
 
         if (values.length == 0) {
-            throw new RuntimeException("TsExampleSet: data matrix is not allowed to be empty.");
+            throw new RuntimeException("DataTable: data matrix is not allowed to be empty.");
         }
 
         if(values[0].length != attributesNames.length) {
-            throw new RuntimeException("TsExampleSet: number of columns in matrix is not equal to number of attributes");
+            throw new RuntimeException("DataTable: number of columns in matrix is not equal to number of attributes");
         }
 
         table = Table.create("");
@@ -158,15 +163,15 @@ public class DataTable implements Cloneable, Serializable {
     }
 
     public void createPredictionColumn(String name) {
-        ColumnMetaData labelColMetaData = this.getColumnByRole(EColumnRole.label.name());
+        IAttribute labelColMetaData = this.getColumnByRole(EColumnRole.label.name());
         labelColMetaData.setName(name);
         labelColMetaData.setRole(EColumnRole.prediction.name());
 
         addNewColumn(labelColMetaData);
     }
 
-    public void addNewColumn(ColumnMetaData colMetaData) {
-        ColumnMetaData newColMetaData = colMetaData.cloneWithNewOwner(this);
+    public void addNewColumn(IAttribute colMetaData) {
+        ColumnMetaData newColMetaData = ((ColumnMetaData) colMetaData).cloneWithNewOwner(this);
         Column<?> tsCol = null;
 
         if(newColMetaData.getColumnType() == EColumnType.NOMINAL) {
@@ -203,7 +208,7 @@ public class DataTable implements Cloneable, Serializable {
                 .collect(Collectors.toList());
     }
 
-    public ColumnMetaData getColumnByRole(String role) {
+    public IAttribute getColumnByRole(String role) {
 
         List<ColumnMetaData> cols = columnMetaData.values().stream()
                 .filter(columnMetaData -> role.equals(columnMetaData.getRole()))
@@ -260,9 +265,7 @@ public class DataTable implements Cloneable, Serializable {
         table = table.sortOn((sortDir == EColumnSortDirections.DECREASING ? "-" : "") + columnName);
     }
 
-    public Iterator<Row> iterator(){
-        return table.iterator();
-    }
+
 
     @Override
     public DataTable clone() {
@@ -324,7 +327,7 @@ public class DataTable implements Cloneable, Serializable {
             value = numCol.variance();
         }
         else if(stateType == EStatisticType.AVERAGE_WEIGHTED) {
-            ColumnMetaData colMetaData = this.getColumnByRole(EColumnRole.weight.name());
+            IAttribute colMetaData = this.getColumnByRole(EColumnRole.weight.name());
             if(colMetaData == null || !colMetaData.isNumerical()) {
 //                throw new NotImplementedException("Column with 'weight' role not found");
                 value = Double.NaN;
@@ -359,7 +362,7 @@ public class DataTable implements Cloneable, Serializable {
         }
     }
 
-    public DataTable filterData(ICondition condition) {
+    private DataTable filterData(ICondition condition) {
         return new DataTable(table.where(condition.createSelection(table)));
     }
 
@@ -428,7 +431,7 @@ public class DataTable implements Cloneable, Serializable {
                 throw new IllegalStateException(String.format("There is no index '%d' in '%s' column mapping", iValue, colName));
             }
             StringColumn colStr = table.stringColumn(colName);
-            colStr.set(rowIndex, colMetaData.getMapping().getValue(iValue));
+            colStr.set(rowIndex, colMetaData.getMapping().mapIndex(iValue));
         }
         else {
             DoubleColumn colNum = (DoubleColumn) table.column(colName);
@@ -500,6 +503,70 @@ public class DataTable implements Cloneable, Serializable {
         } else {
             return Double.NaN;
         }
+    }
+
+
+    @Override
+    public IAttributes getAttributes() {
+        return new DataTableAttributes(this);
+    }
+
+    @Override
+    public int size() {
+        return rowCount();
+    }
+
+    @Override
+    public Example getExample(int var1) {
+        return new Example(new DataRow(this, var1), this);
+    }
+
+    @Override
+    public void recalculateAttributeStatistics(IAttribute var1) {
+        getMetaDataTable().getColumnMetaData(var1.getName()).recalculateStatistics();
+    }
+
+    @Override
+    public double getStatistics(IAttribute var1, String var2) {
+        return getStatistic(EStatisticType.fromString(var2), var1.getName());
+    }
+
+    @Override
+    public IExampleSet filter(ICondition cnd) {
+        return filterData(cnd);
+    }
+
+    @Override
+    public IExampleSet filterWithOr(List<ICondition> cndList) {
+        return filterData(cndList, EConditionsLogicOperator.OR);
+    }
+
+    @Override
+    public IExampleSet updateMapping(IExampleSet mappingSource) {
+        MetaDataTable metaDataTable = mappingSource.getMetaDataTable();
+
+        DataTable resDataTable = this.clone();
+        resDataTable.updateMapping(metaDataTable);
+
+        return resDataTable;
+    }
+
+
+    @Override
+    public DataTableAnnotations getAnnotations() {
+        return new DataTableAnnotations(this);
+    }
+
+    @NotNull
+    @Override
+    public Iterator<Example> iterator() {
+        return new ExampleIterator(this);
+    }
+
+    @Override
+    public int addAttribute(IAttribute var1) {
+        addNewColumn(var1);
+        return getColumnIndex(var1.getName());
     }
 
     @Override

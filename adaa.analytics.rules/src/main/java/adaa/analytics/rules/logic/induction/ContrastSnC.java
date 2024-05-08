@@ -6,10 +6,9 @@ import adaa.analytics.rules.data.condition.StringCondition;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.model.ContrastRuleSet;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
-import adaa.analytics.rules.rm.comp.TsExampleSet;
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.example.table.INominalMapping;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.data.INominalMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,11 +42,11 @@ public class ContrastSnC extends ClassificationSnC {
         ContrastExampleSet ces;
 
         if (factory.getType() == RuleFactory.CONTRAST_REGRESSION) {
-            ces = new ContrastRegressionExampleSet((TsExampleSet) dataset);
+            ces = new ContrastRegressionExampleSet( dataset);
         } else if (factory.getType() == RuleFactory.CONTRAST_SURVIVAL) {
-            ces = new ContrastSurvivalExampleSet((TsExampleSet) dataset);
+            ces = new ContrastSurvivalExampleSet(dataset);
         } else {
-            ces = new ContrastExampleSet((TsExampleSet) dataset);
+            ces = new ContrastExampleSet( dataset);
         }
 
         ContrastRuleSet rs = (ContrastRuleSet) factory.create(ces);

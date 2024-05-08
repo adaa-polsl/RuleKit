@@ -24,9 +24,9 @@ import adaa.analytics.rules.logic.induction.Covering;
 
 import adaa.analytics.rules.logic.quality.Hypergeometric;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
-import adaa.analytics.rules.rm.example.Example;
-import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.tools.container.Pair;
+import adaa.analytics.rules.data.row.Example;
+import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.utils.Pair;
 
 import java.util.Set;
 
@@ -85,7 +85,7 @@ public class ClassificationRule extends Rule {
 	 */
 	public Covering covers(IExampleSet set, Set<Integer> filterIds) {
 		Covering covered = new Covering();
-		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = set.getDataTable().getDataColumnDoubleAdapter(set.getAttributes().getWeight(), Double.NaN);
+		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = set.getDataColumnDoubleAdapter(set.getAttributes().getWeight(), Double.NaN);
 
 		for (int id : filterIds) {
 			Example ex = set.getExample(id);

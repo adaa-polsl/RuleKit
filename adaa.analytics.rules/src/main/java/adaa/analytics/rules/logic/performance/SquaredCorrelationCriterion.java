@@ -1,6 +1,6 @@
 package adaa.analytics.rules.logic.performance;
 
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.IExampleSet;
 
 /**
  * Computes the square of the empirical corellation coefficient 'r' between label and prediction.

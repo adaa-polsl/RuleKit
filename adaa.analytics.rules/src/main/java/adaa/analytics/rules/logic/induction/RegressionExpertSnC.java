@@ -18,9 +18,8 @@ import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.model.RegressionRuleSet;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
-import adaa.analytics.rules.rm.example.Example;
-import adaa.analytics.rules.rm.example.IAttribute;
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IExampleSet;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -71,7 +70,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 		Set<Integer> uncovered = new IntegerBitSet(dataset.size());
 		double weighted_PN = 0;
 		// at the beginning rule set does not cover any examples
-		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = sortedDataset.getDataTable().getDataColumnDoubleAdapter(sortedDataset.getAttributes().getWeight(), Double.NaN);
+		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = sortedDataset.getDataColumnDoubleAdapter(sortedDataset.getAttributes().getWeight(), Double.NaN);
 
 		for (int id = 0; id < sortedDataset.size(); ++id) {
 			uncovered.add(id);

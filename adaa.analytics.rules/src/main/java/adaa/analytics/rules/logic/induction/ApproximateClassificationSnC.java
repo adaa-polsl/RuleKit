@@ -1,6 +1,6 @@
 package adaa.analytics.rules.logic.induction;
 
-import adaa.analytics.rules.rm.example.IExampleSet;
+import adaa.analytics.rules.data.IExampleSet;
 
 public class ApproximateClassificationSnC extends ClassificationSnC {
     public ApproximateClassificationSnC(AbstractFinder finder, InductionParameters params) {

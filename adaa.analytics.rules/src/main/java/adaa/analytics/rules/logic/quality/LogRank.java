@@ -19,8 +19,8 @@ import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.representation.IntegerBitSet;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 
-import adaa.analytics.rules.rm.example.IExampleSet;
-import adaa.analytics.rules.rm.tools.container.Pair;
+import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.utils.Pair;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
 import java.io.Serializable;

@@ -14,7 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import adaa.analytics.rules.rm.example.IAttribute;
+import adaa.analytics.rules.data.IAttribute;
 
 import java.util.Comparator;
 
