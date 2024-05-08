@@ -209,7 +209,8 @@ public class DataTable implements Serializable, IExampleSet {
     }
 
     public IAttribute getColumnByRole(String role) {
-
+        if (role==null)
+            return null;
         List<ColumnMetaData> cols = columnMetaData.values().stream()
                 .filter(columnMetaData -> role.equals(columnMetaData.getRole()))
                 .collect(Collectors.toList());
