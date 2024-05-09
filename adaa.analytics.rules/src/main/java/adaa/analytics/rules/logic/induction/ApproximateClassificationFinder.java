@@ -68,7 +68,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
     @Override
     public IExampleSet preprocess(IExampleSet dataset) {
         int n_examples = dataset.size();
-        int n_attributes = dataset.getAttributes().size();
+        int n_attributes = dataset.getAttributes().regularSize();
 
         trainSet = dataset;
         descriptions = new long[n_attributes][n_examples];

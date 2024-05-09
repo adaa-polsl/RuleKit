@@ -1,5 +1,7 @@
 package adaa.analytics.rules.data;
 
+import adaa.analytics.rules.data.metadata.EStatisticType;
+
 import java.io.Serializable;
 
 public interface IAttribute extends Cloneable, Serializable {
@@ -34,5 +36,7 @@ public interface IAttribute extends Cloneable, Serializable {
 
     String getRole();
 
-    Object [] getValues();
+    void recalculateStatistics();
+
+    double getStatistic(EStatisticType statType);
 }

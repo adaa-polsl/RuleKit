@@ -100,7 +100,7 @@ public class TestProcess {
         if (predictions.getAnnotations().containsKey(RuleSetBase.ANNOTATION_TEST_REPORT)) {
             testingReport.append("================================================================================\n");
             testingReport.append(testFileName + "\n");
-            testingReport.append(predictions.getAnnotations().get(RuleSetBase.ANNOTATION_TEST_REPORT));
+            testingReport.append(predictions.getAnnotations().getAnnotation(RuleSetBase.ANNOTATION_TEST_REPORT));
             testingReport.append("\n\n");
         }
 

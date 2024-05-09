@@ -15,6 +15,7 @@
 package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
+import adaa.analytics.rules.data.metadata.EStatisticType;
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.quality.ChiSquareVarianceTest;
@@ -74,7 +75,7 @@ public class RegressionRule extends Rule {
 	@Override
 	public void updateWeightAndPValue(IExampleSet trainSet, ContingencyTable ct, IQualityMeasure votingMeasure) {
 		ChiSquareVarianceTest test = new ChiSquareVarianceTest();
-		double expectedDev = Math.sqrt(trainSet.getStatistics(trainSet.getAttributes().getLabel(), IStatistics.VARIANCE));
+		double expectedDev = Math.sqrt(trainSet.getAttributes().getLabel().getStatistic(EStatisticType.VARIANCE));
 
 		int sampleSize = (int)(ct.weighted_p + ct.weighted_n);
 

@@ -4,10 +4,10 @@ import adaa.analytics.rules.logic.representation.Logger;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IAttributes;
 import adaa.analytics.rules.data.IExampleSet;
-import adaa.analytics.rules.data.attributes.AttributeFactory;
+import adaa.analytics.rules.data.metadata.AttributeFactory;
 import adaa.analytics.rules.data.INominalMapping;
 import adaa.analytics.rules.utils.OperatorException;
-import adaa.analytics.rules.utils.Ontology;
+import adaa.analytics.rules.data.metadata.Ontology;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -74,9 +74,9 @@ public abstract class PredictionModel implements Serializable {
 		IExampleSet trainingHeaderSet = getTrainingHeader();
 
 		// check number of attributes
-		if (exampleSet.getAttributes().size() != trainingHeaderSet.getAttributes().size()) {
+		if (exampleSet.getAttributes().regularSize() != trainingHeaderSet.getAttributes().regularSize()) {
 			Logger.log("The number of regular attributes of the given example set does not fit the number of attributes of the training example set, training: "
-					+ trainingHeaderSet.getAttributes().size() + ", application: " + exampleSet.getAttributes().size(), Level.WARNING);
+					+ trainingHeaderSet.getAttributes().regularSize() + ", application: " + exampleSet.getAttributes().regularSize(), Level.WARNING);
 		} else {
 			// check order of attributes
 			Iterator<IAttribute> trainingIt = trainingHeaderSet.getAttributes().iterator();
@@ -176,14 +176,14 @@ public abstract class PredictionModel implements Serializable {
 		if (predictedLabel != null) { // remove old predicted label
 			if (predictedLabel.isNominal()) {
 				for (String value : predictedLabel.getMapping().getValues()) {
-					IAttribute currentConfidenceAttribute = exampleSet.getAttributes().getSpecial(
+					IAttribute currentConfidenceAttribute = exampleSet.getAttributes().getColumnByRole(
 							IAttributes.CONFIDENCE_NAME + "_" + value);
 					if (currentConfidenceAttribute != null) {
-						exampleSet.getAttributes().remove(currentConfidenceAttribute);
+						exampleSet.getAttributes().removeRegularRole(currentConfidenceAttribute);
 					}
 				}
 			}
-			exampleSet.getAttributes().remove(predictedLabel);
+			exampleSet.getAttributes().removeRegularRole(predictedLabel);
 		}
 	}
 
@@ -200,7 +200,7 @@ public abstract class PredictionModel implements Serializable {
 			if (predictedLabel.isNominal()) {
 				for (String value : predictedLabel.getMapping().getValues()) {
 					IAttribute currentConfidenceAttribute = source.getAttributes()
-							.getSpecial(IAttributes.CONFIDENCE_NAME + "_" + value);
+							.getColumnByRole(IAttributes.CONFIDENCE_NAME + "_" + value);
 
 					// it's possible that the model does not create confidences for all label
 					// values, so check for null (e.g. OneClass-SVM)

@@ -34,13 +34,13 @@ public class TsExampleSetTest {
 
         IExampleSet es = new DataTable(crateValues(), crateAttsNames(), "l_att", "s_att", "c_att");
 
-        Assert.assertEquals(3, es.getAttributes().size());
+        Assert.assertEquals(3, es.getAttributes().regularSize());
         Assert.assertEquals("l_att", es.getAttributes().getLabel().getName());
-        Assert.assertEquals("s_att", es.getAttributes().getSpecial(EColumnRole.survival_time.name()).getName());
-        Assert.assertEquals("c_att", es.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getName());
+        Assert.assertEquals("s_att", es.getAttributes().getColumnByRole(EColumnRole.survival_time.name()).getName());
+        Assert.assertEquals("c_att", es.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getName());
         Assert.assertEquals(5, es.size());
         Assert.assertEquals(2, es.getAttributes().getLabel().getMapping().getValues().size());
-        Assert.assertEquals(3, es.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getMapping().getValues().size());
+        Assert.assertEquals(3, es.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getMapping().getValues().size());
         Assert.assertEquals(1.0, es.getExample(0).getDataRow().get(es.getAttributes().get("s_att")), 0.0000001);
         Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getDataRow().get(es.getAttributes().get("l_att")), 0.0000001);
         Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getDataRow().get(es.getAttributes().get("c_att")), 0.0000001);
@@ -58,10 +58,10 @@ public class TsExampleSetTest {
 
         IExampleSet es = new DataTable(crateValues(), crateAttsNames(), "l_att", null, null);
 
-        Assert.assertEquals(5, es.getAttributes().size());
+        Assert.assertEquals(5, es.getAttributes().regularSize());
         Assert.assertEquals("l_att", es.getAttributes().getLabel().getName());
-        Assert.assertNull(es.getAttributes().getSpecial(EColumnRole.survival_time.name()));
-        Assert.assertNull(es.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE));
+        Assert.assertNull(es.getAttributes().getColumnByRole(EColumnRole.survival_time.name()));
+        Assert.assertNull(es.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE));
         Assert.assertEquals(5, es.size());
         Assert.assertEquals(2, es.getAttributes().getLabel().getMapping().getValues().size());
         Assert.assertEquals(1.0, es.getExample(0).getDataRow().get(es.getAttributes().get("s_att")), 0.0000001);
@@ -81,10 +81,10 @@ public class TsExampleSetTest {
 
         IExampleSet es = new DataTable(crateValues(), crateAttsNames(), null, "s_att", null);
 
-        Assert.assertEquals(5, es.getAttributes().size());
+        Assert.assertEquals(5, es.getAttributes().regularSize());
         Assert.assertNull(es.getAttributes().getLabel());
-        Assert.assertEquals("s_att", es.getAttributes().getSpecial(EColumnRole.survival_time.name()).getName());
-        Assert.assertNull(es.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE));
+        Assert.assertEquals("s_att", es.getAttributes().getColumnByRole(EColumnRole.survival_time.name()).getName());
+        Assert.assertNull(es.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE));
         Assert.assertEquals(5, es.size());
         Assert.assertEquals(2, es.getAttributes().get("l_att").getMapping().getValues().size());
         Assert.assertEquals(3, es.getAttributes().get("c_att").getMapping().getValues().size());
@@ -105,13 +105,13 @@ public class TsExampleSetTest {
 
         IExampleSet es = new DataTable(crateValues(), crateAttsNames(), null, null, "c_att");
 
-        Assert.assertEquals(5, es.getAttributes().size());
+        Assert.assertEquals(5, es.getAttributes().regularSize());
         Assert.assertNull(es.getAttributes().getLabel());
-        Assert.assertNull(es.getAttributes().getSpecial(EColumnRole.survival_time.name()));
-        Assert.assertEquals("c_att", es.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getName());
+        Assert.assertNull(es.getAttributes().getColumnByRole(EColumnRole.survival_time.name()));
+        Assert.assertEquals("c_att", es.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getName());
         Assert.assertEquals(5, es.size());
         Assert.assertEquals(2, es.getAttributes().get("l_att").getMapping().getValues().size());
-        Assert.assertEquals(3, es.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getMapping().getValues().size());
+        Assert.assertEquals(3, es.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getMapping().getValues().size());
         Assert.assertEquals(1.0, es.getExample(0).getDataRow().get(es.getAttributes().get("s_att")), 0.0000001);
         Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getDataRow().get(es.getAttributes().get("l_att")), 0.0000001);
         Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getDataRow().get(es.getAttributes().get("c_att")), 0.0000001);
@@ -130,10 +130,10 @@ public class TsExampleSetTest {
 
         IExampleSet es = new DataTable(crateValues(), crateAttsNames(), "l_att", "s_att", null);
 
-        Assert.assertEquals(4, es.getAttributes().size());
+        Assert.assertEquals(4, es.getAttributes().regularSize());
         Assert.assertEquals("l_att", es.getAttributes().getLabel().getName());
-        Assert.assertEquals("s_att", es.getAttributes().getSpecial(EColumnRole.survival_time.name()).getName());
-        Assert.assertNull(es.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE));
+        Assert.assertEquals("s_att", es.getAttributes().getColumnByRole(EColumnRole.survival_time.name()).getName());
+        Assert.assertNull(es.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE));
         Assert.assertEquals(5, es.size());
         Assert.assertEquals(2, es.getAttributes().getLabel().getMapping().getValues().size());
         Assert.assertEquals(3, es.getAttributes().get("c_att").getMapping().getValues().size());
@@ -155,13 +155,13 @@ public class TsExampleSetTest {
 
         IExampleSet es = new DataTable(crateValues(), crateAttsNames(), "l_att", null, "c_att");
 
-        Assert.assertEquals(4, es.getAttributes().size());
+        Assert.assertEquals(4, es.getAttributes().regularSize());
         Assert.assertEquals("l_att", es.getAttributes().getLabel().getName());
-        Assert.assertNull(es.getAttributes().getSpecial(EColumnRole.survival_time.name()));
-        Assert.assertEquals("c_att", es.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getName());
+        Assert.assertNull(es.getAttributes().getColumnByRole(EColumnRole.survival_time.name()));
+        Assert.assertEquals("c_att", es.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getName());
         Assert.assertEquals(5, es.size());
         Assert.assertEquals(2, es.getAttributes().getLabel().getMapping().getValues().size());
-        Assert.assertEquals(3, es.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getMapping().getValues().size());
+        Assert.assertEquals(3, es.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getMapping().getValues().size());
         Assert.assertEquals(1.0, es.getExample(0).getDataRow().get(es.getAttributes().get("s_att")), 0.0000001);
         Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getDataRow().get(es.getAttributes().get("l_att")), 0.0000001);
         Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getDataRow().get(es.getAttributes().get("c_att")), 0.0000001);
@@ -180,13 +180,13 @@ public class TsExampleSetTest {
 
         IExampleSet es = new DataTable(crateValues(), crateAttsNames(), null, "s_att", "c_att");
 
-        Assert.assertEquals(4, es.getAttributes().size());
+        Assert.assertEquals(4, es.getAttributes().regularSize());
         Assert.assertNull(es.getAttributes().getLabel());
-        Assert.assertEquals("s_att", es.getAttributes().getSpecial(EColumnRole.survival_time.name()).getName());
-        Assert.assertEquals("c_att", es.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getName());
+        Assert.assertEquals("s_att", es.getAttributes().getColumnByRole(EColumnRole.survival_time.name()).getName());
+        Assert.assertEquals("c_att", es.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getName());
         Assert.assertEquals(5, es.size());
         Assert.assertEquals(2, es.getAttributes().get("l_att").getMapping().getValues().size());
-        Assert.assertEquals(3, es.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getMapping().getValues().size());
+        Assert.assertEquals(3, es.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getMapping().getValues().size());
         Assert.assertEquals(1.0, es.getExample(0).getDataRow().get(es.getAttributes().get("s_att")), 0.0000001);
         Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getDataRow().get(es.getAttributes().get("l_att")), 0.0000001);
         Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getDataRow().get(es.getAttributes().get("c_att")), 0.0000001);

@@ -53,9 +53,9 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 		Logger.log("ClassificationSnC.run()\n", Level.FINE);
 
 		// use contrast attribute if specified
-		final IAttribute outputAttr = (dataset.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE) == null)
+		final IAttribute outputAttr = (dataset.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE) == null)
 				? dataset.getAttributes().getLabel()
-				: dataset.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+				: dataset.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
 		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getWeight(), Double.NaN);
 		DataColumnDoubleAdapter outputAttrrDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(outputAttr, Double.NaN);
 

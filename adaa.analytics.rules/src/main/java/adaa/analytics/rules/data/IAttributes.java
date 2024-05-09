@@ -3,7 +3,7 @@ package adaa.analytics.rules.data;
 import java.io.Serializable;
 import java.util.Iterator;
 
-public interface IAttributes  extends Iterable<IAttribute>, Cloneable, Serializable {
+public interface IAttributes  extends Iterable<IAttribute>,  Serializable {
     String CONFIDENCE_NAME = "confidence";
     String ATTRIBUTE_NAME = "attribute";
     String ID_NAME = "id";
@@ -16,33 +16,30 @@ public interface IAttributes  extends Iterable<IAttribute>, Cloneable, Serializa
     String CLASSIFICATION_COST = "cost";
     String BASE_VALUE = "base_value";
 
-    Object clone();
 
     boolean equals(Object var1);
 
     int hashCode();
 
-    Iterator<IAttribute> iterator();
-
     Iterator<IAttribute> allAttributes();
 
     boolean contains(IAttribute var1);
 
-    int size();
+    int regularSize();
 
     int allSize();
 
-    void addRegular(IAttribute var1);
+    void setRegularRole(IAttribute var1);
 
-    boolean remove(IAttribute var1);
+    boolean removeRegularRole(IAttribute var1);
 
-    IAttribute get(String var1);
+    IAttribute get(String columnName);
 
-    IAttribute get(String var1, boolean var2);
+    IAttribute get(String columnName, boolean caseSensitive);
 
-    IAttribute getRegular(String var1);
+    IAttribute getRegular(String columnName);
 
-    IAttribute getSpecial(String var1);
+    IAttribute getColumnByRole(String roleName);
 
     IAttribute getLabel();
 
@@ -58,9 +55,10 @@ public interface IAttributes  extends Iterable<IAttribute>, Cloneable, Serializa
 
     IAttribute getCost();
 
-    void setSpecialAttribute(IAttribute var1, String var2);
+    void setSpecialAttribute(IAttribute var1, String role);
 
     String toString();
 
-    String findRoleBySpecialName(String var1);
+    String findRoleBySpecialName(String role);
+
 }

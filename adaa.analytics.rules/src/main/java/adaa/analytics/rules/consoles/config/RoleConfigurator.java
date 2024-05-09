@@ -44,7 +44,7 @@ class RoleConfigurator {
         }
         if (contrastValue!=null)
         {
-            exampleSet.getAnnotations().put(ContrastRule.CONTRAST_ATTRIBUTE_ROLE, contrastValue);
+            exampleSet.getAnnotations().setAnnotation(ContrastRule.CONTRAST_ATTRIBUTE_ROLE, contrastValue);
         }
 
     }
@@ -56,17 +56,17 @@ class RoleConfigurator {
             throw new IllegalArgumentException("Params not found: "+ paramKey+" "+name);
         }
 
-        exampleSet.getAttributes().remove(attribute);
+        exampleSet.getAttributes().removeRegularRole(attribute);
         if (newRole == null || newRole.trim().length() == 0) {
             throw new IllegalArgumentException("Undefined parameter: set_additional_roles");
         }
         if (newRole.equals(REGULAR_NAME)) {
-            exampleSet.getAttributes().addRegular(attribute);
+            exampleSet.getAttributes().setRegularRole(attribute);
         } else {
-            IAttribute oldOne = exampleSet.getAttributes().getSpecial(newRole);
+            IAttribute oldOne = exampleSet.getAttributes().getColumnByRole(newRole);
             if (oldOne != null) {
-                exampleSet.getAttributes().remove(oldOne);
-                exampleSet.getAttributes().addRegular(oldOne);
+                exampleSet.getAttributes().removeRegularRole(oldOne);
+                exampleSet.getAttributes().setRegularRole(oldOne);
             }
             exampleSet.getAttributes().setSpecialAttribute(attribute, newRole);
         }

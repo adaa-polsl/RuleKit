@@ -86,9 +86,10 @@ public class ClassificationSnCTest {
         this.writeReport(testCase, ruleSet);
         RuleSetComparator.assertRulesAreEqual(testCase.getReferenceReport().getRules(), ruleSet.getRules());
 
-        IAttribute confidenceMetaData = prediction.getColumnByRole(EColumnRole.confidence.toString());
+        IAttribute confidenceMetaData = prediction.getAttributes().getColumnByRole(EColumnRole.confidence.toString());
         Assert.assertNotNull(confidenceMetaData);
-        Assert.assertTrue(confidenceMetaData.getValues().length>0);
-        Assert.assertTrue(confidenceMetaData.getValues() instanceof Double[]);
+        Object[] values = prediction.getValues(confidenceMetaData.getName());
+        Assert.assertTrue(values.length>0);
+        Assert.assertTrue( values instanceof Double[]);
     }
 }

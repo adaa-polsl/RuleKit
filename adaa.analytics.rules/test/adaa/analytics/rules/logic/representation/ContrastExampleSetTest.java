@@ -27,9 +27,9 @@ public class ContrastExampleSetTest {
         DataTable tsExampleSet = new DataTable(crateValues(), crateAttsNames(), null, null, "c_att");
         ContrastExampleSet cExampleSet = new ContrastExampleSet(tsExampleSet);
 
-        Assert.assertEquals(5, cExampleSet.getAttributes().size());
+        Assert.assertEquals(5, cExampleSet.getAttributes().regularSize());
         Assert.assertNull(cExampleSet.getAttributes().getLabel());
-        Assert.assertNull(cExampleSet.getAttributes().getSpecial(EColumnRole.survival_time.name()));
+        Assert.assertNull(cExampleSet.getAttributes().getColumnByRole(EColumnRole.survival_time.name()));
         Assert.assertEquals("c_att", cExampleSet.getContrastAttribute().getName());
         Assert.assertEquals(5, cExampleSet.size());
         Assert.assertEquals(2, cExampleSet.getAttributes().get("l_att").getMapping().getValues().size());

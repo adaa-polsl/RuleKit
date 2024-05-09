@@ -58,7 +58,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 		IAttribute label = dataset.getAttributes().getLabel();
 		//SortedExampleSet ses = new SortedExampleSetEx(dataset, label, SortedExampleSet.INCREASING);
 
-		sortedDataset.recalculateAttributeStatistics(sortedDataset.getAttributes().getLabel());
+		sortedDataset.getAttributes().getLabel().recalculateStatistics();
 		
 		if (factory.getType() == RuleFactory.REGRESSION) {
 			double median = sortedDataset.getExample(sortedDataset.size() / 2).getLabel();

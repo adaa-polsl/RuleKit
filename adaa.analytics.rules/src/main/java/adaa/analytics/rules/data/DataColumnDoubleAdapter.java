@@ -2,6 +2,7 @@ package adaa.analytics.rules.data;
 
 import adaa.analytics.rules.data.metadata.ColumnMetaData;
 import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.metadata.ColumnMetadataMap;
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
@@ -20,24 +21,13 @@ public class DataColumnDoubleAdapter {
 
     private double defaultValue;
 
-    public DataColumnDoubleAdapter(Table table, Map<String, ColumnMetaData> columnMetaData, IAttribute attr, double defaultValue)
+    public DataColumnDoubleAdapter(ColumnMetaData colMetaData, DoubleColumn colNum, StringColumn colStr, IAttribute attr, double defaultValue)
     {
         this.attr = attr;
         this.defaultValue = defaultValue;
-        String colName = attr!=null?attr.getName():null;
-        if (colName!=null)
-            this.colMetaData = columnMetaData.get(colName);
-        if (colMetaData!=null) {
-            if (colMetaData.isNominal()) {
-                this.colStr = table.stringColumn(colName);
-
-            }else
-            {
-                this.colNum = (DoubleColumn) table.column(colName);
-            }
-        }
-
-
+        this.colStr = colStr;
+        this.colNum = colNum;
+        this.colMetaData = colMetaData;
     }
 
     public String getNominalValue(int rowIndex) {

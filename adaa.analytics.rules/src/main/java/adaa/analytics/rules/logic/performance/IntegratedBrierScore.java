@@ -42,9 +42,9 @@ public class IntegratedBrierScore extends AbstractPerformanceCounter {
 	 @Override
 	 public PerformanceResult countExample(IExampleSet testSet) {
 
-		 IAttribute survTime = testSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
+		 IAttribute survTime = testSet.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE);
 		 IAttribute survStat = testSet.getAttributes().getLabel();
-		 IAttribute specialAttr = testSet.getAttributes().getSpecial(SurvivalRuleSet.ATTRIBUTE_ESTIMATOR);
+		 IAttribute specialAttr = testSet.getAttributes().getColumnByRole(SurvivalRuleSet.ATTRIBUTE_ESTIMATOR);
 		 DataColumnDoubleAdapter survStatDataColumnDoubleAdapter = testSet.getDataColumnDoubleAdapter(survStat, Double.NaN);
 		 DataColumnDoubleAdapter survTimeDataColumnDoubleAdapter = testSet.getDataColumnDoubleAdapter(survTime, Double.NaN);
 		 DataColumnDoubleAdapter specialAttrDataColumnDoubleAdapter = testSet.getDataColumnDoubleAdapter(specialAttr, Double.NaN);

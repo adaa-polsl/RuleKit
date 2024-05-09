@@ -1,6 +1,5 @@
 package adaa.analytics.rules.data;
 
-import adaa.analytics.rules.data.attributes.DataTableAttributes;
 import adaa.analytics.rules.data.condition.EConditionsLogicOperator;
 import adaa.analytics.rules.data.condition.ICondition;
 import adaa.analytics.rules.data.metadata.*;
@@ -8,6 +7,7 @@ import adaa.analytics.rules.data.row.DataRow;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.row.ExampleIterator;
 import adaa.analytics.rules.logic.representation.ContrastRule;
+import adaa.analytics.rules.utils.Tools;
 import ioutils.AttributeInfo;
 import org.jetbrains.annotations.NotNull;
 import tech.tablesaw.api.*;
@@ -20,49 +20,40 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class DataTable implements Serializable, IExampleSet {
 
     private Table table;
-    private Map<String, ColumnMetaData> columnMetaData = new LinkedHashMap<>();
+    private ColumnMetadataMap columnMetadataMap = new ColumnMetadataMap(this);
+    private DataTableAnnotations dataTableAnnotations = new DataTableAnnotations();
 
-    private Map<String, String> annotations = new LinkedHashMap<>();
+    //local cache to optimize access to column idx
+    private Map<String, Integer> columnIdxMap = new HashMap<>();
 
-    private DataTable(Table table) {
+    private DataTable(Table table, ColumnMetadataMap columnMetadataMap, DataTableAnnotations dataTableAnnotations) {
         this.table = table;
     }
-
-    public DataTable(CsvReadOptions options) {
-
-        table = Table.read().usingOptions(options);
-
-    }
-
 
     public DataTable(CsvReadOptions.Builder builder, List<AttributeInfo> attsInfo) {
 
         // Predefined column types for tablesaw csv loader (if necessary)
         ColumnType[] columnTypes;
 
-        if(attsInfo == null) {
+        if (attsInfo == null) {
             throw new NullPointerException("Attributes info list is required");
         }
 
         // Fill predefined column types for tablesaw csv loader if attributesInfo is defined
         columnTypes = new ColumnType[attsInfo.size()];
-        for(int i=0 ; i<attsInfo.size() ; i++) {
+        for (int i = 0; i < attsInfo.size(); i++) {
 
-            if(attsInfo.get(i).getCellType() == EColumnType.NUMERICAL) {
+            if (attsInfo.get(i).getCellType() == EColumnType.NUMERICAL) {
                 columnTypes[i] = ColumnType.DOUBLE;
-            }
-            else if(attsInfo.get(i).getCellType() == EColumnType.NOMINAL) {
+            } else if (attsInfo.get(i).getCellType() == EColumnType.NOMINAL) {
                 columnTypes[i] = ColumnType.STRING;
-            }
-            else if(attsInfo.get(i).getCellType() == EColumnType.DATE) {
+            } else if (attsInfo.get(i).getCellType() == EColumnType.DATE) {
                 columnTypes[i] = ColumnType.LOCAL_DATE_TIME;
-            }
-            else {
+            } else {
                 columnTypes[i] = ColumnType.STRING;
             }
         }
@@ -71,54 +62,40 @@ public class DataTable implements Serializable, IExampleSet {
 
         // Use predefined column types in table saw csv loader
         table = Table.read().usingOptions(builder.build());
-        for(int i=0 ; i<attsInfo.size() ; i++) {
+        for (int i = 0; i < attsInfo.size(); i++) {
             AttributeInfo attInfo = attsInfo.get(i);
             table.column(i).setName(attInfo.getName());
-            columnMetaData.put(
-                    attInfo.getName(),
-                    new ColumnMetaData(attInfo.getName(), attInfo.getCellType(), EColumnRole.regular.name(), attInfo.getValues(), this)
-            );
+            columnMetadataMap.add(attInfo.getName(), new ColumnMetaData(attInfo.getName(), attInfo.getCellType(), EColumnRole.regular.name(), attInfo.getValues(), this));
         }
     }
 
-    public DataTable(Object[][] values,
-                     String[] attributesNames,
-                     String decisionAttribute,
-                     String survivalTimeAttribute,
-                     String contrastAttribute) {
+    public DataTable(Object[][] values, String[] attributesNames, String decisionAttribute, String survivalTimeAttribute, String contrastAttribute) {
 
         if (values.length == 0) {
             throw new RuntimeException("DataTable: data matrix is not allowed to be empty.");
         }
 
-        if(values[0].length != attributesNames.length) {
+        if (values[0].length != attributesNames.length) {
             throw new RuntimeException("DataTable: number of columns in matrix is not equal to number of attributes");
         }
 
         table = Table.create("");
 
-        for(int i=0 ; i<attributesNames.length ; i++) {
+        for (int i = 0; i < attributesNames.length; i++) {
             String attName = attributesNames[i];
             Object obj = values[0][i];
             EColumnType colType = EColumnType.OTHER;
-            if(obj instanceof String) {
+            if (obj instanceof String) {
                 colType = EColumnType.NOMINAL;
-            }
-            else if(obj instanceof Boolean ||
-                    obj instanceof Integer ||
-                    obj instanceof Long ||
-                    obj instanceof Float ||
-                    obj instanceof Double) {
+            } else if (obj instanceof Boolean || obj instanceof Integer || obj instanceof Long || obj instanceof Float || obj instanceof Double) {
                 colType = EColumnType.NUMERICAL;
             }
             String colRole = EColumnRole.regular.name();
-            if(attName.equals(decisionAttribute)) {
+            if (attName.equals(decisionAttribute)) {
                 colRole = EColumnRole.label.name();
-            }
-            else if(attName.equals(survivalTimeAttribute)) {
+            } else if (attName.equals(survivalTimeAttribute)) {
                 colRole = EColumnRole.survival_time.name();
-            }
-            else if(attName.equals(contrastAttribute)) {
+            } else if (attName.equals(contrastAttribute)) {
                 colRole = ContrastRule.CONTRAST_ATTRIBUTE_ROLE;
             }
 
@@ -127,34 +104,31 @@ public class DataTable implements Serializable, IExampleSet {
 
             Set<String> nomMapValues = new HashSet<>();
 
-            if(colType == EColumnType.NOMINAL) {
+            if (colType == EColumnType.NOMINAL) {
                 nomData = new String[values.length];
-            }
-            else if(colType == EColumnType.NUMERICAL) {
+            } else if (colType == EColumnType.NUMERICAL) {
                 numData = new Double[values.length];
             }
 
-            for(int j=0 ; j<values.length ; j++) {
-                if(colType == EColumnType.NOMINAL) {
+            for (int j = 0; j < values.length; j++) {
+                if (colType == EColumnType.NOMINAL) {
                     nomData[j] = (String) values[j][i];
                     nomMapValues.add(nomData[j]);
-                }
-                else if(colType == EColumnType.NUMERICAL) {
-                    numData[j] = convertToDouble(values[j][i]);
+                } else if (colType == EColumnType.NUMERICAL) {
+                    numData[j] = Tools.convertToDouble(values[j][i]);
                 }
             }
 
             ColumnMetaData colMetaData = new ColumnMetaData(attName, colType, colRole, new ArrayList<>(nomMapValues), this);
 
             Column<?> col = null;
-            if(colType == EColumnType.NOMINAL) {
+            if (colType == EColumnType.NOMINAL) {
                 col = StringColumn.create(attName, nomData);
-            }
-            else if(colType == EColumnType.NUMERICAL) {
+            } else if (colType == EColumnType.NUMERICAL) {
                 col = DoubleColumn.create(attName, numData);
             }
             table.addColumns(col);
-            columnMetaData.put(attName, colMetaData);
+            columnMetadataMap.add(attName, colMetaData);
         }
     }
 
@@ -163,7 +137,7 @@ public class DataTable implements Serializable, IExampleSet {
     }
 
     public void createPredictionColumn(String name) {
-        IAttribute labelColMetaData = this.getColumnByRole(EColumnRole.label.name());
+        IAttribute labelColMetaData = columnMetadataMap.getColumnByRole(EColumnRole.label.name());
         labelColMetaData.setName(name);
         labelColMetaData.setRole(EColumnRole.prediction.name());
 
@@ -174,167 +148,87 @@ public class DataTable implements Serializable, IExampleSet {
         ColumnMetaData newColMetaData = ((ColumnMetaData) colMetaData).cloneWithNewOwner(this);
         Column<?> tsCol = null;
 
-        if(newColMetaData.getColumnType() == EColumnType.NOMINAL) {
+        if (newColMetaData.getColumnType() == EColumnType.NOMINAL) {
             tsCol = StringColumn.create(newColMetaData.getName(), table.rowCount());
-        }
-        else if(newColMetaData.getColumnType() == EColumnType.NUMERICAL) {
+        } else if (newColMetaData.getColumnType() == EColumnType.NUMERICAL) {
             tsCol = DoubleColumn.create(newColMetaData.getName(), table.rowCount());
         }
-//        else if(newColMetaData.getColumnType() == EColumnType.DATE) {
-//            tsCol = DateTimeColumn.create(newColMetaData.getName(), table.rowCount());
-//        }
 
-        if(tsCol == null) {
+        if (tsCol == null) {
             throw new IllegalStateException("Cannot crate prediction column, unknown column type");
         }
 
         table.addColumns(tsCol);
-        columnMetaData.put(newColMetaData.getName(), newColMetaData);
+        columnMetadataMap.add(newColMetaData.getName(), newColMetaData);
     }
 
     public ColumnMetaData getColumn(String name) {
-        return columnMetaData.get(name);
+        return columnMetadataMap.getColumnMetaData(name);
     }
 
     public ColumnMetaData getColumn(int index) {
         String colName = table.column(index).name();
-        return columnMetaData.get(colName);
-    }
-
-    public List<ColumnMetaData> getColumnsByRole(String role) {
-
-        return columnMetaData.values().stream()
-                .filter(columnMetaData -> role.equals(columnMetaData.getRole()))
-                .collect(Collectors.toList());
-    }
-
-    public IAttribute getColumnByRole(String role) {
-        if (role==null)
-            return null;
-        List<ColumnMetaData> cols = columnMetaData.values().stream()
-                .filter(columnMetaData -> role.equals(columnMetaData.getRole()))
-                .collect(Collectors.toList());
-
-        if(cols.isEmpty()) {
-            return null;
-        }
-        else if(cols.size() > 1) {
-            throw new IllegalStateException(String.format("More than 1 column found for role '%s'", role));
-        }
-
-        return cols.get(0);
-    }
-
-    public void removeColumn(String name) {
-        columnMetaData.remove(name);
-        table.removeColumns(name);
-    }
-
-    public int rowCount() {
-        return table.rowCount();
+        return columnMetadataMap.getColumnMetaData(colName);
     }
 
     public Row getRow(int index) {
         return table.row(index);
     }
 
-    //local cache to optimize access to column idx
-    Map<String,Integer> columnIdxMap = new HashMap<>();
 
     public int getColumnIndex(String attributeName) {
-        if (columnIdxMap.containsKey(attributeName))
-        {
+        if (columnIdxMap.containsKey(attributeName)) {
             return columnIdxMap.get(attributeName).intValue();
-        }else {
+        } else {
             int idx = table.columnIndex(attributeName);
-            columnIdxMap.put(attributeName,idx);
+            columnIdxMap.put(attributeName, idx);
             return idx;
         }
     }
 
     public boolean setRole(String columnName, String role) {
-        if(!columnMetaData.containsKey(columnName)) {
-            return false;
-        }
-
-        columnMetaData.get(columnName).setRole(role);
-
-        return true;
+        return columnMetadataMap.setColumnRole(columnName, role);
     }
 
     public void sortBy(String columnName, EColumnSortDirections sortDir) {
         table = table.sortOn((sortDir == EColumnSortDirections.DECREASING ? "-" : "") + columnName);
     }
 
-
-
     @Override
     public DataTable clone() {
-        try {
-            DataTable cloned = (DataTable) super.clone();
-            cloned.table = table.copy();
-            cloned.columnMetaData = new LinkedHashMap<>();
-            for(Map.Entry<String, ColumnMetaData> entry : columnMetaData.entrySet()) {
-                cloned.columnMetaData.put(entry.getKey(), entry.getValue().cloneWithNewOwner(cloned));
-            }
-            return cloned;
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public double getStatistic(EStatisticType statType, String colName) {
-
-        return columnMetaData.get(colName).getStatistic(statType);
-    }
-
-    public void recalculateStatistics() {
-
-        for(String colName : columnMetaData.keySet()) {
-            recalculateStatistics(colName);
-        }
-    }
-
-    public void recalculateStatistics(EStatisticType statType) {
-
-        for(String colName : columnMetaData.keySet()) {
-            recalculateStatistics(statType, colName);
-        }
+        DataTable cloned = new DataTable(table.copy(),null, dataTableAnnotations.clone());
+        cloned.columnMetadataMap = columnMetadataMap.cloneWithNewOwner(cloned);
+        return cloned;
     }
 
     public void recalculateStatistics(EStatisticType stateType, String colName) {
         Column<?> col = table.column(colName);
 
-        if(!(col instanceof DoubleColumn)) {
+        if (!(col instanceof DoubleColumn)) {
             // @TODO Add log
 //            throw new IllegalStateException(String.format("Cannot calculate %s statistic for not numerical column: %s", stateType, colName));
             return;
         }
 
-        DoubleColumn numCol = (DoubleColumn)col;
+        DoubleColumn numCol = (DoubleColumn) col;
 
         double value = 0.0;
 
-        if(stateType == EStatisticType.AVERAGE) {
+        if (stateType == EStatisticType.AVERAGE) {
             value = numCol.mean();
-        }
-        else if(stateType == EStatisticType.MAXIMUM) {
+        } else if (stateType == EStatisticType.MAXIMUM) {
             value = numCol.max();
-        }
-        else if(stateType == EStatisticType.MINIMUM) {
+        } else if (stateType == EStatisticType.MINIMUM) {
             value = numCol.min();
-        }
-        else if(stateType == EStatisticType.VARIANCE) {
+        } else if (stateType == EStatisticType.VARIANCE) {
             value = numCol.variance();
-        }
-        else if(stateType == EStatisticType.AVERAGE_WEIGHTED) {
-            IAttribute colMetaData = this.getColumnByRole(EColumnRole.weight.name());
-            if(colMetaData == null || !colMetaData.isNumerical()) {
+        } else if (stateType == EStatisticType.AVERAGE_WEIGHTED) {
+            IAttribute colMetaData = columnMetadataMap.getColumnByRole(EColumnRole.weight.name());
+            if (colMetaData == null || !colMetaData.isNumerical()) {
 //                throw new NotImplementedException("Column with 'weight' role not found");
                 value = Double.NaN;
-            }
-            else {
-                DoubleColumn weightCol = (DoubleColumn)table.column(colMetaData.getName());
+            } else {
+                DoubleColumn weightCol = (DoubleColumn) table.column(colMetaData.getName());
 
                 double weightSum = 0.0;
                 for (int i = 0; i < numCol.size(); i++) {
@@ -348,173 +242,109 @@ public class DataTable implements Serializable, IExampleSet {
             }
         }
 
-        ColumnMetaData colMetaData = columnMetaData.get(colName);
-        if(colMetaData == null) {
+        ColumnMetaData colMetaData = columnMetadataMap.getColumnMetaData(colName);
+        if (colMetaData == null) {
             throw new IllegalStateException(String.format("Cannot find column '%s' in table meta data", colName));
         }
 
         colMetaData.setStatistic(stateType, value);
     }
 
-    public void recalculateStatistics(String colName) {
-
-        for(EStatisticType statType : EStatisticType.values()) {
-            recalculateStatistics(statType, colName);
-        }
+    void updateMapping(IAttributes uColumnMetadataMap) {
+        columnMetadataMap.updateMapping((ColumnMetadataMap) uColumnMetadataMap);
     }
 
-    private DataTable filterData(ICondition condition) {
-        return new DataTable(table.where(condition.createSelection(table)));
-    }
-
-    public DataTable filterData(List<ICondition> conditions, EConditionsLogicOperator logicOp) {
-
-        if(conditions.isEmpty()){
-            return null;
-        }
-
-        Selection sel = addCondition(conditions, 0, logicOp);
-        return new DataTable(table.where(sel));
-    }
-
-    public MetaDataTable getMetaDataTable() {
-        return new MetaDataTable(columnMetaData.values());
-    }
-
-    public MetaDataTable getMetaDataTable(String eColRole) {
-        return new MetaDataTable(columnMetaData.values().stream()
-                .filter(c -> c.getRole() == eColRole)
-                .collect(Collectors.toList()));
-    }
-
-    public void updateMapping(MetaDataTable metaDataTable) {
-        for(String colName : metaDataTable.getColumnNames()) {
-            if(!columnMetaData.containsKey(colName)) {
-                columnMetaData.put(colName, metaDataTable.getColumnMetaData(colName).cloneWithNewOwner(this));
-            }
-        }
-    }
-
-    public double getDoubleValue(String colName,int colIdx, int rowIndex, double defaultValue) {
+    public double getDoubleValue(String colName, int colIdx, int rowIndex, double defaultValue) {
         Column col = table.column(colIdx);
-        if (col.type().equals(ColumnType.DOUBLE))
-        {
+        if (col.type().equals(ColumnType.DOUBLE)) {
             DoubleColumn colNum = (DoubleColumn) col;
             return colNum.getDouble(rowIndex);
-        }else {
+        } else {
             StringColumn colStr = (StringColumn) col;
             String value = colStr.get(rowIndex);
-            ColumnMetaData colMetaData = columnMetaData.get(colName);
-            if (colMetaData==null)
-                return defaultValue;
+            ColumnMetaData colMetaData = columnMetadataMap.getColumnMetaData(colName);
+            if (colMetaData == null) return defaultValue;
             Integer iVal = colMetaData.getMapping().getIndex(value);
             return iVal == null ? defaultValue : iVal.doubleValue();
         }
 
     }
 
+    public DataColumnDoubleAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue) {
+        ColumnMetaData colMetaData = null;
+        DoubleColumn colNum = null;
+        StringColumn colStr = null;
+        String colName = attr != null ? attr.getName() : null;
+        if (colName != null) colMetaData = columnMetadataMap.getColumnMetaData(colName);
+        if (colMetaData != null) {
+            if (colMetaData.isNominal()) {
+                colStr = table.stringColumn(colName);
 
-
-    public DataColumnDoubleAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue)
-    {
-        return new DataColumnDoubleAdapter(table, columnMetaData, attr, defaultValue);
+            } else {
+                colNum = (DoubleColumn) table.column(colName);
+            }
+        }
+        return new DataColumnDoubleAdapter(colMetaData, colNum, colStr, attr, defaultValue);
     }
 
     public void setDoubleValue(String colName, int rowIndex, double value) {
-        ColumnMetaData colMetaData = columnMetaData.get(colName);
-        if(colMetaData == null) {
+        ColumnMetaData colMetaData = columnMetadataMap.getColumnMetaData(colName);
+        if (colMetaData == null) {
             throw new IllegalStateException(String.format("Column '%s' does not exist", colName));
         }
 
-        if(colMetaData.isNominal()) {
-            int iValue = (int)value;
-            if(!colMetaData.getMapping().hasIndex(iValue)) {
+        if (colMetaData.isNominal()) {
+            int iValue = (int) value;
+            if (!colMetaData.getMapping().hasIndex(iValue)) {
                 throw new IllegalStateException(String.format("There is no index '%d' in '%s' column mapping", iValue, colName));
             }
             StringColumn colStr = table.stringColumn(colName);
             colStr.set(rowIndex, colMetaData.getMapping().mapIndex(iValue));
-        }
-        else {
+        } else {
             DoubleColumn colNum = (DoubleColumn) table.column(colName);
             colNum.set(rowIndex, value);
         }
     }
 
-    public void setAnnotation(String key, String value) {
-        annotations.put(key, value);
-    }
 
-    public String getAnnotation(String key) {
-        return annotations.get(key);
-    }
-
-    public int sizeAnnotations() {
-        return annotations.size();
-    }
-
-    public void clearAnnotations() {
-        annotations.clear();
-    }
-
-    public boolean containsAnnotationKey(String key) {
-        return annotations.containsKey(key);
-    }
-
-    public Object [] getValues(String colName) {
+    public Object[] getValues(String colName) {
         ColumnMetaData cmd = getColumn(colName);
 
-        if(cmd == null) {
+        if (cmd == null) {
             throw new IllegalStateException(String.format("Column '%s' does not exist", colName));
         }
 
-        if(cmd.isNumerical()) {
+        if (cmd.isNumerical()) {
             return table.doubleColumn(colName).asObjectArray();
         }
 
-        if(cmd.isNominal()) {
+        if (cmd.isNominal()) {
             return table.stringColumn(colName).asObjectArray();
         }
 
-        return null;
+        throw new IllegalStateException(String.format("Column '%s' is neither numerical nor nominal", colName));
     }
 
     private Selection addCondition(List<ICondition> conditions, int conditionIndex, EConditionsLogicOperator logicOp) {
 
         ICondition condition = conditions.get(conditionIndex);
-        if(conditionIndex == conditions.size()-1) {
+        if (conditionIndex == conditions.size() - 1) {
             return condition.createSelection(table);
-        }
-        else {
-            Selection selection = addCondition(conditions, conditionIndex+1, logicOp);
-            return selection.or(condition.createSelection(table));
-        }
-    }
-
-    private Double convertToDouble(Object variable) {
-        if (variable instanceof Boolean) {
-            return (Boolean) variable ? 1.0 : 0.0;
-        } else if (variable instanceof Double) {
-            return (Double) variable;
-        } else if (variable instanceof Float) {
-            return ((Float) variable).doubleValue();
-        } else if (variable instanceof Integer) {
-            return ((Integer) variable).doubleValue();
-        } else if (variable instanceof Long) {
-            return ((Long) variable).doubleValue();
         } else {
-            return Double.NaN;
+            Selection selection = addCondition(conditions, conditionIndex + 1, logicOp);
+            return selection.or(condition.createSelection(table));
         }
     }
 
 
     @Override
     public IAttributes getAttributes() {
-        return new DataTableAttributes(this);
+        return columnMetadataMap;
     }
 
     @Override
     public int size() {
-        return rowCount();
+        return table.rowCount();
     }
 
     @Override
@@ -523,28 +353,23 @@ public class DataTable implements Serializable, IExampleSet {
     }
 
     @Override
-    public void recalculateAttributeStatistics(IAttribute var1) {
-        getMetaDataTable().getColumnMetaData(var1.getName()).recalculateStatistics();
-    }
-
-    @Override
-    public double getStatistics(IAttribute var1, String var2) {
-        return getStatistic(EStatisticType.fromString(var2), var1.getName());
-    }
-
-    @Override
     public IExampleSet filter(ICondition cnd) {
-        return filterData(cnd);
+        return new DataTable(table.where(cnd.createSelection(table)), columnMetadataMap, dataTableAnnotations);
     }
 
     @Override
     public IExampleSet filterWithOr(List<ICondition> cndList) {
-        return filterData(cndList, EConditionsLogicOperator.OR);
+        if (cndList.isEmpty()) {
+            return null;
+        }
+
+        Selection sel = addCondition(cndList, 0, EConditionsLogicOperator.OR);
+        return new DataTable(table.where(sel), columnMetadataMap, dataTableAnnotations);
     }
 
     @Override
     public IExampleSet updateMapping(IExampleSet mappingSource) {
-        MetaDataTable metaDataTable = mappingSource.getMetaDataTable();
+        IAttributes metaDataTable = mappingSource.getAttributes();
 
         DataTable resDataTable = this.clone();
         resDataTable.updateMapping(metaDataTable);
@@ -555,7 +380,7 @@ public class DataTable implements Serializable, IExampleSet {
 
     @Override
     public DataTableAnnotations getAnnotations() {
-        return new DataTableAnnotations(this);
+        return dataTableAnnotations;
     }
 
     @NotNull
@@ -571,37 +396,35 @@ public class DataTable implements Serializable, IExampleSet {
     }
 
     @Override
-    public boolean equals(Object o){
-        if(!(o instanceof DataTable)) {
+    public boolean equals(Object o) {
+        if (!(o instanceof DataTable)) {
             return false;
         }
         DataTable dt = (DataTable) o;
-        if(!dt.table.equals(table)) {
+        if (!dt.table.equals(table)) {
             return false;
         }
-        return dt.columnMetaData.equals(columnMetaData);
+        return dt.columnMetadataMap.equals(columnMetadataMap);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(table, columnMetaData);
+        return Objects.hash(table, columnMetadataMap);
     }
 
 
-    private void writeObject(ObjectOutputStream oos)
-            throws IOException {
+    private void writeObject(ObjectOutputStream oos) throws IOException {
         Object[] data = new Object[3];
         data[0] = table.write().toString("csv");
-        data[1] = columnMetaData;
-        data[2] = annotations;
+        data[1] = columnMetadataMap;
+        data[2] = dataTableAnnotations;
         oos.writeObject(data);
     }
 
-    private void readObject(ObjectInputStream ois)
-            throws ClassNotFoundException, IOException {
-        Object[] data = (Object[])ois.readObject();
-        table = Table.read().string((String)data[0],"csv");
-        columnMetaData = (Map<String, ColumnMetaData>)data[1];
-        annotations = (Map<String, String>)data[2];
+    private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+        Object[] data = (Object[]) ois.readObject();
+        table = Table.read().string((String) data[0], "csv");
+        columnMetadataMap = (ColumnMetadataMap) data[1];
+        dataTableAnnotations = (DataTableAnnotations) data[2];
     }
 }

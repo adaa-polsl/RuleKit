@@ -131,10 +131,6 @@ public class ColumnMetaData implements Serializable, IAttribute {
 		return cloned;
     }
 
-	public Object [] getValues() {
-		return owner.getValues(name);
-	}
-
     @Override
     public ColumnMetaData clone() {
         ColumnMetaData cloned = null;
@@ -206,6 +202,6 @@ public class ColumnMetaData implements Serializable, IAttribute {
 
 	@Override
 	public int getValueType() {
-		return Converter.EColumnTypeToRmOntology(getColumnType());
+		return EColumnType.EColumnTypeToRmOntology(getColumnType());
 	}
 }

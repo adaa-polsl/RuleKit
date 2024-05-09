@@ -34,7 +34,7 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 
 	public static class Implementation {
 		public IExampleSet preprocess(IExampleSet trainSet) {
-			IAttribute survTime = trainSet.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
+			IAttribute survTime = trainSet.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE);
 			SortedExampleSetEx ses = new SortedExampleSetEx(trainSet, survTime, EColumnSortDirections.INCREASING);
 			return ses;
 		}

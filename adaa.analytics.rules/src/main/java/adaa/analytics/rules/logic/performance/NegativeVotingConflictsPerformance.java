@@ -37,7 +37,7 @@ public class NegativeVotingConflictsPerformance extends AbstractPerformanceCount
             int label = (int) e.getLabel();
 
             // get conflict measures
-            String[] counts = e.getValueAsString(e.getAttributes().getSpecial(ClassificationRuleSet.ATTRIBUTE_VOTING_RESULTS_COUNTS)).split(" ");
+            String[] counts = e.getValueAsString(e.getAttributes().getColumnByRole(ClassificationRuleSet.ATTRIBUTE_VOTING_RESULTS_COUNTS)).split(" ");
 
             BitSet mask = new BitSet(counts.length);
 

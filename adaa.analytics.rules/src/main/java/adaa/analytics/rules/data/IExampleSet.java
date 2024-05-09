@@ -2,7 +2,8 @@ package adaa.analytics.rules.data;
 
 import adaa.analytics.rules.data.condition.ICondition;
 import adaa.analytics.rules.data.metadata.EColumnSortDirections;
-import adaa.analytics.rules.data.metadata.MetaDataTable;
+import adaa.analytics.rules.data.metadata.ColumnMetadataMap;
+import adaa.analytics.rules.data.metadata.EStatisticType;
 import adaa.analytics.rules.data.row.Example;
 
 import java.io.Serializable;
@@ -27,17 +28,12 @@ public interface IExampleSet extends Serializable, Cloneable, Iterable<Example> 
 
     Example getExample(int var1);
 
-    void recalculateAttributeStatistics(IAttribute var1);
-
-    double getStatistics(IAttribute var1, String var2);
-
     IExampleSet filter(ICondition cnd);
 
     IExampleSet filterWithOr(List<ICondition> cndList);
 
     IExampleSet updateMapping(IExampleSet mappingSource);
 
-    MetaDataTable getMetaDataTable();
 
     Object [] getValues(String colName);
 
@@ -45,5 +41,4 @@ public interface IExampleSet extends Serializable, Cloneable, Iterable<Example> 
 
     DataColumnDoubleAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue);
 
-    IAttribute getColumnByRole(String role);
 }

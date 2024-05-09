@@ -90,7 +90,7 @@ public class StandardRule {
         DataTableAnnotations annotations = exampleSet.getAnnotations();
 
         if (annotations != null && annotations.containsKey(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
-            contrastAttr = exampleSet.getAttributes().get(exampleSet.getAnnotations().get(ContrastRule.CONTRAST_ATTRIBUTE_ROLE));
+            contrastAttr = exampleSet.getAttributes().get(exampleSet.getAnnotations().getAnnotation(ContrastRule.CONTRAST_ATTRIBUTE_ROLE));
         }
 
         // set role only when not null and different than label attribute

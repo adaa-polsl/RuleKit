@@ -22,9 +22,9 @@ import adaa.analytics.rules.logic.representation.SurvivalRule;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
-import adaa.analytics.rules.data.attributes.AttributeFactory;
+import adaa.analytics.rules.data.metadata.AttributeFactory;
 import adaa.analytics.rules.utils.OperatorException;
-import adaa.analytics.rules.utils.Ontology;
+import adaa.analytics.rules.data.metadata.Ontology;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,7 +99,7 @@ public class SurvivalRuleSet extends RuleSetBase {
  	    }
  	    
  	    String textKaplan = kaplan.save();
-		example.setValue(example.getAttributes().getSpecial(ATTRIBUTE_ESTIMATOR), textKaplan);
+		example.setValue(example.getAttributes().getColumnByRole(ATTRIBUTE_ESTIMATOR), textKaplan);
 	
 		return 0;
 	}

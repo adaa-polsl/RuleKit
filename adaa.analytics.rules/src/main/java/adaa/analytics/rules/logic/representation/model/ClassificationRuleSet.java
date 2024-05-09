@@ -19,9 +19,9 @@ import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
-import adaa.analytics.rules.data.attributes.AttributeFactory;
+import adaa.analytics.rules.data.metadata.AttributeFactory;
 import adaa.analytics.rules.utils.OperatorException;
-import adaa.analytics.rules.utils.Ontology;
+import adaa.analytics.rules.data.metadata.Ontology;
 
 import java.util.List;
 
@@ -126,8 +126,8 @@ public class ClassificationRuleSet extends RuleSetBase {
             calculateConfidence(example, votes, votesSum, result);
         }
 
-        example.setValue(example.getAttributes().getSpecial(ATTRIBUTE_VOTING_RESULTS_WEIGHTS), sb_weights.toString());
-        example.setValue(example.getAttributes().getSpecial(ATTRIBUTE_VOTING_RESULTS_COUNTS), sb_counts.toString());
+        example.setValue(example.getAttributes().getColumnByRole(ATTRIBUTE_VOTING_RESULTS_WEIGHTS), sb_weights.toString());
+        example.setValue(example.getAttributes().getColumnByRole(ATTRIBUTE_VOTING_RESULTS_COUNTS), sb_counts.toString());
 
         return (double) result;
     }
@@ -202,7 +202,7 @@ public class ClassificationRuleSet extends RuleSetBase {
                 ++rid;
             }
 
-            result.getAnnotations().put(ANNOTATION_TEST_REPORT, sb.toString());
+            result.getAnnotations().setAnnotation(ANNOTATION_TEST_REPORT, sb.toString());
         }
 
         // Copy in order to avoid RemappedExampleSets wrapped around each other accumulating over time

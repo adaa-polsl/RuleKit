@@ -3,7 +3,7 @@ package adaa.analytics.rules.data.row;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IAttributes;
 import adaa.analytics.rules.data.IExampleSet;
-import adaa.analytics.rules.utils.Ontology;
+import adaa.analytics.rules.data.metadata.Ontology;
 
 import java.io.Serializable;
 import java.util.*;

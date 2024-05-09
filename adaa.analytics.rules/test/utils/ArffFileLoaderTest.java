@@ -19,9 +19,9 @@ public class ArffFileLoaderTest {
         ArffFileLoader arffFileLoader = new ArffFileLoader();
         IExampleSet es = arffFileLoader.loadDataTable(dataDir, "Future Customer", "");
 
-        Assert.assertEquals(3, es.getAttributes().size());
+        Assert.assertEquals(3, es.getAttributes().regularSize());
         Assert.assertEquals(1000, es.size());
         Assert.assertNotNull(es.getAttributes().getLabel());
-        Assert.assertNull(es.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE));
+        Assert.assertNull(es.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE));
     }
 }

@@ -1,4 +1,4 @@
-package adaa.analytics.rules.utils;
+package adaa.analytics.rules.data.metadata;
 
 public class Ontology {
     private final int[] parentId;

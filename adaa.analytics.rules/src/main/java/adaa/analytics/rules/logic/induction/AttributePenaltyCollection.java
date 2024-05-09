@@ -26,9 +26,9 @@ public class AttributePenaltyCollection {
         penalties.clear();
 
         // each group requires its own penalty object
-        final IAttribute outputAttr = (trainSet.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE) == null)
+        final IAttribute outputAttr = (trainSet.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE) == null)
                 ? trainSet.getAttributes().getLabel()
-                : trainSet.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+                : trainSet.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
 
         INominalMapping mapping = outputAttr.getMapping();
 

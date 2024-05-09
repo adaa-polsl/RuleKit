@@ -16,7 +16,7 @@ public class ExampleIterator implements Iterator<Example> {
 
     @Override
     public boolean hasNext() {
-        return index < dataTable.rowCount();
+        return index < dataTable.size();
     }
 
     @Override

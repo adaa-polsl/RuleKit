@@ -1,10 +1,9 @@
 package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
-import adaa.analytics.rules.data.DataTable;
 import adaa.analytics.rules.data.metadata.EColumnSortDirections;
-import adaa.analytics.rules.data.metadata.MetaDataTable;
 import adaa.analytics.rules.data.condition.ICondition;
+import adaa.analytics.rules.data.metadata.EStatisticType;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IAttributes;
@@ -41,7 +40,7 @@ public class SortedExampleSetEx implements IExampleSet {
         weights = new double[this.size()];
         totalWeightsBefore = new double[this.size() + 1];
 
-        IAttribute survTime = this.getAttributes().getSpecial(SurvivalRule.SURVIVAL_TIME_ROLE);
+        IAttribute survTime = this.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE);
         if (survTime != null) {
             survivalTimes = new double[this.size()];
         }
@@ -122,16 +121,6 @@ public class SortedExampleSetEx implements IExampleSet {
     }
 
     @Override
-    public void recalculateAttributeStatistics(IAttribute var1) {
-        delegateExampleSet.recalculateAttributeStatistics(var1);
-    }
-
-    @Override
-    public double getStatistics(IAttribute var1, String var2) {
-        return delegateExampleSet.getStatistics(var1, var2);
-    }
-
-    @Override
     public IExampleSet filter(ICondition cnd) {
         return delegateExampleSet.filter(cnd);
     }
@@ -144,11 +133,6 @@ public class SortedExampleSetEx implements IExampleSet {
     @Override
     public IExampleSet updateMapping(IExampleSet mappingSource) {
         return delegateExampleSet.updateMapping(mappingSource);
-    }
-
-    @Override
-    public MetaDataTable getMetaDataTable() {
-        return delegateExampleSet.getMetaDataTable();
     }
 
     @Override
@@ -188,8 +172,4 @@ public class SortedExampleSetEx implements IExampleSet {
         return delegateExampleSet.getDataColumnDoubleAdapter(attr, defaultValue);
     }
 
-    @Override
-    public IAttribute getColumnByRole(String role) {
-        return delegateExampleSet.getColumnByRole(role);
-    }
 }

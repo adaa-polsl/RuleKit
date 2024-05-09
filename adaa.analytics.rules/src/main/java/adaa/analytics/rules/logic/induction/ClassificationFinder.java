@@ -193,7 +193,7 @@ public class ClassificationFinder extends AbstractFinder {
 
 				if (params.getMaxGrowingConditions() > 0) {
 					if (currentRule.getPremise().getSubconditions().size() - initialConditionsCount >=
-						params.getMaxGrowingConditions() * dataset.getAttributes().size()) {
+						params.getMaxGrowingConditions() * dataset.getAttributes().regularSize()) {
 						carryOn = false;
 					}
 				}
@@ -538,9 +538,7 @@ public class ClassificationFinder extends AbstractFinder {
 
 					// get all distinctive values of attribute
 					for (int id : coveredByRule) {
-//						DataRow dr = trainSet.getExample(id).getDataRow();
-//						double val = dr.get(attr) + 0.0; // to eliminate -0.0
-						double val = attDataRowDoubleAdapter.getDoubleValue(id) + 0.0;
+						double val = attDataRowDoubleAdapter.getDoubleValue(id) + 0.0;// to eliminate -0.0
 
 						// exclude missing values from keypoints
 						if (Double.isNaN(val)) {
@@ -548,7 +546,6 @@ public class ClassificationFinder extends AbstractFinder {
 						}
 
 						TotalPosNeg tot = totals.computeIfAbsent(val, (k) -> new TotalPosNeg());
-//						double w = (weightAttr != null) ? dr.get(weightAttr) : 1.0;
 						double w = (weightAttr != null) ? weightDataRowDoubleAdapter.getDoubleValue(id) : 1.0;
 
 						// put to proper bin depending of class label
@@ -640,8 +637,6 @@ public class ClassificationFinder extends AbstractFinder {
 
 						// get all distinctive values of attribute
 						for (int id : coveredByRule) {
-//							DataRow dr = trainSet.getExample(id).getDataRow();
-//							double value = dr.get(attr);
 							double value = attDataRowDoubleAdapter.getDoubleValue(id);
 							// omit missing values
 							if (Double.isNaN(value)) {
@@ -649,7 +644,6 @@ public class ClassificationFinder extends AbstractFinder {
 							}
 
 							int castedValue = (int) value;
-//							double w = (weightAttr != null) ? dr.get(weightAttr) : 1.0;
 							double w = (weightAttr != null) ? weightDataRowDoubleAdapter.getDoubleValue(id) : 1.0;
 							if (positives.contains(id)) {
 								p[castedValue] += w;

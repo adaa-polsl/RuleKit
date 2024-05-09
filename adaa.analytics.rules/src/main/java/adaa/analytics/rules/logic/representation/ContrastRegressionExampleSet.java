@@ -7,6 +7,7 @@ import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.data.IStatistics;
 import adaa.analytics.rules.data.INominalMapping;
+import adaa.analytics.rules.data.metadata.EStatisticType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +29,13 @@ public class ContrastRegressionExampleSet extends ContrastExampleSet {
     public ContrastRegressionExampleSet(IExampleSet exampleSet) {
         super(exampleSet);
 
-        String averageName = (exampleSet.getAttributes().getWeight() != null)
-                ? IStatistics.AVERAGE_WEIGHTED : IStatistics.AVERAGE;
+        EStatisticType averageName = (exampleSet.getAttributes().getWeight() != null)
+                ? EStatisticType.AVERAGE_WEIGHTED : EStatisticType.AVERAGE;
 
         // establish training  estimator
         IAttribute label = exampleSet.getAttributes().getLabel();
-        exampleSet.recalculateAttributeStatistics(label);
-        trainingEstimator = exampleSet.getStatistics(label, averageName);
+        label.recalculateStatistics();
+        trainingEstimator = label.getStatistic(averageName);
 
         // establish contrast groups  estimator
         try {
@@ -44,8 +45,10 @@ public class ContrastRegressionExampleSet extends ContrastExampleSet {
                 ICondition cnd = new StringCondition(contrastAttribute.getName(), AbstractCondition.EComparisonOperator.EQUALS, value);
 
                 IExampleSet conditionedSet = exampleSet.filter(cnd);
-                conditionedSet.recalculateAttributeStatistics(label);
-                groupEstimators.add(conditionedSet.getStatistics(label, averageName));
+                label.recalculateStatistics();
+                //TODO jaki to ma sens?
+//                groupEstimators.add(conditionedSet.getStatistics(label, averageName));
+                groupEstimators.add(label.getStatistic(averageName));
             }
         }
         catch (Exception e) {

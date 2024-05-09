@@ -1,5 +1,6 @@
 package adaa.analytics.rules.logic.performance;
 
+import adaa.analytics.rules.data.metadata.EStatisticType;
 import adaa.analytics.rules.logic.representation.ContrastIndicators;
 import adaa.analytics.rules.logic.representation.ContrastRule;
 import adaa.analytics.rules.logic.representation.SurvivalRule;
@@ -99,9 +100,8 @@ public class RulePerformanceCounter {
             if (!weightAttribute.isNumerical()) {
                 throw new IllegalStateException("Error in weight value of example set - non numerical");
             }
-
-            testSet.recalculateAttributeStatistics(weightAttribute);
-            double minimum = testSet.getStatistics(weightAttribute, IStatistics.MINIMUM);
+            weightAttribute.recalculateStatistics();
+            double minimum = weightAttribute.getStatistic(EStatisticType.MINIMUM);
             if (Double.isNaN(minimum) || minimum < 0.0d) {
                 throw new IllegalStateException("Error in weight value of example set - nan or negative");
             }

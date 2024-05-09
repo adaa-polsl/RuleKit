@@ -71,9 +71,9 @@ public class RegressionSnCTest {
 
 
         IExampleSet prediction = ruleSet.apply(testCase.getExampleSet());
-        IAttribute pa = prediction.getColumnByRole(EColumnRole.prediction.name());
+        IAttribute pa = prediction.getAttributes().getColumnByRole(EColumnRole.prediction.name());
         Assert.assertNotNull(pa);
-        Object[] predictionValues = pa.getValues();
+        Object[] predictionValues = prediction.getValues(pa.getName());
         Assert.assertNotNull(predictionValues);
         Assert.assertTrue(predictionValues.length>0);
         Assert.assertTrue(predictionValues instanceof  Double[]);
