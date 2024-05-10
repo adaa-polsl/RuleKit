@@ -141,6 +141,7 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 
 	@Override
 	public ExampleSet preprocess(ExampleSet trainSet) {
+		super.preprocess(trainSet);
 		return implementation.preprocess(trainSet);
 	}
 

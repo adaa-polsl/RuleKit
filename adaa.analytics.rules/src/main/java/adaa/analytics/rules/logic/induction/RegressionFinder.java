@@ -41,6 +41,8 @@ public class RegressionFinder extends AbstractFinder {
 
 	@Override
 	public ExampleSet preprocess(ExampleSet trainSet) {
+		super.preprocess(trainSet);
+
 		Attribute label = trainSet.getAttributes().getLabel();
 		SortedExampleSetEx ses = new SortedExampleSetEx(trainSet, label, SortedExampleSet.INCREASING);
 		return ses;
@@ -237,8 +239,10 @@ public class RegressionFinder extends AbstractFinder {
 
 				} else {
 					// try all possible conditions
-					for (int i = 0; i < attr.getMapping().size(); ++i) {
+					for (int j = 0; j < attr.getMapping().size(); ++j) {
+
 						// evaluate straight condition
+						int i = attributeValuesOrder.get(attr)[j];
 						ElementaryCondition candidate = new ElementaryCondition(
 								attr.getName(), new SingletonSet((double)i, attr.getMapping().getValues()));
 						checkCandidate(dataset, rule, candidate, uncovered, covered, best);
@@ -351,8 +355,10 @@ public class RegressionFinder extends AbstractFinder {
 					}
 				} else {
 					// try all possible conditions
-					for (int i = 0; i < attr.getMapping().size(); ++i) {
+					for (int j = 0; j < attr.getMapping().size(); ++j) {
+
 						// evaluate straight condition
+						int i = attributeValuesOrder.get(attr)[j];
 						ElementaryCondition candidate = new ElementaryCondition(
 								attr.getName(), new SingletonSet((double)i, attr.getMapping().getValues()));
 						checkCandidate(dataset, rule, candidate, uncovered, covered, best);

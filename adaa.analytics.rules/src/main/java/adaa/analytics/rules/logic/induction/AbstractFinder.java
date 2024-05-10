@@ -26,6 +26,7 @@ import adaa.analytics.rules.logic.quality.NoneQualityModifier;
 import adaa.analytics.rules.logic.representation.*;
 
 import com.rapidminer.example.Attribute;
+import com.rapidminer.example.Attributes;
 import com.rapidminer.example.ExampleSet;
 import com.rapidminer.tools.container.Pair;
 
@@ -56,6 +57,9 @@ public abstract class AbstractFinder implements AutoCloseable {
 
 	private List<IFinderObserver> observers = new ArrayList<IFinderObserver>();
 
+	protected Map<Attribute, Integer[]> attributeValuesOrder
+			= new HashMap<Attribute, Integer[]>();
+
 	public void addObserver(IFinderObserver o) { observers.add(o); }
 	public void clearObservers() { observers.clear(); }
 	
@@ -83,7 +87,31 @@ public abstract class AbstractFinder implements AutoCloseable {
 	 * @param trainSet Training set.
 	 * @return Preprocessed training set.
 	 */
-	public ExampleSet preprocess(ExampleSet trainSet) { return trainSet; }
+	public ExampleSet preprocess(ExampleSet trainSet) {
+
+		Attributes attributes = trainSet.getAttributes();
+
+		for (Attribute attr : attributes) {
+
+			Integer[] valuesOrder = null;
+
+			// check if attribute is nominal
+			if (attr.isNominal()) {
+				// get orders
+				valuesOrder = new Integer[attr.getMapping().size()];
+				List<String> labels = new ArrayList<>();
+				labels.addAll(attr.getMapping().getValues());
+				Collections.sort(labels);
+				for (int j = 0; j < labels.size(); ++j) {
+					valuesOrder[j] = attr.getMapping().getIndex(labels.get(j));
+				}
+			}
+
+			attributeValuesOrder.put(attr, valuesOrder);
+		}
+
+		return trainSet;
+	}
 
 	/**
 	 * Adds elementary conditions to the rule premise until termination conditions are fulfilled.

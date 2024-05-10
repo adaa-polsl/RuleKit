@@ -46,9 +46,6 @@ public class ClassificationFinder extends AbstractFinder {
 	protected Map<Attribute, Map<Double, IntegerBitSet>> precalculatedCoveringsComplement
 			= new HashMap<Attribute, Map<Double, IntegerBitSet>>();
 
-	protected Map<Attribute, Integer[]> attributeValuesOrder
-			= new HashMap<Attribute, Integer[]>();
-
 	/**
 	 * Initializes induction parameters.
 	 * @param params Induction parameters.
@@ -65,7 +62,8 @@ public class ClassificationFinder extends AbstractFinder {
 	 */
 	@Override
 	public ExampleSet preprocess(ExampleSet trainSet) {
-	
+		super.preprocess(trainSet);
+
 		// do nothing for weighted datasets
 		if (trainSet.getAttributes().getWeight() != null) {
 			return trainSet;
@@ -81,18 +79,10 @@ public class ClassificationFinder extends AbstractFinder {
 			Future f = pool.submit( () -> {
 				Map<Double, IntegerBitSet> attributeCovering = new TreeMap<Double, IntegerBitSet>();
 				Map<Double, IntegerBitSet> attributeCoveringComplement = new TreeMap<Double, IntegerBitSet>();
-				Integer[] valuesOrder = null;
 
 				// check if attribute is nominal
 				if (attr.isNominal()) {
 					// get orders
-					valuesOrder = new Integer[attr.getMapping().size()];
-					List<String> labels = new ArrayList<>();
-					labels.addAll(attr.getMapping().getValues());
-					Collections.sort(labels);
-					for (int j = 0; j < labels.size(); ++j) {
-						valuesOrder[j] = attr.getMapping().getIndex(labels.get(j));
-					}
 
 					// prepare bit vectors
 					for (int val = 0; val != attr.getMapping().size(); ++val) {
@@ -121,7 +111,6 @@ public class ClassificationFinder extends AbstractFinder {
 				synchronized (this) {
 					precalculatedCoverings.put(attr, attributeCovering);
 					precalculatedCoveringsComplement.put(attr, attributeCoveringComplement);
-					attributeValuesOrder.put(attr, valuesOrder);
 				}
 			});
 
