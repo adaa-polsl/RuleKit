@@ -19,6 +19,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
+import adaa.analytics.rules.data.IAttributes;
 import adaa.analytics.rules.logic.quality.IQualityModifier;
 import adaa.analytics.rules.logic.quality.NoneQualityModifier;
 import adaa.analytics.rules.logic.representation.*;
@@ -57,6 +58,9 @@ public abstract class AbstractFinder implements AutoCloseable {
 
 	private List<IFinderObserver> observers = new ArrayList<IFinderObserver>();
 
+	protected Map<IAttribute, Integer[]> attributeValuesOrder
+			= new HashMap<IAttribute, Integer[]>();
+
 	public void addObserver(IFinderObserver o) { observers.add(o); }
 	public void clearObservers() { observers.clear(); }
 	
@@ -84,7 +88,32 @@ public abstract class AbstractFinder implements AutoCloseable {
 	 * @param trainSet Training set.
 	 * @return Preprocessed training set.
 	 */
-	public IExampleSet preprocess(IExampleSet trainSet) { return trainSet; }
+	public IExampleSet preprocess(IExampleSet trainSet) {
+
+		IAttributes attributes = trainSet.getAttributes();
+
+		for (IAttribute attr : attributes) {
+
+			Integer[] valuesOrder = null;
+
+			// check if attribute is nominal
+			if (attr.isNominal()) {
+				// get orders
+				valuesOrder = new Integer[attr.getMapping().size()];
+				List<String> labels = new ArrayList<>();
+				labels.addAll(attr.getMapping().getValues());
+				Collections.sort(labels);
+				for (int j = 0; j < labels.size(); ++j) {
+					valuesOrder[j] = attr.getMapping().getIndex(labels.get(j));
+				}
+			}
+
+			attributeValuesOrder.put(attr, valuesOrder);
+		}
+
+		return trainSet;
+	}
+
 
 	/**
 	 * Adds elementary conditions to the rule premise until termination conditions are fulfilled.

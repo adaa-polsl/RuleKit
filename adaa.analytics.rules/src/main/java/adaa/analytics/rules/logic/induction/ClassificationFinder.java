@@ -55,9 +55,6 @@ public class ClassificationFinder extends AbstractFinder {
 	protected Map<IAttribute, Map<Double, IntegerBitSet>> precalculatedCoveringsComplement
 			= new HashMap<IAttribute, Map<Double, IntegerBitSet>>();
 
-	protected Map<IAttribute, Integer[]> attributeValuesOrder
-			= new HashMap<IAttribute, Integer[]>();
-
 	/**
 	 * Initializes induction parameters.
 	 * @param params Induction parameters.
@@ -74,7 +71,8 @@ public class ClassificationFinder extends AbstractFinder {
 	 */
 	@Override
 	public IExampleSet preprocess(IExampleSet trainSet) {
-	
+		super.preprocess(trainSet);
+
 		// do nothing for weighted datasets
 		if (trainSet.getAttributes().getWeight() != null) {
 			return trainSet;
@@ -90,19 +88,9 @@ public class ClassificationFinder extends AbstractFinder {
 			Future f = pool.submit( () -> {
 				Map<Double, IntegerBitSet> attributeCovering = new TreeMap<Double, IntegerBitSet>();
 				Map<Double, IntegerBitSet> attributeCoveringComplement = new TreeMap<Double, IntegerBitSet>();
-				Integer[] valuesOrder = null;
 
 				// check if attribute is nominal
 				if (attr.isNominal()) {
-					// get orders
-					valuesOrder = new Integer[attr.getMapping().size()];
-					List<String> labels = new ArrayList<>();
-					labels.addAll(attr.getMapping().getValues());
-					Collections.sort(labels);
-					for (int j = 0; j < labels.size(); ++j) {
-						valuesOrder[j] = attr.getMapping().getIndex(labels.get(j));
-					}
-
 					// prepare bit vectors
 					for (int val = 0; val != attr.getMapping().size(); ++val) {
 						attributeCovering.put((double) val, new IntegerBitSet(trainSet.size()));
@@ -131,7 +119,6 @@ public class ClassificationFinder extends AbstractFinder {
 				synchronized (this) {
 					precalculatedCoverings.put(attr, attributeCovering);
 					precalculatedCoveringsComplement.put(attr, attributeCoveringComplement);
-					attributeValuesOrder.put(attr, valuesOrder);
 				}
 			});
 
