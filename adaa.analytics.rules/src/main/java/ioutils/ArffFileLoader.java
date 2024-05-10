@@ -12,7 +12,7 @@ public class ArffFileLoader extends TableSawLoader {
 
 
     @Override
-    public DataTable loadDataTable(String path, String labelParameterName, String survivalTimeParameter) {
+    public DataTable loadDataTable(String path, String labelParameterName, String survivalTimeParameter) throws IOException {
 
         List<AttributeInfo> attributesInfo = new ArrayList<>();
 
@@ -21,20 +21,17 @@ public class ArffFileLoader extends TableSawLoader {
         return loadDataTable(builder, labelParameterName, survivalTimeParameter, attributesInfo);
     }
 
-    private CsvReadOptions.Builder createArffLoadBuilder(String path, List<AttributeInfo> attributesInfo) {
+    private CsvReadOptions.Builder createArffLoadBuilder(String path, List<AttributeInfo> attributesInfo) throws IOException {
 
         File file = new File(path);
         long dataPosition = findDataPosition(file, attributesInfo);
 
         BufferedReader bufferReader = null;
         if (dataPosition >= 0) {
-            try {
                 RandomAccessFile raf = new RandomAccessFile(file, "r");
                 raf.seek(dataPosition);
                 bufferReader = new BufferedReader(new InputStreamReader(new FileInputStream(raf.getFD())));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
         } else {
             System.out.println("Nie znaleziono znacznika '@data'.");
         }
@@ -42,7 +39,7 @@ public class ArffFileLoader extends TableSawLoader {
         return CsvReadOptions.builder(bufferReader).header(false);
     }
 
-    private long findDataPosition(File file, List<AttributeInfo> attributesInfo) {
+    private long findDataPosition(File file, List<AttributeInfo> attributesInfo) throws IOException {
 
         long position = -1;
         try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
@@ -60,9 +57,6 @@ public class ArffFileLoader extends TableSawLoader {
                     break;
                 }
             }
-        } catch (IOException e) {
-
-            e.printStackTrace();
         }
         return position;
     }

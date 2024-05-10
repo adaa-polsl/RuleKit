@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.rule;
 
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
@@ -20,6 +20,10 @@ import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
+import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.IntegerBitSet;
+import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -282,8 +286,8 @@ public abstract class Rule implements Serializable, Cloneable {
 	 */
 	public String toString() {
 		String consequenceString;
-		if (consequence.valueSet instanceof SingletonSet &&
-				Double.isNaN(((SingletonSet) consequence.valueSet).value) && ((SingletonSet) consequence.valueSet).mapping == null) {
+		if (consequence.getValueSet() instanceof SingletonSet &&
+				Double.isNaN(((SingletonSet) consequence.getValueSet()).getValue()) && ((SingletonSet) consequence.getValueSet()).getMapping() == null) {
 			consequenceString = "";
 		} else {
 			consequenceString = consequence.toString();

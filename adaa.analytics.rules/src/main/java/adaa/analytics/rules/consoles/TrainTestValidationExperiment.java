@@ -16,7 +16,7 @@ package adaa.analytics.rules.consoles;
 
 import adaa.analytics.rules.consoles.config.DatasetConfiguration;
 import adaa.analytics.rules.consoles.config.ParamSetConfiguration;
-import adaa.analytics.rules.logic.representation.Logger;
+import adaa.analytics.rules.utils.Logger;
 
 import java.io.File;
 import java.io.IOException;

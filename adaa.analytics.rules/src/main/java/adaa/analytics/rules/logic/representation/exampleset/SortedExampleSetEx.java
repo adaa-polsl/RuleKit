@@ -1,36 +1,90 @@
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.exampleset;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.data.metadata.EColumnSortDirections;
 import adaa.analytics.rules.data.condition.ICondition;
-import adaa.analytics.rules.data.metadata.EStatisticType;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IAttributes;
 import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.data.DataTableAnnotations;
+import adaa.analytics.rules.logic.representation.IntegerBitSet;
+import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.Consumer;
 
-public class ContrastExampleSet implements IExampleSet {
+public class SortedExampleSetEx implements IExampleSet {
 
     private IExampleSet delegateExampleSet;
 
-    protected IAttribute contrastAttribute;
+    public double[] labels;
+    public double[] weights;
+    public double[] labelsWeighted;
+    public double[] totalWeightsBefore;
+    public double[] survivalTimes;
 
-    public IAttribute getContrastAttribute() { return contrastAttribute; }
+    public double meanLabel = 0;
 
-    public ContrastExampleSet(IExampleSet exampleSet) {
-        this.delegateExampleSet = exampleSet;
+    public Map<IAttribute, IntegerBitSet> nonMissingVals = new HashMap<>();
 
-        contrastAttribute = (exampleSet.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE) == null)
-                ? exampleSet.getAttributes().getLabel()
-                : exampleSet.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
+    public SortedExampleSetEx(IExampleSet parent, IAttribute sortingAttribute, EColumnSortDirections sortingDirection) {
+        this.delegateExampleSet = parent;
+        sortBy(sortingAttribute.getName(), sortingDirection);
+        fillLabelsAndWeights();
     }
+
+    protected final void fillLabelsAndWeights() {
+        labels = new double[this.size()];
+        labelsWeighted = new double[this.size()];
+        weights = new double[this.size()];
+        totalWeightsBefore = new double[this.size() + 1];
+
+        IAttribute survTime = this.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE);
+        if (survTime != null) {
+            survivalTimes = new double[this.size()];
+        }
+
+        boolean weighted = getAttributes().getWeight() != null;
+
+        for (IAttribute a: this.getAttributes()) {
+            nonMissingVals.put(a, new IntegerBitSet(this.size()));
+        }
+
+        int i = 0;
+        int sumWeights = 0;
+
+        for (Example e: this) {
+            double y = e.getLabel();
+            double w = weighted ? e.getWeight() : 1.0;
+
+            labels[i] = y;
+            weights[i] = w;
+            labelsWeighted[i] = y * w;
+            totalWeightsBefore[i] = sumWeights;
+            meanLabel += y;
+
+            if (survTime != null) {
+                survivalTimes[i] = e.getValue(survTime);
+            }
+
+            for (IAttribute a: this.getAttributes()) {
+                if (!Double.isNaN(e.getValue(a))) {
+                    nonMissingVals.get(a).add(i);
+                }
+            }
+
+            ++i;
+            sumWeights += w;
+        }
+
+        totalWeightsBefore[size()] = sumWeights;
+        meanLabel /= size();
+    }
+
+
+
 
     @Override
     public DataTableAnnotations getAnnotations() {
@@ -62,7 +116,6 @@ public class ContrastExampleSet implements IExampleSet {
         return delegateExampleSet.size();
     }
 
-
     @Override
     public Example getExample(int var1) {
         return delegateExampleSet.getExample(var1);
@@ -82,7 +135,6 @@ public class ContrastExampleSet implements IExampleSet {
     public IExampleSet updateMapping(IExampleSet mappingSource) {
         return delegateExampleSet.updateMapping(mappingSource);
     }
-
 
     @Override
     public Object[] getValues(String colName) {
@@ -105,6 +157,7 @@ public class ContrastExampleSet implements IExampleSet {
         return delegateExampleSet.spliterator();
     }
 
+
     @Override
     public void sortBy(String columnName, EColumnSortDirections sortDir) {
         delegateExampleSet.sortBy(columnName, sortDir);
@@ -120,8 +173,13 @@ public class ContrastExampleSet implements IExampleSet {
         return delegateExampleSet.getDataColumnDoubleAdapter(attr, defaultValue);
     }
 
+    @Override
+    public double getDoubleValue(String colName, int colIdx, int rowIndex, double defaultValue) {
+        return delegateExampleSet.getDoubleValue(colName, colIdx, rowIndex, defaultValue);
+    }
+
+    @Override
+    public void setDoubleValue(IAttribute att, int rowIndex, double value) {
+        delegateExampleSet.setDoubleValue(att, rowIndex, value);
+    }
 }
-
-
-
-

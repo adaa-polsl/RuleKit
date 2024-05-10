@@ -1,6 +1,4 @@
-package adaa.analytics.rules.logic.representation;
-
-import org.apache.commons.math3.util.Precision;
+package adaa.analytics.rules.utils;
 
 import java.math.BigDecimal;
 import java.math.MathContext;

@@ -13,9 +13,7 @@ public class VersionService {
         versionProperties = new Properties();
         try {
             versionProperties.load(this.getClass().getResourceAsStream("/version.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
+        } catch (Exception e) {
             versionProperties = null;
         }
     }

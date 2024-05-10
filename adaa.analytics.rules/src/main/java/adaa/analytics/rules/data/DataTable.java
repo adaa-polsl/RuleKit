@@ -1,12 +1,10 @@
 package adaa.analytics.rules.data;
 
-import adaa.analytics.rules.data.condition.EConditionsLogicOperator;
 import adaa.analytics.rules.data.condition.ICondition;
 import adaa.analytics.rules.data.metadata.*;
-import adaa.analytics.rules.data.row.DataRow;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.row.ExampleIterator;
-import adaa.analytics.rules.logic.representation.ContrastRule;
+import adaa.analytics.rules.logic.representation.rule.ContrastRule;
 import adaa.analytics.rules.utils.Tools;
 import ioutils.AttributeInfo;
 import org.jetbrains.annotations.NotNull;
@@ -271,37 +269,34 @@ public class DataTable implements Serializable, IExampleSet {
     }
 
     public DataColumnDoubleAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue) {
-        ColumnMetaData colMetaData = null;
         DoubleColumn colNum = null;
         StringColumn colStr = null;
         String colName = attr != null ? attr.getName() : null;
-        if (colName != null) colMetaData = columnMetadataMap.getColumnMetaData(colName);
-        if (colMetaData != null) {
-            if (colMetaData.isNominal()) {
+        if (attr != null) {
+            if (attr.isNominal()) {
                 colStr = table.stringColumn(colName);
 
             } else {
                 colNum = (DoubleColumn) table.column(colName);
             }
         }
-        return new DataColumnDoubleAdapter(colMetaData, colNum, colStr, attr, defaultValue);
+        return new DataColumnDoubleAdapter(attr, colNum, colStr,  defaultValue);
     }
 
-    public void setDoubleValue(String colName, int rowIndex, double value) {
-        ColumnMetaData colMetaData = columnMetadataMap.getColumnMetaData(colName);
-        if (colMetaData == null) {
-            throw new IllegalStateException(String.format("Column '%s' does not exist", colName));
+    public void setDoubleValue(IAttribute att, int rowIndex, double value) {
+        if (att == null) {
+            throw new IllegalStateException("Column  not exist");
         }
 
-        if (colMetaData.isNominal()) {
+        if (att.isNominal()) {
             int iValue = (int) value;
-            if (!colMetaData.getMapping().hasIndex(iValue)) {
-                throw new IllegalStateException(String.format("There is no index '%d' in '%s' column mapping", iValue, colName));
+            if (!att.getMapping().hasIndex(iValue)) {
+                throw new IllegalStateException(String.format("There is no index '%d' in '%s' column mapping", iValue, att.getName()));
             }
-            StringColumn colStr = table.stringColumn(colName);
-            colStr.set(rowIndex, colMetaData.getMapping().mapIndex(iValue));
+            StringColumn colStr = table.stringColumn(att.getName());
+            colStr.set(rowIndex, att.getMapping().mapIndex(iValue));
         } else {
-            DoubleColumn colNum = (DoubleColumn) table.column(colName);
+            DoubleColumn colNum = (DoubleColumn) table.column(att.getName());
             colNum.set(rowIndex, value);
         }
     }
@@ -325,31 +320,15 @@ public class DataTable implements Serializable, IExampleSet {
         throw new IllegalStateException(String.format("Column '%s' is neither numerical nor nominal", colName));
     }
 
-    private Selection addCondition(List<ICondition> conditions, int conditionIndex, EConditionsLogicOperator logicOp) {
+    private Selection addCondition(List<ICondition> conditions, int conditionIndex) {
 
         ICondition condition = conditions.get(conditionIndex);
         if (conditionIndex == conditions.size() - 1) {
             return condition.createSelection(table);
         } else {
-            Selection selection = addCondition(conditions, conditionIndex + 1, logicOp);
+            Selection selection = addCondition(conditions, conditionIndex + 1);
             return selection.or(condition.createSelection(table));
         }
-    }
-
-
-    @Override
-    public IAttributes getAttributes() {
-        return columnMetadataMap;
-    }
-
-    @Override
-    public int size() {
-        return table.rowCount();
-    }
-
-    @Override
-    public Example getExample(int var1) {
-        return new Example(new DataRow(this, var1), this);
     }
 
     @Override
@@ -363,9 +342,26 @@ public class DataTable implements Serializable, IExampleSet {
             return null;
         }
 
-        Selection sel = addCondition(cndList, 0, EConditionsLogicOperator.OR);
+        Selection sel = addCondition(cndList, 0);
         return new DataTable(table.where(sel), columnMetadataMap, dataTableAnnotations);
     }
+
+    @Override
+    public IAttributes getAttributes() {
+        return columnMetadataMap;
+    }
+
+    @Override
+    public int size() {
+        return table.rowCount();
+    }
+
+    @Override
+    public Example getExample(int rowIndex) {
+        return new Example( rowIndex, this);
+    }
+
+
 
     @Override
     public IExampleSet updateMapping(IExampleSet mappingSource) {

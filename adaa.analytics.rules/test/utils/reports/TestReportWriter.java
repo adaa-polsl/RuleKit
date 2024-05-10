@@ -1,6 +1,6 @@
 package utils.reports;
 
-import adaa.analytics.rules.logic.representation.Rule;
+import adaa.analytics.rules.logic.representation.rule.Rule;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 
 import java.io.File;

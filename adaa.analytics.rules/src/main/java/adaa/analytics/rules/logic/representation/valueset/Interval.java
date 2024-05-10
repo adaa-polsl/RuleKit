@@ -12,8 +12,10 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.valueset;
 
+import adaa.analytics.rules.utils.DoubleFormatter;
+import adaa.analytics.rules.logic.representation.MissingValuesHandler;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;

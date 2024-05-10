@@ -19,6 +19,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import adaa.analytics.rules.logic.representation.valueset.AnyValueSet;
+import adaa.analytics.rules.logic.representation.valueset.IValueSet;
+import adaa.analytics.rules.logic.representation.valueset.Interval;
 import org.junit.Assert;
 import org.junit.Test;
 

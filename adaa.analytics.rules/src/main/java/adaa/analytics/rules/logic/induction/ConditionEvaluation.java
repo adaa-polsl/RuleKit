@@ -13,7 +13,7 @@
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
-import adaa.analytics.rules.logic.representation.ConditionBase;
+import adaa.analytics.rules.logic.representation.condition.ConditionBase;
 
 /**
  * Helper class for storing information about evaluated condition. 

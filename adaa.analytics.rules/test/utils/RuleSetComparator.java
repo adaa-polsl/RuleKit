@@ -1,6 +1,6 @@
 package utils;
 
-import adaa.analytics.rules.logic.representation.Rule;
+import adaa.analytics.rules.logic.representation.rule.Rule;
 import utils.reports.RuleStringFactory;
 
 import java.util.HashMap;

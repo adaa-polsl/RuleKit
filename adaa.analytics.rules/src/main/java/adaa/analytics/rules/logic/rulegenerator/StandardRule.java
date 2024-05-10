@@ -16,9 +16,9 @@ package adaa.analytics.rules.logic.rulegenerator;
 
 import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.quality.LogRank;
-import adaa.analytics.rules.logic.representation.ContrastRule;
+import adaa.analytics.rules.logic.representation.rule.ContrastRule;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
+import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.data.DataTableAnnotations;

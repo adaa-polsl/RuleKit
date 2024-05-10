@@ -17,10 +17,16 @@ package adaa.analytics.rules.logic.rulegenerator;
 import adaa.analytics.rules.logic.induction.*;
 import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.representation.*;
-import adaa.analytics.rules.logic.representation.ConditionBase.Type;
+import adaa.analytics.rules.logic.representation.condition.ConditionBase;
+import adaa.analytics.rules.logic.representation.condition.ConditionBase.Type;
+import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.logic.representation.rule.Rule;
+import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
+import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
+import adaa.analytics.rules.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,13 +77,12 @@ public class ExpertRule {
 
     private MultiSet<Rule> generateForbiddenConditions(IExampleSet exampleSet)
     {
-        ExampleSetMetaData setMeta = new ExampleSetMetaData(exampleSet);
         MultiSet<Rule> forbiddenConditions = new MultiSet<Rule>();
         Logger.log("Loading forbidden conditions/attributes:\n", Level.FINER);
         List<String[]> ruleList = ruleGeneratorParams.getParameterList(RuleGeneratorParams.PARAMETER_EXPERT_FORBIDDEN_CONDITIONS);
         if (ruleList!=null) {
             for (String[] e : ruleList) {
-                Rule r = RuleParser.parseRule(e[1], setMeta);
+                Rule r = RuleParser.parseRule(e[1], exampleSet.getAttributes());
                 for (ConditionBase cnd : r.getPremise().getSubconditions()) {
                     cnd.setType(Type.NORMAL);
                 }
@@ -91,7 +96,6 @@ public class ExpertRule {
 
     private MultiSet<Rule> generatePreferredConditions(IExampleSet exampleSet)
     {
-        ExampleSetMetaData setMeta = new ExampleSetMetaData(exampleSet);
         MultiSet<Rule> preferredConditions = new MultiSet<Rule>();
         Logger.log("Loading preferred conditions/attributes:\n", Level.FINER);
         Pattern pattern = Pattern.compile("(?<number>(\\d+)|(inf)):\\s*(?<rule>.*)");
@@ -102,7 +106,7 @@ public class ExpertRule {
                 matcher.find();
                 String count = matcher.group("number");
                 String ruleDesc = matcher.group("rule");
-                Rule r = RuleParser.parseRule(ruleDesc, setMeta);
+                Rule r = RuleParser.parseRule(ruleDesc, exampleSet.getAttributes());
                 if (r != null) {
                     r.getPremise().setType(ConditionBase.Type.PREFERRED); // set entire compound condition as preferred and all subconditions as normal
                     for (ConditionBase cnd : r.getPremise().getSubconditions()) {
@@ -121,8 +125,6 @@ public class ExpertRule {
 
     private MultiSet<Rule> generateInitialRules(IExampleSet exampleSet)
     {
-        ExampleSetMetaData setMeta = new ExampleSetMetaData(exampleSet);
-
         MultiSet<Rule> rules = new MultiSet<Rule>();
 
         Logger.log("Loading initial rules:\n", Level.FINER);
@@ -130,7 +132,7 @@ public class ExpertRule {
         if (ruleList!=null) {
             for (String[] e : ruleList) {
 
-                Rule r = RuleParser.parseRule(e[1], setMeta);
+                Rule r = RuleParser.parseRule(e[1], exampleSet.getAttributes());
                 if (r != null) {
                     // set all subconditions in rules as forced no matter how they were specified
                     for (ConditionBase cnd : r.getPremise().getSubconditions()) {

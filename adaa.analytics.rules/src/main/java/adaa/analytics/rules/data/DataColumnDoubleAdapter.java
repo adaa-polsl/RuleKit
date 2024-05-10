@@ -11,7 +11,6 @@ import java.util.Map;
 
 public class DataColumnDoubleAdapter {
 
-    private ColumnMetaData colMetaData;
 
     private DoubleColumn colNum;
 
@@ -21,13 +20,12 @@ public class DataColumnDoubleAdapter {
 
     private double defaultValue;
 
-    public DataColumnDoubleAdapter(ColumnMetaData colMetaData, DoubleColumn colNum, StringColumn colStr, IAttribute attr, double defaultValue)
+    public DataColumnDoubleAdapter(IAttribute attr, DoubleColumn colNum, StringColumn colStr, double defaultValue)
     {
         this.attr = attr;
         this.defaultValue = defaultValue;
         this.colStr = colStr;
         this.colNum = colNum;
-        this.colMetaData = colMetaData;
     }
 
     public String getNominalValue(int rowIndex) {
@@ -41,12 +39,12 @@ public class DataColumnDoubleAdapter {
 
     public double getDoubleValue(int rowIndex)
     {
-        if(colMetaData == null) {
+        if(attr == null) {
             return defaultValue;
         }
         if (colStr!=null) {
             String value = colStr.get(rowIndex);
-            Integer iVal = colMetaData.getMapping().getIndex(value);
+            Integer iVal = attr.getMapping().getIndex(value);
             return iVal == null ? defaultValue : iVal.doubleValue();
         }else if (colNum!=null)
         {

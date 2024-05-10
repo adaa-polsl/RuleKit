@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.utils;
 
 import java.io.PrintStream;
 import java.util.ArrayList;

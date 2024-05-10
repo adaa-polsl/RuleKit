@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.rule;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.logic.induction.ContingencyTable;
@@ -20,6 +20,9 @@ import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
+import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;

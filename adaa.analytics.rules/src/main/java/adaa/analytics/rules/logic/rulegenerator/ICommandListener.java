@@ -1,6 +1,6 @@
 package adaa.analytics.rules.logic.rulegenerator;
 
-import adaa.analytics.rules.logic.representation.Rule;
+import adaa.analytics.rules.logic.representation.rule.Rule;
 
 public interface ICommandListener {
 

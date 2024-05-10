@@ -1,11 +1,10 @@
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.exampleset;
 
 import adaa.analytics.rules.data.condition.AbstractCondition;
 import adaa.analytics.rules.data.condition.ICondition;
 import adaa.analytics.rules.data.condition.StringCondition;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
-import adaa.analytics.rules.data.IStatistics;
 import adaa.analytics.rules.data.INominalMapping;
 import adaa.analytics.rules.data.metadata.EStatisticType;
 
@@ -38,22 +37,23 @@ public class ContrastRegressionExampleSet extends ContrastExampleSet {
         trainingEstimator = label.getStatistic(averageName);
 
         // establish contrast groups  estimator
-        try {
+//        try {
             INominalMapping mapping = contrastAttribute.getMapping();
 
             for(String value : mapping.getValues()) {
                 ICondition cnd = new StringCondition(contrastAttribute.getName(), AbstractCondition.EComparisonOperator.EQUALS, value);
 
-                IExampleSet conditionedSet = exampleSet.filter(cnd);
-                label.recalculateStatistics();
                 //TODO jaki to ma sens?
+                IExampleSet conditionedSet = exampleSet.filter(cnd);
+                label = conditionedSet.getAttributes().getLabel();
+                label.recalculateStatistics();
 //                groupEstimators.add(conditionedSet.getStatistics(label, averageName));
                 groupEstimators.add(label.getStatistic(averageName));
             }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+//        }
+//        catch (Exception e) {
+//            e.printStackTrace();
+//        }
 //        catch (ExpressionEvaluationException e) {
 //            e.printStackTrace();
 //        }

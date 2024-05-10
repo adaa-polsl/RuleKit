@@ -1,4 +1,7 @@
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.rule;
+
+import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
+import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
 
 public class ContrastRegressionRule extends ContrastRule {
 

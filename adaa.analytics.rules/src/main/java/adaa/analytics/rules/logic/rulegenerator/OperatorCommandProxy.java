@@ -1,6 +1,6 @@
 package adaa.analytics.rules.logic.rulegenerator;
 
-import adaa.analytics.rules.logic.representation.Rule;
+import adaa.analytics.rules.logic.representation.rule.Rule;
 
 import java.util.ArrayList;
 import java.util.List;

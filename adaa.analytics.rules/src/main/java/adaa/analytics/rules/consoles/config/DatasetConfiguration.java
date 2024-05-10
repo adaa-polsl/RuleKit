@@ -1,8 +1,8 @@
 package adaa.analytics.rules.consoles.config;
 
-import adaa.analytics.rules.logic.representation.ContrastRule;
-import adaa.analytics.rules.logic.representation.Logger;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
+import adaa.analytics.rules.logic.representation.rule.ContrastRule;
+import adaa.analytics.rules.utils.Logger;
+import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
 import adaa.analytics.rules.data.IExampleSet;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

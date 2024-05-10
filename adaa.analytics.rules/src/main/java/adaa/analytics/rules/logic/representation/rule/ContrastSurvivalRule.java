@@ -1,4 +1,8 @@
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.rule;
+
+import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
+import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 
 public class ContrastSurvivalRule extends ContrastRule {
 

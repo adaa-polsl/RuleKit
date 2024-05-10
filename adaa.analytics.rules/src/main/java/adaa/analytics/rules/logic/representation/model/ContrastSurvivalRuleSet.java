@@ -3,6 +3,10 @@ package adaa.analytics.rules.logic.representation.model;
 import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.logic.representation.exampleset.ContrastExampleSet;
+import adaa.analytics.rules.logic.representation.exampleset.ContrastSurvivalExampleSet;
+import adaa.analytics.rules.logic.representation.rule.ContrastSurvivalRule;
+import adaa.analytics.rules.logic.representation.rule.Rule;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;

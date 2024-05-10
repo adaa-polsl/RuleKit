@@ -2,6 +2,7 @@ package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.data.DataTable;
 import adaa.analytics.rules.data.metadata.EColumnRole;
+import adaa.analytics.rules.logic.representation.exampleset.ContrastExampleSet;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,11 +35,11 @@ public class ContrastExampleSetTest {
         Assert.assertEquals(5, cExampleSet.size());
         Assert.assertEquals(2, cExampleSet.getAttributes().get("l_att").getMapping().getValues().size());
         Assert.assertEquals(3, cExampleSet.getContrastAttribute().getMapping().getValues().size());
-        Assert.assertEquals(1.0, cExampleSet.getExample(0).getDataRow().get(cExampleSet.getAttributes().get("s_att")), 0.0000001);
-        Assert.assertEquals(cExampleSet.getAttributes().get("l_att").getMapping().mapString("val2"), cExampleSet.getExample(1).getDataRow().get(cExampleSet.getAttributes().get("l_att")), 0.0000001);
-        Assert.assertEquals(cExampleSet.getAttributes().get("c_att").getMapping().mapString("c2"), cExampleSet.getExample(1).getDataRow().get(cExampleSet.getAttributes().get("c_att")), 0.0000001);
-        Assert.assertEquals(0.0, cExampleSet.getExample(2).getDataRow().get(cExampleSet.getAttributes().get("att_1")), 0.0000001);
-        Assert.assertEquals(1, cExampleSet.getExample(3).getDataRow().get(cExampleSet.getAttributes().get("att_2")), 0.0000001);
-        Assert.assertEquals(7, cExampleSet.getExample(4).getDataRow().get(cExampleSet.getAttributes().get("att_3")), 0.0000001);
+        Assert.assertEquals(1.0, cExampleSet.getExample(0).getValue(cExampleSet.getAttributes().get("s_att")), 0.0000001);
+        Assert.assertEquals(cExampleSet.getAttributes().get("l_att").getMapping().mapString("val2"), cExampleSet.getExample(1).getValue(cExampleSet.getAttributes().get("l_att")), 0.0000001);
+        Assert.assertEquals(cExampleSet.getAttributes().get("c_att").getMapping().mapString("c2"), cExampleSet.getExample(1).getValue(cExampleSet.getAttributes().get("c_att")), 0.0000001);
+        Assert.assertEquals(0.0, cExampleSet.getExample(2).getValue(cExampleSet.getAttributes().get("att_1")), 0.0000001);
+        Assert.assertEquals(1, cExampleSet.getExample(3).getValue(cExampleSet.getAttributes().get("att_2")), 0.0000001);
+        Assert.assertEquals(7, cExampleSet.getExample(4).getValue(cExampleSet.getAttributes().get("att_3")), 0.0000001);
     }
 }

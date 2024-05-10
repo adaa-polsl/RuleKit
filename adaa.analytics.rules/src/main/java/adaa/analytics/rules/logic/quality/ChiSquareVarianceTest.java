@@ -14,7 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.quality;
 
-import adaa.analytics.rules.logic.representation.Logger;
+import adaa.analytics.rules.utils.Logger;
 import adaa.analytics.rules.utils.Pair;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 import java.util.logging.Level;

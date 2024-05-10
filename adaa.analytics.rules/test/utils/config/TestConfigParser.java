@@ -2,8 +2,6 @@ package utils.config;
 
 import adaa.analytics.rules.consoles.config.DatasetConfiguration;
 import adaa.analytics.rules.consoles.config.ParamSetConfiguration;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
-import adaa.analytics.rules.logic.rulegenerator.RuleGeneratorParams;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -11,11 +9,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class TestConfigParser {
 

@@ -15,6 +15,8 @@
 package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.logic.representation.exampleset.SortedExampleSetEx;
+import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
 
 import java.io.Serializable;
 import java.security.InvalidParameterException;
@@ -62,7 +64,7 @@ public class KaplanMeierEstimator implements Serializable {
 
 	/**
 	 * Generates survival estimator function from survival data.
-	 * @param data Example set with attribute of {@link adaa.analytics.rules.logic.representation.SurvivalRule#SURVIVAL_TIME_ROLE}.
+	 * @param data Example set with attribute of {@link SurvivalRule#SURVIVAL_TIME_ROLE}.
 	 */
     public KaplanMeierEstimator(IExampleSet data) {
         this(data, new IntegerBitSet(data.size(), true));
@@ -125,7 +127,7 @@ public class KaplanMeierEstimator implements Serializable {
     
     /**
 	 * Generates survival estimator function from survival data.
-	 * @param data Example set with attribute of {@link adaa.analytics.rules.logic.representation.SurvivalRule#SURVIVAL_TIME_ROLE}.
+	 * @param data Example set with attribute of {@link SurvivalRule#SURVIVAL_TIME_ROLE}.
 	 * @param indices Indices of the examples to be taken into account when building the estimator. 
 	 */
     public KaplanMeierEstimator(IExampleSet data, Set<Integer> indices) {

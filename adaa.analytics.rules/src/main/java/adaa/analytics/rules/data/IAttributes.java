@@ -1,20 +1,11 @@
 package adaa.analytics.rules.data;
 
+import adaa.analytics.rules.data.metadata.EColumnRole;
+
 import java.io.Serializable;
 import java.util.Iterator;
 
 public interface IAttributes  extends Iterable<IAttribute>,  Serializable {
-    String CONFIDENCE_NAME = "confidence";
-    String ATTRIBUTE_NAME = "attribute";
-    String ID_NAME = "id";
-    String LABEL_NAME = "label";
-    String PREDICTION_NAME = "prediction";
-    String CLUSTER_NAME = "cluster";
-    String WEIGHT_NAME = "weight";
-    String BATCH_NAME = "batch";
-    String OUTLIER_NAME = "outlier";
-    String CLASSIFICATION_COST = "cost";
-    String BASE_VALUE = "base_value";
 
 
     boolean equals(Object var1);
@@ -61,4 +52,7 @@ public interface IAttributes  extends Iterable<IAttribute>,  Serializable {
 
     String findRoleBySpecialName(String role);
 
+    IAttribute getColumnByRoleUnsafe(String role);
+
+    IAttribute getLabelUnsafe();
 }

@@ -5,6 +5,11 @@ import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.quality.NegativeControlledMeasure;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.logic.representation.exampleset.ContrastExampleSet;
+import adaa.analytics.rules.logic.representation.exampleset.ContrastSurvivalExampleSet;
+import adaa.analytics.rules.logic.representation.rule.ContrastSurvivalRule;
+import adaa.analytics.rules.logic.representation.rule.Rule;
+import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
 import adaa.analytics.rules.utils.Pair;
 
 import java.io.Serializable;

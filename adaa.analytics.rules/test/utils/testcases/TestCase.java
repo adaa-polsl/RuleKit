@@ -1,9 +1,8 @@
 package utils.testcases;
 
 import adaa.analytics.rules.consoles.config.DatasetConfiguration;
-import adaa.analytics.rules.logic.representation.ExampleSetMetaData;
-import adaa.analytics.rules.logic.rulegenerator.RuleGeneratorParams;
 import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.logic.rulegenerator.RuleGeneratorParams;
 import ioutils.ArffFileLoader;
 import utils.TestResourcePathFactory;
 import utils.reports.TestReport;
@@ -27,7 +26,7 @@ public class TestCase {
         this.reportFilePath = filePath;
     }
 
-    public IExampleSet getExampleSet() {
+    public IExampleSet getExampleSet() throws IOException {
         if (exampleSet == null) {
             ArffFileLoader arffFileLoader = new ArffFileLoader();
             this.exampleSet = arffFileLoader.load(TestResourcePathFactory.get(datasetConfiguration.trainElements.get(0).inFile).toString(), datasetConfiguration.label);
@@ -38,7 +37,7 @@ public class TestCase {
 
     public TestReport getReferenceReport() throws IOException {
         if (referenceReport == null) {
-            TestReportReader reportReader = new TestReportReader(reportFilePath, new ExampleSetMetaData(getExampleSet()));
+            TestReportReader reportReader = new TestReportReader(reportFilePath, getExampleSet().getAttributes());
             referenceReport = reportReader.read();
             reportReader.close();
         }

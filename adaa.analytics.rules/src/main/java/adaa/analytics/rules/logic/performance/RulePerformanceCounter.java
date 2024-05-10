@@ -2,13 +2,12 @@ package adaa.analytics.rules.logic.performance;
 
 import adaa.analytics.rules.data.metadata.EStatisticType;
 import adaa.analytics.rules.logic.representation.ContrastIndicators;
-import adaa.analytics.rules.logic.representation.ContrastRule;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
+import adaa.analytics.rules.logic.representation.rule.ContrastRule;
+import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
 import adaa.analytics.rules.logic.representation.model.ContrastRuleSet;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
-import adaa.analytics.rules.data.IStatistics;
 
 import java.util.ArrayList;
 import java.util.Arrays;

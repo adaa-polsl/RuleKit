@@ -4,7 +4,7 @@ import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.IUserMeasure;
-import adaa.analytics.rules.logic.representation.Logger;
+import adaa.analytics.rules.utils.Logger;
 
 import java.util.*;
 import java.util.logging.Level;

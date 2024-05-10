@@ -1,10 +1,10 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.quality.IQualityModifier;
-import adaa.analytics.rules.logic.representation.ConditionBase;
-import adaa.analytics.rules.logic.representation.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.condition.ConditionBase;
+import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.MultiSet;
-import adaa.analytics.rules.logic.representation.Rule;
+import adaa.analytics.rules.logic.representation.rule.Rule;
 
 public class AttributePenalty implements IQualityModifier, IFinderObserver {
     protected double penaltyStrength;

@@ -20,6 +20,10 @@ import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.data.metadata.AttributeFactory;
+import adaa.analytics.rules.logic.representation.condition.ConditionBase;
+import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.rule.Rule;
+import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
 import adaa.analytics.rules.utils.OperatorException;
 import adaa.analytics.rules.data.metadata.Ontology;
 

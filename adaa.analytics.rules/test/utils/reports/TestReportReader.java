@@ -1,8 +1,8 @@
 package utils.reports;
 
-import adaa.analytics.rules.logic.representation.ExampleSetMetaData;
-import adaa.analytics.rules.logic.representation.Rule;
+import adaa.analytics.rules.data.IAttributes;
 import adaa.analytics.rules.logic.representation.RuleParser;
+import adaa.analytics.rules.logic.representation.rule.Rule;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -14,9 +14,9 @@ public class TestReportReader {
 
     private BufferedReader reader;
     private String fileName;
-    private ExampleSetMetaData exampleSetMetaData;
+    private IAttributes exampleSetMetaData;
 
-    public TestReportReader(String fileName, ExampleSetMetaData exampleSetMetaData) throws IOException {
+    public TestReportReader(String fileName, IAttributes exampleSetMetaData) throws IOException {
         this.exampleSetMetaData = exampleSetMetaData;
         this.fileName = fileName;
         reader = new BufferedReader(new FileReader(fileName));

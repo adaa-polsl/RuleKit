@@ -5,6 +5,9 @@ import adaa.analytics.rules.logic.induction.SetHelper;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.logic.representation.rule.ContrastRule;
+import adaa.analytics.rules.logic.representation.rule.Rule;
+import adaa.analytics.rules.utils.DoubleFormatter;
 import adaa.analytics.rules.utils.OperatorException;
 
 import java.util.*;

@@ -21,6 +21,6 @@ public class ExampleIterator implements Iterator<Example> {
 
     @Override
     public Example next() {
-        return new Example(new DataRow(dataTable, index++), this.dataTable);
+        return new Example(index++, this.dataTable);
     }
 }

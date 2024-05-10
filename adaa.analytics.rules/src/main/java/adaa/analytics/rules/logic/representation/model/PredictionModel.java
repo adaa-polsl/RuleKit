@@ -1,6 +1,7 @@
 package adaa.analytics.rules.logic.representation.model;
 
-import adaa.analytics.rules.logic.representation.Logger;
+import adaa.analytics.rules.data.metadata.EColumnRole;
+import adaa.analytics.rules.utils.Logger;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IAttributes;
 import adaa.analytics.rules.data.IExampleSet;
@@ -136,22 +137,22 @@ public abstract class PredictionModel implements Serializable {
 	 */
 	protected IAttribute createPredictionAttributes(IExampleSet exampleSet, IAttribute label) {
 		// create and add prediction attribute
-		IAttribute predictedLabel = AttributeFactory.createAttribute(label, IAttributes.PREDICTION_NAME);
+		IAttribute predictedLabel = AttributeFactory.createAttribute(label, EColumnRole.prediction.name());
 		exampleSet.addAttribute(predictedLabel);
 		exampleSet.getAttributes().setPredictedLabel(predictedLabel);
 
 		// check whether confidence labels should be constructed
 		if (supportsConfidences(label)) {
 			for (String value : predictedLabel.getMapping().getValues()) {
-				IAttribute confidence = AttributeFactory.createAttribute(IAttributes.CONFIDENCE_NAME + "(" + value + ")",
+				IAttribute confidence = AttributeFactory.createAttribute(EColumnRole.confidence.name()+ "(" + value + ")",
 						Ontology.REAL);
 				exampleSet.addAttribute(confidence);
-				exampleSet.getAttributes().setSpecialAttribute(confidence, IAttributes.CONFIDENCE_NAME + "_" + value);
+				exampleSet.getAttributes().setSpecialAttribute(confidence, EColumnRole.confidence.name() + "_" + value);
 			}
-			IAttribute confidence = AttributeFactory.createAttribute(IAttributes.CONFIDENCE_NAME,
+			IAttribute confidence = AttributeFactory.createAttribute(EColumnRole.confidence.name(),
 					Ontology.REAL);
 			exampleSet.addAttribute(confidence);
-			exampleSet.getAttributes().setSpecialAttribute(confidence, IAttributes.CONFIDENCE_NAME);
+			exampleSet.getAttributes().setSpecialAttribute(confidence, EColumnRole.confidence.name());
 		}
 		return predictedLabel;
 	}
@@ -177,7 +178,7 @@ public abstract class PredictionModel implements Serializable {
 			if (predictedLabel.isNominal()) {
 				for (String value : predictedLabel.getMapping().getValues()) {
 					IAttribute currentConfidenceAttribute = exampleSet.getAttributes().getColumnByRole(
-							IAttributes.CONFIDENCE_NAME + "_" + value);
+							EColumnRole.confidence.name() + "_" + value);
 					if (currentConfidenceAttribute != null) {
 						exampleSet.getAttributes().removeRegularRole(currentConfidenceAttribute);
 					}
@@ -200,7 +201,7 @@ public abstract class PredictionModel implements Serializable {
 			if (predictedLabel.isNominal()) {
 				for (String value : predictedLabel.getMapping().getValues()) {
 					IAttribute currentConfidenceAttribute = source.getAttributes()
-							.getColumnByRole(IAttributes.CONFIDENCE_NAME + "_" + value);
+							.getColumnByRole(EColumnRole.confidence.name() + "_" + value);
 
 					// it's possible that the model does not create confidences for all label
 					// values, so check for null (e.g. OneClass-SVM)
@@ -208,7 +209,7 @@ public abstract class PredictionModel implements Serializable {
 						IAttribute copyOfCurrentConfidenceAttribute = AttributeFactory
 								.createAttribute(currentConfidenceAttribute);
 						destination.getAttributes().setSpecialAttribute(copyOfCurrentConfidenceAttribute,
-								IAttributes.CONFIDENCE_NAME + "_" + value);
+								EColumnRole.confidence.name() + "_" + value);
 					}
 				}
 			}
@@ -219,7 +220,7 @@ public abstract class PredictionModel implements Serializable {
 
 		IAttribute costs = source.getAttributes().getCost();
 		if (costs != null) {
-			destination.getAttributes().setSpecialAttribute(costs, IAttributes.CLASSIFICATION_COST);
+			destination.getAttributes().setSpecialAttribute(costs, EColumnRole.cost.name());
 		}
 	}
 }

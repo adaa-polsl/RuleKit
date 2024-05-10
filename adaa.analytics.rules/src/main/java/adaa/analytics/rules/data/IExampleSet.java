@@ -41,4 +41,7 @@ public interface IExampleSet extends Serializable, Cloneable, Iterable<Example> 
 
     DataColumnDoubleAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue);
 
+    double getDoubleValue(String colName, int colIdx, int rowIndex, double defaultValue);
+
+    void setDoubleValue(IAttribute att, int rowIndex, double value);
 }

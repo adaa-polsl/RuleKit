@@ -1,7 +1,7 @@
 package adaa.analytics.rules.consoles.config;
 
-import adaa.analytics.rules.logic.representation.DoubleFormatter;
-import adaa.analytics.rules.logic.representation.Logger;
+import adaa.analytics.rules.utils.DoubleFormatter;
+import adaa.analytics.rules.utils.Logger;
 import adaa.analytics.rules.logic.rulegenerator.RuleGeneratorParams;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

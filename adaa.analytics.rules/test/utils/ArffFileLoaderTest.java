@@ -1,6 +1,6 @@
 package utils;
 
-import adaa.analytics.rules.logic.representation.SurvivalRule;
+import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
 import adaa.analytics.rules.data.IExampleSet;
 import ioutils.ArffFileLoader;
 import org.junit.Assert;

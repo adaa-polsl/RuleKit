@@ -19,6 +19,10 @@ import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.logic.representation.condition.ConditionBase;
+import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.rule.Rule;
+import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
 import adaa.analytics.rules.utils.OperatorException;
 
 /**

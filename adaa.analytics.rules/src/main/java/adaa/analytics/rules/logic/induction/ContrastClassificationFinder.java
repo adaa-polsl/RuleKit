@@ -1,8 +1,8 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.quality.NegativeControlledMeasure;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.SingletonSet;
+import adaa.analytics.rules.logic.representation.rule.Rule;
+import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
 import adaa.analytics.rules.data.IExampleSet;
 
 import java.util.Set;

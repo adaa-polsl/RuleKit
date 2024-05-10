@@ -1,5 +1,7 @@
 package adaa.analytics.rules.logic.representation;
 
+import adaa.analytics.rules.logic.representation.rule.ContrastRule;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 

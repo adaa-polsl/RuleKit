@@ -9,24 +9,30 @@ import java.io.Serializable;
 import java.util.*;
 
 public class Example implements Serializable, Map<String, Object> {
-    private DataRow data;
+
+    private int rowIndex;
     private IExampleSet parentExampleSet;
 
-    public Example(DataRow data, IExampleSet parentExampleSet) {
-        this.data = data;
+    public Example(int rowIndex, IExampleSet parentExampleSet) {
+        this.rowIndex = rowIndex;
         this.parentExampleSet = parentExampleSet;
     }
 
-    public DataRow getDataRow() {
-        return this.data;
-    }
 
     public IAttributes getAttributes() {
         return this.parentExampleSet.getAttributes();
     }
 
     public double getValue(IAttribute a) {
-        return this.data.get(a);
+        if (a == null) {
+            return Double.NaN;
+        } else {
+            try {
+                return parentExampleSet.getDoubleValue(a.getName(),a.getTableIndex(), rowIndex, Double.NaN);
+            } catch (ArrayIndexOutOfBoundsException var3) {
+                throw new ArrayIndexOutOfBoundsException("DataRow: table index " + a.getTableIndex() + " of Attribute " + a.getName() + " is out of bounds.");
+            }
+        }
     }
 
     public String getNominalValue(IAttribute a) {
@@ -55,7 +61,7 @@ public class Example implements Serializable, Map<String, Object> {
 //    }
 
     public void setValue(IAttribute a, double value) {
-        this.data.set(a, value);
+        parentExampleSet.setDoubleValue(a, rowIndex, value);
     }
 
     public void setValue(IAttribute a, String str) {

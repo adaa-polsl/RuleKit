@@ -15,6 +15,19 @@
 package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IAttributes;
+import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
+import adaa.analytics.rules.logic.representation.condition.ConditionBase;
+import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.rule.ClassificationRule;
+import adaa.analytics.rules.logic.representation.rule.RegressionRule;
+import adaa.analytics.rules.logic.representation.rule.Rule;
+import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
+import adaa.analytics.rules.logic.representation.valueset.IValueSet;
+import adaa.analytics.rules.logic.representation.valueset.Interval;
+import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
+import adaa.analytics.rules.logic.representation.valueset.Universum;
+import adaa.analytics.rules.utils.Logger;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.ArrayList;
@@ -38,14 +51,14 @@ public class RuleParser {
 	 * @param meta Example set meta data.
 	 * @return Rule instance.
 	 */
-	public static Rule parseRule(String s, ExampleSetMetaData meta) {
+	public static Rule parseRule(String s, IAttributes meta) {
 		Rule rule = null; 
 
 		Pattern pattern = Pattern.compile("IF\\s+(?<premise>.+)\\s+THEN(?<consequence>\\s+.*|\\s*)");
 		Matcher matcher = pattern.matcher(s);
 
 		boolean isSurvival = false;
-		if (meta.getAttributeByRole(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
+		if (meta.getColumnByRoleUnsafe(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
 			isSurvival = true;
 		}
 
@@ -57,14 +70,12 @@ public class RuleParser {
 			CompoundCondition premise = parseCompoundCondition(pre, meta);
 
 			if (con == null || con.trim().length() == 0) {
-				if (!meta.getLabelMetaData().isNumerical()) {
+				if (!meta.getLabelUnsafe().isNumerical()) {
 					Logger.log("Empty conclusion for nominal label"+ "\n", Level.WARNING);
 				} else {
-					consequence = new ElementaryCondition();
-					consequence.attribute = meta.getLabelMetaData().getName();
-					consequence.valueSet = new SingletonSet(NaN, null);
-					consequence.adjustable = false;
-					consequence.disabled = false;
+					consequence = new ElementaryCondition(meta.getLabelUnsafe().getName(),  new SingletonSet(NaN, null));
+					consequence.setAdjustable(false);
+					consequence.setDisabled( false);
 				}
 			} else {
 				consequence = parseElementaryCondition(con, meta);
@@ -72,7 +83,7 @@ public class RuleParser {
 
 			if (premise != null && consequence != null) {
 
-				rule = meta.getLabelMetaData().isNominal()
+				rule = meta.getLabelUnsafe().isNominal()
 						? new ClassificationRule(premise, consequence)
 						: (isSurvival
 						? new SurvivalRule(premise, consequence)
@@ -93,7 +104,7 @@ public class RuleParser {
 	 * @param meta Example set meta data.
 	 * @return Compound condition instance.
 	 */
-	public static CompoundCondition parseCompoundCondition(String s, ExampleSetMetaData meta) {
+	public static CompoundCondition parseCompoundCondition(String s, IAttributes meta) {
 		CompoundCondition out = new CompoundCondition();
 		
 		String tokens[] = s.split("AND");
@@ -114,7 +125,7 @@ public class RuleParser {
 	 * @param meta Example set meta data.
 	 * @return Elementary condition instance.
 	 */
-	public static ElementaryCondition parseElementaryCondition(String s, ExampleSetMetaData meta) {
+	public static ElementaryCondition parseElementaryCondition(String s, IAttributes meta) {
 		ElementaryCondition out = null;
 
 		// remove surrounding white characters
@@ -148,7 +159,7 @@ public class RuleParser {
 	    	
 	    	IValueSet valueSet = null;
 
-	    	IAttribute attributeMeta = meta.getAttributeByName(attribute);
+	    	IAttribute attributeMeta = meta.get(attribute);
 	    	if (attributeMeta == null) {
 				Logger.log("Attribute <" + attribute + "> not found"+ "\n", Level.WARNING);
 				return null;

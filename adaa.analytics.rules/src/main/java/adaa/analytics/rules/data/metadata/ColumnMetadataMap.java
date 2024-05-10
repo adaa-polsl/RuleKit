@@ -187,16 +187,16 @@ public class ColumnMetadataMap implements Serializable, IAttributes {
 
     @Override
     public IAttribute getLabel() {
-        return this.getColumnByRole("label");
+        return this.getColumnByRole(EColumnRole.label.name());
     }
 
     @Override
     public void setLabel(IAttribute var1) {
-        this.setSpecialAttribute(var1, "label");
+        this.setSpecialAttribute(var1, EColumnRole.label.name());
     }
 
     public IAttribute getPredictedLabel() {
-        return this.getColumnByRole("prediction");
+        return this.getColumnByRole(EColumnRole.prediction.name());
     }
 
     public IAttribute getConfidence(String classLabel) {
@@ -204,15 +204,15 @@ public class ColumnMetadataMap implements Serializable, IAttributes {
     }
 
     public void setPredictedLabel(IAttribute predictedLabel) {
-        this.setSpecialAttribute(predictedLabel, "prediction");
+        this.setSpecialAttribute(predictedLabel, EColumnRole.prediction.name());
     }
 
     public IAttribute getWeight() {
-        return this.getColumnByRole("weight");
+        return this.getColumnByRole(EColumnRole.weight.name());
     }
 
     public IAttribute getCost() {
-        return this.getColumnByRole("cost");
+        return this.getColumnByRole(EColumnRole.cost.name());
     }
 
     @Override
@@ -224,5 +224,20 @@ public class ColumnMetadataMap implements Serializable, IAttributes {
     public List<ColumnMetaData> getColumnsByRole(String role) {
         if (role == null) return new ArrayList<>(0);
         return attributeMetaData.values().stream().filter(columnMetaData -> role.equals(columnMetaData.getRole())).collect(Collectors.toList());
+    }
+
+    public IAttribute getColumnByRoleUnsafe(String role) {
+        Iterator<IAttribute> iAtts = allAttributes();
+        while(iAtts.hasNext()) {
+            IAttribute att = iAtts.next();
+            if(att.getRole().equals(role)) {
+                return att;
+            }
+        }
+        return null;
+    }
+
+    public IAttribute getLabelUnsafe() {
+        return getColumnByRoleUnsafe(EColumnRole.label.name());
     }
 }

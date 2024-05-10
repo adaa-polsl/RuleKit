@@ -2,7 +2,7 @@ package adaa.analytics.rules.rm.comp;
 
 import adaa.analytics.rules.data.DataTable;
 import adaa.analytics.rules.data.metadata.EColumnRole;
-import adaa.analytics.rules.logic.representation.ContrastRule;
+import adaa.analytics.rules.logic.representation.rule.ContrastRule;
 import adaa.analytics.rules.data.IExampleSet;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,12 +41,12 @@ public class TsExampleSetTest {
         Assert.assertEquals(5, es.size());
         Assert.assertEquals(2, es.getAttributes().getLabel().getMapping().getValues().size());
         Assert.assertEquals(3, es.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getMapping().getValues().size());
-        Assert.assertEquals(1.0, es.getExample(0).getDataRow().get(es.getAttributes().get("s_att")), 0.0000001);
-        Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getDataRow().get(es.getAttributes().get("l_att")), 0.0000001);
-        Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getDataRow().get(es.getAttributes().get("c_att")), 0.0000001);
-        Assert.assertEquals(0.0, es.getExample(2).getDataRow().get(es.getAttributes().get("att_1")), 0.0000001);
-        Assert.assertEquals(1, es.getExample(3).getDataRow().get(es.getAttributes().get("att_2")), 0.0000001);
-        Assert.assertEquals(7, es.getExample(4).getDataRow().get(es.getAttributes().get("att_3")), 0.0000001);
+        Assert.assertEquals(1.0, es.getExample(0).getValue(es.getAttributes().get("s_att")), 0.0000001);
+        Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getValue(es.getAttributes().get("l_att")), 0.0000001);
+        Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getValue(es.getAttributes().get("c_att")), 0.0000001);
+        Assert.assertEquals(0.0, es.getExample(2).getValue(es.getAttributes().get("att_1")), 0.0000001);
+        Assert.assertEquals(1, es.getExample(3).getValue(es.getAttributes().get("att_2")), 0.0000001);
+        Assert.assertEquals(7, es.getExample(4).getValue(es.getAttributes().get("att_3")), 0.0000001);
     }
 
     /**
@@ -64,12 +64,12 @@ public class TsExampleSetTest {
         Assert.assertNull(es.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE));
         Assert.assertEquals(5, es.size());
         Assert.assertEquals(2, es.getAttributes().getLabel().getMapping().getValues().size());
-        Assert.assertEquals(1.0, es.getExample(0).getDataRow().get(es.getAttributes().get("s_att")), 0.0000001);
-        Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getDataRow().get(es.getAttributes().get("l_att")), 0.0000001);
-        Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getDataRow().get(es.getAttributes().get("c_att")), 0.0000001);
-        Assert.assertEquals(0.0, es.getExample(2).getDataRow().get(es.getAttributes().get("att_1")), 0.0000001);
-        Assert.assertEquals(1, es.getExample(3).getDataRow().get(es.getAttributes().get("att_2")), 0.0000001);
-        Assert.assertEquals(7, es.getExample(4).getDataRow().get(es.getAttributes().get("att_3")), 0.0000001);
+        Assert.assertEquals(1.0, es.getExample(0).getValue(es.getAttributes().get("s_att")), 0.0000001);
+        Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getValue(es.getAttributes().get("l_att")), 0.0000001);
+        Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getValue(es.getAttributes().get("c_att")), 0.0000001);
+        Assert.assertEquals(0.0, es.getExample(2).getValue(es.getAttributes().get("att_1")), 0.0000001);
+        Assert.assertEquals(1, es.getExample(3).getValue(es.getAttributes().get("att_2")), 0.0000001);
+        Assert.assertEquals(7, es.getExample(4).getValue(es.getAttributes().get("att_3")), 0.0000001);
     }
 
     /**
@@ -88,12 +88,12 @@ public class TsExampleSetTest {
         Assert.assertEquals(5, es.size());
         Assert.assertEquals(2, es.getAttributes().get("l_att").getMapping().getValues().size());
         Assert.assertEquals(3, es.getAttributes().get("c_att").getMapping().getValues().size());
-        Assert.assertEquals(1.0, es.getExample(0).getDataRow().get(es.getAttributes().get("s_att")), 0.0000001);
-        Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getDataRow().get(es.getAttributes().get("l_att")), 0.0000001);
-        Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getDataRow().get(es.getAttributes().get("c_att")), 0.0000001);
-        Assert.assertEquals(0.0, es.getExample(2).getDataRow().get(es.getAttributes().get("att_1")), 0.0000001);
-        Assert.assertEquals(1, es.getExample(3).getDataRow().get(es.getAttributes().get("att_2")), 0.0000001);
-        Assert.assertEquals(7, es.getExample(4).getDataRow().get(es.getAttributes().get("att_3")), 0.0000001);
+        Assert.assertEquals(1.0, es.getExample(0).getValue(es.getAttributes().get("s_att")), 0.0000001);
+        Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getValue(es.getAttributes().get("l_att")), 0.0000001);
+        Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getValue(es.getAttributes().get("c_att")), 0.0000001);
+        Assert.assertEquals(0.0, es.getExample(2).getValue(es.getAttributes().get("att_1")), 0.0000001);
+        Assert.assertEquals(1, es.getExample(3).getValue(es.getAttributes().get("att_2")), 0.0000001);
+        Assert.assertEquals(7, es.getExample(4).getValue(es.getAttributes().get("att_3")), 0.0000001);
     }
 
     /**
@@ -112,12 +112,12 @@ public class TsExampleSetTest {
         Assert.assertEquals(5, es.size());
         Assert.assertEquals(2, es.getAttributes().get("l_att").getMapping().getValues().size());
         Assert.assertEquals(3, es.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getMapping().getValues().size());
-        Assert.assertEquals(1.0, es.getExample(0).getDataRow().get(es.getAttributes().get("s_att")), 0.0000001);
-        Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getDataRow().get(es.getAttributes().get("l_att")), 0.0000001);
-        Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getDataRow().get(es.getAttributes().get("c_att")), 0.0000001);
-        Assert.assertEquals(0.0, es.getExample(2).getDataRow().get(es.getAttributes().get("att_1")), 0.0000001);
-        Assert.assertEquals(1, es.getExample(3).getDataRow().get(es.getAttributes().get("att_2")), 0.0000001);
-        Assert.assertEquals(7, es.getExample(4).getDataRow().get(es.getAttributes().get("att_3")), 0.0000001);
+        Assert.assertEquals(1.0, es.getExample(0).getValue(es.getAttributes().get("s_att")), 0.0000001);
+        Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getValue(es.getAttributes().get("l_att")), 0.0000001);
+        Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getValue(es.getAttributes().get("c_att")), 0.0000001);
+        Assert.assertEquals(0.0, es.getExample(2).getValue(es.getAttributes().get("att_1")), 0.0000001);
+        Assert.assertEquals(1, es.getExample(3).getValue(es.getAttributes().get("att_2")), 0.0000001);
+        Assert.assertEquals(7, es.getExample(4).getValue(es.getAttributes().get("att_3")), 0.0000001);
     }
 
     /**
@@ -137,12 +137,12 @@ public class TsExampleSetTest {
         Assert.assertEquals(5, es.size());
         Assert.assertEquals(2, es.getAttributes().getLabel().getMapping().getValues().size());
         Assert.assertEquals(3, es.getAttributes().get("c_att").getMapping().getValues().size());
-        Assert.assertEquals(1.0, es.getExample(0).getDataRow().get(es.getAttributes().get("s_att")), 0.0000001);
-        Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getDataRow().get(es.getAttributes().get("l_att")), 0.0000001);
-        Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getDataRow().get(es.getAttributes().get("c_att")), 0.0000001);
-        Assert.assertEquals(0.0, es.getExample(2).getDataRow().get(es.getAttributes().get("att_1")), 0.0000001);
-        Assert.assertEquals(1, es.getExample(3).getDataRow().get(es.getAttributes().get("att_2")), 0.0000001);
-        Assert.assertEquals(7, es.getExample(4).getDataRow().get(es.getAttributes().get("att_3")), 0.0000001);
+        Assert.assertEquals(1.0, es.getExample(0).getValue(es.getAttributes().get("s_att")), 0.0000001);
+        Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getValue(es.getAttributes().get("l_att")), 0.0000001);
+        Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getValue(es.getAttributes().get("c_att")), 0.0000001);
+        Assert.assertEquals(0.0, es.getExample(2).getValue(es.getAttributes().get("att_1")), 0.0000001);
+        Assert.assertEquals(1, es.getExample(3).getValue(es.getAttributes().get("att_2")), 0.0000001);
+        Assert.assertEquals(7, es.getExample(4).getValue(es.getAttributes().get("att_3")), 0.0000001);
     }
 
     /**
@@ -162,12 +162,12 @@ public class TsExampleSetTest {
         Assert.assertEquals(5, es.size());
         Assert.assertEquals(2, es.getAttributes().getLabel().getMapping().getValues().size());
         Assert.assertEquals(3, es.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getMapping().getValues().size());
-        Assert.assertEquals(1.0, es.getExample(0).getDataRow().get(es.getAttributes().get("s_att")), 0.0000001);
-        Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getDataRow().get(es.getAttributes().get("l_att")), 0.0000001);
-        Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getDataRow().get(es.getAttributes().get("c_att")), 0.0000001);
-        Assert.assertEquals(0.0, es.getExample(2).getDataRow().get(es.getAttributes().get("att_1")), 0.0000001);
-        Assert.assertEquals(1, es.getExample(3).getDataRow().get(es.getAttributes().get("att_2")), 0.0000001);
-        Assert.assertEquals(7, es.getExample(4).getDataRow().get(es.getAttributes().get("att_3")), 0.0000001);
+        Assert.assertEquals(1.0, es.getExample(0).getValue(es.getAttributes().get("s_att")), 0.0000001);
+        Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getValue(es.getAttributes().get("l_att")), 0.0000001);
+        Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getValue(es.getAttributes().get("c_att")), 0.0000001);
+        Assert.assertEquals(0.0, es.getExample(2).getValue(es.getAttributes().get("att_1")), 0.0000001);
+        Assert.assertEquals(1, es.getExample(3).getValue(es.getAttributes().get("att_2")), 0.0000001);
+        Assert.assertEquals(7, es.getExample(4).getValue(es.getAttributes().get("att_3")), 0.0000001);
     }
 
     /**
@@ -187,11 +187,11 @@ public class TsExampleSetTest {
         Assert.assertEquals(5, es.size());
         Assert.assertEquals(2, es.getAttributes().get("l_att").getMapping().getValues().size());
         Assert.assertEquals(3, es.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE).getMapping().getValues().size());
-        Assert.assertEquals(1.0, es.getExample(0).getDataRow().get(es.getAttributes().get("s_att")), 0.0000001);
-        Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getDataRow().get(es.getAttributes().get("l_att")), 0.0000001);
-        Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getDataRow().get(es.getAttributes().get("c_att")), 0.0000001);
-        Assert.assertEquals(0.0, es.getExample(2).getDataRow().get(es.getAttributes().get("att_1")), 0.0000001);
-        Assert.assertEquals(1, es.getExample(3).getDataRow().get(es.getAttributes().get("att_2")), 0.0000001);
-        Assert.assertEquals(7, es.getExample(4).getDataRow().get(es.getAttributes().get("att_3")), 0.0000001);
+        Assert.assertEquals(1.0, es.getExample(0).getValue(es.getAttributes().get("s_att")), 0.0000001);
+        Assert.assertEquals(es.getAttributes().get("l_att").getMapping().mapString("val2"), es.getExample(1).getValue(es.getAttributes().get("l_att")), 0.0000001);
+        Assert.assertEquals(es.getAttributes().get("c_att").getMapping().mapString("c2"), es.getExample(1).getValue(es.getAttributes().get("c_att")), 0.0000001);
+        Assert.assertEquals(0.0, es.getExample(2).getValue(es.getAttributes().get("att_1")), 0.0000001);
+        Assert.assertEquals(1, es.getExample(3).getValue(es.getAttributes().get("att_2")), 0.0000001);
+        Assert.assertEquals(7, es.getExample(4).getValue(es.getAttributes().get("att_3")), 0.0000001);
     }
 }

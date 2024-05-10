@@ -12,10 +12,12 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.condition;
 
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.logic.representation.IntegerBitSet;
+import adaa.analytics.rules.logic.representation.LogicalOperator;
 
 import java.util.*;
 

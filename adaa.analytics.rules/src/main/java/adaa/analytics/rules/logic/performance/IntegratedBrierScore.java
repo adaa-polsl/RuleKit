@@ -16,7 +16,7 @@ package adaa.analytics.rules.logic.performance;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
-import adaa.analytics.rules.logic.representation.SurvivalRule;
+import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
 import adaa.analytics.rules.logic.representation.model.SurvivalRuleSet;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;

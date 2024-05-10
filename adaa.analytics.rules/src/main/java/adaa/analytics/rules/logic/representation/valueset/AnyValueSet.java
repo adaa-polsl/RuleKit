@@ -13,7 +13,7 @@
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
 
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.valueset;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -9,6 +9,7 @@ public enum EColumnRole {
     prediction,
     cluster,
     weight,
+    cost,
     batch,
     outlier,
     survival_time,

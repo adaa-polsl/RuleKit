@@ -40,7 +40,7 @@ import org.apache.commons.cli.*;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import adaa.analytics.rules.logic.representation.Logger;
+import adaa.analytics.rules.utils.Logger;
 
 
 /**

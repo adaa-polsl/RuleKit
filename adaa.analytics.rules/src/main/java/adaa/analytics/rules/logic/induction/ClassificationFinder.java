@@ -26,6 +26,15 @@ import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IAttributes;
 import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
+import adaa.analytics.rules.logic.representation.condition.ConditionBase;
+import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.rule.ClassificationRule;
+import adaa.analytics.rules.logic.representation.rule.Rule;
+import adaa.analytics.rules.logic.representation.valueset.Interval;
+import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
+import adaa.analytics.rules.logic.representation.valueset.SingletonSetComplement;
+import adaa.analytics.rules.utils.Logger;
 
 
 /**

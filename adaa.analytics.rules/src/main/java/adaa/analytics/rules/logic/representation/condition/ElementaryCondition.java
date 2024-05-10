@@ -12,12 +12,13 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.condition;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.logic.representation.valueset.IValueSet;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -43,7 +44,7 @@ public class ElementaryCondition extends ConditionBase {
 	
 	/** Gets {@link #attribute}. */
 	public String getAttribute() { return attribute; }
-	
+
 	/** Gets {@link #valueSet}. */
 	public IValueSet getValueSet() { return valueSet; }
 	/** Sets {@link #valueSet}. */

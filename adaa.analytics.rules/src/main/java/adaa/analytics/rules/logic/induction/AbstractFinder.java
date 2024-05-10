@@ -25,6 +25,10 @@ import adaa.analytics.rules.logic.representation.*;
 
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.logic.representation.condition.ConditionBase;
+import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.rule.Rule;
+import adaa.analytics.rules.utils.Logger;
 
 /**
  * Abstract base class for growing and pruning procedures for all types of rules (classification, regression, survival).

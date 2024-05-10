@@ -15,11 +15,17 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.*;
-import adaa.analytics.rules.logic.representation.ConditionBase.Type;
+import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
+import adaa.analytics.rules.logic.representation.condition.ConditionBase;
+import adaa.analytics.rules.logic.representation.condition.ConditionBase.Type;
 
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
 
+import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.rule.Rule;
+import adaa.analytics.rules.logic.representation.valueset.Universum;
+import adaa.analytics.rules.utils.Logger;
 import org.apache.commons.lang3.SerializationUtils;
 
 import java.util.*;

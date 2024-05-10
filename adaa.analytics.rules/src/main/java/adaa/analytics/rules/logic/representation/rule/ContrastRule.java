@@ -1,8 +1,8 @@
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.rule;
 
-import adaa.analytics.rules.logic.induction.ContingencyTable;
-
-import java.io.Serializable;
+import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
+import adaa.analytics.rules.utils.DoubleFormatter;
+import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
 
 public class ContrastRule extends ClassificationRule {
 

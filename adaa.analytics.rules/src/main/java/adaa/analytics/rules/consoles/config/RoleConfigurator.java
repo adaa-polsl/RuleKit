@@ -1,6 +1,6 @@
 package adaa.analytics.rules.consoles.config;
 
-import adaa.analytics.rules.logic.representation.ContrastRule;
+import adaa.analytics.rules.logic.representation.rule.ContrastRule;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
 

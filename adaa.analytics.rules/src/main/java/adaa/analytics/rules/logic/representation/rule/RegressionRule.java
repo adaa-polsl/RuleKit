@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.rule;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.data.metadata.EStatisticType;
@@ -22,7 +22,11 @@ import adaa.analytics.rules.logic.quality.ChiSquareVarianceTest;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IExampleSet;
-import adaa.analytics.rules.data.IStatistics;
+import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
+import adaa.analytics.rules.utils.DoubleFormatter;
+import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.exampleset.SortedExampleSetEx;
+import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
 import adaa.analytics.rules.utils.Pair;
 
 import java.security.InvalidParameterException;
@@ -222,8 +226,8 @@ public class RegressionRule extends Rule {
 	@Override
 	public String toString() {
 		String consequenceString;
-		if (consequence.valueSet instanceof SingletonSet &&
-				((SingletonSet) consequence.valueSet).value == NaN && ((SingletonSet) consequence.valueSet).mapping == null) {
+		if (consequence.getValueSet() instanceof SingletonSet &&
+				((SingletonSet) consequence.getValueSet()).getValue() == NaN && ((SingletonSet) consequence.getValueSet()).getMapping() == null) {
 			consequenceString = "";
 		} else {
 			double lo = getConsequenceValue() - stddev;

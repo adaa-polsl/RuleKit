@@ -19,7 +19,13 @@ import java.util.logging.Level;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
+import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.model.ClassificationRuleSet;
+import adaa.analytics.rules.logic.representation.rule.ClassificationRule;
+import adaa.analytics.rules.logic.representation.rule.Rule;
+import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
+import adaa.analytics.rules.utils.Logger;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 
