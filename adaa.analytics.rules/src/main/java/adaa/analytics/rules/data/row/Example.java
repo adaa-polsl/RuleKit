@@ -23,15 +23,15 @@ public class Example implements Serializable, Map<String, Object> {
         return this.parentExampleSet.getAttributes();
     }
 
+    public double getValue(String columnName) {
+        return parentExampleSet.getDoubleValue(columnName, parentExampleSet.getColumnIndex(columnName), rowIndex, Double.NaN);
+    }
+
     public double getValue(IAttribute a) {
         if (a == null) {
             return Double.NaN;
         } else {
-            try {
-                return parentExampleSet.getDoubleValue(a.getName(),a.getTableIndex(), rowIndex, Double.NaN);
-            } catch (ArrayIndexOutOfBoundsException var3) {
-                throw new ArrayIndexOutOfBoundsException("DataRow: table index " + a.getTableIndex() + " of Attribute " + a.getName() + " is out of bounds.");
-            }
+            return parentExampleSet.getDoubleValue(a.getName(), a.getTableIndex(), rowIndex, Double.NaN);
         }
     }
 
@@ -40,25 +40,10 @@ public class Example implements Serializable, Map<String, Object> {
             throw new IllegalStateException("Extraction of nominal example value for non-nominal attribute '" + a.getName() + "' is not possible.");
         } else {
             double value = this.getValue(a);
-            return Double.isNaN(value) ? "?" : a.getMapping().mapIndex((int)value);
+            return Double.isNaN(value) ? "?" : a.getMapping().mapIndex((int) value);
         }
     }
 
-    public double getNumericalValue(IAttribute a) {
-        if (!a.isNumerical()) {
-            throw new IllegalStateException("Extraction of numerical example value for non-numerical attribute '" + a.getName() + "' is not possible.");
-        } else {
-            return this.getValue(a);
-        }
-    }
-
-//    public Date getDateValue(IAttribute a) {
-//        if (!Ontology.ATTRIBUTE_VALUE_TYPE.isA(a.getValueType(), 9)) {
-//            throw new AttributeTypeException("Extraction of date example value for non-date attribute '" + a.getName() + "' is not possible.");
-//        } else {
-//            return new Date((long)this.getValue(a));
-//        }
-//    }
 
     public void setValue(IAttribute a, double value) {
         parentExampleSet.setDoubleValue(a, rowIndex, value);
@@ -69,7 +54,7 @@ public class Example implements Serializable, Map<String, Object> {
             throw new IllegalStateException("setValue(Attribute, String) only supported for nominal values!");
         } else {
             if (str != null) {
-                this.setValue(a, (double)a.getMapping().mapString(str));
+                this.setValue(a, (double) a.getMapping().mapString(str));
             } else {
                 this.setValue(a, Double.NaN);
             }
@@ -102,14 +87,14 @@ public class Example implements Serializable, Map<String, Object> {
     }
 
     public String toString() {
-        return this.toDenseString( true);
+        return this.toDenseString(true);
     }
 
-    public String toDenseString( boolean quoteNominal) {
+    public String toDenseString(boolean quoteNominal) {
         StringBuffer result = new StringBuffer();
         Iterator<IAttribute> a = this.getAttributes().allAttributes();
 
-        for(boolean first = true; a.hasNext(); result.append(this.getValueAsString((IAttribute)a.next(),  quoteNominal))) {
+        for (boolean first = true; a.hasNext(); result.append(this.getValueAsString((IAttribute) a.next(), quoteNominal))) {
             if (first) {
                 first = false;
             } else {
@@ -123,7 +108,7 @@ public class Example implements Serializable, Map<String, Object> {
     public Object get(Object key) {
         IAttribute attribute = null;
         if (key instanceof String) {
-            attribute = this.parentExampleSet.getAttributes().get((String)key);
+            attribute = this.parentExampleSet.getAttributes().get((String) key);
         }
 
         double value = this.getValue(attribute);
@@ -134,9 +119,9 @@ public class Example implements Serializable, Map<String, Object> {
         } else if (attribute.isNominal()) {
             return this.getValueAsString(attribute);
         } else if (Ontology.ATTRIBUTE_VALUE_TYPE.isA(attribute.getValueType(), 3)) {
-            return (int)this.getValue(attribute);
+            return (int) this.getValue(attribute);
         } else {
-            return Ontology.ATTRIBUTE_VALUE_TYPE.isA(attribute.getValueType(), 9) ? new Date((long)this.getValue(attribute)) : this.getValue(attribute);
+            return Ontology.ATTRIBUTE_VALUE_TYPE.isA(attribute.getValueType(), 9) ? new Date((long) this.getValue(attribute)) : this.getValue(attribute);
         }
     }
 
@@ -159,7 +144,7 @@ public class Example implements Serializable, Map<String, Object> {
             } else if (value == null) {
                 this.setValue(attribute, Double.NaN);
             } else {
-                this.setValue(attribute, (double)attribute.getMapping().mapString(value.toString()));
+                this.setValue(attribute, (double) attribute.getMapping().mapString(value.toString()));
             }
 
             return value;
@@ -173,7 +158,7 @@ public class Example implements Serializable, Map<String, Object> {
     public boolean containsKey(Object key) {
         IAttribute attribute = null;
         if (key instanceof String) {
-            attribute = this.parentExampleSet.getAttributes().get((String)key);
+            attribute = this.parentExampleSet.getAttributes().get((String) key);
         }
 
         return attribute != null;
@@ -188,15 +173,15 @@ public class Example implements Serializable, Map<String, Object> {
     }
 
     public boolean isEmpty() {
-        return this.parentExampleSet.getAttributes().allSize() == 0;
+        return this.parentExampleSet.columnCount() == 0;
     }
 
     public Set<String> keySet() {
         Set<String> allKeys = new HashSet<>();
         Iterator<IAttribute> a = this.parentExampleSet.getAttributes().allAttributes();
 
-        while(a.hasNext()) {
-            allKeys.add(((IAttribute)a.next()).getName());
+        while (a.hasNext()) {
+            allKeys.add(((IAttribute) a.next()).getName());
         }
 
         return allKeys;
@@ -211,7 +196,7 @@ public class Example implements Serializable, Map<String, Object> {
     }
 
     public int size() {
-        return this.parentExampleSet.getAttributes().allSize();
+        return this.parentExampleSet.columnCount();
     }
 
     public Collection<Object> values() {

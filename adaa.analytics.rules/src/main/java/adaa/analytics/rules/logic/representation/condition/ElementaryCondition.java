@@ -35,7 +35,7 @@ public class ElementaryCondition extends ConditionBase {
 	
 	/** Attribute the condition is built upon. */
 	protected String attribute;
-	
+
 	/** Value set. */
 	protected IValueSet valueSet;
 	
@@ -77,7 +77,7 @@ public class ElementaryCondition extends ConditionBase {
 	 */
 	@Override
 	protected boolean internalEvaluate(Example ex) {
-		double v = ex.getValue(ex.getAttributes().get(attribute));
+		double v = ex.getValue(attribute);
 		boolean result = valueSet.contains(v);
 		return result;
 	}

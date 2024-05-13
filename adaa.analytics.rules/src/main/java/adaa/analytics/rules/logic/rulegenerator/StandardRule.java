@@ -45,7 +45,7 @@ public class StandardRule {
 
     private void prepareSncAndFinder(IExampleSet exampleSet, IAttribute contrastAttr, InductionParameters params)
     {
-        if (exampleSet.getAttributes().findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
+        if (exampleSet.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
             // survival problem
             finder = contrastAttr != null
                     ? new ContrastSurvivalFinder(params)
@@ -105,7 +105,7 @@ public class StandardRule {
     {
         InductionParameters params = ruleGeneratorParams.generateInductionParameters();
 
-        if (exampleSet.getAttributes().findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
+        if (exampleSet.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
             // survival problem
             //	if (getParameterAsBoolean(PARAMETER_LOGRANK_SURVIVAL)) {
             params.setInductionMeasure(new LogRank());

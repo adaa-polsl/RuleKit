@@ -138,7 +138,7 @@ public abstract class PredictionModel implements Serializable {
 	protected IAttribute createPredictionAttributes(IExampleSet exampleSet, IAttribute label) {
 		// create and add prediction attribute
 		IAttribute predictedLabel = AttributeFactory.createAttribute(label, EColumnRole.prediction.name());
-		exampleSet.addAttribute(predictedLabel);
+		exampleSet.addNewColumn(predictedLabel);
 		exampleSet.getAttributes().setPredictedLabel(predictedLabel);
 
 		// check whether confidence labels should be constructed
@@ -146,12 +146,12 @@ public abstract class PredictionModel implements Serializable {
 			for (String value : predictedLabel.getMapping().getValues()) {
 				IAttribute confidence = AttributeFactory.createAttribute(EColumnRole.confidence.name()+ "(" + value + ")",
 						Ontology.REAL);
-				exampleSet.addAttribute(confidence);
+				exampleSet.addNewColumn(confidence);
 				exampleSet.getAttributes().setSpecialAttribute(confidence, EColumnRole.confidence.name() + "_" + value);
 			}
 			IAttribute confidence = AttributeFactory.createAttribute(EColumnRole.confidence.name(),
 					Ontology.REAL);
-			exampleSet.addAttribute(confidence);
+			exampleSet.addNewColumn(confidence);
 			exampleSet.getAttributes().setSpecialAttribute(confidence, EColumnRole.confidence.name());
 		}
 		return predictedLabel;
@@ -167,60 +167,5 @@ public abstract class PredictionModel implements Serializable {
 	}
 
 
-	/**
-	 * Helper method in order to lower memory consumption. This method should be invoked after a
-	 * predicted label and confidence are not longer needed, e.g. after each crossvalidation run or
-	 * after a meta learning iteration.
-	 */
-	public static void removePredictedLabel(IExampleSet exampleSet) {
-		IAttribute predictedLabel = exampleSet.getAttributes().getPredictedLabel();
-		if (predictedLabel != null) { // remove old predicted label
-			if (predictedLabel.isNominal()) {
-				for (String value : predictedLabel.getMapping().getValues()) {
-					IAttribute currentConfidenceAttribute = exampleSet.getAttributes().getColumnByRole(
-							EColumnRole.confidence.name() + "_" + value);
-					if (currentConfidenceAttribute != null) {
-						exampleSet.getAttributes().removeRegularRole(currentConfidenceAttribute);
-					}
-				}
-			}
-			exampleSet.getAttributes().removeRegularRole(predictedLabel);
-		}
-	}
 
-	/**
-	 * Copies the predicted label from the source example set to the destination example set. Does
-	 * nothing if the source does not contain a predicted label.
-	 */
-	public static void copyPredictedLabel(IExampleSet source, IExampleSet destination) {
-		IAttribute predictedLabel = source.getAttributes().getPredictedLabel();
-		if (predictedLabel != null) {
-			// remove attributes but do not delete the columns from the table, otherwise copying is
-			// not possible
-			removePredictedLabel(destination);
-			if (predictedLabel.isNominal()) {
-				for (String value : predictedLabel.getMapping().getValues()) {
-					IAttribute currentConfidenceAttribute = source.getAttributes()
-							.getColumnByRole(EColumnRole.confidence.name() + "_" + value);
-
-					// it's possible that the model does not create confidences for all label
-					// values, so check for null (e.g. OneClass-SVM)
-					if (currentConfidenceAttribute != null) {
-						IAttribute copyOfCurrentConfidenceAttribute = AttributeFactory
-								.createAttribute(currentConfidenceAttribute);
-						destination.getAttributes().setSpecialAttribute(copyOfCurrentConfidenceAttribute,
-								EColumnRole.confidence.name() + "_" + value);
-					}
-				}
-			}
-
-			IAttribute copyOfPredictedLabel = AttributeFactory.createAttribute(predictedLabel);
-			destination.getAttributes().setPredictedLabel(copyOfPredictedLabel);
-		}
-
-		IAttribute costs = source.getAttributes().getCost();
-		if (costs != null) {
-			destination.getAttributes().setSpecialAttribute(costs, EColumnRole.cost.name());
-		}
-	}
 }

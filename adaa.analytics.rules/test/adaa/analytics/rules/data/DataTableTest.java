@@ -1,13 +1,11 @@
-package adaa.analytics.rules.rm.comp;
+package adaa.analytics.rules.data;
 
-import adaa.analytics.rules.data.DataTable;
 import adaa.analytics.rules.data.metadata.EColumnRole;
 import adaa.analytics.rules.logic.representation.rule.ContrastRule;
-import adaa.analytics.rules.data.IExampleSet;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TsExampleSetTest {
+public class DataTableTest {
 
     private Object[][] crateValues() {
         return new Object[][]{
@@ -30,7 +28,7 @@ public class TsExampleSetTest {
      * - contrastAttribute
      */
     @Test
-    public void CreateTsExampleSetAllTest() {
+    public void CreateDataTableAllTest() {
 
         IExampleSet es = new DataTable(crateValues(), crateAttsNames(), "l_att", "s_att", "c_att");
 
@@ -54,7 +52,7 @@ public class TsExampleSetTest {
      * - decisionAttribute
      */
     @Test
-    public void CreateTsExampleSetLabelTest() {
+    public void CreateDataTableLabelTest() {
 
         IExampleSet es = new DataTable(crateValues(), crateAttsNames(), "l_att", null, null);
 
@@ -77,7 +75,7 @@ public class TsExampleSetTest {
      * - survivalTimeAttribute
      */
     @Test
-    public void CreateTsExampleSetSurvivalTest() {
+    public void CreateDataTableSurvivalTest() {
 
         IExampleSet es = new DataTable(crateValues(), crateAttsNames(), null, "s_att", null);
 
@@ -101,7 +99,7 @@ public class TsExampleSetTest {
      * - contrastAttribute
      */
     @Test
-    public void CreateTsExampleSetContrastTest() {
+    public void CreateDataTableContrastTest() {
 
         IExampleSet es = new DataTable(crateValues(), crateAttsNames(), null, null, "c_att");
 
@@ -126,7 +124,7 @@ public class TsExampleSetTest {
      * - survivalTimeAttribute
      */
     @Test
-    public void CreateTsExampleSetLabelSurvivalTest() {
+    public void CreateDataTableLabelSurvivalTest() {
 
         IExampleSet es = new DataTable(crateValues(), crateAttsNames(), "l_att", "s_att", null);
 
@@ -151,7 +149,7 @@ public class TsExampleSetTest {
      * - contrastAttribute
      */
     @Test
-    public void CreateTsExampleSetLabelContrastTest() {
+    public void CreateDataTableLabelContrastTest() {
 
         IExampleSet es = new DataTable(crateValues(), crateAttsNames(), "l_att", null, "c_att");
 
@@ -176,7 +174,7 @@ public class TsExampleSetTest {
      * - contrastAttribute
      */
     @Test
-    public void CreateTsExampleSetSurvivalContrastTest() {
+    public void CreateDataTableSurvivalContrastTest() {
 
         IExampleSet es = new DataTable(crateValues(), crateAttsNames(), null, "s_att", "c_att");
 

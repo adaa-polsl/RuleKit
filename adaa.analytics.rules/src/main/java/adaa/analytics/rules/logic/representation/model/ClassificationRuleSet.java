@@ -226,11 +226,11 @@ public class ClassificationRuleSet extends RuleSetBase {
         IAttribute predictedLabel = super.createPredictionAttributes(exampleSet, label);
 
         IAttribute attr = AttributeFactory.createAttribute(ATTRIBUTE_VOTING_RESULTS_WEIGHTS, Ontology.STRING);
-        exampleSet.addAttribute(attr);
+        exampleSet.addNewColumn(attr);
         exampleSet.getAttributes().setSpecialAttribute(attr, attr.getName());
 
         attr = AttributeFactory.createAttribute(ATTRIBUTE_VOTING_RESULTS_COUNTS, Ontology.STRING);
-        exampleSet.addAttribute(attr);
+        exampleSet.addNewColumn(attr);
         exampleSet.getAttributes().setSpecialAttribute(attr, attr.getName());
 
         return predictedLabel;

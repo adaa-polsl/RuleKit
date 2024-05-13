@@ -5,12 +5,7 @@ import adaa.analytics.rules.data.IAttribute;
 public class AttributeFactory {
 
     public static IAttribute createAttribute(String name, int valueType) {
-       return new ColumnMetaData(name, EColumnType.RmOntologyToEColumnType(valueType));
-    }
-
-
-    public static IAttribute createAttribute(IAttribute attribute) {
-        return createAttribute(attribute, (String)null);
+       return new ColumnMetaData(name, EColumnType.RmOntologyToEColumnType(valueType),null);
     }
 
     public static IAttribute createAttribute(IAttribute attribute, String functionName) {

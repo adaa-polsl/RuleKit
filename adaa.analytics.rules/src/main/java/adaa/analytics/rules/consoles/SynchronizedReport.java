@@ -17,7 +17,9 @@ package adaa.analytics.rules.consoles;
 import java.io.*;
 
 public class SynchronizedReport {
-	
+
+	private static VersionService versionService = new VersionService();
+
 	protected Writer writer;
 	
 	protected boolean empty = true;
@@ -27,11 +29,14 @@ public class SynchronizedReport {
 	public String getFile() { return file; }
 
 
-	public SynchronizedReport(String dirPath, String filePath, String header) throws IOException {
+	public SynchronizedReport(String dirPath, String filePath) throws IOException {
 		if (filePath!=null && !filePath.isEmpty()) {
 			file = dirPath + "/" + filePath;
 			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "utf-8"));
-			writer.write(header);
+			if (filePath.endsWith("csv"))
+				writer.write(versionService.getSimpleHeader());
+			else
+				writer.write(versionService.getHeader());
 		}
 	}
 	

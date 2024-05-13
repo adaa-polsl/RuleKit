@@ -1,32 +1,19 @@
 package adaa.analytics.rules.data;
 
-import adaa.analytics.rules.data.metadata.EColumnRole;
-
 import java.io.Serializable;
 import java.util.Iterator;
 
 public interface IAttributes  extends Iterable<IAttribute>,  Serializable {
 
-
-    boolean equals(Object var1);
-
-    int hashCode();
-
     Iterator<IAttribute> allAttributes();
-
-    boolean contains(IAttribute var1);
 
     int regularSize();
 
-    int allSize();
-
     void setRegularRole(IAttribute var1);
 
-    boolean removeRegularRole(IAttribute var1);
+    void removeRegularRole(IAttribute var1);
 
     IAttribute get(String columnName);
-
-    IAttribute get(String columnName, boolean caseSensitive);
 
     IAttribute getRegular(String columnName);
 
@@ -47,10 +34,6 @@ public interface IAttributes  extends Iterable<IAttribute>,  Serializable {
     IAttribute getCost();
 
     void setSpecialAttribute(IAttribute var1, String role);
-
-    String toString();
-
-    String findRoleBySpecialName(String role);
 
     IAttribute getColumnByRoleUnsafe(String role);
 

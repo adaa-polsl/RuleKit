@@ -140,7 +140,7 @@ public class SurvivalRuleSet extends RuleSetBase {
 		IAttribute predictedLabel = super.createPredictionAttributes(exampleSet, label);
 
 		IAttribute attr = AttributeFactory.createAttribute(ATTRIBUTE_ESTIMATOR, Ontology.STRING);
-		exampleSet.addAttribute(attr);
+		exampleSet.addNewColumn(attr);
 		exampleSet.getAttributes().setSpecialAttribute(attr, attr.getName());
 		
 		return predictedLabel;

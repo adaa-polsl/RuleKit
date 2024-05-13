@@ -49,6 +49,7 @@ public class TestProcess {
         // Test process
         if (datasetConfiguration.predictElements.size() > 0) {
             Logger.log("PREDICTION\n" + "Performance file: " + performanceTable.getFile() + "\n", Level.INFO);
+
             for (PredictElement pe : datasetConfiguration.predictElements) {
                 Logger.log("Applying model " + pe.modelFile + " on " + pe.testFile + ", saving predictions in " + pe.testFile, Level.INFO);
                 Date begin = new Date();
@@ -80,7 +81,7 @@ public class TestProcess {
                     rpc.countValues();
                     pv = rpc.getResult();
                 }
-                ArffFileWriter.write(appliedEs,predictionsFilePath);
+                ArffFileWriter.write(appliedEs, predictionsFilePath);
 
                 long t2 = System.nanoTime();
                 double elapsedSec = (double) (t2 - t1) / 1e9;
@@ -115,26 +116,25 @@ public class TestProcess {
         StringBuilder performanceHeader = new StringBuilder("Dataset, time started, elapsed[s], ");
         StringBuilder row = new StringBuilder(testFileName + "," + dateString + "," + elapsedSec + ",");
 
-        for(PerformanceResult pc: performance){
+        for (PerformanceResult pc : performance) {
             performanceHeader.append(pc.getName()).append(",");
         }
 
         if (performanceData != null) {
-            for(PerformanceResult pc: performanceData){
+            for (PerformanceResult pc : performanceData) {
                 performanceHeader.append(pc.getName()).append(",");
             }
         }
 
-        for(PerformanceResult pc: performance){
+        for (PerformanceResult pc : performance) {
             row.append(pc.getValue()).append(", ");
         }
 
         if (performanceData != null) {
-            for(PerformanceResult pc: performanceData){
+            for (PerformanceResult pc : performanceData) {
                 row.append(pc.getValue()).append(", ");
             }
         }
-
         String configString = "Parameters: " + model.getParams().toString().replace("\n", "; ");
         performanceTable.add(new String[]{configString, performanceHeader.toString()}, row.toString());
 

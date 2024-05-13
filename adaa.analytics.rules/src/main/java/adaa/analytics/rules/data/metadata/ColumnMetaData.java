@@ -1,9 +1,6 @@
 package adaa.analytics.rules.data.metadata;
 
-import adaa.analytics.rules.data.DataTable;
-import adaa.analytics.rules.data.NominalMapping;
-import adaa.analytics.rules.data.IAttribute;
-import adaa.analytics.rules.data.INominalMapping;
+import adaa.analytics.rules.data.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -18,7 +15,7 @@ public class ColumnMetaData implements Serializable, IAttribute {
 	private EColumnType colType;
 	private String role;
 	private NominalMapping mapping = new NominalMapping();
-	private DataTable owner;
+	private IExampleSet owner;
 	private Map<EStatisticType, Double> statistics = new HashMap<>();
 
 	public ColumnMetaData(@NotNull String columnName, @NotNull EColumnType columnType, @NotNull String role, List<String> values, DataTable owner) {
@@ -30,12 +27,12 @@ public class ColumnMetaData implements Serializable, IAttribute {
 		fillValueSet(values);
 	}
 
-	public ColumnMetaData(@NotNull String columnName, @NotNull EColumnType columnType) {
+	public ColumnMetaData(@NotNull String columnName, @NotNull EColumnType columnType, IExampleSet owner) {
 
 		this.name = columnName;
 		this.colType = columnType;
 		this.role = EColumnRole.regular.name();
-		this.owner = null;
+		this.owner = owner;
 	}
 
 	public String getRole() {
@@ -72,10 +69,6 @@ public class ColumnMetaData implements Serializable, IAttribute {
 		this.role = role;
 	}
 
-	public DataTable getOwner() {
-		return owner;
-	}
-
 	public void setStatistic(EStatisticType statType, double value) {
 		statistics.put(statType, value);
 	}
@@ -102,6 +95,10 @@ public class ColumnMetaData implements Serializable, IAttribute {
 		for(EStatisticType statType : EStatisticType.values()) {
 			owner.recalculateStatistics(statType, name);
 		}
+	}
+
+	public void setOwner(DataTable owner) {
+		this.owner = owner;
 	}
 
 	private void fillValueSet(List<String> values) {

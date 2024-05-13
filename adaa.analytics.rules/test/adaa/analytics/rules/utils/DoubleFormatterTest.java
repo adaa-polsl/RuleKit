@@ -1,6 +1,5 @@
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.utils;
 
-import adaa.analytics.rules.utils.DoubleFormatter;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

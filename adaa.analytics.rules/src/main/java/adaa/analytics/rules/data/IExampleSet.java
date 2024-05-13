@@ -20,9 +20,15 @@ public interface IExampleSet extends Serializable, Cloneable, Iterable<Example> 
 
     DataTableAnnotations getAnnotations();
 
+    int getColumnIndex(String attributeName);
+
+    void recalculateStatistics(EStatisticType stateType, String colName);
+
     IAttributes getAttributes();
 
     int size();
+
+    int columnCount();
 
     void sortBy(String columnName, EColumnSortDirections sortDir);
 
@@ -37,7 +43,7 @@ public interface IExampleSet extends Serializable, Cloneable, Iterable<Example> 
 
     Object [] getValues(String colName);
 
-    int addAttribute(IAttribute var1);
+    void addNewColumn(IAttribute colMetaData);
 
     DataColumnDoubleAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue);
 

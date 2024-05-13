@@ -32,17 +32,16 @@ public class TrainTestValidationExperiment implements Runnable {
 
     public TrainTestValidationExperiment(DatasetConfiguration datasetConfiguration, ParamSetConfiguration paramSet,
                                          String outDirPath, boolean verbose) throws IOException {
-        VersionService versionService = new VersionService();
 
         File f = new File(outDirPath);
         String finalOutDirPath = f.isAbsolute() ? outDirPath : (System.getProperty("user.dir") + "/" + outDirPath);
         this.logsVerbose = verbose;
 
-        SynchronizedReport trainingReport = new SynchronizedReport(outDirPath, datasetConfiguration.trainingReportFilePath, versionService.getHeader());
+        SynchronizedReport trainingReport = new SynchronizedReport(outDirPath, datasetConfiguration.trainingReportFilePath);
         this.trainProcess = new TrainProcess(datasetConfiguration, paramSet, trainingReport, finalOutDirPath);
 
-        SynchronizedReport performanceTable = new SynchronizedReport(outDirPath, datasetConfiguration.predictionPerformanceFilePath, versionService.getSimpleHeader());
-        SynchronizedReport testingReport = new SynchronizedReport(outDirPath, datasetConfiguration.testingReportFilePath, versionService.getHeader());
+        SynchronizedReport performanceTable = new SynchronizedReport(outDirPath, datasetConfiguration.predictionPerformanceFilePath);
+        SynchronizedReport testingReport = new SynchronizedReport(outDirPath, datasetConfiguration.testingReportFilePath);
         this.testProcess = new TestProcess(datasetConfiguration, paramSet, testingReport, performanceTable, finalOutDirPath);
     }
 

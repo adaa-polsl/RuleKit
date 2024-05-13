@@ -3,7 +3,6 @@ package adaa.analytics.rules.data.metadata;
 import adaa.analytics.rules.data.DataTable;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IAttributes;
-import com.google.common.collect.LinkedHashMultimap;
 
 import java.io.Serializable;
 import java.util.*;
@@ -13,17 +12,12 @@ public class ColumnMetadataMap implements Serializable, IAttributes {
 
     private Map<String, ColumnMetaData> attributeMetaData = new LinkedHashMap<>();
 
-    private DataTable owner;
-    public ColumnMetadataMap(DataTable owner) {
-        this.owner = owner;
-    }
-
-    public void add(String columnName, ColumnMetaData columnMetaData)
+    public void add(ColumnMetaData columnMetaData)
     {
-        attributeMetaData.put(columnName,columnMetaData);
+        attributeMetaData.put(columnMetaData.getName(),columnMetaData);
     }
 
-    public void updateMapping(ColumnMetadataMap uColumnMetadataMap) {
+    public void updateMapping(ColumnMetadataMap uColumnMetadataMap, DataTable owner) {
         for (String colName : uColumnMetadataMap.getColumnNames()) {
             ColumnMetaData uColumnMetadata =  uColumnMetadataMap.getColumnMetaData(colName).cloneWithNewOwner(owner);
             if (!attributeMetaData.containsKey(colName)) {
@@ -36,15 +30,6 @@ public class ColumnMetadataMap implements Serializable, IAttributes {
         return attributeMetaData.keySet();
     }
 
-    public boolean setColumnRole(String columnName, String role)
-    {
-        if (! attributeMetaData.containsKey(columnName))
-            return false;
-
-        ColumnMetaData columnMetadata = attributeMetaData.get(columnName);
-        columnMetadata.setRole(role);
-        return true;
-    }
 
     public Collection<ColumnMetaData> getAllColumnMetaData()
     {
@@ -57,7 +42,7 @@ public class ColumnMetadataMap implements Serializable, IAttributes {
 
     public ColumnMetadataMap cloneWithNewOwner(DataTable newOwner)
     {
-        ColumnMetadataMap cloned = new ColumnMetadataMap(newOwner);
+        ColumnMetadataMap cloned = new ColumnMetadataMap();
 
         for(Map.Entry<String, ColumnMetaData> entry : attributeMetaData.entrySet()) {
             ColumnMetaData clonedColumnMetaData = entry.getValue().cloneWithNewOwner(newOwner);
@@ -90,64 +75,23 @@ public class ColumnMetadataMap implements Serializable, IAttributes {
     }
 
     @Override
-    public boolean contains(IAttribute var1) {
-        return getColumnMetaData(var1.getName()).equals(var1);
-    }
-
-    @Override
     public int regularSize() {
         return getColumnsByRole(EColumnRole.regular.name()).size();
     }
 
     @Override
-    public int allSize() {
-        return owner.columnCount();
-    }
-
-    @Override
-    public void setRegularRole(IAttribute var1) {
-        String name = var1.getName();
-        this.setColumnRole(name, EColumnRole.regular.name());
-    }
-
-    @Override
-    public boolean removeRegularRole(IAttribute var1) {
-        String name = var1.getName();
-        return this.setColumnRole(name, EColumnRole.not_defined.name());
+    public void removeRegularRole(IAttribute var1) {
+        this.setSpecialAttribute(var1, EColumnRole.not_defined.name());
     }
 
     @Override
     public IAttribute get(String name) {
-        return get(name, true);
-    }
-
-    @Override
-    public IAttribute get(String name, boolean caseSensitive) {
-        IAttribute cmd = null;
-
-        if(caseSensitive) {
-            cmd = getColumnMetaData(name);
-            if(cmd == null) {
-                cmd = getColumnByRole(name);
-            }
-            return cmd == null ? null : cmd;
-        }
-
-        for(int i=0 ; i<owner.columnCount() ; i++) {
-            if(owner.getColumn(i).getName().equalsIgnoreCase(name)) {
-                cmd = owner.getColumn(i);
-            }
-        }
-
+        IAttribute cmd = getColumnMetaData(name);
         if(cmd == null) {
-            for(int i=0 ; i<owner.columnCount() ; i++) {
-                if(owner.getColumn(i).getRole().equalsIgnoreCase(name)) {
-                    cmd = owner.getColumn(i);
-                }
-            }
+            cmd = getColumnByRole(name);
         }
-
         return cmd == null ? null : cmd;
+
     }
 
     @Override
@@ -178,14 +122,6 @@ public class ColumnMetadataMap implements Serializable, IAttributes {
     }
 
     @Override
-    public String findRoleBySpecialName(String role) {
-        IAttribute att = getColumnByRole(role);
-        if (att==null)
-            return null;
-        return att.getName();
-    }
-
-    @Override
     public IAttribute getLabel() {
         return this.getColumnByRole(EColumnRole.label.name());
     }
@@ -195,6 +131,31 @@ public class ColumnMetadataMap implements Serializable, IAttributes {
         this.setSpecialAttribute(var1, EColumnRole.label.name());
     }
 
+    @Override
+    public void setRegularRole(IAttribute var1) {
+        this.setSpecialAttribute(var1, EColumnRole.regular.name());
+    }
+
+    public void setPredictedLabel(IAttribute predictedLabel) {
+        this.setSpecialAttribute(predictedLabel, EColumnRole.prediction.name());
+    }
+    @Override
+    public void setSpecialAttribute(IAttribute var1, String role) {
+       var1.setRole(role);
+    }
+
+    public boolean setColumnRole(String columnName, String role)
+    {
+        if (! attributeMetaData.containsKey(columnName))
+            return false;
+
+        ColumnMetaData columnMetadata = attributeMetaData.get(columnName);
+        columnMetadata.setRole(role);
+        return true;
+    }
+
+
+
     public IAttribute getPredictedLabel() {
         return this.getColumnByRole(EColumnRole.prediction.name());
     }
@@ -203,9 +164,6 @@ public class ColumnMetadataMap implements Serializable, IAttributes {
         return this.getColumnByRole("confidence_" + classLabel);
     }
 
-    public void setPredictedLabel(IAttribute predictedLabel) {
-        this.setSpecialAttribute(predictedLabel, EColumnRole.prediction.name());
-    }
 
     public IAttribute getWeight() {
         return this.getColumnByRole(EColumnRole.weight.name());
@@ -215,11 +173,6 @@ public class ColumnMetadataMap implements Serializable, IAttributes {
         return this.getColumnByRole(EColumnRole.cost.name());
     }
 
-    @Override
-    public void setSpecialAttribute(IAttribute var1, String role) {
-        String name = var1.getName();
-        setColumnRole(name, role);
-    }
 
     public List<ColumnMetaData> getColumnsByRole(String role) {
         if (role == null) return new ArrayList<>(0);

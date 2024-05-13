@@ -1,8 +1,7 @@
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.exampleset;
 
 import adaa.analytics.rules.data.DataTable;
 import adaa.analytics.rules.data.metadata.EColumnRole;
-import adaa.analytics.rules.logic.representation.exampleset.ContrastExampleSet;
 import org.junit.Assert;
 import org.junit.Test;
 

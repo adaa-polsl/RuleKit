@@ -56,7 +56,7 @@ public class ExpertRule {
 
     private void prepareSncAndFinder(IExampleSet exampleSet, Knowledge knowledge, InductionParameters params)
     {
-        if (exampleSet.getAttributes().findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
+        if (exampleSet.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
             // survival problem
             params.setInductionMeasure(new LogRank());
             params.setPruningMeasure(new LogRank());
@@ -168,7 +168,7 @@ public class ExpertRule {
     {
         InductionParameters inductionParameters = ruleGeneratorParams.generateInductionParameters();
 
-        if (exampleSet.getAttributes().findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
+        if (exampleSet.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
             // survival problem
             inductionParameters.setInductionMeasure(new LogRank());
             inductionParameters.setPruningMeasure(new LogRank());

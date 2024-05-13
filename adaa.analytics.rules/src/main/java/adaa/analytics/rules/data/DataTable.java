@@ -22,7 +22,7 @@ import java.util.*;
 public class DataTable implements Serializable, IExampleSet {
 
     private Table table;
-    private ColumnMetadataMap columnMetadataMap = new ColumnMetadataMap(this);
+    private ColumnMetadataMap columnMetadataMap = new ColumnMetadataMap();
     private DataTableAnnotations dataTableAnnotations = new DataTableAnnotations();
 
     //local cache to optimize access to column idx
@@ -63,7 +63,7 @@ public class DataTable implements Serializable, IExampleSet {
         for (int i = 0; i < attsInfo.size(); i++) {
             AttributeInfo attInfo = attsInfo.get(i);
             table.column(i).setName(attInfo.getName());
-            columnMetadataMap.add(attInfo.getName(), new ColumnMetaData(attInfo.getName(), attInfo.getCellType(), EColumnRole.regular.name(), attInfo.getValues(), this));
+            columnMetadataMap.add( new ColumnMetaData(attInfo.getName(), attInfo.getCellType(), EColumnRole.regular.name(), attInfo.getValues(), this));
         }
     }
 
@@ -126,7 +126,7 @@ public class DataTable implements Serializable, IExampleSet {
                 col = DoubleColumn.create(attName, numData);
             }
             table.addColumns(col);
-            columnMetadataMap.add(attName, colMetaData);
+            columnMetadataMap.add( colMetaData);
         }
     }
 
@@ -143,7 +143,8 @@ public class DataTable implements Serializable, IExampleSet {
     }
 
     public void addNewColumn(IAttribute colMetaData) {
-        ColumnMetaData newColMetaData = ((ColumnMetaData) colMetaData).cloneWithNewOwner(this);
+        ColumnMetaData newColMetaData = ((ColumnMetaData) colMetaData);
+        newColMetaData.setOwner(this);
         Column<?> tsCol = null;
 
         if (newColMetaData.getColumnType() == EColumnType.NOMINAL) {
@@ -157,7 +158,7 @@ public class DataTable implements Serializable, IExampleSet {
         }
 
         table.addColumns(tsCol);
-        columnMetadataMap.add(newColMetaData.getName(), newColMetaData);
+        columnMetadataMap.add(newColMetaData);
     }
 
     public ColumnMetaData getColumn(String name) {
@@ -249,7 +250,7 @@ public class DataTable implements Serializable, IExampleSet {
     }
 
     void updateMapping(IAttributes uColumnMetadataMap) {
-        columnMetadataMap.updateMapping((ColumnMetadataMap) uColumnMetadataMap);
+        columnMetadataMap.updateMapping((ColumnMetadataMap) uColumnMetadataMap,this);
     }
 
     public double getDoubleValue(String colName, int colIdx, int rowIndex, double defaultValue) {
@@ -383,12 +384,6 @@ public class DataTable implements Serializable, IExampleSet {
     @Override
     public Iterator<Example> iterator() {
         return new ExampleIterator(this);
-    }
-
-    @Override
-    public int addAttribute(IAttribute var1) {
-        addNewColumn(var1);
-        return getColumnIndex(var1.getName());
     }
 
     @Override

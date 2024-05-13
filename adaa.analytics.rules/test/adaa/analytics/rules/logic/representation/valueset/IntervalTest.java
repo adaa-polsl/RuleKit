@@ -12,16 +12,13 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
-package adaa.analytics.rules.logic.representation;
+package adaa.analytics.rules.logic.representation.valueset;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import adaa.analytics.rules.logic.representation.valueset.AnyValueSet;
-import adaa.analytics.rules.logic.representation.valueset.IValueSet;
-import adaa.analytics.rules.logic.representation.valueset.Interval;
 import org.junit.Assert;
 import org.junit.Test;
 

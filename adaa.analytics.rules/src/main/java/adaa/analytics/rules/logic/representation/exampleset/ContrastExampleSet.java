@@ -3,6 +3,7 @@ package adaa.analytics.rules.logic.representation.exampleset;
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.data.metadata.EColumnSortDirections;
 import adaa.analytics.rules.data.condition.ICondition;
+import adaa.analytics.rules.data.metadata.EStatisticType;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IAttributes;
@@ -111,8 +112,8 @@ public class ContrastExampleSet implements IExampleSet {
     }
 
     @Override
-    public int addAttribute(IAttribute var1) {
-        return delegateExampleSet.addAttribute(var1);
+    public void addNewColumn(IAttribute var1) {
+        delegateExampleSet.addNewColumn(var1);
     }
 
     @Override
@@ -128,6 +129,21 @@ public class ContrastExampleSet implements IExampleSet {
     @Override
     public void setDoubleValue(IAttribute att, int rowIndex, double value) {
         delegateExampleSet.setDoubleValue(att, rowIndex, value);
+    }
+
+    @Override
+    public int columnCount() {
+        return delegateExampleSet.columnCount();
+    }
+
+    @Override
+    public int getColumnIndex(String attributeName) {
+        return delegateExampleSet.getColumnIndex(attributeName);
+    }
+
+    @Override
+    public void recalculateStatistics(EStatisticType stateType, String colName) {
+        delegateExampleSet.recalculateStatistics(stateType, colName);
     }
 }
 

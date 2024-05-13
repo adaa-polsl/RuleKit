@@ -76,7 +76,7 @@ public class RulePerformanceCounter {
 
         if (testSet.getAnnotations().containsKey(ContrastRule.CONTRAST_ATTRIBUTE_ROLE)) {
             throw new IllegalStateException("Operator does not evaluate contrast sets.");
-        } else if (testSet.getAttributes().findRoleBySpecialName(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
+        } else if (testSet.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
             choosedCriterion.addAll(Arrays.asList(SURVIVAL_CRITERIA_CLASSES));
         } else if (label.isNominal()) {
             if (label.getMapping().size() == 2) {
