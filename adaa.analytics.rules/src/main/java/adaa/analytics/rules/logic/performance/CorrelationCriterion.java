@@ -43,7 +43,7 @@ public class CorrelationCriterion extends AbstractPerformanceCounter {
         while (exampleIterator.hasNext()) {
             Example example = exampleIterator.next();
 
-            if ((Double.isNaN(example.getLabel()) || Double.isNaN(example.getPredictedLabel()))) {
+            if ((Double.isNaN(example.getLabelValue()) || Double.isNaN(example.getPredictedLabelValue()))) {
                 continue;
             }
 

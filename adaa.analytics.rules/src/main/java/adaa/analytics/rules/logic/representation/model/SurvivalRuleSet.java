@@ -14,17 +14,17 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation.model;
 
+import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.data.metadata.AttributeFactory;
+import adaa.analytics.rules.data.metadata.EColumnType;
+import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.logic.induction.InductionParameters;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 import adaa.analytics.rules.logic.representation.Knowledge;
 import adaa.analytics.rules.logic.representation.rule.Rule;
 import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
-import adaa.analytics.rules.data.row.Example;
-import adaa.analytics.rules.data.IAttribute;
-import adaa.analytics.rules.data.IExampleSet;
-import adaa.analytics.rules.data.metadata.AttributeFactory;
 import adaa.analytics.rules.utils.OperatorException;
-import adaa.analytics.rules.data.metadata.Ontology;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,10 +71,9 @@ public class SurvivalRuleSet extends RuleSetBase {
 	 * Estimates survival function for a given example and stores in a text form in ATTRIBUTE_ESTIMATOR attribute. 
 	 * @param example Example to be examined.
 	 * @return Should be ignored (always 0).
-	 * @throws OperatorException
 	 */
 	@Override 
-	public double predict(Example example) throws OperatorException {
+	public double predict(Example example) {
 		
 		// predict estimator
 		List<SurvivalRule> matchingRules = new ArrayList<SurvivalRule>();
@@ -139,7 +138,7 @@ public class SurvivalRuleSet extends RuleSetBase {
 	protected IAttribute createPredictionAttributes(IExampleSet exampleSet, IAttribute label) {
 		IAttribute predictedLabel = super.createPredictionAttributes(exampleSet, label);
 
-		IAttribute attr = AttributeFactory.createAttribute(ATTRIBUTE_ESTIMATOR, Ontology.STRING);
+		IAttribute attr = AttributeFactory.createAttribute(ATTRIBUTE_ESTIMATOR, EColumnType.NOMINAL);
 		exampleSet.addNewColumn(attr);
 		exampleSet.getAttributes().setSpecialAttribute(attr, attr.getName());
 		

@@ -96,8 +96,6 @@ public class ClassificationFinder extends AbstractFinder {
 					// get all distinctive values of attribute
 					int id = 0;
 					for (Example e : trainSet) {
-//						DataRow dr = e.getDataRow();
-//						double value = dr.get(attr);
 						double value = attDataColumnDoubleAdapter.getDoubleValue(id);
 
 						// omit missing values

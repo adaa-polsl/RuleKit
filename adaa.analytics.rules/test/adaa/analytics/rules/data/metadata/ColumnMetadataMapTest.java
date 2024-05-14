@@ -16,13 +16,13 @@ public class ColumnMetadataMapTest {
     private ColumnMetadataMap prepareColumnMetadataMap()
     {
         ColumnMetadataMap cmm = new ColumnMetadataMap();
-        cmm.add(new ColumnMetaData("columnName1",EColumnType.NOMINAL,EColumnRole.regular.toString(),new ArrayList<>(), null));
-        cmm.add(new ColumnMetaData("columnName2",EColumnType.NOMINAL,EColumnRole.regular.toString(),new ArrayList<>(), null));
-        cmm.add(new ColumnMetaData("columnName3",EColumnType.NOMINAL,EColumnRole.regular.toString(),new ArrayList<>(), null));
-        cmm.add(new ColumnMetaData("labelColumn",EColumnType.NOMINAL,EColumnRole.label.toString(),new ArrayList<>(), null));
-        cmm.add(new ColumnMetaData("weightColumn",EColumnType.NUMERICAL,EColumnRole.weight.toString(),new ArrayList<>(), null));
-        cmm.add(new ColumnMetaData("costColumn",EColumnType.NUMERICAL,EColumnRole.cost.toString(),new ArrayList<>(), null));
-        cmm.add(new ColumnMetaData("predictionColumn",EColumnType.NUMERICAL,EColumnRole.prediction.toString(),new ArrayList<>(), null));
+        cmm.add(new ColumnMetaData("columnName1",EColumnType.NOMINAL,EColumnRole.regular,new ArrayList<>(), null));
+        cmm.add(new ColumnMetaData("columnName2",EColumnType.NOMINAL,EColumnRole.regular,new ArrayList<>(), null));
+        cmm.add(new ColumnMetaData("columnName3",EColumnType.NOMINAL,EColumnRole.regular,new ArrayList<>(), null));
+        cmm.add(new ColumnMetaData("labelColumn",EColumnType.NOMINAL,EColumnRole.label,new ArrayList<>(), null));
+        cmm.add(new ColumnMetaData("weightColumn",EColumnType.NUMERICAL,EColumnRole.weight,new ArrayList<>(), null));
+        cmm.add(new ColumnMetaData("costColumn",EColumnType.NUMERICAL,EColumnRole.cost,new ArrayList<>(), null));
+        cmm.add(new ColumnMetaData("predictionColumn",EColumnType.NUMERICAL,EColumnRole.prediction,new ArrayList<>(), null));
         cmm.add(new ColumnMetaData("confidenceColumn",EColumnType.NUMERICAL,EColumnRole.confidence.toString()+"_class",new ArrayList<>(), null));
 
         return cmm;
@@ -121,7 +121,7 @@ public class ColumnMetadataMapTest {
     @Test
     public void testSetGetRegular() {
         ColumnMetadataMap cmm = new ColumnMetadataMap();
-        cmm.add(new ColumnMetaData("columnName1",EColumnType.NOMINAL,EColumnRole.not_defined.toString(),new ArrayList<>(), null));
+        cmm.add(new ColumnMetaData("columnName1",EColumnType.NOMINAL,EColumnRole.not_defined,new ArrayList<>(), null));
         Assert.assertNull(cmm.getRegular("columnName1"));
         cmm.setRegularRole(cmm.get("columnName1"));
         Assert.assertNotNull(cmm.getRegular("columnName1"));
@@ -132,7 +132,7 @@ public class ColumnMetadataMapTest {
     @Test
     public void testSetGetLabel() {
         ColumnMetadataMap cmm = new ColumnMetadataMap();
-        cmm.add(new ColumnMetaData("columnName1",EColumnType.NOMINAL,EColumnRole.not_defined.toString(),new ArrayList<>(), null));
+        cmm.add(new ColumnMetaData("columnName1",EColumnType.NOMINAL,EColumnRole.not_defined,new ArrayList<>(), null));
         Assert.assertNull(cmm.getLabel());
         cmm.setLabel(cmm.get("columnName1"));
         Assert.assertNotNull(cmm.getLabel());
@@ -141,7 +141,7 @@ public class ColumnMetadataMapTest {
     @Test
     public void testSetGetPredicted() {
         ColumnMetadataMap cmm = new ColumnMetadataMap();
-        cmm.add(new ColumnMetaData("columnName1",EColumnType.NOMINAL,EColumnRole.not_defined.toString(),new ArrayList<>(), null));
+        cmm.add(new ColumnMetaData("columnName1",EColumnType.NOMINAL,EColumnRole.not_defined,new ArrayList<>(), null));
         Assert.assertNull(cmm.getPredictedLabel());
         cmm.setPredictedLabel(cmm.get("columnName1"));
         Assert.assertNotNull(cmm.getPredictedLabel());
@@ -161,7 +161,7 @@ public class ColumnMetadataMapTest {
     public void testUpdateMapping() {
         ColumnMetadataMap cmm = prepareColumnMetadataMap();
         ColumnMetadataMap cmm2 = new ColumnMetadataMap();
-        cmm2.add(new ColumnMetaData("newColumn",EColumnType.NOMINAL,EColumnRole.not_defined.toString(),new ArrayList<>(), null));
+        cmm2.add(new ColumnMetaData("newColumn",EColumnType.NOMINAL,EColumnRole.not_defined,new ArrayList<>(), null));
 
         cmm.updateMapping(cmm2,null);
         IAttribute nc = cmm.get("newColumn");

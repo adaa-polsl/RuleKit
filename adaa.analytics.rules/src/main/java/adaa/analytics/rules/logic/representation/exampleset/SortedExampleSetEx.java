@@ -53,8 +53,8 @@ public class SortedExampleSetEx implements IExampleSet {
         int sumWeights = 0;
 
         for (Example e: this) {
-            double y = e.getLabel();
-            double w = weighted ? e.getWeight() : 1.0;
+            double y = e.getLabelValue();
+            double w = weighted ? e.getWeightValue() : 1.0;
 
             labels[i] = y;
             weights[i] = w;

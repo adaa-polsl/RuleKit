@@ -28,7 +28,7 @@ public class DataTable implements Serializable, IExampleSet {
     //local cache to optimize access to column idx
     private Map<String, Integer> columnIdxMap = new HashMap<>();
 
-    private DataTable(Table table, ColumnMetadataMap columnMetadataMap, DataTableAnnotations dataTableAnnotations) {
+    public DataTable(Table table, ColumnMetadataMap columnMetadataMap, DataTableAnnotations dataTableAnnotations) {
         this.table = table;
         this.columnMetadataMap = columnMetadataMap;
         this.dataTableAnnotations = dataTableAnnotations;
@@ -65,7 +65,7 @@ public class DataTable implements Serializable, IExampleSet {
         for (int i = 0; i < attsInfo.size(); i++) {
             AttributeInfo attInfo = attsInfo.get(i);
             table.column(i).setName(attInfo.getName());
-            columnMetadataMap.add( new ColumnMetaData(attInfo.getName(), attInfo.getCellType(), EColumnRole.regular.name(), attInfo.getValues(), this));
+            columnMetadataMap.add( new ColumnMetaData(attInfo.getName(), attInfo.getCellType(), EColumnRole.regular, attInfo.getValues(), this));
         }
     }
 
@@ -90,13 +90,13 @@ public class DataTable implements Serializable, IExampleSet {
             } else if (obj instanceof Boolean || obj instanceof Integer || obj instanceof Long || obj instanceof Float || obj instanceof Double) {
                 colType = EColumnType.NUMERICAL;
             }
-            String colRole = EColumnRole.regular.name();
+            EColumnRole colRole = EColumnRole.regular;
             if (attName.equals(decisionAttribute)) {
-                colRole = EColumnRole.label.name();
+                colRole = EColumnRole.label;
             } else if (attName.equals(survivalTimeAttribute)) {
-                colRole = EColumnRole.survival_time.name();
+                colRole = EColumnRole.survival_time;
             } else if (attName.equals(contrastAttribute)) {
-                colRole = ContrastRule.CONTRAST_ATTRIBUTE_ROLE;
+                colRole = EColumnRole.contrast_attribute;
             }
 
             String[] nomData = null;

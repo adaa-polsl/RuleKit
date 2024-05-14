@@ -14,20 +14,19 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation.rule;
 
-import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.data.IDataColumnAdapter;
+import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.data.metadata.EStatisticType;
+import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.quality.ChiSquareVarianceTest;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
-import adaa.analytics.rules.data.row.Example;
-import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
-import adaa.analytics.rules.utils.DoubleFormatter;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.exampleset.SortedExampleSetEx;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
+import adaa.analytics.rules.utils.DoubleFormatter;
 import adaa.analytics.rules.utils.Pair;
 
 import java.security.InvalidParameterException;
@@ -191,7 +190,7 @@ public class RegressionRule extends Rule {
 			medianId = orderedNegatives.get(orderedNegatives.size() / 2);
 		}
 
-		ct.median_y = set.getExample(medianId).getLabel();
+		ct.median_y = set.getExample(medianId).getLabelValue();
 
 		// update positives inside epsilon
 		double label = useMean ? ct.mean_y : ct.median_y;

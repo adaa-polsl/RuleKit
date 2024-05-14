@@ -35,8 +35,8 @@ public class BalancedAccuracyPerformance extends AbstractPerformanceCounter {
         int[] bad = new int[numClasses];
 
         for (Example e : testSet) {
-            int label = (int) e.getLabel();
-            if (label == (int) e.getPredictedLabel()) {
+            int label = (int) e.getLabelValue();
+            if (label == (int) e.getPredictedLabelValue()) {
                 ++good[label];
             } else {
                 ++bad[label];

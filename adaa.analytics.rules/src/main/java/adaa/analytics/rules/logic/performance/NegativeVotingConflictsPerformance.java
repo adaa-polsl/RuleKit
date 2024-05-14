@@ -34,10 +34,10 @@ public class NegativeVotingConflictsPerformance extends AbstractPerformanceCount
         int negativeConflictCount = 0;
 
         for (Example e : testSet) {
-            int label = (int) e.getLabel();
+            int label = (int) e.getLabelValue();
 
             // get conflict measures
-            String[] counts = e.getValueAsString(e.getAttributes().getColumnByRole(ClassificationRuleSet.ATTRIBUTE_VOTING_RESULTS_COUNTS)).split(" ");
+            String[] counts = e.getValueAsString(testSet.getAttributes().getColumnByRole(ClassificationRuleSet.ATTRIBUTE_VOTING_RESULTS_COUNTS)).split(" ");
 
             BitSet mask = new BitSet(counts.length);
 
@@ -50,7 +50,7 @@ public class NegativeVotingConflictsPerformance extends AbstractPerformanceCount
 
             // when more than one bit is set - conflict
             if (mask.cardinality() > 1) {
-                if (label != (int) e.getPredictedLabel()) {
+                if (label != (int) e.getPredictedLabelValue()) {
                     ++negativeConflictCount;
                 }
             }

@@ -1,9 +1,8 @@
 package adaa.analytics.rules.logic.performance;
 
 import adaa.analytics.rules.data.IAttribute;
-import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IExampleSet;
-import adaa.analytics.rules.data.metadata.Ontology;
+import adaa.analytics.rules.data.row.Example;
 
 import java.util.*;
 
@@ -111,7 +110,7 @@ public class MultiClassificationPerformance extends AbstractPerformanceCounter {
         while (exampleIterator.hasNext()) {
             Example example = exampleIterator.next();
 
-            if ((Double.isNaN(example.getLabel()) || Double.isNaN(example.getPredictedLabel()))) {
+            if ((Double.isNaN(example.getLabelValue()) || Double.isNaN(example.getPredictedLabelValue()))) {
                 continue;
             }
             int label = classNameMap.get(example.getNominalValue(labelAttribute));
@@ -131,7 +130,7 @@ public class MultiClassificationPerformance extends AbstractPerformanceCounter {
             throw new IllegalStateException("Label is null");
         }
         IAttribute a = es.getAttributes().getLabel();
-        if (!Ontology.ATTRIBUTE_VALUE_TYPE.isA(a.getValueType(), Ontology.NOMINAL)) {
+        if (!a.isNominal()) {
             throw new IllegalStateException("Error in atributes: " + a.getName() + " " + algorithm);
         }
     }

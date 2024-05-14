@@ -58,10 +58,9 @@ public class RegressionRuleSet extends RuleSetBase {
 	 * Calculate prediction for a given example.
 	 * @param example Example to be examined.
 	 * @return Output prediction.
-	 * @throws OperatorException
 	 */
 	@Override
-	public double predict(Example example) throws OperatorException {
+	public double predict(Example example)  {
 		double result = 0.0;
 		double weightSum = 0.0;
 		

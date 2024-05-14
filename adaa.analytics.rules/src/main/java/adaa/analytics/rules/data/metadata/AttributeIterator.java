@@ -13,9 +13,6 @@ public class AttributeIterator implements Iterator<IAttribute> {
     }
 
     public AttributeIterator(ColumnMetadataMap columnMetadataMap, String eColRole) {
-        //TODO filtrowanie po eColRole - chyba zrobione
-        //n new ColumnMetadataMap(columnMetaData.values().stream().filter(c -> c.getRole() == eColRole).collect(Collectors.toList()));
-//        ColumnMetadataMap columnMetadataMap
         iColumnMetaData = columnMetadataMap.getColumnsByRole(eColRole).iterator();
     }
 

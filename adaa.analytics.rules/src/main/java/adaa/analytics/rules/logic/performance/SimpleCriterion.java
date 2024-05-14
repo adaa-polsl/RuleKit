@@ -107,7 +107,7 @@ public class SimpleCriterion extends AbstractPerformanceCounter {
         while (exampleIterator.hasNext()) {
             Example example = exampleIterator.next();
 
-            if ((Double.isNaN(example.getLabel()) || Double.isNaN(example.getPredictedLabel()))) {
+            if ((Double.isNaN(example.getLabelValue()) || Double.isNaN(example.getPredictedLabelValue()))) {
                 continue;
             }
 
@@ -121,7 +121,7 @@ public class SimpleCriterion extends AbstractPerformanceCounter {
                 plabel = example.getValue(predictedAttribute);
             } else {
                 String labelS = example.getNominalValue(labelAttribute);
-                plabel = example.getConfidence(labelS);
+                plabel = example.getConfidenceValue(labelS);
                 label = 1.0d;
             }
 

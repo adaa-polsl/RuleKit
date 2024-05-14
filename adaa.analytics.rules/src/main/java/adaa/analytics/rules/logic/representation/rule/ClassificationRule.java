@@ -18,7 +18,6 @@
  */
 package adaa.analytics.rules.logic.representation.rule;
 
-import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
@@ -141,7 +140,7 @@ public class ClassificationRule extends Rule {
 
 		boolean unweighted = set.getAttributes().getWeight() == null;
 		for (Example ex : set) {
-			double w = unweighted ? 1.0 : ex.getWeight();
+			double w = unweighted ? 1.0 : ex.getWeightValue();
 
 			boolean consequenceAgree = this.getConsequence().evaluate(ex);
 			if (consequenceAgree) {
@@ -173,7 +172,7 @@ public class ClassificationRule extends Rule {
 		int id = 0;
 		boolean unweighted = set.getAttributes().getWeight() == null;
 		for (Example ex : set) {
-			double w = unweighted ? 1.0 : ex.getWeight();
+			double w = unweighted ? 1.0 : ex.getWeightValue();
 
 			boolean consequenceAgree = this.getConsequence().evaluate(ex);
 			if (consequenceAgree) {

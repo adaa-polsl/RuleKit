@@ -14,7 +14,6 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
@@ -60,7 +59,7 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 		sortedDataset.getAttributes().getLabel().recalculateStatistics();
 			
 		if (factory.getType() == RuleFactory.REGRESSION) {
-			double median = sortedDataset.getExample(sortedDataset.size() / 2).getLabel();
+			double median = sortedDataset.getExample(sortedDataset.size() / 2).getLabelValue();
 			RegressionRuleSet tmp = (RegressionRuleSet)ruleset;
 			tmp.setDefaultValue(median); // use this even in mean-based variant
 		}

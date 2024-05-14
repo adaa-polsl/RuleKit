@@ -4,6 +4,7 @@ public enum EColumnRole {
     regular,
     confidence,
     attribute,
+    contrast_attribute,
     id,
     label,
     prediction,

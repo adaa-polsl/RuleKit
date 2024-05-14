@@ -14,7 +14,6 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation.rule;
 
-import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
@@ -112,7 +111,7 @@ public class SurvivalRule extends Rule {
 		boolean unweighted = set.getAttributes().getWeight() == null;
 
 		for (Example ex: set) {
-			double weight = unweighted ? 1.0 : ex.getWeight();
+			double weight = unweighted ? 1.0 : ex.getWeightValue();
 
 			ct.weighted_P += weight;
 			if (this.getPremise().evaluate(ex)){
@@ -127,7 +126,7 @@ public class SurvivalRule extends Rule {
 		boolean unweighted = set.getAttributes().getWeight() == null;
 
 		for (Example ex : set) {
-			double weight = unweighted ? 1.0 : ex.getWeight();
+			double weight = unweighted ? 1.0 : ex.getWeightValue();
 
 			ct.weighted_P += weight;
 			if (this.getPremise().evaluate(ex)){
@@ -149,7 +148,7 @@ public class SurvivalRule extends Rule {
 		
 		for (int id = 0; id < set.size(); ++id) {
 			Example ex = set.getExample(id);
-			double w = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeight();
+			double w = set.getAttributes().getWeight() == null ? 1.0 : ex.getWeightValue();
 			covered.weighted_P += w;
 			if (this.getPremise().evaluate(ex)) {
 				covered.positives.add(id);

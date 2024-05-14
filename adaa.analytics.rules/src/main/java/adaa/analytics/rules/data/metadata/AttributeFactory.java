@@ -4,8 +4,8 @@ import adaa.analytics.rules.data.IAttribute;
 
 public class AttributeFactory {
 
-    public static IAttribute createAttribute(String name, int valueType) {
-       return new ColumnMetaData(name, EColumnType.RmOntologyToEColumnType(valueType),null);
+    public static IAttribute createAttribute(String name, EColumnType valueType) {
+       return new ColumnMetaData(name, valueType);
     }
 
     public static IAttribute createAttribute(IAttribute attribute, String functionName) {

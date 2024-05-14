@@ -1,14 +1,12 @@
 package adaa.analytics.rules.data;
 
+import adaa.analytics.rules.data.metadata.EColumnType;
 import adaa.analytics.rules.data.metadata.EStatisticType;
 
 import java.io.Serializable;
 
 public interface IAttribute extends Cloneable, Serializable {
 
-    boolean equals(Object var1);
-
-    int hashCode();
 
     Object clone();
 
@@ -20,17 +18,16 @@ public interface IAttribute extends Cloneable, Serializable {
 
     INominalMapping getMapping();
 
-    int getValueType();
+    EColumnType getColumnType();
 
-    String toString();
 
     boolean isNominal();
 
     boolean isNumerical();
 
-    String getAsString(double value);
+    boolean isDate();
 
-    String getAsString(double value, boolean quoteNominal);
+    String getAsString(double value);
 
     void setRole(String role);
 

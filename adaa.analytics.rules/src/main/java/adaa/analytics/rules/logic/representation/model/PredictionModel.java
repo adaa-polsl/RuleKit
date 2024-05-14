@@ -1,14 +1,13 @@
 package adaa.analytics.rules.logic.representation.model;
 
-import adaa.analytics.rules.data.metadata.EColumnRole;
-import adaa.analytics.rules.utils.Logger;
 import adaa.analytics.rules.data.IAttribute;
-import adaa.analytics.rules.data.IAttributes;
 import adaa.analytics.rules.data.IExampleSet;
-import adaa.analytics.rules.data.metadata.AttributeFactory;
 import adaa.analytics.rules.data.INominalMapping;
+import adaa.analytics.rules.data.metadata.AttributeFactory;
+import adaa.analytics.rules.data.metadata.EColumnRole;
+import adaa.analytics.rules.data.metadata.EColumnType;
+import adaa.analytics.rules.utils.Logger;
 import adaa.analytics.rules.utils.OperatorException;
-import adaa.analytics.rules.data.metadata.Ontology;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -99,10 +98,10 @@ public abstract class PredictionModel implements Serializable {
 				Logger.log("The given example set does not contain a regular attribute with name '" + name
 						+ "'. This might cause problems for some models depending on this particular attribute.", Level.WARNING);
 			} else {
-				if (trainingAttribute.getValueType() != attribute.getValueType()) {
+				if (!trainingAttribute.getColumnType().equals(attribute.getColumnType())) {
 					Logger.log("The value types between training and application differ for attribute '" + name
-							+ "', training: " + Ontology.VALUE_TYPE_NAMES[trainingAttribute.getValueType()]
-							+ ", application: " + Ontology.VALUE_TYPE_NAMES[attribute.getValueType()], Level.WARNING);
+							+ "', training: " + trainingAttribute.getColumnType()
+							+ ", application: " + attribute.getColumnType(), Level.WARNING);
 				} else {
 					// check nominal values
 					if (trainingAttribute.isNominal()) {
@@ -145,12 +144,12 @@ public abstract class PredictionModel implements Serializable {
 		if (supportsConfidences(label)) {
 			for (String value : predictedLabel.getMapping().getValues()) {
 				IAttribute confidence = AttributeFactory.createAttribute(EColumnRole.confidence.name()+ "(" + value + ")",
-						Ontology.REAL);
+						EColumnType.NUMERICAL);
 				exampleSet.addNewColumn(confidence);
 				exampleSet.getAttributes().setSpecialAttribute(confidence, EColumnRole.confidence.name() + "_" + value);
 			}
 			IAttribute confidence = AttributeFactory.createAttribute(EColumnRole.confidence.name(),
-					Ontology.REAL);
+					EColumnType.NUMERICAL);
 			exampleSet.addNewColumn(confidence);
 			exampleSet.getAttributes().setSpecialAttribute(confidence, EColumnRole.confidence.name());
 		}

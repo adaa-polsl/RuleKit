@@ -14,17 +14,22 @@ public interface IExampleSet extends Serializable, Cloneable, Iterable<Example> 
 
     Object clone();
 
-    boolean equals(Object var1);
 
-    int hashCode();
 
-    DataTableAnnotations getAnnotations();
+    IAttributes getAttributes();
 
     int getColumnIndex(String attributeName);
 
+    double getDoubleValue(String colName, int colIdx, int rowIndex, double defaultValue);
+
+    void setDoubleValue(IAttribute att, int rowIndex, double value);
+
+    DataTableAnnotations getAnnotations();
+
+
     void recalculateStatistics(EStatisticType stateType, String colName);
 
-    IAttributes getAttributes();
+
 
     int size();
 
@@ -47,7 +52,5 @@ public interface IExampleSet extends Serializable, Cloneable, Iterable<Example> 
 
     IDataColumnAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue);
 
-    double getDoubleValue(String colName, int colIdx, int rowIndex, double defaultValue);
 
-    void setDoubleValue(IAttribute att, int rowIndex, double value);
 }

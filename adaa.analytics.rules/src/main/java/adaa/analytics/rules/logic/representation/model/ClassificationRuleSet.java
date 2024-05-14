@@ -14,18 +14,18 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation.model;
 
-import adaa.analytics.rules.logic.induction.InductionParameters;
-import adaa.analytics.rules.logic.representation.*;
-import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.data.metadata.AttributeFactory;
+import adaa.analytics.rules.data.metadata.EColumnType;
+import adaa.analytics.rules.data.row.Example;
+import adaa.analytics.rules.logic.induction.InductionParameters;
+import adaa.analytics.rules.logic.representation.Knowledge;
 import adaa.analytics.rules.logic.representation.condition.ConditionBase;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.rule.Rule;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
 import adaa.analytics.rules.utils.OperatorException;
-import adaa.analytics.rules.data.metadata.Ontology;
 
 import java.util.List;
 
@@ -225,11 +225,11 @@ public class ClassificationRuleSet extends RuleSetBase {
     protected IAttribute createPredictionAttributes(IExampleSet exampleSet, IAttribute label) {
         IAttribute predictedLabel = super.createPredictionAttributes(exampleSet, label);
 
-        IAttribute attr = AttributeFactory.createAttribute(ATTRIBUTE_VOTING_RESULTS_WEIGHTS, Ontology.STRING);
+        IAttribute attr = AttributeFactory.createAttribute(ATTRIBUTE_VOTING_RESULTS_WEIGHTS, EColumnType.NOMINAL);
         exampleSet.addNewColumn(attr);
         exampleSet.getAttributes().setSpecialAttribute(attr, attr.getName());
 
-        attr = AttributeFactory.createAttribute(ATTRIBUTE_VOTING_RESULTS_COUNTS, Ontology.STRING);
+        attr = AttributeFactory.createAttribute(ATTRIBUTE_VOTING_RESULTS_COUNTS, EColumnType.NOMINAL);
         exampleSet.addNewColumn(attr);
         exampleSet.getAttributes().setSpecialAttribute(attr, attr.getName());
 
