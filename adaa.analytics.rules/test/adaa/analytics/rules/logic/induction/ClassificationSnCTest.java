@@ -1,7 +1,7 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.data.metadata.EColumnRole;
-import adaa.analytics.rules.logic.representation.model.RuleSetBase;
+import adaa.analytics.rules.logic.representation.ruleset.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.row.Example;

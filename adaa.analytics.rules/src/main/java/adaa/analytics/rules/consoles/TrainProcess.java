@@ -7,7 +7,7 @@ import adaa.analytics.rules.logic.performance.PerformanceResult;
 import adaa.analytics.rules.logic.performance.RulePerformanceCounter;
 import adaa.analytics.rules.logic.representation.rule.ContrastRule;
 import adaa.analytics.rules.utils.Logger;
-import adaa.analytics.rules.logic.representation.model.RuleSetBase;
+import adaa.analytics.rules.logic.representation.ruleset.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.RuleGenerator;
 import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.utils.OperatorException;

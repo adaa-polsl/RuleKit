@@ -1,6 +1,6 @@
 package adaa.analytics.rules.consoles;
 
-import adaa.analytics.rules.logic.representation.model.RuleSetBase;
+import adaa.analytics.rules.logic.representation.ruleset.RuleSetBase;
 
 import java.io.*;
 

@@ -3,7 +3,7 @@ package adaa.analytics.rules.utils;
 import adaa.analytics.rules.consoles.ModelFileInOut;
 import adaa.analytics.rules.consoles.config.DatasetConfiguration;
 import adaa.analytics.rules.data.IExampleSet;
-import adaa.analytics.rules.logic.representation.model.RuleSetBase;
+import adaa.analytics.rules.logic.representation.ruleset.RuleSetBase;
 import ioutils.ArffFileLoader;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;

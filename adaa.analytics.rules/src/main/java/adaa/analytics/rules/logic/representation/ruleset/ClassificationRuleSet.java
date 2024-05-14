@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU Affero General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/.
  ******************************************************************************/
-package adaa.analytics.rules.logic.representation.model;
+package adaa.analytics.rules.logic.representation.ruleset;
 
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;

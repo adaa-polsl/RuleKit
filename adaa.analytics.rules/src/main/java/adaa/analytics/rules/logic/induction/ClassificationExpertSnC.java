@@ -21,7 +21,7 @@ import adaa.analytics.rules.data.*;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.model.ClassificationRuleSet;
+import adaa.analytics.rules.logic.representation.ruleset.ClassificationRuleSet;
 import adaa.analytics.rules.logic.representation.rule.ClassificationRule;
 import adaa.analytics.rules.logic.representation.rule.Rule;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSet;

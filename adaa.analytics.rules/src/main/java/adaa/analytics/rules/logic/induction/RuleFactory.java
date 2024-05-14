@@ -17,7 +17,7 @@ package adaa.analytics.rules.logic.induction;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.model.*;
+import adaa.analytics.rules.logic.representation.ruleset.*;
 import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.logic.representation.rule.*;
 

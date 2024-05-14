@@ -1,4 +1,4 @@
-package adaa.analytics.rules.logic.representation.model;
+package adaa.analytics.rules.logic.representation.ruleset;
 
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;

@@ -15,7 +15,7 @@
 package adaa.analytics.rules.logic.rulegenerator;
 
 import adaa.analytics.rules.logic.quality.IUserMeasure;
-import adaa.analytics.rules.logic.representation.model.RuleSetBase;
+import adaa.analytics.rules.logic.representation.ruleset.RuleSetBase;
 import adaa.analytics.rules.data.IExampleSet;
 
 import java.util.List;

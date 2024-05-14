@@ -14,7 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.performance;
 
-import adaa.analytics.rules.logic.representation.model.ClassificationRuleSet;
+import adaa.analytics.rules.logic.representation.ruleset.ClassificationRuleSet;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IExampleSet;
 
