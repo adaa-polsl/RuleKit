@@ -15,6 +15,7 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
+import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.data.metadata.EColumnSortDirections;
 import adaa.analytics.rules.logic.representation.*;
 
@@ -76,7 +77,7 @@ public class RegressionFinder extends AbstractFinder {
 
 		// iterate over all possible decision attributes
 		for (IAttribute attr : allowedAttributes) {
-			DataColumnDoubleAdapter attDataColumnDoubleAdapter = set.getDataColumnDoubleAdapter(attr, Double.NaN);
+			IDataColumnAdapter attDataColumnDoubleAdapter = set.getDataColumnDoubleAdapter(attr, Double.NaN);
 
 			// consider attributes in parallel
 			Future<ConditionEvaluation> future = (Future<ConditionEvaluation>) pool.submit(() -> {
@@ -327,7 +328,7 @@ public class RegressionFinder extends AbstractFinder {
 				
 		// iterate over all possible decision attributes
 		for (IAttribute attr : allowedAttributes) {
-			DataColumnDoubleAdapter attDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(attr, Double.NaN);
+			IDataColumnAdapter attDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(attr, Double.NaN);
 
 			// consider attributes in parallel
 			Future<ConditionEvaluation> future = (Future<ConditionEvaluation>) pool.submit(() -> {
@@ -451,7 +452,7 @@ public class RegressionFinder extends AbstractFinder {
 			new_p = SetHelper.intersectionSize(uncovered, cov.positives);
 			new_n =	SetHelper.intersectionSize(uncovered, cov.negatives);
 		} else {
-			DataColumnDoubleAdapter weightDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getWeight(), Double.NaN);
+			IDataColumnAdapter weightDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getWeight(), Double.NaN);
 
 			// calculate weights of newly covered examples
 			for (int id : cov.positives) {

@@ -14,15 +14,12 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import adaa.analytics.rules.data.DataColumnDoubleAdapter;
+import adaa.analytics.rules.data.*;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.model.ClassificationRuleSet;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
-import adaa.analytics.rules.data.IAttribute;
-import adaa.analytics.rules.data.IExampleSet;
-import adaa.analytics.rules.data.INominalMapping;
 import adaa.analytics.rules.logic.representation.rule.ClassificationRule;
 import adaa.analytics.rules.logic.representation.rule.ContrastRule;
 import adaa.analytics.rules.logic.representation.rule.Rule;
@@ -63,8 +60,8 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 		final IAttribute outputAttr = (dataset.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE) == null)
 				? dataset.getAttributes().getLabel()
 				: dataset.getAttributes().getColumnByRole(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
-		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getWeight(), Double.NaN);
-		DataColumnDoubleAdapter outputAttrrDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(outputAttr, Double.NaN);
+		IDataColumnAdapter weightDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getWeight(), Double.NaN);
+		IDataColumnAdapter outputAttrrDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(outputAttr, Double.NaN);
 
 		INominalMapping mapping = outputAttr.getMapping();
 		List<String> labels = new ArrayList<>();

@@ -1,14 +1,10 @@
 package adaa.analytics.rules.logic.representation.exampleset;
 
-import adaa.analytics.rules.data.DataColumnDoubleAdapter;
+import adaa.analytics.rules.data.*;
 import adaa.analytics.rules.data.metadata.EColumnSortDirections;
 import adaa.analytics.rules.data.condition.ICondition;
 import adaa.analytics.rules.data.metadata.EStatisticType;
 import adaa.analytics.rules.data.row.Example;
-import adaa.analytics.rules.data.IAttribute;
-import adaa.analytics.rules.data.IAttributes;
-import adaa.analytics.rules.data.IExampleSet;
-import adaa.analytics.rules.data.DataTableAnnotations;
 import adaa.analytics.rules.logic.representation.IntegerBitSet;
 import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
 import org.jetbrains.annotations.NotNull;
@@ -170,7 +166,7 @@ public class SortedExampleSetEx implements IExampleSet {
     }
 
     @Override
-    public DataColumnDoubleAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue) {
+    public IDataColumnAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue) {
         return delegateExampleSet.getDataColumnDoubleAdapter(attr, defaultValue);
     }
 

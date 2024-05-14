@@ -15,6 +15,7 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
+import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
@@ -76,7 +77,7 @@ public class RegressionExpertSnC extends RegressionSnC {
 		Set<Integer> uncovered = new IntegerBitSet(dataset.size());
 		double weighted_PN = 0;
 		// at the beginning rule set does not cover any examples
-		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = sortedDataset.getDataColumnDoubleAdapter(sortedDataset.getAttributes().getWeight(), Double.NaN);
+		IDataColumnAdapter weightDataColumnDoubleAdapter = sortedDataset.getDataColumnDoubleAdapter(sortedDataset.getAttributes().getWeight(), Double.NaN);
 
 		for (int id = 0; id < sortedDataset.size(); ++id) {
 			uncovered.add(id);

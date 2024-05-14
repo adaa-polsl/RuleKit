@@ -15,6 +15,7 @@
 package adaa.analytics.rules.logic.representation.rule;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
+import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
@@ -91,7 +92,7 @@ public class SurvivalRule extends Rule {
 	@Override
 	public Covering covers(IExampleSet set, Set<Integer> ids) {
 		Covering covered = new Covering();
-		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = set.getDataColumnDoubleAdapter(set.getAttributes().getWeight(), Double.NaN);
+		IDataColumnAdapter weightDataColumnDoubleAdapter = set.getDataColumnDoubleAdapter(set.getAttributes().getWeight(), Double.NaN);
 
 		for (int id : ids) {
 			Example ex = set.getExample(id);

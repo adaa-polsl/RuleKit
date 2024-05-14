@@ -1,6 +1,7 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
+import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
@@ -320,7 +321,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
         // iterate over all allowed decision attributes
         for (IAttribute attr : dataset.getAttributes()) {
-            DataColumnDoubleAdapter attrDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(attr, Double.NaN);
+            IDataColumnAdapter attrDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(attr, Double.NaN);
 
             if (!allowedAttributes.contains(attr)) {
                 continue;
@@ -571,7 +572,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
 
         Logger.log("Establishing bins: " + attr.getName() + "\n", Level.FINER);
-        DataColumnDoubleAdapter attrDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(attr, Double.NaN);
+        IDataColumnAdapter attrDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(attr, Double.NaN);
 
         double [] vals = new double[dataset.size()];
         Integer[] sortedIds = new Integer[dataset.size()];
@@ -807,7 +808,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
         int n_examples = dataset.size();
 
         int[][] copy_ranges = (int[][])arrayCopies.get("ruleRanges");
-        DataColumnDoubleAdapter labelDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getLabel(), Double.NaN);
+        IDataColumnAdapter labelDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getLabel(), Double.NaN);
 
         for (IAttribute attr: dataset.getAttributes()) {
             int attribute_id = attr.getTableIndex();
@@ -931,7 +932,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
     protected void updateMidpoint(IExampleSet dataset, ConditionCandidate candidate) {
         IAttribute bestAttr = dataset.getAttributes().get(candidate.getAttribute());
 
-        DataColumnDoubleAdapter bestAttrDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(bestAttr, Double.NaN);
+        IDataColumnAdapter bestAttrDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(bestAttr, Double.NaN);
 
         // alter midpoint
         int attribute_id = bestAttr.getTableIndex();

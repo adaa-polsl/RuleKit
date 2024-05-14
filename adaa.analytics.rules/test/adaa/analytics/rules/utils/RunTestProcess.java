@@ -1,33 +1,24 @@
-package adaa.analytics.rules.consoles;
+package adaa.analytics.rules.utils;
 
+import adaa.analytics.rules.consoles.ModelFileInOut;
 import adaa.analytics.rules.consoles.config.DatasetConfiguration;
 import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.logic.representation.model.RuleSetBase;
-import adaa.analytics.rules.utils.OperatorException;
 import ioutils.ArffFileLoader;
-import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-import utils.TestResourcePathFactory;
-import utils.config.TestConfig;
-import utils.config.TestConfigParser;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.ParseException;
-import java.util.HashMap;
-import java.util.regex.Pattern;
 
 /**
  * Class used to run test process to profile execution of prediction
  */
 public class RunTestProcess {
 
-    private static String configFilePath = "c:\\Users\\wojciech.gorka\\Downloads\\poker.xml";
+    private static String configFilePath = "poker.xml";
 
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, OperatorException, ParserConfigurationException, SAXException {

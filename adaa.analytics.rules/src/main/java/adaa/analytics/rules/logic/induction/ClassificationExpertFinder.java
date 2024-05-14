@@ -15,6 +15,7 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
+import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.logic.quality.ClassificationMeasure;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
@@ -181,7 +182,7 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 		double classId = ((SingletonSet)rule.getConsequence().getValueSet()).getValue();
 		double apriori_prec = rule.getWeighted_P() / (rule.getWeighted_P() + rule.getWeighted_N());
 		IAttribute weightAttr = dataset.getAttributes().getWeight();
-		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(weightAttr, Double.NaN);
+		IDataColumnAdapter weightDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(weightAttr, Double.NaN);
 
 		// get current covering
 		Set<Integer> covered = new IntegerBitSet(dataset.size());

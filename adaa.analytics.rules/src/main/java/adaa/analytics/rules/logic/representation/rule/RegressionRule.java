@@ -15,6 +15,7 @@
 package adaa.analytics.rules.logic.representation.rule;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
+import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.data.metadata.EStatisticType;
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
@@ -136,7 +137,7 @@ public class RegressionRule extends Rule {
 
 	@Override
 	public void covers(IExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
-		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = set.getDataColumnDoubleAdapter(set.getAttributes().getWeight(), Double.NaN);
+		IDataColumnAdapter weightDataColumnDoubleAdapter = set.getDataColumnDoubleAdapter(set.getAttributes().getWeight(), Double.NaN);
 
 		SortedExampleSetEx ses = (set instanceof SortedExampleSetEx) ? (SortedExampleSetEx)set : null;
 		if (ses == null) {

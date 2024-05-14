@@ -1,6 +1,7 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
+import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.NegativeControlledMeasure;
 import adaa.analytics.rules.logic.representation.*;
@@ -39,7 +40,7 @@ public class ContrastRegressionFinder extends RegressionFinder implements IPenal
             double sum = 0;
 
             int i = 0;
-            DataColumnDoubleAdapter labelDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getLabel(), Double.NaN);
+            IDataColumnAdapter labelDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getLabel(), Double.NaN);
 
             for (int e : cov.positives) {
                 sum += labelDataColumnDoubleAdapter.getDoubleValue(e);
@@ -123,7 +124,7 @@ public class ContrastRegressionFinder extends RegressionFinder implements IPenal
         ContingencyTable ct = new ContingencyTable();
         rule.covers(dataset, ct, covered, negatives);
         covered.addAll(negatives);
-        DataColumnDoubleAdapter labelDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getLabel(), Double.NaN);
+        IDataColumnAdapter labelDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getLabel(), Double.NaN);
 
         double sum = 0;
         for (int e : covered) {

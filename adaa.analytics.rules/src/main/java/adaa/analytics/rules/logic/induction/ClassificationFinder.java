@@ -19,13 +19,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 
-import adaa.analytics.rules.data.DataColumnDoubleAdapter;
+import adaa.analytics.rules.data.*;
 import adaa.analytics.rules.logic.representation.*;
 
-import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.row.Example;
-import adaa.analytics.rules.data.IAttributes;
-import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
 import adaa.analytics.rules.logic.representation.condition.ConditionBase;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
@@ -83,7 +80,7 @@ public class ClassificationFinder extends AbstractFinder {
 
 		// iterate over all allowed decision attributes
 		for (IAttribute attr : attributes) {
-			DataColumnDoubleAdapter attDataColumnDoubleAdapter = trainSet.getDataColumnDoubleAdapter(attr, Double.NaN);
+			IDataColumnAdapter attDataColumnDoubleAdapter = trainSet.getDataColumnDoubleAdapter(attr, Double.NaN);
 
 			Future f = pool.submit( () -> {
 				Map<Double, IntegerBitSet> attributeCovering = new TreeMap<Double, IntegerBitSet>();
@@ -226,7 +223,7 @@ public class ClassificationFinder extends AbstractFinder {
 	 */
 	public void prune(final Rule rule, final IExampleSet trainSet, final Set<Integer> uncovered) {
 		Logger.log("ClassificationFinder.prune()\n", Level.FINE);
-		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = trainSet.getDataColumnDoubleAdapter(trainSet.getAttributes().getWeight(), Double.NaN);
+		IDataColumnAdapter weightDataColumnDoubleAdapter = trainSet.getDataColumnDoubleAdapter(trainSet.getAttributes().getWeight(), Double.NaN);
 
 		// check preconditions
 		if (rule.getWeighted_p() == Double.NaN || rule.getWeighted_p() == Double.NaN ||
@@ -492,7 +489,7 @@ public class ClassificationFinder extends AbstractFinder {
 
 		double classId = ((SingletonSet)rule.getConsequence().getValueSet()).getValue();
 		IAttribute weightAttr = trainSet.getAttributes().getWeight();
-		DataColumnDoubleAdapter weightDataRowDoubleAdapter = trainSet.getDataColumnDoubleAdapter(weightAttr, Double.NaN);
+		IDataColumnAdapter weightDataRowDoubleAdapter = trainSet.getDataColumnDoubleAdapter(weightAttr, Double.NaN);
 
 		Set<Integer> positives = rule.getCoveredPositives();
 		double P = rule.getWeighted_P();
@@ -511,7 +508,7 @@ public class ClassificationFinder extends AbstractFinder {
 			Future<ConditionEvaluation> future = (Future<ConditionEvaluation>) pool.submit(() -> {
 				
 				ConditionEvaluation best = new ConditionEvaluation();
-				DataColumnDoubleAdapter attDataRowDoubleAdapter = trainSet.getDataColumnDoubleAdapter(attr, Double.NaN);
+				IDataColumnAdapter attDataRowDoubleAdapter = trainSet.getDataColumnDoubleAdapter(attr, Double.NaN);
 				// check if attribute is numerical or nominal
 				if (attr.isNumerical()) {
 					// statistics from all points

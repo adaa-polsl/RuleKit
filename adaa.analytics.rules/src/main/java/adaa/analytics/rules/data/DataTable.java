@@ -30,6 +30,8 @@ public class DataTable implements Serializable, IExampleSet {
 
     private DataTable(Table table, ColumnMetadataMap columnMetadataMap, DataTableAnnotations dataTableAnnotations) {
         this.table = table;
+        this.columnMetadataMap = columnMetadataMap;
+        this.dataTableAnnotations = dataTableAnnotations;
     }
 
     public DataTable(CsvReadOptions.Builder builder, List<AttributeInfo> attsInfo) {
@@ -269,19 +271,18 @@ public class DataTable implements Serializable, IExampleSet {
 
     }
 
-    public DataColumnDoubleAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue) {
-        DoubleColumn colNum = null;
-        StringColumn colStr = null;
+    public IDataColumnAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue) {
+
         String colName = attr != null ? attr.getName() : null;
         if (attr != null) {
             if (attr.isNominal()) {
-                colStr = table.stringColumn(colName);
+               return new DataColumnNominalAdapter(attr, table.stringColumn(colName),defaultValue);
 
             } else {
-                colNum = (DoubleColumn) table.column(colName);
+                return new DataColumnDoubleAdapter( (DoubleColumn) table.column(colName));
             }
         }
-        return new DataColumnDoubleAdapter(attr, colNum, colStr,  defaultValue);
+        return new DataColumnEmptyAdapter(defaultValue);
     }
 
     public void setDoubleValue(IAttribute att, int rowIndex, double value) {

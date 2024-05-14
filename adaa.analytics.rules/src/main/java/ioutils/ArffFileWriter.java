@@ -2,6 +2,7 @@ package ioutils;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.data.IAttribute;
+import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.data.IExampleSet;
 
 import java.io.BufferedWriter;
@@ -56,14 +57,15 @@ public class ArffFileWriter {
                 StringBuilder lineBuilder = new StringBuilder();
 
                 for(IAttribute att : attributes) {
-                    DataColumnDoubleAdapter attDataColumnDoubleAdapter = exampleSet.getDataColumnDoubleAdapter(att, Double.NaN);
+                    IDataColumnAdapter  attDataColumnDoubleAdapter = exampleSet.getDataColumnDoubleAdapter(att, Double.NaN);
 
                     if(att.isNumerical()) {
                         double val = attDataColumnDoubleAdapter.getDoubleValue(i);
                         lineBuilder.append(Double.toString(val)).append(",");
                     }
                     else if(att.isNominal()) {
-                        String val = attDataColumnDoubleAdapter.getNominalValue(i);
+                        double value = attDataColumnDoubleAdapter.getDoubleValue(i);
+                        String val = Double.isNaN(value) ? "?" : att.getMapping().mapIndex((int)value);
                         lineBuilder.append("'").append(val).append("',");
                     }
                 }

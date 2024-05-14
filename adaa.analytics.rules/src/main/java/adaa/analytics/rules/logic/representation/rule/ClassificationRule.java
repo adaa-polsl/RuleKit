@@ -19,6 +19,7 @@
 package adaa.analytics.rules.logic.representation.rule;
 
 import adaa.analytics.rules.data.DataColumnDoubleAdapter;
+import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 
@@ -88,7 +89,7 @@ public class ClassificationRule extends Rule {
 	 */
 	public Covering covers(IExampleSet set, Set<Integer> filterIds) {
 		Covering covered = new Covering();
-		DataColumnDoubleAdapter weightDataColumnDoubleAdapter = set.getDataColumnDoubleAdapter(set.getAttributes().getWeight(), Double.NaN);
+		IDataColumnAdapter weightDataColumnDoubleAdapter = set.getDataColumnDoubleAdapter(set.getAttributes().getWeight(), Double.NaN);
 
 		for (int id : filterIds) {
 			Example ex = set.getExample(id);
