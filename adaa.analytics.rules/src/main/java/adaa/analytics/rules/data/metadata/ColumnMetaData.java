@@ -116,8 +116,7 @@ public class ColumnMetaData implements Serializable, IAttribute {
             return;
 
         int maxValues = Integer.MAX_VALUE;
-        for (int i = 0; i < values.size(); i++) {
-            String value = values.get(i);
+        for (String value : values) {
             if (value == null) {
                 continue;
             }

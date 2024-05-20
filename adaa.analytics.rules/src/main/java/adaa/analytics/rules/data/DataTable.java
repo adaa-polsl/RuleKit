@@ -67,6 +67,8 @@ public class DataTable implements Serializable, IExampleSet {
             table.column(i).setName(attInfo.getName());
             columnMetadataMap.add( new ColumnMetaData(attInfo.getName(), attInfo.getCellType(), EColumnRole.regular, attInfo.getValues(), this));
         }
+
+        convertStringColsToDouble();
     }
 
     public DataTable(Object[][] values, String[] attributesNames, String decisionAttribute, String survivalTimeAttribute, String contrastAttribute) {
@@ -130,6 +132,8 @@ public class DataTable implements Serializable, IExampleSet {
             table.addColumns(col);
             columnMetadataMap.add( colMetaData);
         }
+
+        convertStringColsToDouble();
     }
 
     public int columnCount() {
@@ -149,15 +153,15 @@ public class DataTable implements Serializable, IExampleSet {
         newColMetaData.setOwner(this);
         Column<?> tsCol = null;
 
-        if (newColMetaData.getColumnType() == EColumnType.NOMINAL) {
-            tsCol = StringColumn.create(newColMetaData.getName(), table.rowCount());
-        } else if (newColMetaData.getColumnType() == EColumnType.NUMERICAL) {
+//        if (newColMetaData.getColumnType() == EColumnType.NOMINAL) {
+//            tsCol = StringColumn.create(newColMetaData.getName(), table.rowCount());
+//        } else if (newColMetaData.getColumnType() == EColumnType.NUMERICAL) {
             tsCol = DoubleColumn.create(newColMetaData.getName(), table.rowCount());
-        }
+//        }
 
-        if (tsCol == null) {
-            throw new IllegalStateException("Cannot crate prediction column, unknown column type");
-        }
+//        if (tsCol == null) {
+//            throw new IllegalStateException("Cannot crate prediction column, unknown column type");
+//        }
 
         table.addColumns(tsCol);
         columnMetadataMap.add(newColMetaData);
@@ -256,71 +260,68 @@ public class DataTable implements Serializable, IExampleSet {
     }
 
     public double getDoubleValue(String colName, int colIdx, int rowIndex, double defaultValue) {
-        Column col = table.column(colIdx);
-        if (col.type().equals(ColumnType.DOUBLE)) {
-            DoubleColumn colNum = (DoubleColumn) col;
-            return colNum.getDouble(rowIndex);
-        } else {
-            StringColumn colStr = (StringColumn) col;
-            String value = colStr.get(rowIndex);
-            ColumnMetaData colMetaData = columnMetadataMap.getColumnMetaData(colName);
-            if (colMetaData == null) return defaultValue;
-            Integer iVal = colMetaData.getMapping().getIndex(value);
-            return iVal == null ? defaultValue : iVal.doubleValue();
-        }
+//        Column<?> col = table.column(colIdx);
+//        if (col.type().equals(ColumnType.DOUBLE)) {
+//            DoubleColumn colNum = (DoubleColumn) col;
+//            return colNum.getDouble(rowIndex);
+//        } else {
+//            StringColumn colStr = (StringColumn) col;
+//            String value = colStr.get(rowIndex);
+//            ColumnMetaData colMetaData = columnMetadataMap.getColumnMetaData(colName);
+//            if (colMetaData == null) return defaultValue;
+//            Integer iVal = colMetaData.getMapping().getIndex(value);
+//            return iVal == null ? defaultValue : iVal.doubleValue();
+//        }
 
+        DoubleColumn col = (DoubleColumn) table.column(colIdx);
+        return col.getDouble(rowIndex);
     }
 
     public IDataColumnAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue) {
 
         String colName = attr != null ? attr.getName() : null;
         if (attr != null) {
-            if (attr.isNominal()) {
-               return new DataColumnNominalAdapter(attr, table.stringColumn(colName),defaultValue);
-
-            } else {
-                return new DataColumnDoubleAdapter( (DoubleColumn) table.column(colName));
-            }
+            return new DataColumnDoubleAdapter( (DoubleColumn) table.column(colName));
         }
         return new DataColumnEmptyAdapter(defaultValue);
     }
 
     public void setDoubleValue(IAttribute att, int rowIndex, double value) {
         if (att == null) {
-            throw new IllegalStateException("Column  not exist");
+            throw new IllegalStateException("Column not exist");
         }
 
-        if (att.isNominal()) {
-            int iValue = (int) value;
-            if (!att.getMapping().hasIndex(iValue)) {
-                throw new IllegalStateException(String.format("There is no index '%d' in '%s' column mapping", iValue, att.getName()));
-            }
-            StringColumn colStr = table.stringColumn(att.getName());
-            colStr.set(rowIndex, att.getMapping().mapIndex(iValue));
-        } else {
-            DoubleColumn colNum = (DoubleColumn) table.column(att.getName());
-            colNum.set(rowIndex, value);
-        }
+        DoubleColumn col = (DoubleColumn) table.column(att.getName());
+        col.set(rowIndex, value);
     }
 
-
-    public Object[] getValues(String colName) {
+    public double[] getValues(String colName) {
         ColumnMetaData cmd = getColumn(colName);
 
         if (cmd == null) {
             throw new IllegalStateException(String.format("Column '%s' does not exist", colName));
         }
 
-        if (cmd.isNumerical()) {
-            return table.doubleColumn(colName).asObjectArray();
-        }
-
-        if (cmd.isNominal()) {
-            return table.stringColumn(colName).asObjectArray();
-        }
-
-        throw new IllegalStateException(String.format("Column '%s' is neither numerical nor nominal", colName));
+        return table.doubleColumn(colName).asDoubleArray();
     }
+
+//    public Object[] getValues(String colName) {
+//        ColumnMetaData cmd = getColumn(colName);
+//
+//        if (cmd == null) {
+//            throw new IllegalStateException(String.format("Column '%s' does not exist", colName));
+//        }
+//
+//        if (cmd.isNumerical()) {
+//            return table.doubleColumn(colName).asObjectArray();
+//        }
+//
+//        if (cmd.isNominal()) {
+//            return table.stringColumn(colName).asObjectArray();
+//        }
+//
+//        throw new IllegalStateException(String.format("Column '%s' is neither numerical nor nominal", colName));
+//    }
 
     private Selection addCondition(List<ICondition> conditions, int conditionIndex) {
 
@@ -418,5 +419,24 @@ public class DataTable implements Serializable, IExampleSet {
         table = Table.read().string((String) data[0], "csv");
         columnMetadataMap = (ColumnMetadataMap) data[1];
         dataTableAnnotations = (DataTableAnnotations) data[2];
+    }
+
+    private void convertStringColsToDouble() {
+
+        for(ColumnMetaData colMetaData : columnMetadataMap.getAllColumnMetaData()) {
+            if(!colMetaData.isNominal())
+                continue;
+
+            int cIndex = table.columnIndex(colMetaData.getName());
+            StringColumn strCol = (StringColumn) table.column(colMetaData.getName());
+
+            DoubleColumn doubleColumn = DoubleColumn.create(colMetaData.getName());
+            for (String value : strCol) {
+                doubleColumn.append(colMetaData.getMapping().getIndex(value));
+            }
+
+            table.removeColumns(colMetaData.getName());
+            table.insertColumn(cIndex, doubleColumn);
+        }
     }
 }

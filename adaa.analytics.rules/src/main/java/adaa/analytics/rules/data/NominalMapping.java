@@ -12,9 +12,7 @@ public class NominalMapping implements Serializable, INominalMapping {
     public int addValue(String val) {
         val = val.replace("\"","");
         if (stringToIdx.containsKey(val))
-        {
             return stringToIdx.get(val);
-        }
 
         int firstFreeIndex = idxToString.size();
         idxToString.add(val);

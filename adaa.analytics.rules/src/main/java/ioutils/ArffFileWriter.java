@@ -1,6 +1,5 @@
 package ioutils;
 
-import adaa.analytics.rules.data.DataColumnDoubleAdapter;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.data.IExampleSet;
@@ -61,7 +60,7 @@ public class ArffFileWriter {
 
                     if(att.isNumerical()) {
                         double val = attDataColumnDoubleAdapter.getDoubleValue(i);
-                        lineBuilder.append(Double.toString(val)).append(",");
+                        lineBuilder.append(val).append(",");
                     }
                     else if(att.isNominal()) {
                         double value = attDataColumnDoubleAdapter.getDoubleValue(i);

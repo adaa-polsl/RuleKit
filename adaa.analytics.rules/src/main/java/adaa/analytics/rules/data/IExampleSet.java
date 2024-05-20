@@ -46,7 +46,7 @@ public interface IExampleSet extends Serializable, Cloneable, Iterable<Example> 
     IExampleSet updateMapping(IExampleSet mappingSource);
 
 
-    Object [] getValues(String colName);
+    double [] getValues(String colName);
 
     void addNewColumn(IAttribute colMetaData);
 

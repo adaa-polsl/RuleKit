@@ -134,7 +134,7 @@ public class SortedExampleSetEx implements IExampleSet {
     }
 
     @Override
-    public Object[] getValues(String colName) {
+    public double[] getValues(String colName) {
         return delegateExampleSet.getValues(colName);
     }
 
