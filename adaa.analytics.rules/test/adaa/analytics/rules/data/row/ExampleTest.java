@@ -116,8 +116,8 @@ public class ExampleTest {
         }
 
         @Override
-        public Object[] getValues(String colName) {
-            return new Object[0];
+        public double[] getValues(String colName) {
+            return new double[0];
         }
 
         @Override

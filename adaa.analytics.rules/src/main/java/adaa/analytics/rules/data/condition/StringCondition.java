@@ -13,7 +13,7 @@ public class StringCondition extends AbstractCondition {
     }
 
     public Selection createSelection(Table table) {
-        StringColumn strCol = table.stringColumn("");
+        StringColumn strCol = table.stringColumn(colName);
         Selection selection = null;
         switch(compOperator) {
             case EQUALS:

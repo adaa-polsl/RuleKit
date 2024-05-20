@@ -88,8 +88,8 @@ public class ClassificationSnCTest {
 
         IAttribute confidenceMetaData = prediction.getAttributes().getColumnByRole(EColumnRole.confidence.toString());
         Assert.assertNotNull(confidenceMetaData);
-        Object[] values = prediction.getValues(confidenceMetaData.getName());
+        double[] values = prediction.getValues(confidenceMetaData.getName());
         Assert.assertTrue(values.length>0);
-        Assert.assertTrue( values instanceof Double[]);
+//        Assert.assertTrue( values instanceof Double[]);
     }
 }
