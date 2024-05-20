@@ -1,7 +1,5 @@
 package adaa.analytics.rules.data;
 
-import adaa.analytics.rules.data.INominalMapping;
-
 import java.io.Serializable;
 import java.util.*;
 

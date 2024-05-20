@@ -18,7 +18,6 @@
  */
 package adaa.analytics.rules.logic.representation.rule;
 
-import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 
@@ -30,6 +29,7 @@ import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
 import adaa.analytics.rules.utils.Pair;
+import tech.tablesaw.api.DoubleColumn;
 
 import java.util.Set;
 
@@ -88,11 +88,11 @@ public class ClassificationRule extends Rule {
 	 */
 	public Covering covers(IExampleSet set, Set<Integer> filterIds) {
 		Covering covered = new Covering();
-		IDataColumnAdapter weightDataColumnDoubleAdapter = set.getDataColumnDoubleAdapter(set.getAttributes().getWeight(), Double.NaN);
+		DoubleColumn weightDataColumnDoubleAdapter = set.getDoubleColumn(set.getAttributes().getWeight());
 
 		for (int id : filterIds) {
 			Example ex = set.getExample(id);
-			double w = set.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDoubleValue(id);
+			double w = set.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDouble(id);
 			
 			boolean consequenceAgree = this.getConsequence().evaluate(ex);
 			if (consequenceAgree) {

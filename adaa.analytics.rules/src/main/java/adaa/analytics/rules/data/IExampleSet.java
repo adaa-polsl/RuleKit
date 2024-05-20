@@ -2,9 +2,9 @@ package adaa.analytics.rules.data;
 
 import adaa.analytics.rules.data.condition.ICondition;
 import adaa.analytics.rules.data.metadata.EColumnSortDirections;
-import adaa.analytics.rules.data.metadata.ColumnMetadataMap;
 import adaa.analytics.rules.data.metadata.EStatisticType;
 import adaa.analytics.rules.data.row.Example;
+import tech.tablesaw.api.DoubleColumn;
 
 import java.io.Serializable;
 import java.util.List;
@@ -20,7 +20,7 @@ public interface IExampleSet extends Serializable, Cloneable, Iterable<Example> 
 
     int getColumnIndex(String attributeName);
 
-    double getDoubleValue(String colName, int colIdx, int rowIndex, double defaultValue);
+    double getDoubleValue(int colIdx, int rowIndex);
 
     void setDoubleValue(IAttribute att, int rowIndex, double value);
 
@@ -46,11 +46,9 @@ public interface IExampleSet extends Serializable, Cloneable, Iterable<Example> 
     IExampleSet updateMapping(IExampleSet mappingSource);
 
 
-    double [] getValues(String colName);
-
     void addNewColumn(IAttribute colMetaData);
 
-    IDataColumnAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue);
+    DoubleColumn getDoubleColumn(IAttribute attr);
 
 
 }

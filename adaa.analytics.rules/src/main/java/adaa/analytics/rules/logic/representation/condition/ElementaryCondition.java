@@ -14,12 +14,11 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation.condition;
 
-import adaa.analytics.rules.data.DataColumnDoubleAdapter;
-import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.logic.representation.valueset.IValueSet;
+import tech.tablesaw.api.DoubleColumn;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -107,11 +106,9 @@ public class ElementaryCondition extends ConditionBase {
 			}
 			++id;
 		}*/
-		IDataColumnAdapter dataColumnDoubleAdapter = set.getDataColumnDoubleAdapter(a,Double.NaN);
+		DoubleColumn dataColumnDoubleAdapter = set.getDoubleColumn(a);
 		for (int id = 0; id < set.size(); ++id) {
-//			Example e = set.getExample(id);
-//			double v = e.getValue(a);
-			double v = dataColumnDoubleAdapter.getDoubleValue(id);
+			double v = dataColumnDoubleAdapter.getDouble(id);
 			if (valueSet.contains(v)) {
 				outIndices.add(id);
 			}

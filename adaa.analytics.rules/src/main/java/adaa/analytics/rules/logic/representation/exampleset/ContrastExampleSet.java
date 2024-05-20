@@ -7,6 +7,7 @@ import adaa.analytics.rules.data.metadata.EStatisticType;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.logic.representation.rule.ContrastRule;
 import org.jetbrains.annotations.NotNull;
+import tech.tablesaw.api.DoubleColumn;
 
 import java.util.Iterator;
 import java.util.List;
@@ -80,12 +81,6 @@ public class ContrastExampleSet implements IExampleSet {
         return delegateExampleSet.updateMapping(mappingSource);
     }
 
-
-    @Override
-    public double[] getValues(String colName) {
-        return delegateExampleSet.getValues(colName);
-    }
-
     @NotNull
     @Override
     public Iterator<Example> iterator() {
@@ -113,13 +108,13 @@ public class ContrastExampleSet implements IExampleSet {
     }
 
     @Override
-    public IDataColumnAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue) {
-        return delegateExampleSet.getDataColumnDoubleAdapter(attr, defaultValue);
+    public DoubleColumn getDoubleColumn(IAttribute attr) {
+        return delegateExampleSet.getDoubleColumn(attr);
     }
 
     @Override
-    public double getDoubleValue(String colName, int colIdx, int rowIndex, double defaultValue) {
-        return delegateExampleSet.getDoubleValue(colName, colIdx, rowIndex, defaultValue);
+    public double getDoubleValue(int colIdx, int rowIndex) {
+        return delegateExampleSet.getDoubleValue(colIdx, rowIndex);
     }
 
     @Override

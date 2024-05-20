@@ -22,14 +22,14 @@ public class Example implements Serializable{
     }
 
     public double getValue(String columnName) {
-        return parentExampleSet.getDoubleValue(columnName, parentExampleSet.getColumnIndex(columnName), rowIndex, Double.NaN);
+        return parentExampleSet.getDoubleValue(parentExampleSet.getColumnIndex(columnName), rowIndex);
     }
 
     public double getValue(IAttribute a) {
         if (a == null) {
             return Double.NaN;
         } else {
-            return parentExampleSet.getDoubleValue(a.getName(), a.getTableIndex(), rowIndex, Double.NaN);
+            return parentExampleSet.getDoubleValue(a.getTableIndex(), rowIndex);
         }
     }
 

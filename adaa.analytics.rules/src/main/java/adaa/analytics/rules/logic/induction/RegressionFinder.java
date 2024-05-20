@@ -14,8 +14,6 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import adaa.analytics.rules.data.DataColumnDoubleAdapter;
-import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.data.metadata.EColumnSortDirections;
 import adaa.analytics.rules.logic.representation.*;
 
@@ -31,6 +29,7 @@ import adaa.analytics.rules.logic.representation.valueset.Interval;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSetComplement;
 import adaa.analytics.rules.utils.Logger;
+import tech.tablesaw.api.DoubleColumn;
 
 import java.security.InvalidParameterException;
 import java.util.*;
@@ -77,7 +76,7 @@ public class RegressionFinder extends AbstractFinder {
 
 		// iterate over all possible decision attributes
 		for (IAttribute attr : allowedAttributes) {
-			IDataColumnAdapter attDataColumnDoubleAdapter = set.getDataColumnDoubleAdapter(attr, Double.NaN);
+			DoubleColumn attDataColumnDoubleAdapter = set.getDoubleColumn(attr);
 
 			// consider attributes in parallel
 			Future<ConditionEvaluation> future = (Future<ConditionEvaluation>) pool.submit(() -> {
@@ -141,14 +140,14 @@ public class RegressionFinder extends AbstractFinder {
 					}
 
 					// sort ids array according to the attribute value
-					Arrays.sort(ids, Comparator.comparingDouble(a -> attDataColumnDoubleAdapter.getDoubleValue(a)));
+					Arrays.sort(ids, Comparator.comparingDouble(a -> attDataColumnDoubleAdapter.getDouble(a)));
 
 					// iterate over examples in increasing attribute value order
 					double prev_val = Double.MAX_VALUE;
 					for (i = 0; i < ids.length; ++i) {
 						int id = ids[i];
 //						double val = dataset.getExample(id).getValue(attr);
-						double val = attDataColumnDoubleAdapter.getDoubleValue(id);
+						double val = attDataColumnDoubleAdapter.getDouble(id);
 						if (Double.isNaN(val)) {
 							continue;
 						}
@@ -328,7 +327,7 @@ public class RegressionFinder extends AbstractFinder {
 				
 		// iterate over all possible decision attributes
 		for (IAttribute attr : allowedAttributes) {
-			IDataColumnAdapter attDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(attr, Double.NaN);
+			DoubleColumn attDataColumnDoubleAdapter = dataset.getDoubleColumn(attr);
 
 			// consider attributes in parallel
 			Future<ConditionEvaluation> future = (Future<ConditionEvaluation>) pool.submit(() -> {
@@ -343,7 +342,7 @@ public class RegressionFinder extends AbstractFinder {
 					for (int id : covered) {
 //						Example ex = dataset.getExample(id);
 //						double val = ex.getValue(attr);
-						double val = attDataColumnDoubleAdapter.getDoubleValue(id);
+						double val = attDataColumnDoubleAdapter.getDouble(id);
 
 						if (!values2ids.containsKey(val)) {
 							values2ids.put(val, new ArrayList<Integer>());
@@ -452,14 +451,14 @@ public class RegressionFinder extends AbstractFinder {
 			new_p = SetHelper.intersectionSize(uncovered, cov.positives);
 			new_n =	SetHelper.intersectionSize(uncovered, cov.negatives);
 		} else {
-			IDataColumnAdapter weightDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getWeight(), Double.NaN);
+			DoubleColumn weightDataColumnDoubleAdapter = dataset.getDoubleColumn(dataset.getAttributes().getWeight());
 
 			// calculate weights of newly covered examples
 			for (int id : cov.positives) {
-				new_p += uncovered.contains(id) ? weightDataColumnDoubleAdapter.getDoubleValue(id) : 0;
+				new_p += uncovered.contains(id) ? weightDataColumnDoubleAdapter.getDouble(id) : 0;
 			}
 			for (int id : cov.negatives) {
-				new_n += uncovered.contains(id) ? weightDataColumnDoubleAdapter.getDoubleValue(id) : 0;
+				new_n += uncovered.contains(id) ? weightDataColumnDoubleAdapter.getDouble(id) : 0;
 			}
 		}
 		

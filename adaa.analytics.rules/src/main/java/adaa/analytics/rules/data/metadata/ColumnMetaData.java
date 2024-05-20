@@ -151,7 +151,7 @@ public class ColumnMetaData implements Serializable, IAttribute {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, colType, role, mapping);
+        return Objects.hash(name);
     }
 
     @Override
@@ -160,16 +160,7 @@ public class ColumnMetaData implements Serializable, IAttribute {
             return false;
         }
         ColumnMetaData cmd = (ColumnMetaData) o;
-        if (!cmd.name.equals(name)) {
-            return false;
-        }
-        if (!cmd.colType.equals(colType)) {
-            return false;
-        }
-        if (!cmd.role.equals(role)) {
-            return false;
-        }
-        return cmd.mapping.equals(mapping);
+        return cmd.name.equals(name);
     }
 
     @Override

@@ -14,7 +14,6 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation.rule;
 
-import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.logic.induction.ContingencyTable;
 import adaa.analytics.rules.logic.induction.Covering;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
@@ -24,6 +23,7 @@ import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 import org.jetbrains.annotations.NotNull;
+import tech.tablesaw.api.DoubleColumn;
 
 import java.util.Set;
 
@@ -91,11 +91,11 @@ public class SurvivalRule extends Rule {
 	@Override
 	public Covering covers(IExampleSet set, Set<Integer> ids) {
 		Covering covered = new Covering();
-		IDataColumnAdapter weightDataColumnDoubleAdapter = set.getDataColumnDoubleAdapter(set.getAttributes().getWeight(), Double.NaN);
+		DoubleColumn weightDataColumnDoubleAdapter = set.getDoubleColumn(set.getAttributes().getWeight());
 
 		for (int id : ids) {
 			Example ex = set.getExample(id);
-			double w = set.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDoubleValue(id);
+			double w = set.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDouble(id);
 			covered.weighted_P += w;
 			if (this.getPremise().evaluate(ex)) {
 				covered.positives.add(id);

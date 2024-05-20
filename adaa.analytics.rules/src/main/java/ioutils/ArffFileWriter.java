@@ -1,8 +1,8 @@
 package ioutils;
 
 import adaa.analytics.rules.data.IAttribute;
-import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.data.IExampleSet;
+import tech.tablesaw.api.DoubleColumn;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -56,14 +56,14 @@ public class ArffFileWriter {
                 StringBuilder lineBuilder = new StringBuilder();
 
                 for(IAttribute att : attributes) {
-                    IDataColumnAdapter  attDataColumnDoubleAdapter = exampleSet.getDataColumnDoubleAdapter(att, Double.NaN);
+                    DoubleColumn attDataColumnDoubleAdapter = exampleSet.getDoubleColumn(att);
 
                     if(att.isNumerical()) {
-                        double val = attDataColumnDoubleAdapter.getDoubleValue(i);
+                        double val = attDataColumnDoubleAdapter.getDouble(i);
                         lineBuilder.append(val).append(",");
                     }
                     else if(att.isNominal()) {
-                        double value = attDataColumnDoubleAdapter.getDoubleValue(i);
+                        double value = attDataColumnDoubleAdapter.getDouble(i);
                         String val = Double.isNaN(value) ? "?" : att.getMapping().mapIndex((int)value);
                         lineBuilder.append("'").append(val).append("',");
                     }

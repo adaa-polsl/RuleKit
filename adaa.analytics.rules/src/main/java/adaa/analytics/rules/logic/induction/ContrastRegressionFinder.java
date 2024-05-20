@@ -1,7 +1,5 @@
 package adaa.analytics.rules.logic.induction;
 
-import adaa.analytics.rules.data.DataColumnDoubleAdapter;
-import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.NegativeControlledMeasure;
 import adaa.analytics.rules.logic.representation.*;
@@ -11,6 +9,7 @@ import adaa.analytics.rules.logic.representation.exampleset.ContrastRegressionEx
 import adaa.analytics.rules.logic.representation.rule.ContrastRegressionRule;
 import adaa.analytics.rules.logic.representation.rule.Rule;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
+import tech.tablesaw.api.DoubleColumn;
 
 import java.io.Serializable;
 import java.security.InvalidParameterException;
@@ -40,13 +39,13 @@ public class ContrastRegressionFinder extends RegressionFinder implements IPenal
             double sum = 0;
 
             int i = 0;
-            IDataColumnAdapter labelDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getLabel(), Double.NaN);
+            DoubleColumn labelDataColumnDoubleAdapter = dataset.getDoubleColumn(dataset.getAttributes().getLabel());
 
             for (int e : cov.positives) {
-                sum += labelDataColumnDoubleAdapter.getDoubleValue(e);
+                sum += labelDataColumnDoubleAdapter.getDouble(e);
             }
             for (int e : cov.negatives) {
-                sum += labelDataColumnDoubleAdapter.getDoubleValue(e);
+                sum += labelDataColumnDoubleAdapter.getDouble(e);
             }
 
             // the smaller the difference in means, the better the contrast set
@@ -124,11 +123,11 @@ public class ContrastRegressionFinder extends RegressionFinder implements IPenal
         ContingencyTable ct = new ContingencyTable();
         rule.covers(dataset, ct, covered, negatives);
         covered.addAll(negatives);
-        IDataColumnAdapter labelDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getLabel(), Double.NaN);
+        DoubleColumn labelDataColumnDoubleAdapter = dataset.getDoubleColumn(dataset.getAttributes().getLabel());
 
         double sum = 0;
         for (int e : covered) {
-            sum += labelDataColumnDoubleAdapter.getDoubleValue(e);
+            sum += labelDataColumnDoubleAdapter.getDouble(e);
         }
         ((ContrastRegressionRule)rule).setMeanLabel(sum / covered.size());
 

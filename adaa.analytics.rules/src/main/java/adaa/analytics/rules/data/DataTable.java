@@ -2,6 +2,7 @@ package adaa.analytics.rules.data;
 
 import adaa.analytics.rules.data.condition.ICondition;
 import adaa.analytics.rules.data.metadata.*;
+import adaa.analytics.rules.data.row.EmptyDoubleColumn;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.row.ExampleIterator;
 import adaa.analytics.rules.logic.representation.rule.ContrastRule;
@@ -259,40 +260,19 @@ public class DataTable implements Serializable, IExampleSet {
         columnMetadataMap.updateMapping((ColumnMetadataMap) uColumnMetadataMap,this);
     }
 
-    public double getDoubleValue(String colName, int colIdx, int rowIndex, double defaultValue) {
-//        Column<?> col = table.column(colIdx);
-//        if (col.type().equals(ColumnType.DOUBLE)) {
-//            DoubleColumn colNum = (DoubleColumn) col;
-//            return colNum.getDouble(rowIndex);
-//        } else {
-//            StringColumn colStr = (StringColumn) col;
-//            String value = colStr.get(rowIndex);
-//            ColumnMetaData colMetaData = columnMetadataMap.getColumnMetaData(colName);
-//            if (colMetaData == null) return defaultValue;
-//            Integer iVal = colMetaData.getMapping().getIndex(value);
-//            return iVal == null ? defaultValue : iVal.doubleValue();
-//        }
-
-        DoubleColumn col = (DoubleColumn) table.column(colIdx);
+    public double getDoubleValue(int colIdx, int rowIndex) {
+        DoubleColumn col = table.doubleColumn(colIdx);
         return col.getDouble(rowIndex);
     }
 
-    public IDataColumnAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue) {
+    public DoubleColumn getDoubleColumn(IAttribute attr) {
 
         String colName = attr != null ? attr.getName() : null;
-        if (attr != null) {
-            return new DataColumnDoubleAdapter( (DoubleColumn) table.column(colName));
+        if (colName != null) {
+            return table.doubleColumn(getColumnIndex(colName));
+        }else {
+            return new EmptyDoubleColumn();
         }
-        return new DataColumnEmptyAdapter(defaultValue);
-    }
-
-    public void setDoubleValue(IAttribute att, int rowIndex, double value) {
-        if (att == null) {
-            throw new IllegalStateException("Column not exist");
-        }
-
-        DoubleColumn col = (DoubleColumn) table.column(att.getName());
-        col.set(rowIndex, value);
     }
 
     public double[] getValues(String colName) {
@@ -304,6 +284,16 @@ public class DataTable implements Serializable, IExampleSet {
 
         return table.doubleColumn(colName).asDoubleArray();
     }
+
+    public void setDoubleValue(IAttribute att, int rowIndex, double value) {
+        if (att == null) {
+            throw new IllegalStateException("Column not exist");
+        }
+
+        DoubleColumn col = (DoubleColumn) table.column(att.getName());
+        col.set(rowIndex, value);
+    }
+
 
 //    public Object[] getValues(String colName) {
 //        ColumnMetaData cmd = getColumn(colName);

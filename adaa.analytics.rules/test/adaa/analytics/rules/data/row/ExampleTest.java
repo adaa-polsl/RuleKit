@@ -6,6 +6,7 @@ import adaa.analytics.rules.data.metadata.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
+import tech.tablesaw.api.DoubleColumn;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -56,7 +57,7 @@ public class ExampleTest {
         }
 
         @Override
-        public double getDoubleValue(String colName, int colIdx, int rowIndex, double defaultValue) {
+        public double getDoubleValue(int colIdx, int rowIndex) {
             return rowIndex;
         }
 
@@ -115,10 +116,6 @@ public class ExampleTest {
             return null;
         }
 
-        @Override
-        public double[] getValues(String colName) {
-            return new double[0];
-        }
 
         @Override
         public void addNewColumn(IAttribute colMetaData) {
@@ -126,7 +123,7 @@ public class ExampleTest {
         }
 
         @Override
-        public IDataColumnAdapter getDataColumnDoubleAdapter(IAttribute attr, double defaultValue) {
+        public DoubleColumn getDoubleColumn(IAttribute attr) {
             return null;
         }
 

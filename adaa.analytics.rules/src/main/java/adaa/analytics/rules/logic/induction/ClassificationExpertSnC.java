@@ -28,6 +28,7 @@ import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
 import adaa.analytics.rules.utils.Logger;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
+import tech.tablesaw.api.DoubleColumn;
 
 /**
  * User-guided separate'n'conquer algorithm for generating classification rule sets.
@@ -61,8 +62,8 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 		Logger.log("ClassificationExpertSnC.run()\n", Level.FINE);
 		double beginTime;
 		beginTime = System.nanoTime();
-		IDataColumnAdapter weightDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getWeight(), Double.NaN);
-		IDataColumnAdapter labelDataColumnDoubleAdapter = dataset.getDataColumnDoubleAdapter(dataset.getAttributes().getLabel(), Double.NaN);
+		DoubleColumn weightDataColumnDoubleAdapter = dataset.getDoubleColumn(dataset.getAttributes().getWeight());
+		DoubleColumn labelDataColumnDoubleAdapter = dataset.getDoubleColumn(dataset.getAttributes().getLabel());
 
 		ClassificationRuleSet ruleset = (ClassificationRuleSet)factory.create(dataset);
 		IAttribute outputAttr = dataset.getAttributes().getLabel();
@@ -93,9 +94,9 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 
 			// at the beginning rule set does not cover any examples
 			for (int id = 0; id < dataset.size(); ++id) {
-				double w = dataset.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDoubleValue(id);
+				double w = dataset.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDouble(id);
 
-				if ((double)labelDataColumnDoubleAdapter.getDoubleValue(id) == classId) {
+				if ((double)labelDataColumnDoubleAdapter.getDouble(id) == classId) {
 					weighted_P += w;
 					positives.add(id);
 				} else {

@@ -14,12 +14,12 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.performance;
 
-import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
 import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
 import adaa.analytics.rules.logic.representation.ruleset.SurvivalRuleSet;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
+import tech.tablesaw.api.DoubleColumn;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -45,16 +45,16 @@ public class IntegratedBrierScore extends AbstractPerformanceCounter {
 		 IAttribute survTime = testSet.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE);
 		 IAttribute survStat = testSet.getAttributes().getLabel();
 		 IAttribute specialAttr = testSet.getAttributes().getColumnByRole(SurvivalRuleSet.ATTRIBUTE_ESTIMATOR);
-		 IDataColumnAdapter survStatDataColumnDoubleAdapter = testSet.getDataColumnDoubleAdapter(survStat, Double.NaN);
-		 IDataColumnAdapter survTimeDataColumnDoubleAdapter = testSet.getDataColumnDoubleAdapter(survTime, Double.NaN);
-		 IDataColumnAdapter specialAttrDataColumnDoubleAdapter = testSet.getDataColumnDoubleAdapter(specialAttr, Double.NaN);
+		 DoubleColumn survStatDataColumnDoubleAdapter = testSet.getDoubleColumn(survStat);
+		 DoubleColumn survTimeDataColumnDoubleAdapter = testSet.getDoubleColumn(survTime);
+		 DoubleColumn specialAttrDataColumnDoubleAdapter = testSet.getDoubleColumn(specialAttr);
 
 		 List<SurvInfo> info = new ArrayList<SurvInfo>();
 		 for (int i = 0; i < testSet.size(); i++) {
-			 double t = survTimeDataColumnDoubleAdapter.getDoubleValue(i);
-			 boolean isCensored = survStatDataColumnDoubleAdapter.getDoubleValue(i) == 0;
+			 double t = survTimeDataColumnDoubleAdapter.getDouble(i);
+			 boolean isCensored = survStatDataColumnDoubleAdapter.getDouble(i) == 0;
 
-			 String textKaplan = specialAttr.getAsString(specialAttrDataColumnDoubleAdapter.getDoubleValue(i));
+			 String textKaplan = specialAttr.getAsString(specialAttrDataColumnDoubleAdapter.getDouble(i));
 			 KaplanMeierEstimator kaplan = new KaplanMeierEstimator();
 			 kaplan.load(textKaplan);
 

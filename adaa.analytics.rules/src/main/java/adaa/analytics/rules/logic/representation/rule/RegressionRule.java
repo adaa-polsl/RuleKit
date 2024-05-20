@@ -14,7 +14,6 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.representation.rule;
 
-import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.data.metadata.EStatisticType;
 import adaa.analytics.rules.data.row.Example;
@@ -28,6 +27,7 @@ import adaa.analytics.rules.logic.representation.exampleset.SortedExampleSetEx;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
 import adaa.analytics.rules.utils.DoubleFormatter;
 import adaa.analytics.rules.utils.Pair;
+import tech.tablesaw.api.DoubleColumn;
 
 import java.security.InvalidParameterException;
 import java.util.*;
@@ -136,7 +136,7 @@ public class RegressionRule extends Rule {
 
 	@Override
 	public void covers(IExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
-		IDataColumnAdapter weightDataColumnDoubleAdapter = set.getDataColumnDoubleAdapter(set.getAttributes().getWeight(), Double.NaN);
+		DoubleColumn weightDataColumnDoubleAdapter = set.getDoubleColumn(set.getAttributes().getWeight());
 
 		SortedExampleSetEx ses = (set instanceof SortedExampleSetEx) ? (SortedExampleSetEx)set : null;
 		if (ses == null) {
@@ -180,7 +180,7 @@ public class RegressionRule extends Rule {
 				int id = it.next();
 
 				// if example covered
-				cur += set.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDoubleValue(id);
+				cur += set.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDouble(id);
 				if (cur > ct.weighted_n / 2) {
 					break;
 				}

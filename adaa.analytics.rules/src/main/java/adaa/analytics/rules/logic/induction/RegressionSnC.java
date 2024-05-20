@@ -14,7 +14,6 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import adaa.analytics.rules.data.IDataColumnAdapter;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
@@ -27,6 +26,7 @@ import adaa.analytics.rules.logic.representation.rule.Rule;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
 import adaa.analytics.rules.utils.Logger;
 import org.apache.commons.lang3.StringUtils;
+import tech.tablesaw.api.DoubleColumn;
 
 import java.util.Set;
 import java.util.logging.Level;
@@ -67,12 +67,12 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 		//Set<Integer> uncovered = new HashSet<Integer>();
 		Set<Integer> uncovered = new IntegerBitSet(sortedDataset.size());
 		double weighted_PN = 0;
-		IDataColumnAdapter weightDataColumnDoubleAdapter = sortedDataset.getDataColumnDoubleAdapter(sortedDataset.getAttributes().getWeight(), Double.NaN);
+		DoubleColumn weightDataColumnDoubleAdapter = sortedDataset.getDoubleColumn(sortedDataset.getAttributes().getWeight());
 
 		// at the beginning rule set does not cover any examples
 		for (int id = 0; id < sortedDataset.size(); ++id) {
 			uncovered.add(id);
-			double w = sortedDataset.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDoubleValue(id);
+			double w = sortedDataset.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDouble(id);
 			weighted_PN += w;
 		}
 		
@@ -122,7 +122,7 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 				
 				uncovered_pn = 0;
 				for (int id : uncovered) {
-					uncovered_pn += dataset.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDoubleValue(id);
+					uncovered_pn += dataset.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDouble(id);
 				}
 				
 				// stop if number of examples remaining is less than threshold
