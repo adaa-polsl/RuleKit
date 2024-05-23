@@ -1,0 +1,6 @@
+@relation 'mapping-2'
+@attribute 'att' {'val2','val3','val1'}
+@data
+'val2'
+'val3'
+'val1'

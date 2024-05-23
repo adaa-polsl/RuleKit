@@ -2,8 +2,12 @@ package adaa.analytics.rules.data;
 
 import adaa.analytics.rules.data.metadata.EColumnRole;
 import adaa.analytics.rules.logic.representation.rule.ContrastRule;
+import ioutils.ArffFileLoader;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.nio.file.Paths;
 
 public class DataTableTest {
 
@@ -191,5 +195,26 @@ public class DataTableTest {
         Assert.assertEquals(0.0, es.getExample(2).getValue(es.getAttributes().get("att_1")), 0.0000001);
         Assert.assertEquals(1, es.getExample(3).getValue(es.getAttributes().get("att_2")), 0.0000001);
         Assert.assertEquals(7, es.getExample(4).getValue(es.getAttributes().get("att_3")), 0.0000001);
+    }
+
+    @Test
+    public void UpdateMappingTest() throws IOException {
+
+        String workingDir = System.getProperty("user.dir");
+        String dataDir1 = Paths.get(workingDir, "/test/resources/data/unit-test-mapping-1.arff").toString();
+        String dataDir2 = Paths.get(workingDir, "/test/resources/data/unit-test-mapping-2.arff").toString();
+
+        ArffFileLoader arffFileLoader = new ArffFileLoader();
+        IExampleSet es1 = arffFileLoader.loadDataTable(dataDir1, "", "");
+        IExampleSet es2 = arffFileLoader.loadDataTable(dataDir2, "", "");
+
+        IExampleSet es3 = es2.updateMapping(es1);
+
+        Assert.assertNotNull(es1);
+        Assert.assertNotNull(es2);
+        Assert.assertNotNull(es3);
+
+        Assert.assertNotEquals(es1.getAttributes().get("att").getMapping().getIndex("val1"), es2.getAttributes().get("att").getMapping().getIndex("val1"));
+        Assert.assertEquals(es1.getAttributes().get("att").getMapping().getIndex("val1"), es3.getAttributes().get("att").getMapping().getIndex("val1"));
     }
 }
