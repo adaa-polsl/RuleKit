@@ -1,7 +1,6 @@
 package ioutils;
 
 import adaa.analytics.rules.data.DataTable;
-import adaa.analytics.rules.data.IExampleSet;
 import tech.tablesaw.io.csv.CsvReadOptions;
 
 import java.io.*;
@@ -9,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ArffFileLoader extends TableSawLoader {
-
 
     @Override
     public DataTable loadDataTable(String path, String labelParameterName, String survivalTimeParameter) throws IOException {

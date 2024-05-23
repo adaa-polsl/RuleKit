@@ -20,9 +20,7 @@ public class ColumnMetadataMap implements Serializable, IAttributes {
     public void updateMapping(ColumnMetadataMap uColumnMetadataMap, DataTable owner) {
         for (String colName : uColumnMetadataMap.getColumnNames()) {
             ColumnMetaData uColumnMetadata =  uColumnMetadataMap.getColumnMetaData(colName).cloneWithNewOwner(owner);
-            if (!attributeMetaData.containsKey(colName)) {
-                attributeMetaData.put(colName, uColumnMetadata);
-            }
+            attributeMetaData.put(colName, uColumnMetadata);
         }
     }
 
