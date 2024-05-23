@@ -1,10 +1,10 @@
 package ioutils;
 
 import adaa.analytics.rules.data.metadata.EColumnType;
-import org.apache.commons.lang3.text.StrTokenizer;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -27,16 +27,13 @@ public class AttributeInfo {
             arffAttributeLine = matcher.replaceAll("").trim();
         }
 
-        StrTokenizer globalTokenizer = new StrTokenizer(arffAttributeLine);
-        globalTokenizer.setDelimiterChar(' ');
-        globalTokenizer.setQuoteChar('\'');
-        String[] tokens = globalTokenizer.getTokenArray();
+        List<String> tokens = getTokens(arffAttributeLine, ' ');
 
-        if (tokens[0].equalsIgnoreCase("@attribute")) {
+        if (tokens.get(0).equalsIgnoreCase("@attribute")) {
 
-            name = tokens[1];
+            name = tokens.get(1);
             if(type == null) {
-                type = tokens[2].trim();
+                type = tokens.get(2).trim();
             }
 
             if (type.equalsIgnoreCase("numeric") ||
@@ -44,11 +41,7 @@ public class AttributeInfo {
                 colType = EColumnType.NUMERICAL;
             } else if (type.startsWith("{") && type.endsWith("}")) {
                 type = type.substring(1, type.length() - 1);
-                StrTokenizer typeTokenizer = new StrTokenizer(type);
-                typeTokenizer.setDelimiterChar(',');
-                typeTokenizer.setQuoteChar('\'');
-                typeTokenizer.setTrimmerMatcher(StrTokenizer.getCSVInstance().getTrimmerMatcher());
-                values = Arrays.asList(typeTokenizer.getTokenArray());
+                values = getTokens(type, ',');
                 colType = EColumnType.NOMINAL;
             } else {
                 colType = EColumnType.OTHER;
@@ -74,5 +67,53 @@ public class AttributeInfo {
 
     public List<String> getValues() {
         return values;
+    }
+
+    private List<String> getTokens(String arffAttributeLine, char delimiterChar) {
+        return getTokens(arffAttributeLine, delimiterChar, "'\"");
+    }
+
+    private List<String> getTokens(String arffAttributeLine, char delimiterChar, String quoteChars) {
+        ArrayList<String> tokensList = new ArrayList<>();
+        Character currQuoteChar = null;
+
+        Scanner scanner = new Scanner(arffAttributeLine);
+        scanner.useDelimiter(String.valueOf(delimiterChar));
+        while (scanner.hasNext()) {
+            String token = scanner.next();
+            if (startsWithOneOfChars(token, quoteChars)) {
+                currQuoteChar = token.charAt(0);
+                if(token.endsWith(String.valueOf(currQuoteChar))) {
+                    tokensList.add(token.substring(1, token.length()-1));
+                }
+                else {
+                    StringBuilder quotedToken = new StringBuilder(token.substring(1));
+                    while (scanner.hasNext()) {
+                        token = scanner.next();
+                        quotedToken.append(delimiterChar);
+                        if (token.endsWith(String.valueOf(currQuoteChar))) {
+                            quotedToken.append(token, 0, token.length()-1);
+                            break;
+                        }
+                        quotedToken.append(token);
+                    }
+                    tokensList.add(quotedToken.toString());
+                }
+                currQuoteChar = null;
+            } else {
+                tokensList.add(token);
+            }
+        }
+        scanner.close();
+
+        return tokensList;
+    }
+
+    private boolean startsWithOneOfChars(String text, String chars) {
+        for(char c : chars.toCharArray()) {
+            if(text.startsWith(String.valueOf(c)))
+                return true;
+        }
+        return false;
     }
 }
