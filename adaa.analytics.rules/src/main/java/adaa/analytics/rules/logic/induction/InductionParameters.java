@@ -41,7 +41,7 @@ public class InductionParameters implements Serializable {
 	private IQualityMeasure votingMeasure = new ClassificationMeasure(ClassificationMeasure.Correlation);
 
 	/** Minimum number of previously uncovered examples that a new rule has to cover. */
-	private double minimumCovered = 5.0;
+	private double minimumCovered = 0.05;
 	private double minimumCoveredAll = 0.0;
 	private int maxRuleCount = 0;
 	private double maximumUncoveredFraction = 0;

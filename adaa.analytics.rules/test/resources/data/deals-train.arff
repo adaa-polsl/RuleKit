@@ -1,9 +1,9 @@
 @RELATION RapidMinerData
 
 @ATTRIBUTE 'Age' real
-@ATTRIBUTE 'Gender' {'male','female'}
-@ATTRIBUTE 'Payment Method' {'credit card','cheque','cash'}
-@ATTRIBUTE 'Future Customer' {'yes','no'}
+@ATTRIBUTE "Gender" {'male','female'}
+@ATTRIBUTE 'Payment Method' {"credit card",'cheque','cash'}
+@ATTRIBUTE "Future Customer" {'yes','no'}
 
 @DATA
 64.0,'male','credit card','yes'
