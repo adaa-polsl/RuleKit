@@ -125,6 +125,13 @@ public class ClassificationRuleSet extends RuleSetBase {
                 if (votes[i] > maxVote) {
                     maxVote = votes[i];
                     result = i;
+                }else if (votes[i]==maxVote)
+                {
+                    if (label.getMapping().getValue(i).compareTo(label.getMapping().getValue(result))<0)
+                    {
+                        maxVote = votes[i];
+                        result = i;
+                    }
                 }
             }
             calculateConfidence(example, votes, votesSum, result);

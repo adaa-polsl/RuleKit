@@ -275,16 +275,6 @@ public class DataTable implements Serializable, IExampleSet {
         }
     }
 
-    public double[] getValues(String colName) {
-        ColumnMetaData cmd = getColumn(colName);
-
-        if (cmd == null) {
-            throw new IllegalStateException(String.format("Column '%s' does not exist", colName));
-        }
-
-        return table.doubleColumn(colName).asDoubleArray();
-    }
-
     public void setDoubleValue(IAttribute att, int rowIndex, double value) {
         if (att == null) {
             throw new IllegalStateException("Column not exist");
