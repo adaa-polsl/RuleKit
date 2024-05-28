@@ -48,22 +48,23 @@
 								<xs:enumeration value="approximate_induction"/>
 								<xs:enumeration value="approximate_bins_count"/>
 								<xs:enumeration value="expert_preferred_conditions"/>
-<xs:enumeration value="expert_forbidden_conditions"/>
-<xs:enumeration value="export_key"/>
-<xs:enumeration value="export_value"/>
-<xs:enumeration value="extend_using_preferred"/>
-<xs:enumeration value="extend_using_automatic"/>
-<xs:enumeration value="induce_using_preferred"/>
-<xs:enumeration value="induce_using_automatic"/>
-<xs:enumeration value="consider_other_classes"/>
-<xs:enumeration value="preferred_conditions_per_rule"/>
-<xs:enumeration value="preferred_attributes_per_rule"/>
-<xs:enumeration value="minsupp_all"/>
-<xs:enumeration value="enable_pruning"/>
-<xs:enumeration value="max_neg2pos"/>
-<xs:enumeration value="penalty_strength"/>
-<xs:enumeration value="penalty_saturationmax_passes_count"/>
-<xs:enumeration value="include_binary_contrast"/>
+                <xs:enumeration value="expert_forbidden_conditions"/>
+                <xs:enumeration value="export_key"/>
+                <xs:enumeration value="export_value"/>
+                <xs:enumeration value="extend_using_preferred"/>
+                <xs:enumeration value="extend_using_automatic"/>
+                <xs:enumeration value="induce_using_preferred"/>
+                <xs:enumeration value="induce_using_automatic"/>
+                <xs:enumeration value="consider_other_classes"/>
+                <xs:enumeration value="preferred_conditions_per_rule"/>
+                <xs:enumeration value="preferred_attributes_per_rule"/>
+                <xs:enumeration value="minsupp_all"/>
+                <xs:enumeration value="enable_pruning"/>
+                <xs:enumeration value="max_neg2pos"/>
+                <xs:enumeration value="penalty_strength"/>
+                <xs:enumeration value="penalty_saturation"/>
+                <xs:enumeration value="max_passes_count"/>
+                <xs:enumeration value="include_binary_contrast"/>
 							</xs:restriction>
 						</xs:simpleType>
 					</xs:attribute>
