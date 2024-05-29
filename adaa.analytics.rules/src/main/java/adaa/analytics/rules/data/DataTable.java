@@ -284,25 +284,6 @@ public class DataTable implements Serializable, IExampleSet {
         col.set(rowIndex, value);
     }
 
-
-//    public Object[] getValues(String colName) {
-//        ColumnMetaData cmd = getColumn(colName);
-//
-//        if (cmd == null) {
-//            throw new IllegalStateException(String.format("Column '%s' does not exist", colName));
-//        }
-//
-//        if (cmd.isNumerical()) {
-//            return table.doubleColumn(colName).asObjectArray();
-//        }
-//
-//        if (cmd.isNominal()) {
-//            return table.stringColumn(colName).asObjectArray();
-//        }
-//
-//        throw new IllegalStateException(String.format("Column '%s' is neither numerical nor nominal", colName));
-//    }
-
     private Selection addCondition(List<ICondition> conditions, int conditionIndex) {
 
         ICondition condition = conditions.get(conditionIndex);
