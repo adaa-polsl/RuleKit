@@ -1,11 +1,14 @@
 package ioutils;
 
 import adaa.analytics.rules.data.DataTable;
+import org.jetbrains.annotations.NotNull;
 import tech.tablesaw.io.csv.CsvReadOptions;
 
 import java.io.*;
+import java.nio.CharBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ArffFileLoader extends TableSawLoader {
 
@@ -26,10 +29,10 @@ public class ArffFileLoader extends TableSawLoader {
 
         BufferedReader bufferReader = null;
         if (dataPosition >= 0) {
-                RandomAccessFile raf = new RandomAccessFile(file, "r");
-                raf.seek(dataPosition);
-                bufferReader = new BufferedReader(new InputStreamReader(new FileInputStream(raf.getFD())));
-
+            RandomAccessFile raf = new RandomAccessFile(file, "r");
+            raf.seek(dataPosition);
+            BufferedReader inBufferReader = new BufferedReader(new InputStreamReader(new FileInputStream(raf.getFD())));
+            bufferReader = filterFileData(inBufferReader);
         } else {
             System.out.println("Nie znaleziono znacznika '@data'.");
         }
@@ -57,5 +60,23 @@ public class ArffFileLoader extends TableSawLoader {
             }
         }
         return position;
+    }
+
+    private BufferedReader filterFileData(BufferedReader inReader) throws IOException {
+        List<String> filteredLines = new ArrayList<>();
+
+        String inLine;
+        while ((inLine = inReader.readLine()) != null) {
+            if (!inLine.trim().startsWith("%")) {
+                filteredLines.add(inLine);
+            }
+        }
+
+        StringBuilder filteredData = new StringBuilder();
+        for (String line : filteredLines) {
+            filteredData.append(line).append("\n");
+        }
+
+        return new BufferedReader(new StringReader(filteredData.toString()));
     }
 }

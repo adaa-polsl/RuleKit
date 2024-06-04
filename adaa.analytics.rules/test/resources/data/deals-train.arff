@@ -1,9 +1,9 @@
 @RELATION RapidMinerData
 
 @ATTRIBUTE 'Age' real
-@ATTRIBUTE "Gender" {'male','female'}
-@ATTRIBUTE 'Payment Method' {"credit card",'cheque','cash'}
-@ATTRIBUTE "Future Customer" {'yes','no'}
+@ATTRIBUTE "Gender" {male, female}
+@ATTRIBUTE 'Payment Method' {"credit card","cheque",'cash'}
+@ATTRIBUTE 'Future Customer' {'yes','no'}
 
 @DATA
 64.0,'male','credit card','yes'
@@ -982,6 +982,7 @@
 38.0,'male','credit card','yes'
 81.0,'male','cash','no'
 20.0,'male','cash','yes'
+%
 20.0,'female','credit card','yes'
 40.0,'male','credit card','yes'
 29.0,'male','cash','yes'
@@ -1006,3 +1007,6 @@
 20.0,'male','credit card','yes'
 19.0,'male','credit card','yes'
 24.0,'female','credit card','yes'
+%
+%
+%
