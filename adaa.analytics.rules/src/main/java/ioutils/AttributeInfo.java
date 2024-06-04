@@ -84,7 +84,7 @@ public class AttributeInfo {
             if (startsWithOneOfChars(token, quoteChars)) {
                 currQuoteChar = token.charAt(0);
                 if(token.endsWith(String.valueOf(currQuoteChar))) {
-                    tokensList.add(token.substring(1, token.length()-1));
+                    tokensList.add(token.substring(1, token.length()-1).trim());
                 }
                 else {
                     StringBuilder quotedToken = new StringBuilder(token.substring(1));
@@ -97,11 +97,11 @@ public class AttributeInfo {
                         }
                         quotedToken.append(token);
                     }
-                    tokensList.add(quotedToken.toString());
+                    tokensList.add(quotedToken.toString().trim());
                 }
                 currQuoteChar = null;
             } else {
-                tokensList.add(token);
+                tokensList.add(token.trim());
             }
         }
         scanner.close();
