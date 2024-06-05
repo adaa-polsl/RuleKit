@@ -14,3 +14,4 @@ Rules
 	IF MM116 = <0.95, 1.25) THEN MM116_pred = {1.10} 
 	IF MM116 = <0.95, 1.35) THEN MM116_pred = {1.10} 
 	IF MM116 = (-inf, 0.95) AND MM31 = <0.30, inf) THEN MM116_pred = {0.80} 
+	IF MM116 = <1.05, inf) AND AS038 = <2.15, inf) AND MM31 = (-inf, 0.67) THEN MM116_pred = {1.20} 

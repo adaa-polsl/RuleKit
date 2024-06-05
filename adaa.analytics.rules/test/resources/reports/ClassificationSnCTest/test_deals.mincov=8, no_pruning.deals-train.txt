@@ -1,6 +1,17 @@
 
 
 Rules
+	IF Gender = {female} AND Age = <34.50, inf) THEN Future Customer = {no}
+	IF Payment Method = {cash} AND Age = <37.50, inf) THEN Future Customer = {no}
+	IF Age = <72.50, inf) THEN Future Customer = {no}
+	IF Payment Method = {cheque} AND Age = <54.50, 71.50) THEN Future Customer = {no}
+	IF Payment Method = {cheque} AND Age = <41.50, 55.50) THEN Future Customer = {no}
+	IF Gender = {female} AND Age = <32.50, inf) THEN Future Customer = {no}
+	IF Age = <31.50, 42.50) THEN Future Customer = {no}
+	IF Gender = {female} AND Age = <27.50, inf) THEN Future Customer = {no}
+	IF Gender = {female} AND Age = <24.50, inf) THEN Future Customer = {no}
+	IF Gender = {female} AND Age = <19.50, inf) THEN Future Customer = {no}
+	IF Gender = {female} THEN Future Customer = {no}
 	IF Payment Method = {credit card} AND Age = (-inf, 30.50) THEN Future Customer = {yes}
 	IF Gender = {male} AND Payment Method = {credit card} AND Age = (-inf, 32.50) THEN Future Customer = {yes}
 	IF Gender = {male} AND Age = <18.50, 21.50) THEN Future Customer = {yes}
@@ -13,13 +24,3 @@ Rules
 	IF Gender = {male} AND Age = (-inf, 35.50) THEN Future Customer = {yes}
 	IF Gender = {male} AND Payment Method = {credit card} AND Age = (-inf, 36.50) THEN Future Customer = {yes}
 	IF Gender = {male} AND Payment Method = {credit card} AND Age = (-inf, 72.50) THEN Future Customer = {yes}
-	IF Gender = {female} AND Age = <34.50, inf) THEN Future Customer = {no}
-	IF Payment Method = {cash} AND Age = <37.50, inf) THEN Future Customer = {no}
-	IF Age = <72.50, inf) THEN Future Customer = {no}
-	IF Payment Method = {cheque} AND Age = <54.50, 71.50) THEN Future Customer = {no}
-	IF Payment Method = {cheque} AND Age = <41.50, 55.50) THEN Future Customer = {no}
-	IF Gender = {female} AND Age = <32.50, inf) THEN Future Customer = {no}
-	IF Age = <31.50, 42.50) THEN Future Customer = {no}
-	IF Gender = {female} AND Age = <27.50, inf) THEN Future Customer = {no}
-	IF Gender = {female} AND Age = <24.50, inf) THEN Future Customer = {no}
-	IF Gender = {female} AND Age = <19.50, inf) THEN Future Customer = {no}

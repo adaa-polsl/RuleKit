@@ -15,3 +15,4 @@ Rules
 	IF [CD34kgx10d6 = (-inf, 11.86)] AND Stemcellsource = {0} AND Donorage = <23.22, inf) AND extcGvHD = {1} AND Donorage35 = {0} AND Recipientage = <3.25, 8.40) THEN 
 	IF [CD34kgx10d6 = (-inf, 11.86)] AND Recipientgender = {1} AND ABOmatch = {1} AND Txpostrelapse = {0} AND Recipientage10 = {0} AND CD3dCD34 = (-inf, 4.30) THEN 
 	IF [CD34kgx10d6 = <11.86, inf)] THEN 
+	IF [CD34kgx10d6 = (-inf, 11.86)] AND Relapse = {0} AND Donorage = (-inf, 37.64) AND extcGvHD = {1} AND Txpostrelapse = {0} AND HLAgrI = {0} THEN 
