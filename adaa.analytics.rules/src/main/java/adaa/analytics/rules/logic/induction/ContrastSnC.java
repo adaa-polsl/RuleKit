@@ -144,8 +144,8 @@ public class ContrastSnC extends ClassificationSnC {
 //                        IExampleSet conditionedSet = new ConditionedExampleSet(dataset, cnd);
 
                         List<ICondition> cndList = new ArrayList<>(2);
-                        cndList.add(new StringCondition(contrastAttr.getName(), AbstractCondition.EComparisonOperator.EQUALS, mapping.mapIndex(i)));
-                        cndList.add(new StringCondition(contrastAttr.getName(), AbstractCondition.EComparisonOperator.EQUALS, mapping.mapIndex(j)));
+                        cndList.add(new StringCondition(contrastAttr.getName(), AbstractCondition.EComparisonOperator.EQUALS, (double)i));
+                        cndList.add(new StringCondition(contrastAttr.getName(), AbstractCondition.EComparisonOperator.EQUALS, (double)j));
                         IExampleSet conditionedSet = dataset.filterWithOr(cndList);
 
                         rs = super.run(conditionedSet);

@@ -34,8 +34,8 @@ public class ContrastSurvivalExampleSet extends ContrastExampleSet {
 //        try {
             INominalMapping mapping = contrastAttribute.getMapping();
 
-            for(String value : mapping.getValues()) {
-                ICondition cnd = new StringCondition(contrastAttribute.getName(), AbstractCondition.EComparisonOperator.EQUALS, value);
+            for(int i=0 ; i<mapping.size();i++) {
+                ICondition cnd = new StringCondition(contrastAttribute.getName(), AbstractCondition.EComparisonOperator.EQUALS, (double)i);
                 IExampleSet conditionedSet = exampleSet.filter(cnd);
                 groupEstimators.add(new KaplanMeierEstimator(conditionedSet));
             }
