@@ -38,12 +38,18 @@ public class ContrastSurvivalExampleSet extends ContrastExampleSet {
                 AttributeValueFilterSingleCondition cnd = new AttributeValueFilterSingleCondition(
                         contrastAttribute, AttributeValueFilterSingleCondition.EQUALS, mapping.mapIndex(i));
 
-                ExampleSet conditionedSet = new ConditionedExampleSet(exampleSet,cnd);
+                ExampleSet conditionedSet = new ConditionedExampleSet(exampleSet, cnd);
                 groupEstimators.add(new KaplanMeierEstimator(conditionedSet));
             }
 
         } catch (ExpressionEvaluationException e) {
             e.printStackTrace();
         }
+    }
+
+    public ContrastSurvivalExampleSet(ContrastSurvivalExampleSet rhs) {
+        super(rhs);
+        this.trainingEstimator = rhs.trainingEstimator;
+        this.groupEstimators = rhs.groupEstimators;
     }
 }

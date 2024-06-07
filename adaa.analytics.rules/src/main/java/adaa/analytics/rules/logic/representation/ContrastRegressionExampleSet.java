@@ -54,4 +54,10 @@ public class ContrastRegressionExampleSet extends ContrastExampleSet {
             e.printStackTrace();
         }
     }
+
+    public ContrastRegressionExampleSet(ContrastRegressionExampleSet rhs) {
+        super(rhs);
+        this.trainingEstimator = rhs.trainingEstimator;
+        this.groupEstimators = rhs.groupEstimators;
+    }
 }

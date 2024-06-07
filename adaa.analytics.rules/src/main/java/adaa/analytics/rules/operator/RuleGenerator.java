@@ -274,6 +274,7 @@ public class RuleGenerator extends AbstractLearner implements OperatorI18N {
 			if (contrastAttr != null) {
 				params.setConditionComplementEnabled(true);
 				params.setSelectBestCandidate(true);
+				params.setAdjustMinimumCovered(false);
 				snc = new ContrastSnC(finder, params);
 			}
 

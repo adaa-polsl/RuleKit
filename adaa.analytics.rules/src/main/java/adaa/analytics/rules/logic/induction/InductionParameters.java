@@ -47,6 +47,8 @@ public class InductionParameters implements Serializable {
 	private double maximumUncoveredFraction = 0;
 	private boolean conditionComplementEnabled = false;
 
+	private boolean adjustMinimumCovered = true;
+
 	private boolean ignoreMissing = false;
 	private boolean pruningEnabled = true;
 	private double maxGrowingConditions = 0;
@@ -80,6 +82,9 @@ public class InductionParameters implements Serializable {
 		return Math.max(1, minimumCovered * (minimumCovered >= 1 ? 1 : size));
 	}
 	public void setMinimumCovered(double minimumCovered) {this.minimumCovered = minimumCovered;}
+
+	public boolean isAdjustMinimumCovered() { return adjustMinimumCovered; }
+	public void setAdjustMinimumCovered(boolean v) { adjustMinimumCovered = v; }
 
 	public int getMaxRuleCount() {
 		return maxRuleCount;
@@ -153,6 +158,7 @@ public class InductionParameters implements Serializable {
 
 
 		return "minsupp_new=" + minimumCovered + "\n" +
+				"adjust_minsupp_new=" + adjustMinimumCovered + "\n" +
 				mincov_all_desc + "\n" +
 				"max_rule_count=" + maxRuleCount + "\n" +
 				"max_neg2pos=" + (maxcovNegative == Double.MAX_VALUE ? "OFF" : maxcovNegative) + "\n" +

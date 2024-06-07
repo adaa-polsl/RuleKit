@@ -24,6 +24,11 @@ public class ContrastExampleSet extends SimpleExampleSet {
                 ? exampleSet.getAttributes().getLabel()
                 : exampleSet.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
     }
+
+    public ContrastExampleSet(ContrastExampleSet rhs) {
+        super(rhs);
+        this.contrastAttribute = rhs.contrastAttribute;
+    }
 }
 
 
