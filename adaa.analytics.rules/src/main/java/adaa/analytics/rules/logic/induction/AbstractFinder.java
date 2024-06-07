@@ -382,7 +382,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 			int toGenerateRulesCount = params.getMaxRuleCount()- ruleOrderNum;
 			double fractionCurrentGeneration = 1.0 / (double) toGenerateRulesCount;
 			return fractionCurrentGeneration * sizeToCover;
-		}else if (uncoveredSize < params.getAbsoluteMinimumCovered(size)) {
+		} else if (uncoveredSize < params.getAbsoluteMinimumCovered(size) && params.isAdjustMinimumCovered()) {
 			return uncoveredSize;
 		} else {
 			return params.getAbsoluteMinimumCovered(size);
