@@ -118,6 +118,7 @@ public class StandardRule {
         if (contrastAttr != null) {
             params.setConditionComplementEnabled(true);
             params.setSelectBestCandidate(true);
+            params.setAdjustMinimumCovered(false);
         }
         return params;
     }
