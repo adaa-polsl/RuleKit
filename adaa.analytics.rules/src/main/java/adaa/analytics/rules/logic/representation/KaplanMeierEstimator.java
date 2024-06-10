@@ -19,7 +19,6 @@ import adaa.analytics.rules.logic.representation.exampleset.SortedExampleSetEx;
 import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
 
 import java.io.Serializable;
-import java.security.InvalidParameterException;
 import java.util.*;
 
 /**
@@ -134,7 +133,7 @@ public class KaplanMeierEstimator implements Serializable {
 
         SortedExampleSetEx set = (data instanceof SortedExampleSetEx) ? (SortedExampleSetEx)data : null;
         if (set == null) {
-            throw new InvalidParameterException("RegressionRules support only ListedExampleSet example sets");
+            throw new IllegalArgumentException("RegressionRules support only SortedExampleSetEx example sets");
         }
 
 		this.reserve(indices.size());

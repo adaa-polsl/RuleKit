@@ -170,7 +170,7 @@ public class ColumnMetaData implements Serializable, IAttribute {
         }
 
         if (isNominal()) {
-            return "\""+getMapping().getValue((int) value)+"\"";
+            return getMapping().getValue((int) value);
         }else {
             return ""+value;
         }

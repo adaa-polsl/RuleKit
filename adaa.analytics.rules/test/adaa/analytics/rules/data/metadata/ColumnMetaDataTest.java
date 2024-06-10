@@ -21,8 +21,8 @@ public class ColumnMetaDataTest {
         values.add("bbb");
 
         ColumnMetaData cmd = new ColumnMetaData("column1", EColumnType.NOMINAL, EColumnRole.label, values, null);
-        Assert.assertEquals("\"aaa\"",cmd.getAsString(0));
-        Assert.assertEquals("\"bbb\"",cmd.getAsString(1));
+        Assert.assertEquals("aaa",cmd.getAsString(0));
+        Assert.assertEquals("bbb",cmd.getAsString(1));
         try {
              cmd.getAsString(2);
             Assert.fail("Should have been exception");
