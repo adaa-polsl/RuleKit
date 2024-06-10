@@ -35,7 +35,7 @@
 			</predict>
 		</prediction>
 	</dataset>
-	<!--<dataset>
+	<dataset>
 		<label>class</label>
 		<contrast_attribute>group</contrast_attribute>
 			<out_directory>./regression/machine</out_directory>
@@ -1023,6 +1023,6 @@
 				<predictions_file>boston-housing.pred.arff</predictions_file>
 			</predict>
 		</prediction>
-	</dataset>-->
+	</dataset>
 </datasets>
 </experiment>
