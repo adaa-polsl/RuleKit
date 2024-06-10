@@ -13,17 +13,29 @@ import java.util.List;
 
 public class ContrastRegressionExampleSet extends ContrastExampleSet {
 
-    /** Training set estimator. */
+    /**
+     * Training set estimator.
+     */
     protected double trainingEstimator;
 
-    /** Collection of Kaplan-Meier estimators for contrast groups. */
+    /**
+     * Collection of Kaplan-Meier estimators for contrast groups.
+     */
     protected List<Double> groupEstimators = new ArrayList<Double>();
 
-    /** Gets {@link #groupEstimators} */
-    public List<Double> getGroupEstimators() { return groupEstimators; }
+    /**
+     * Gets {@link #groupEstimators}
+     */
+    public List<Double> getGroupEstimators() {
+        return groupEstimators;
+    }
 
-    /** Gets {@link #trainingEstimator}}. */
-    public double getTrainingEstimator() { return trainingEstimator; }
+    /**
+     * Gets {@link #trainingEstimator}}.
+     */
+    public double getTrainingEstimator() {
+        return trainingEstimator;
+    }
 
     public ContrastRegressionExampleSet(IExampleSet exampleSet) {
         super(exampleSet);
@@ -37,25 +49,15 @@ public class ContrastRegressionExampleSet extends ContrastExampleSet {
         trainingEstimator = label.getStatistic(averageName);
 
         // establish contrast groups  estimator
-//        try {
-            INominalMapping mapping = contrastAttribute.getMapping();
+        INominalMapping mapping = contrastAttribute.getMapping();
 
-            for(int i=0 ; i<mapping.size();i++) {
-                ICondition cnd = new StringCondition(contrastAttribute.getName(), AbstractCondition.EComparisonOperator.EQUALS, (double)i);
+        for (int i = 0; i < mapping.size(); i++) {
+            ICondition cnd = new StringCondition(contrastAttribute.getName(), AbstractCondition.EComparisonOperator.EQUALS, (double) i);
 
-                //TODO jaki to ma sens?
-                IExampleSet conditionedSet = exampleSet.filter(cnd);
-                label = conditionedSet.getAttributes().getLabel();
-                label.recalculateStatistics();
-//                groupEstimators.add(conditionedSet.getStatistics(label, averageName));
-                groupEstimators.add(label.getStatistic(averageName));
-            }
-//        }
-//        catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        catch (ExpressionEvaluationException e) {
-//            e.printStackTrace();
-//        }
+            IExampleSet conditionedSet = exampleSet.filter(cnd);
+            label = conditionedSet.getAttributes().getLabel();
+            label.recalculateStatistics();
+            groupEstimators.add(label.getStatistic(averageName));
+        }
     }
 }

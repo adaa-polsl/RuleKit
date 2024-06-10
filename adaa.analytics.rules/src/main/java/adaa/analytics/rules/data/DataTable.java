@@ -211,9 +211,7 @@ public class DataTable implements Serializable, IExampleSet {
         Column<?> col = table.column(colName);
 
         if (!(col instanceof DoubleColumn)) {
-            // @TODO Add log
-//            throw new IllegalStateException(String.format("Cannot calculate %s statistic for not numerical column: %s", stateType, colName));
-            return;
+            throw new IllegalStateException(String.format("Cannot calculate %s statistic for not numerical column: %s", stateType, colName));
         }
 
         DoubleColumn numCol = (DoubleColumn) col;
@@ -297,7 +295,10 @@ public class DataTable implements Serializable, IExampleSet {
 
     @Override
     public IExampleSet filter(ICondition cnd) {
-        return new DataTable(table.where(cnd.createSelection(table)), columnMetadataMap, dataTableAnnotations);
+        DataTable filteredDT =  new DataTable(table.where(cnd.createSelection(table)),null,null);
+        filteredDT.columnMetadataMap =  columnMetadataMap.cloneWithNewOwner(filteredDT);
+        filteredDT.dataTableAnnotations = dataTableAnnotations.clone();
+        return filteredDT;
     }
 
     @Override
@@ -307,7 +308,10 @@ public class DataTable implements Serializable, IExampleSet {
         }
 
         Selection sel = addCondition(cndList, 0);
-        return new DataTable(table.where(sel), columnMetadataMap, dataTableAnnotations);
+        DataTable filteredDT =  new DataTable(table.where(sel),null,null);
+        filteredDT.columnMetadataMap =  columnMetadataMap.cloneWithNewOwner(filteredDT);
+        filteredDT.dataTableAnnotations = dataTableAnnotations.clone();
+        return filteredDT;
     }
 
     @Override

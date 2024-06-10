@@ -5,6 +5,7 @@ import adaa.analytics.rules.data.IAttributes;
 import adaa.analytics.rules.data.IExampleSet;
 
 import java.io.Serializable;
+import java.util.Iterator;
 
 public class Example implements Serializable{
 
@@ -78,5 +79,21 @@ public class Example implements Serializable{
     public String getValueAsString(IAttribute attribute) {
         double value = this.getValue(attribute);
         return attribute.getAsString(value);
+    }
+
+    public String toString() {
+
+        StringBuffer result = new StringBuffer();
+        Iterator<IAttribute> a = this.getAttributes().allAttributes();
+
+        for(boolean first = true; a.hasNext(); result.append(this.getValueAsString((IAttribute)a.next()))) {
+            if (first) {
+                first = false;
+            } else {
+                result.append(" ");
+            }
+        }
+
+        return result.toString();
     }
 }

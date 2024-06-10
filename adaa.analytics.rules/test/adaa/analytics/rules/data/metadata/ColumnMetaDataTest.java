@@ -21,8 +21,8 @@ public class ColumnMetaDataTest {
         values.add("bbb");
 
         ColumnMetaData cmd = new ColumnMetaData("column1", EColumnType.NOMINAL, EColumnRole.label, values, null);
-        Assert.assertEquals("aaa",cmd.getAsString(0));
-        Assert.assertEquals("bbb",cmd.getAsString(1));
+        Assert.assertEquals("\"aaa\"",cmd.getAsString(0));
+        Assert.assertEquals("\"bbb\"",cmd.getAsString(1));
         try {
              cmd.getAsString(2);
             Assert.fail("Should have been exception");
@@ -30,7 +30,7 @@ public class ColumnMetaDataTest {
         {}
         cmd = new ColumnMetaData("column1", EColumnType.NUMERICAL, EColumnRole.regular, new ArrayList<>(), null);
         Assert.assertEquals("?",cmd.getAsString(Double.NaN));
-        Assert.assertEquals("?",cmd.getAsString(1));
+        Assert.assertEquals("1.0",cmd.getAsString(1));
     }
 
     @Test

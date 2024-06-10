@@ -23,6 +23,7 @@
 						<xs:simpleType>
 							<xs:restriction base="xs:string">
 								<xs:enumeration value="min_rule_covered"/>
+								<xs:enumeration value="adjust_minsupp_new"/>
 								<xs:enumeration value="minsupp_new"/>
 								<xs:enumeration value="mincov_new"/>
 								<xs:enumeration value="max_uncovered_fraction"/>

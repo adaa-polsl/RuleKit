@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <experiment>
 <parameter_sets>
-
 	<parameter_set name="5 passes, p_strength 0.5, p_sat 0.2, decreasing">		
 		<param name="minsupp_all">0.8 0.5 0.2 0.1</param>
 		<param name="minsupp_new">0.1</param>
@@ -36,7 +35,7 @@
 			</predict>
 		</prediction>
 	</dataset>
-	<dataset>
+	<!--<dataset>
 		<label>class</label>
 		<contrast_attribute>group</contrast_attribute>
 			<out_directory>./regression/machine</out_directory>
@@ -1024,6 +1023,6 @@
 				<predictions_file>boston-housing.pred.arff</predictions_file>
 			</predict>
 		</prediction>
-	</dataset>
+	</dataset>-->
 </datasets>
 </experiment>

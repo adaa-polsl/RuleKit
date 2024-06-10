@@ -340,8 +340,6 @@ public class RegressionFinder extends AbstractFinder {
 					
 					// get all distinctive values of attribute
 					for (int id : covered) {
-//						Example ex = dataset.getExample(id);
-//						double val = ex.getValue(attr);
 						double val = attDataColumnDoubleAdapter.getDouble(id);
 
 						if (!values2ids.containsKey(val)) {
