@@ -42,6 +42,11 @@ public class SortedExampleSetEx extends SortedExampleSet {
         fillLabelsAndWeights();
     }
 
+    public SortedExampleSetEx(SortedExampleSetEx exampleSet) {
+        super(exampleSet);
+        fillLabelsAndWeights();
+    }
+
     protected final void fillLabelsAndWeights() {
         labels = new double[this.size()];
         labelsWeighted = new double[this.size()];

@@ -11,7 +11,7 @@ import com.rapidminer.operator.tools.ExpressionEvaluationException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContrastExampleSet extends SimpleExampleSet {
+public class ContrastExampleSet extends SimpleExampleSet implements IContrastExampleSet {
 
     protected Attribute contrastAttribute;
 

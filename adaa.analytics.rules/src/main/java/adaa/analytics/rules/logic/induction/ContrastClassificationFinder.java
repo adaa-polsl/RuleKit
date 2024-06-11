@@ -2,12 +2,10 @@ package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.quality.NegativeControlledMeasure;
-import adaa.analytics.rules.logic.representation.ContrastRule;
-import adaa.analytics.rules.logic.representation.MultiSet;
-import adaa.analytics.rules.logic.representation.Rule;
-import adaa.analytics.rules.logic.representation.SingletonSet;
+import adaa.analytics.rules.logic.representation.*;
 import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
+import com.rapidminer.example.set.SortedExampleSet;
 import com.rapidminer.example.table.NominalMapping;
 
 import java.util.Map;
@@ -32,6 +30,11 @@ public class ContrastClassificationFinder extends ClassificationFinder implement
         super(params);
         penalties = new AttributePenaltyCollection(params);
         params.setPruningMeasure(new NegativeControlledMeasure(params.getPruningMeasure(), params.getMaxcovNegative()));
+    }
+
+    public ExampleSet preprocess(ExampleSet trainSet) {
+        super.preprocess(trainSet);
+        return trainSet; // return original one
     }
 
 

@@ -135,7 +135,7 @@ public class KaplanMeierEstimator implements Serializable {
 
         SortedExampleSetEx set = (data instanceof SortedExampleSetEx) ? (SortedExampleSetEx)data : null;
         if (set == null) {
-            throw new InvalidParameterException("RegressionRules support only ListedExampleSet example sets");
+            throw new InvalidParameterException("KaplanMeierEstimator support only SortedExampleSetEx example sets");
         }
 
 		this.reserve(indices.size());

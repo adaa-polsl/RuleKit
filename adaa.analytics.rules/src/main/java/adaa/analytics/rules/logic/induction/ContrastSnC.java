@@ -40,7 +40,7 @@ public class ContrastSnC extends ClassificationSnC {
     public RuleSetBase run(ExampleSet dataset) {
 
         // make a contrast dataset
-        ContrastExampleSet ces;
+        IContrastExampleSet ces;
 
         if (factory.getType() == RuleFactory.CONTRAST_REGRESSION) {
             ces = new ContrastRegressionExampleSet((SimpleExampleSet) dataset);
@@ -84,7 +84,7 @@ public class ContrastSnC extends ClassificationSnC {
      * @param dataset Training data set.
      * @return Rule set.
      */
-    protected void run(ContrastExampleSet dataset, ContrastRuleSet crs) {
+    protected void run(IContrastExampleSet dataset, ContrastRuleSet crs) {
         Logger.log("ContrastSnC.run()\n", Level.FINE);
 
         // try to get contrast attribute (use label if not specified)

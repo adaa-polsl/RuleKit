@@ -39,7 +39,7 @@ public class ContrastRegressionRuleSet extends ContrastRuleSet {
     public ContrastRegressionRuleSet(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
         super(exampleSet, isVoting, params, knowledge);
 
-        ContrastRegressionExampleSet cer = (exampleSet instanceof ContrastExampleSet) ? (ContrastRegressionExampleSet)exampleSet : null;
+        ContrastRegressionExampleSet cer = (exampleSet instanceof ContrastRegressionExampleSet) ? (ContrastRegressionExampleSet)exampleSet : null;
         if (cer == null) {
             throw new InvalidParameterException("ContrastRegressionRuleSet supports only ContrastRegressionExampleSet instances");
         }

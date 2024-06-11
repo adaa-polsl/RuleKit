@@ -42,9 +42,9 @@ public class ContrastSurvivalRuleSet extends ContrastRuleSet {
     public ContrastSurvivalRuleSet(ExampleSet exampleSet, boolean isVoting, InductionParameters params, Knowledge knowledge) {
         super(exampleSet, isVoting, params, knowledge);
 
-        ContrastSurvivalExampleSet ces = (exampleSet instanceof ContrastExampleSet) ? (ContrastSurvivalExampleSet)exampleSet : null;
+        ContrastSurvivalExampleSet ces = (exampleSet instanceof ContrastSurvivalExampleSet) ? (ContrastSurvivalExampleSet)exampleSet : null;
         if (ces == null) {
-            throw new InvalidParameterException("ContrastSurvivalRuleSet supports only ContrastExampleSet instances");
+            throw new InvalidParameterException("ContrastSurvivalRuleSet supports only ContrastSurvivalExampleSet instances");
         }
 
         trainingEstimator = ces.getTrainingEstimator();

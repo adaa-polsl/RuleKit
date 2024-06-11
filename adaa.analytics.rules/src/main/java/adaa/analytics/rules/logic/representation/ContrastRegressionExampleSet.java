@@ -12,13 +12,17 @@ import com.rapidminer.operator.tools.ExpressionEvaluationException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContrastRegressionExampleSet extends ContrastExampleSet {
+public class ContrastRegressionExampleSet extends SortedExampleSetEx implements IContrastExampleSet {
+
+    protected Attribute contrastAttribute;
 
     /** Training set estimator. */
     protected double trainingEstimator;
 
     /** Collection of Kaplan-Meier estimators for contrast groups. */
     protected List<Double> groupEstimators = new ArrayList<Double>();
+
+    public Attribute getContrastAttribute() { return contrastAttribute; }
 
     /** Gets {@link #groupEstimators} */
     public List<Double> getGroupEstimators() { return groupEstimators; }
@@ -27,7 +31,11 @@ public class ContrastRegressionExampleSet extends ContrastExampleSet {
     public double getTrainingEstimator() { return trainingEstimator; }
 
     public ContrastRegressionExampleSet(SimpleExampleSet exampleSet) {
-        super(exampleSet);
+        super(exampleSet, exampleSet.getAttributes().getLabel(), SortedExampleSetEx.INCREASING);
+
+        contrastAttribute = (exampleSet.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE) == null)
+                ? exampleSet.getAttributes().getLabel()
+                : exampleSet.getAttributes().getSpecial(ContrastRule.CONTRAST_ATTRIBUTE_ROLE);
 
         String averageName = (exampleSet.getAttributes().getWeight() != null)
                 ? Statistics.AVERAGE_WEIGHTED : Statistics.AVERAGE;
@@ -57,6 +65,7 @@ public class ContrastRegressionExampleSet extends ContrastExampleSet {
 
     public ContrastRegressionExampleSet(ContrastRegressionExampleSet rhs) {
         super(rhs);
+        this.contrastAttribute = rhs.contrastAttribute;
         this.trainingEstimator = rhs.trainingEstimator;
         this.groupEstimators = rhs.groupEstimators;
     }
