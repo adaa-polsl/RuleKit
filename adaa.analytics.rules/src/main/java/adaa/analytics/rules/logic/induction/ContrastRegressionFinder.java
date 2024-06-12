@@ -138,8 +138,8 @@ public class ContrastRegressionFinder extends RegressionFinder implements IPenal
         notifyRuleReady(rule);
     }
 
-
-    boolean checkCoverage(double p, double n, double new_p, double new_n, double P, double N) {
+    @Override
+    boolean checkCoverage(double p, double n, double new_p, double new_n, double P, double N,double uncoveredSize, int ruleOrderNum) {
         return ((new_p) >= params.getAbsoluteMinimumCovered(P)) &&
                 ((p) >= params.getAbsoluteMinimumCoveredAll(P));
     }

@@ -11,6 +11,7 @@ import com.rapidminer.operator.tools.ExpressionEvaluationException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class ContrastRegressionExampleSet extends SortedExampleSetEx implements IContrastExampleSet {
 
@@ -45,6 +46,8 @@ public class ContrastRegressionExampleSet extends SortedExampleSetEx implements 
         exampleSet.recalculateAttributeStatistics(label);
         trainingEstimator = exampleSet.getStatistics(label, averageName);
 
+        Logger.log("Training estimator: " + trainingEstimator + "\n", Level.FINE);
+
         // establish contrast groups  estimator
         try {
             NominalMapping mapping = contrastAttribute.getMapping();
@@ -56,6 +59,8 @@ public class ContrastRegressionExampleSet extends SortedExampleSetEx implements 
                 ExampleSet conditionedSet = new ConditionedExampleSet(exampleSet,cnd);
                 conditionedSet.recalculateAttributeStatistics(label);
                 groupEstimators.add(conditionedSet.getStatistics(label, averageName));
+
+                Logger.log("Group estimator [" + mapping.mapIndex(i) + "]: " +  groupEstimators.get(i) + "\n", Level.FINE);
             }
 
         } catch (ExpressionEvaluationException e) {
