@@ -338,7 +338,9 @@ public class RegressionFinder extends AbstractFinder {
 					}
 					
 					Double [] keys = values2ids.keySet().toArray(new Double[values2ids.size()]);
-		
+					Logger.log("\tChecking attribute " + attr.getName() + ", unique values: " + keys.length + "\n", Level.FINEST);
+
+
 					// check all possible midpoints
 					for (int keyId = 0; keyId < keys.length - 1; ++keyId) {
 						double key = keys[keyId];

@@ -218,6 +218,10 @@ public class ClassificationFinder extends AbstractFinder {
 	 */
 	public void prune(final Rule rule, final ExampleSet trainSet, final Set<Integer> uncovered) {
 		Logger.log("ClassificationFinder.prune()\n", Level.FINE);
+
+		if (rule.getPremise().getSubconditions().size() == 1) {
+			return;
+		}
 		
 		// check preconditions
 		if (rule.getWeighted_p() == Double.NaN || rule.getWeighted_p() == Double.NaN ||
