@@ -1,11 +1,14 @@
 package adaa.analytics.rules.logic.representation.exampleset;
 
+import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.condition.AbstractCondition;
 import adaa.analytics.rules.data.condition.ICondition;
 import adaa.analytics.rules.data.condition.StringCondition;
 import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.data.INominalMapping;
+import adaa.analytics.rules.data.metadata.EColumnSortDirections;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
+import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,8 @@ public class ContrastSurvivalExampleSet extends ContrastExampleSet {
 
     public ContrastSurvivalExampleSet(IExampleSet exampleSet) {
         super(exampleSet);
+
+        this.sortBy(this.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE).getName(), EColumnSortDirections.INCREASING);
 
         // establish training survival estimator
         trainingEstimator = new KaplanMeierEstimator(exampleSet);

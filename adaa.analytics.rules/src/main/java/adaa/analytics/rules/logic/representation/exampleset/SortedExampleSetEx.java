@@ -21,8 +21,6 @@ public class SortedExampleSetEx implements IExampleSet {
     public double[] weights;
     public double[] labelsWeighted;
     public double[] totalWeightsBefore;
-    public double[] survivalTimes;
-
     public double meanLabel = 0;
 
     public Map<IAttribute, IntegerBitSet> nonMissingVals = new HashMap<>();
@@ -38,11 +36,6 @@ public class SortedExampleSetEx implements IExampleSet {
         labelsWeighted = new double[this.size()];
         weights = new double[this.size()];
         totalWeightsBefore = new double[this.size() + 1];
-
-        IAttribute survTime = this.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE);
-        if (survTime != null) {
-            survivalTimes = new double[this.size()];
-        }
 
         boolean weighted = getAttributes().getWeight() != null;
 
@@ -62,10 +55,6 @@ public class SortedExampleSetEx implements IExampleSet {
             labelsWeighted[i] = y * w;
             totalWeightsBefore[i] = sumWeights;
             meanLabel += y;
-
-            if (survTime != null) {
-                survivalTimes[i] = e.getValue(survTime);
-            }
 
             for (IAttribute a: this.getAttributes()) {
                 if (!Double.isNaN(e.getValue(a))) {

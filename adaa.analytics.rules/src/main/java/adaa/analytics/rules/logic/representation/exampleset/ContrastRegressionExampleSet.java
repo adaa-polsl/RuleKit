@@ -6,10 +6,13 @@ import adaa.analytics.rules.data.condition.StringCondition;
 import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.data.INominalMapping;
+import adaa.analytics.rules.data.metadata.EColumnSortDirections;
 import adaa.analytics.rules.data.metadata.EStatisticType;
+import adaa.analytics.rules.utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class ContrastRegressionExampleSet extends ContrastExampleSet {
 
@@ -45,8 +48,11 @@ public class ContrastRegressionExampleSet extends ContrastExampleSet {
 
         // establish training  estimator
         IAttribute label = exampleSet.getAttributes().getLabel();
+        this.sortBy(label.getName(), EColumnSortDirections.INCREASING);
         label.recalculateStatistics();
         trainingEstimator = label.getStatistic(averageName);
+
+        Logger.log("Training estimator: " + trainingEstimator + "\n", Level.FINE);
 
         // establish contrast groups  estimator
         INominalMapping mapping = contrastAttribute.getMapping();
@@ -58,6 +64,8 @@ public class ContrastRegressionExampleSet extends ContrastExampleSet {
             label = conditionedSet.getAttributes().getLabel();
             label.recalculateStatistics();
             groupEstimators.add(label.getStatistic(averageName));
+
+            Logger.log("Group estimator [" + mapping.mapIndex(i) + "]: " +  groupEstimators.get(i) + "\n", Level.FINE);
         }
     }
 }

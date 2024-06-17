@@ -30,9 +30,9 @@ public class ContrastRegressionFinder extends RegressionFinder implements IPenal
         @Override
         public double calculate(IExampleSet dataset, ContingencyTable ct) {
 
-            ContrastRegressionExampleSet cer = (dataset instanceof ContrastExampleSet) ? (ContrastRegressionExampleSet)dataset : null;
+            ContrastRegressionExampleSet cer = (dataset instanceof ContrastRegressionExampleSet) ? (ContrastRegressionExampleSet)dataset : null;
             if (cer == null) {
-                throw new InvalidParameterException("ContrastSurvivalRuleSet supports only ContrastRegressionExampleSet instances");
+                throw new InvalidParameterException("ContrastRegressionRuleset supports only ContrastRegressionExampleSet instances");
             }
 
             Covering cov = (Covering)ct;
@@ -134,8 +134,8 @@ public class ContrastRegressionFinder extends RegressionFinder implements IPenal
         notifyRuleReady(rule);
     }
 
-
-    boolean checkCoverage(double p, double n, double new_p, double new_n, double P, double N) {
+    @Override
+    boolean checkCoverage(double p, double n, double new_p, double new_n, double P, double N, double uncoveredSize, int ruleOrderNum) {
         return ((new_p) >= params.getAbsoluteMinimumCovered(P)) &&
                 ((p) >= params.getAbsoluteMinimumCoveredAll(P));
     }

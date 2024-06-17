@@ -5,17 +5,24 @@ import adaa.analytics.rules.logic.quality.LogRank;
 import adaa.analytics.rules.logic.quality.NegativeControlledMeasure;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
+import adaa.analytics.rules.logic.representation.condition.ConditionBase;
+import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.exampleset.ContrastExampleSet;
 import adaa.analytics.rules.logic.representation.exampleset.ContrastSurvivalExampleSet;
 import adaa.analytics.rules.logic.representation.rule.ContrastSurvivalRule;
 import adaa.analytics.rules.logic.representation.rule.Rule;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
+import adaa.analytics.rules.logic.representation.valueset.SingletonSetComplement;
+import adaa.analytics.rules.utils.Logger;
 import adaa.analytics.rules.utils.Pair;
+import tech.tablesaw.api.DoubleColumn;
 
 import java.io.Serializable;
 import java.security.InvalidParameterException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
 public class ContrastSurvivalFinder extends SurvivalLogRankFinder implements IPenalizedFinder {
 
@@ -128,8 +135,82 @@ public class ContrastSurvivalFinder extends SurvivalLogRankFinder implements IPe
         notifyRuleReady(rule);
     }
 
+    protected boolean checkCandidate(
+            IExampleSet dataset,
+            Rule rule,
+            ConditionBase candidate,
+            Set<Integer> uncovered,
+            Set<Integer> covered,
+            ConditionEvaluation currentBest) {
 
-    boolean checkCoverage(double p, double n, double new_p, double new_n, double P, double N) {
+        try {
+
+            CompoundCondition newPremise = new CompoundCondition();
+            newPremise.getSubconditions().addAll(rule.getPremise().getSubconditions());
+            newPremise.addSubcondition(candidate);
+
+            Rule newRule = (Rule) rule.clone();
+            newRule.setPremise(newPremise);
+
+
+            Covering cov = new Covering();
+            newRule.covers(dataset, cov, cov.positives, cov.negatives);
+
+            double new_p = 0, new_n = 0;
+
+            if (dataset.getAttributes().getWeight() == null) {
+                // unweighted examples
+                new_p = SetHelper.intersectionSize(uncovered, cov.positives);
+                new_n =	SetHelper.intersectionSize(uncovered, cov.negatives);
+            } else {
+                DoubleColumn weights = dataset.getDoubleColumn(dataset.getAttributes().getWeight());
+                // calculate weights of newly covered examples
+                for (int id : cov.positives) {
+                    new_p += uncovered.contains(id) ? weights.get(id) : 0;
+                }
+                for (int id : cov.negatives) {
+                    new_n += uncovered.contains(id) ? weights.get(id) : 0;
+                }
+            }
+
+            if (checkCoverage(cov.weighted_p, cov.weighted_n, new_p, new_n, dataset.size(), 0, uncovered.size(), rule.getRuleOrderNum())) {
+
+                double quality = params.getInductionMeasure().calculate(dataset, cov);
+
+                if (candidate instanceof ElementaryCondition) {
+                    ElementaryCondition ec = (ElementaryCondition) candidate;
+                    quality = modifier.modifyQuality(quality, ec.getAttribute(), cov.weighted_p, new_p);
+                }
+
+                if (quality > currentBest.quality ||
+                        (quality == currentBest.quality && (new_p > currentBest.covered || currentBest.opposite))) {
+
+                    Logger.log("\t\tCurrent best: " + candidate + " (p=" + cov.weighted_p +
+                            ", new_p=" + (double) new_p +
+                            ", P=" + cov.weighted_P +
+                            ", mean_y=" + cov.mean_y + ", mean_y2=" + cov.mean_y2 + ", stddev_y=" + cov.stddev_y +
+                            ", quality=" + quality + "\n", Level.FINEST);
+
+                    currentBest.quality = quality;
+                    currentBest.condition = candidate;
+                    currentBest.covered = new_p;
+                    currentBest.covering = cov;
+                    currentBest.opposite = (candidate instanceof ElementaryCondition) &&
+                            (((ElementaryCondition) candidate).getValueSet() instanceof SingletonSetComplement);
+
+                    //rule.setWeight(quality);
+                    return true;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    boolean checkCoverage(double p, double n, double new_p, double new_n, double P, double N, double uncoveredSize, int ruleOrderNum) {
                return ((new_p) >= params.getAbsoluteMinimumCovered(P)) &&
                 ((p) >= params.getAbsoluteMinimumCoveredAll(P));
     }

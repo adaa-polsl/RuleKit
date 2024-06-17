@@ -17,6 +17,7 @@ package adaa.analytics.rules.logic.representation;
 import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.logic.representation.exampleset.SortedExampleSetEx;
 import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
+import tech.tablesaw.api.DoubleColumn;
 
 import java.io.Serializable;
 import java.util.*;
@@ -131,10 +132,16 @@ public class KaplanMeierEstimator implements Serializable {
 	 */
     public KaplanMeierEstimator(IExampleSet data, Set<Integer> indices) {
 
+        // assume dataset to be sorted by survival time
+        DoubleColumn labels = data.getDoubleColumn(data.getAttributes().getLabel());
+        DoubleColumn survivalTimes = data.getDoubleColumn(data.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE));
+
+        /*
         SortedExampleSetEx set = (data instanceof SortedExampleSetEx) ? (SortedExampleSetEx)data : null;
         if (set == null) {
-            throw new IllegalArgumentException("RegressionRules support only SortedExampleSetEx example sets");
+            throw new IllegalArgumentException("KaplanMeierEstimator support only SortedExampleSetEx example sets");
         }
+         */
 
 		this.reserve(indices.size());
 
@@ -154,7 +161,7 @@ public class KaplanMeierEstimator implements Serializable {
 
         while (it.hasNext()) {
             int id = it.next();
-            double t = set.survivalTimes[id];
+            double t = survivalTimes.get(id);
 
             // time point has changed - add surv info
             if (t != prev_t && prev_t > 0) {
@@ -171,7 +178,7 @@ public class KaplanMeierEstimator implements Serializable {
                 censoredAtTimeCount = 0;
             }
 
-            if (set.labels[id] == 1) {
+            if (labels.get(id) == 1) {
                 ++eventsAtTimeCount;
             } else {
                 ++censoredAtTimeCount;
