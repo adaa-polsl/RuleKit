@@ -178,7 +178,7 @@ public class ActionFinder extends AbstractFinder {
 
 				if (params.getMaxGrowingConditions() > 0) {
 					if (rule.getPremise().getSubconditions().size() - initialConditionsCount >=
-							params.getMaxGrowingConditions() * dataset.getAttributes().size()) {
+							params.getMaxGrowingConditions()) {
 						carryOn = false;
 					}
 				}
