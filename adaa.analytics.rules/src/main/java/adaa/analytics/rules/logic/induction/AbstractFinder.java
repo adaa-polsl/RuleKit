@@ -225,6 +225,11 @@ public abstract class AbstractFinder implements AutoCloseable {
 			final Set<Integer> uncovered) {
 		
 		Logger.log("AbstractFinder.prune()\n", Level.FINE);
+
+		if (rule.getPremise().getSubconditions().size() == 1) {
+			return;
+		}
+
 		boolean weighting = (trainSet.getAttributes().getWeight() != null);
 		
 		// check preconditions

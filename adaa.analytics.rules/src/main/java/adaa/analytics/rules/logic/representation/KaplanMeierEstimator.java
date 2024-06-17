@@ -132,6 +132,10 @@ public class KaplanMeierEstimator implements Serializable {
 	 */
     public KaplanMeierEstimator(IExampleSet data, Set<Integer> indices) {
 
+        if (indices.size() == 0) {
+            assert false: "KaplanMeierEstimator: empty indices set";
+        }
+        
         // assume dataset to be sorted by survival time
         DoubleColumn labels = data.getDoubleColumn(data.getAttributes().getLabel());
         DoubleColumn survivalTimes = data.getDoubleColumn(data.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE));

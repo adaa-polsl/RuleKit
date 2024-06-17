@@ -222,7 +222,11 @@ public class ClassificationFinder extends AbstractFinder {
 	 */
 	public void prune(final Rule rule, final IExampleSet trainSet, final Set<Integer> uncovered) {
 		Logger.log("ClassificationFinder.prune()\n", Level.FINE);
-		DoubleColumn weightDataColumnDoubleAdapter = trainSet.getDoubleColumn(trainSet.getAttributes().getWeight());
+		if (rule.getPremise().getSubconditions().size() == 1) {
+			return;
+		}
+
+		DoubleColumn weights = trainSet.getDoubleColumn(trainSet.getAttributes().getWeight());
 
 		// check preconditions
 		if (rule.getWeighted_p() == Double.NaN || rule.getWeighted_p() == Double.NaN ||
@@ -346,9 +350,9 @@ public class ClassificationFinder extends AbstractFinder {
 							// weighted - iterate over bits and sum weights
 							for (int wordOffset = 0; wordOffset < Long.SIZE; ++wordOffset) {
 								if ((posWord & (1L << wordOffset)) != 0) {
-									p += weightDataColumnDoubleAdapter.getDouble(wordId * Long.SIZE + wordOffset);
+									p += weights.getDouble(wordId * Long.SIZE + wordOffset);
 								} else if ((negWord & (1L << wordOffset)) != 0) {
-									n += weightDataColumnDoubleAdapter.getDouble(wordId * Long.SIZE + wordOffset);
+									n += weights.getDouble(wordId * Long.SIZE + wordOffset);
 								}
 							}
 						} else {
