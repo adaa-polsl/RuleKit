@@ -182,8 +182,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 						+ rule.toString() + ", weight=" + rule.getWeight() + "\n", Level.FINER);
 				
 				if (params.getMaxGrowingConditions() > 0) {
-					if (rule.getPremise().getSubconditions().size() - initialConditionsCount >= 
-						params.getMaxGrowingConditions() * dataset.getAttributes().regularSize()) {
+					if (rule.getPremise().getSubconditions().size() - initialConditionsCount >= params.getMaxGrowingConditions()) {
 						carryOn = false;
 					}
 				}

@@ -184,8 +184,7 @@ public class ClassificationFinder extends AbstractFinder {
 				carryOn = tryAddCondition(currentRule, bestRule, condition, dataset, covered, uncovered);
 
 				if (params.getMaxGrowingConditions() > 0) {
-					if (currentRule.getPremise().getSubconditions().size() - initialConditionsCount >=
-						params.getMaxGrowingConditions() * dataset.getAttributes().regularSize()) {
+					if (currentRule.getPremise().getSubconditions().size() - initialConditionsCount >= params.getMaxGrowingConditions()) {
 						carryOn = false;
 					}
 				}
