@@ -1,6 +1,7 @@
 package adaa.analytics.rules.data.metadata;
 
 import adaa.analytics.rules.data.*;
+import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -71,6 +72,34 @@ public class ColumnMetaData implements Serializable, IAttribute {
 
     public void setRole(String role) {
         this.role = role;
+
+        if(owner == null)
+            return;
+
+        if(role.equals(SurvivalRule.SURVIVAL_TIME_ROLE) ||
+                (role.equals(EColumnRole.label.name()) &&
+                        owner.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE) != null)) {
+
+            IAttribute aLabel = owner.getAttributes().getLabel();
+            if(aLabel == null)
+                return;
+            if(aLabel.isNominal()) {
+                if(aLabel.getMapping().getValues().size() != 2) {
+                    throw new IllegalArgumentException(String.format("Label attribute has to have 2 possible values {0, 1}. It has %d", aLabel.getMapping().getValues().size()));
+                }
+                String v0 = aLabel.getMapping().getValue(0);
+                String v1 = aLabel.getMapping().getValue(1);
+                if(v0.equals("1") && v1.equals("0")) {
+                    aLabel.getMapping().clear();
+                    aLabel.getMapping().mapString("0");
+                    aLabel.getMapping().mapString("1");
+                }
+                else if(!v0.equals("0") || !v1.equals("1")) {
+                    throw new IllegalArgumentException(String.format("Label attribute has wrong possible values {0, 1}. It has {%s, %s}",
+                            v0, v1));
+                }
+            }
+        }
     }
 
     public void setStatistic(EStatisticType statType, double value) {

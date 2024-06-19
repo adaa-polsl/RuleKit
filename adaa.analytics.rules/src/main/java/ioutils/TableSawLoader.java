@@ -4,7 +4,6 @@ import adaa.analytics.rules.data.DataTable;
 import adaa.analytics.rules.data.metadata.EColumnRole;
 import adaa.analytics.rules.data.metadata.EColumnType;
 import adaa.analytics.rules.data.IAttribute;
-import adaa.analytics.rules.data.IExampleSet;
 import org.jetbrains.annotations.NotNull;
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.Row;
@@ -26,31 +25,9 @@ public abstract class TableSawLoader extends ExamplesetFileLoader {
                 .quoteChar('\'')
                 .missingValueIndicator("?");
 
-        // Defined options for tablesaw csv loader
-//        CsvReadOptions options = builder.build();
-
         DataTable dataTable = new DataTable(builder, attributesInfo);
         dataTable.setRole(labelParameterName, EColumnRole.label.name());
         dataTable.setRole(survivalTimeParameter, EColumnRole.survival_time.name());
-
-//        if(attributesInfo != null) {
-//
-//            if(attributesInfo.size() != dataTable.columnCount()) {
-//
-//                throw new IllegalStateException("Niezgodna liczba atrybutów");
-//            }
-//            for(AttributeInfo attInfo : attributesInfo) {
-//
-//                EColumnRole role = EColumnRole.REGULAR;
-//                if(attInfo.getName().equals(labelParameterName)) {
-//                    role = EColumnRole.LABEL;
-//                }
-//                else if(attInfo.getName().equals(survivalTimeParameter)) {
-//                    role = EColumnRole.SURVIVAL_TIME;
-//                }
-//                dataTable.addColumn(attInfo.getName(), attInfo.getCellType(), role, attInfo.getValues());
-//            }
-//        }
 
         return dataTable;
     }

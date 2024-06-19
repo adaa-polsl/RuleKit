@@ -142,8 +142,7 @@ public class ColumnMetadataMap implements Serializable, IAttributes {
        var1.setRole(role);
     }
 
-    public boolean setColumnRole(String columnName, String role)
-    {
+    public boolean setColumnRole(String columnName, String role) {
         if (! attributeMetaData.containsKey(columnName))
             return false;
 

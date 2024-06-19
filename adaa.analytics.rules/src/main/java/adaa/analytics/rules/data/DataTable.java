@@ -5,7 +5,6 @@ import adaa.analytics.rules.data.metadata.*;
 import adaa.analytics.rules.data.row.EmptyDoubleColumn;
 import adaa.analytics.rules.data.row.Example;
 import adaa.analytics.rules.data.row.ExampleIterator;
-import adaa.analytics.rules.logic.representation.rule.ContrastRule;
 import adaa.analytics.rules.utils.Tools;
 import ioutils.AttributeInfo;
 import org.jetbrains.annotations.NotNull;

@@ -146,13 +146,13 @@ public abstract class PredictionModel implements Serializable {
 				IAttribute confidence = AttributeFactory.createAttribute(EColumnRole.confidence.name()+ "(" + value + ")",
 						EColumnType.NUMERICAL);
 				exampleSet.addNewColumn(confidence);
-				exampleSet.getAttributes().setSpecialAttribute(confidence, EColumnRole.confidence.name() + "_" + value);
-			}
+                exampleSet.getAttributes().setSpecialAttribute(confidence, EColumnRole.confidence.name() + "_" + value);
+            }
 			IAttribute confidence = AttributeFactory.createAttribute(EColumnRole.confidence.name(),
 					EColumnType.NUMERICAL);
 			exampleSet.addNewColumn(confidence);
-			exampleSet.getAttributes().setSpecialAttribute(confidence, EColumnRole.confidence.name());
-		}
+            exampleSet.getAttributes().setSpecialAttribute(confidence, EColumnRole.confidence.name());
+        }
 		return predictedLabel;
 	}
 

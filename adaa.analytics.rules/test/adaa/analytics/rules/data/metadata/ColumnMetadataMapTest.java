@@ -1,15 +1,11 @@
 package adaa.analytics.rules.data.metadata;
 
 import adaa.analytics.rules.data.IAttribute;
-import adaa.analytics.rules.data.IAttributes;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Set;
-
-import static org.junit.Assert.*;
 
 public class ColumnMetadataMapTest {
 

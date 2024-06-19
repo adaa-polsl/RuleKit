@@ -37,9 +37,11 @@ public class AttributeInfo {
             }
 
             if (type.equalsIgnoreCase("numeric") ||
-                    type.equalsIgnoreCase("real")) {
+                    type.equalsIgnoreCase("real") ||
+                    type.equalsIgnoreCase("integer")) {
                 colType = EColumnType.NUMERICAL;
-            } else if (type.startsWith("{") && type.endsWith("}")) {
+            } else if ((type.startsWith("{") && type.endsWith("}")) ||
+                    type.equalsIgnoreCase("string")) {
                 type = type.substring(1, type.length() - 1);
                 values = getTokens(type, ',');
                 colType = EColumnType.NOMINAL;
