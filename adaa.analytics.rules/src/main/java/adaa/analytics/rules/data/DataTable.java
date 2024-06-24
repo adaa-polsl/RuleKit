@@ -68,7 +68,7 @@ public class DataTable implements Serializable, IExampleSet {
             columnMetadataMap.add( new ColumnMetaData(attInfo.getName(), attInfo.getCellType(), EColumnRole.regular, attInfo.getValues(), this));
         }
 
-        convertStringColsToDouble();
+//        convertStringColsToDouble();
     }
 
     public DataTable(Object[][] values, String[] attributesNames, String decisionAttribute, String survivalTimeAttribute, String contrastAttribute) {
@@ -385,7 +385,7 @@ public class DataTable implements Serializable, IExampleSet {
         dataTableAnnotations = (DataTableAnnotations) data[2];
     }
 
-    private void convertStringColsToDouble() {
+    public void convertStringColsToDouble() {
 
         for(ColumnMetaData colMetaData : columnMetadataMap.getAllColumnMetaData()) {
             if(!colMetaData.isNominal())

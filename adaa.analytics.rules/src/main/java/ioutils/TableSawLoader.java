@@ -28,6 +28,7 @@ public abstract class TableSawLoader extends ExamplesetFileLoader {
         DataTable dataTable = new DataTable(builder, attributesInfo);
         dataTable.setRole(labelParameterName, EColumnRole.label.name());
         dataTable.setRole(survivalTimeParameter, EColumnRole.survival_time.name());
+        dataTable.convertStringColsToDouble();
 
         return dataTable;
     }
