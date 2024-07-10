@@ -10,6 +10,7 @@ import org.apache.commons.collections15.CollectionUtils;
 import org.apache.commons.collections15.Predicate;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class ContrastRuleSet extends ClassificationRuleSet {
 
@@ -128,6 +129,8 @@ public class ContrastRuleSet extends ClassificationRuleSet {
         List<ContrastRule> dest = sets.get(key);
         double maxCost = 0;
 
+        Logger.log("Redundancy " + rule + ":\n", Level.FINER);
+
         Set<String> queryAttrs = rule.getPremise().getAttributes();
         for (Rule r : dest) {
             Set<String> refAttrs = r.getPremise().getAttributes();
@@ -139,6 +142,8 @@ public class ContrastRuleSet extends ClassificationRuleSet {
             intersection = r.getCoveredPositives().calculateIntersectionSize(rule.getCoveredPositives());
             union = rule.weighted_p + r.weighted_p - intersection;
             double exampleJaccard = intersection / union;
+
+            Logger.log("\tExisting " + r + ":" + attributeJaccard + " * " + exampleJaccard + "\n", Level.FINER);
 
             double cost = attributeJaccard * exampleJaccard;
             if (cost > maxCost) {
