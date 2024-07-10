@@ -45,7 +45,7 @@ public class ContrastSurvivalFinder extends SurvivalLogRankFinder implements IPe
             }
 
             Covering cov = (Covering)ct;
-            Set<Integer> examples = new HashSet<>();
+            Set<Integer> examples = new IntegerBitSet(dataset.size());
             examples.addAll(cov.positives);
             examples.addAll(cov.negatives);
             KaplanMeierEstimator entireEstimator = new KaplanMeierEstimator(dataset, examples);
@@ -135,6 +135,7 @@ public class ContrastSurvivalFinder extends SurvivalLogRankFinder implements IPe
         notifyRuleReady(rule);
     }
 
+    @Override
     protected boolean checkCandidate(
             IExampleSet dataset,
             Rule rule,
@@ -173,7 +174,7 @@ public class ContrastSurvivalFinder extends SurvivalLogRankFinder implements IPe
                 }
             }
 
-            if (checkCoverage(cov.weighted_p, cov.weighted_n, new_p, new_n, dataset.size(), 0, uncovered.size(), rule.getRuleOrderNum())) {
+            if (checkCoverage(cov.weighted_p, cov.weighted_n, new_p, new_n, cov.weighted_P, cov.weighted_N, uncovered.size(), rule.getRuleOrderNum())) {
 
                 double quality = params.getInductionMeasure().calculate(dataset, cov);
 
@@ -185,12 +186,13 @@ public class ContrastSurvivalFinder extends SurvivalLogRankFinder implements IPe
                 if (quality > currentBest.quality ||
                         (quality == currentBest.quality && (new_p > currentBest.covered || currentBest.opposite))) {
 
+                    /*
                     Logger.log("\t\tCurrent best: " + candidate + " (p=" + cov.weighted_p +
                             ", new_p=" + (double) new_p +
                             ", P=" + cov.weighted_P +
                             ", mean_y=" + cov.mean_y + ", mean_y2=" + cov.mean_y2 + ", stddev_y=" + cov.stddev_y +
                             ", quality=" + quality + "\n", Level.FINEST);
-
+                    */
                     currentBest.quality = quality;
                     currentBest.condition = candidate;
                     currentBest.covered = new_p;

@@ -8,9 +8,11 @@ import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.logic.representation.rule.ContrastRule;
 import adaa.analytics.rules.logic.representation.rule.Rule;
 import adaa.analytics.rules.utils.DoubleFormatter;
+import adaa.analytics.rules.utils.Logger;
 import adaa.analytics.rules.utils.OperatorException;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class ContrastRuleSet extends ClassificationRuleSet {
 
@@ -129,6 +131,8 @@ public class ContrastRuleSet extends ClassificationRuleSet {
         List<ContrastRule> dest = sets.get(key);
         double maxCost = 0;
 
+        Logger.log("Redundancy " + rule + ":\n", Level.FINER);
+
         Set<String> queryAttrs = rule.getPremise().getAttributes();
         for (Rule r : dest) {
             Set<String> refAttrs = r.getPremise().getAttributes();
@@ -140,6 +144,8 @@ public class ContrastRuleSet extends ClassificationRuleSet {
             intersection = r.getCoveredPositives().calculateIntersectionSize(rule.getCoveredPositives());
             union = rule.weighted_p + r.weighted_p - intersection;
             double exampleJaccard = intersection / union;
+
+            Logger.log("\tExisting " + r + ":" + attributeJaccard + " * " + exampleJaccard + "\n", Level.FINER);
 
             double cost = attributeJaccard * exampleJaccard;
             if (cost > maxCost) {
