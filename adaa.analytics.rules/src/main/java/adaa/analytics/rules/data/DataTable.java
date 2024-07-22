@@ -196,7 +196,75 @@ public class DataTable implements Serializable, IExampleSet {
     }
 
     public void sortBy(String columnName, EColumnSortDirections sortDir) {
-        table = table.sortOn((sortDir == EColumnSortDirections.DECREASING ? "-" : "") + columnName);
+        customSort(columnName, sortDir, ESortAlgorithm.QuickSort);
+    }
+
+    public void customSort(String columnName, EColumnSortDirections sortDir, ESortAlgorithm sortAlgorithm) {
+        if(sortAlgorithm == ESortAlgorithm.NativeTableSaw) {
+            table = table.sortOn((sortDir == EColumnSortDirections.DECREASING ? "-" : "") + columnName);
+        }
+        if (table.column(columnName) instanceof DoubleColumn) {
+            if(sortAlgorithm == ESortAlgorithm.BubbleSort) {
+                sortDoubleColumnBubble(columnName, sortDir);
+            }
+            else if(sortAlgorithm == ESortAlgorithm.QuickSort) {
+                sortDoubleColumnQuick(columnName, sortDir, 0, table.rowCount() - 1);
+            }
+        } else {
+            throw new IllegalArgumentException("Unsupported column type for custom sorting");
+        }
+    }
+
+    private void sortDoubleColumnBubble(String columnName, EColumnSortDirections sortDir) {
+        DoubleColumn column = (DoubleColumn) table.column(columnName);
+        int n = column.size();
+        boolean swapped;
+
+        do {
+            swapped = false;
+            for (int i = 0; i < n - 1; i++) {
+                int comparison = Double.compare(column.get(i), column.get(i + 1));
+                if ((sortDir == EColumnSortDirections.INCREASING && comparison > 0) ||
+                        (sortDir == EColumnSortDirections.DECREASING && comparison < 0)) {
+                    swapRows(table, i, i + 1);
+                    swapped = true;
+                }
+            }
+        } while (swapped);
+    }
+
+    private void sortDoubleColumnQuick(String columnName, EColumnSortDirections sortDir, int low, int high) {
+        if (low < high) {
+            int pi = partitionDouble(columnName, sortDir, low, high);
+            sortDoubleColumnQuick(columnName, sortDir, low, pi - 1);
+            sortDoubleColumnQuick(columnName, sortDir, pi + 1, high);
+        }
+    }
+
+    private int partitionDouble(String columnName, EColumnSortDirections sortDir, int low, int high) {
+        DoubleColumn column = (DoubleColumn) table.column(columnName);
+        double pivot = column.get(high);
+        int i = low - 1;
+        for (int j = low; j < high; j++) {
+            int comparison = Double.compare(column.get(j), pivot);
+            if ((sortDir == EColumnSortDirections.INCREASING && comparison <= 0) || (sortDir == EColumnSortDirections.DECREASING && comparison >= 0)) {
+                i++;
+                swapRows(table, i, j);
+            }
+        }
+        swapRows(table, i + 1, high);
+        return i + 1;
+    }
+
+    private void swapRows(Table table, int i, int j) {
+        for (int k = 0; k < table.columnCount(); k++) {
+            if (table.column(k) instanceof DoubleColumn) {
+                DoubleColumn column = (DoubleColumn) table.column(k);
+                Double temp = column.get(i);
+                column.set(i, column.get(j));
+                column.set(j, temp);
+            }
+        }
     }
 
     @Override

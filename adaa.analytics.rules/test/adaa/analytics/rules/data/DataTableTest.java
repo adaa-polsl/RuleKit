@@ -1,6 +1,8 @@
 package adaa.analytics.rules.data;
 
 import adaa.analytics.rules.data.metadata.EColumnRole;
+import adaa.analytics.rules.data.metadata.EColumnSortDirections;
+import adaa.analytics.rules.data.metadata.ESortAlgorithm;
 import adaa.analytics.rules.logic.representation.rule.ContrastRule;
 import ioutils.ArffFileLoader;
 import org.junit.Assert;
@@ -216,5 +218,119 @@ public class DataTableTest {
 
         Assert.assertNotEquals(es1.getAttributes().get("att").getMapping().getIndex("val1"), es2.getAttributes().get("att").getMapping().getIndex("val1"));
         Assert.assertEquals(es1.getAttributes().get("att").getMapping().getIndex("val1"), es3.getAttributes().get("att").getMapping().getIndex("val1"));
+    }
+
+    @Test
+    public void BubbleSortTest() {
+
+        Object [][] data = new Object[][]{
+                {1.0, "val1"},
+                {4.0, "val2"},
+                {10.0, "val1"},
+                {3.0, "val2"},
+                {7.0, "val1"},
+                {11.0, "val2"},
+                {2.0, "val1"},
+                {5.0, "val2"},
+                {4.0, "val1"},
+                {3.0, "val2"}
+        };
+
+        String [] colNames = new String[]{ "c1", "c2" };
+
+        DataTable dt = new DataTable(data, colNames, "c2", "c1", null);
+
+        dt.customSort("c2", EColumnSortDirections.INCREASING, ESortAlgorithm.BubbleSort);
+
+        Assert.assertEquals(11.0, dt.getExample(2).getValue("c1"), 0.0000001);
+        Assert.assertEquals(0.0, dt.getExample(2).getValue("c2"), 0.0000001);
+        Assert.assertEquals(1.0, dt.getExample(5).getValue("c1"), 0.0000001);
+        Assert.assertEquals(1.0, dt.getExample(5).getValue("c2"), 0.0000001);
+        Assert.assertEquals(4.0, dt.getExample(9).getValue("c1"), 0.0000001);
+        Assert.assertEquals(1.0, dt.getExample(9).getValue("c2"), 0.0000001);
+
+        dt.sortBy("c1", EColumnSortDirections.INCREASING);
+
+        Assert.assertEquals(3.0, dt.getExample(2).getValue("c1"), 0.0000001);
+        Assert.assertEquals(0.0, dt.getExample(2).getValue("c2"), 0.0000001);
+        Assert.assertEquals(4.0, dt.getExample(5).getValue("c1"), 0.0000001);
+        Assert.assertEquals(1.0, dt.getExample(5).getValue("c2"), 0.0000001);
+        Assert.assertEquals(11.0, dt.getExample(9).getValue("c1"), 0.0000001);
+        Assert.assertEquals(0.0, dt.getExample(9).getValue("c2"), 0.0000001);
+
+        dt.sortBy("c2", EColumnSortDirections.DECREASING);
+
+        Assert.assertEquals(4.0, dt.getExample(2).getValue("c1"), 0.0000001);
+        Assert.assertEquals(1.0, dt.getExample(2).getValue("c2"), 0.0000001);
+        Assert.assertEquals(3.0, dt.getExample(5).getValue("c1"), 0.0000001);
+        Assert.assertEquals(0.0, dt.getExample(5).getValue("c2"), 0.0000001);
+        Assert.assertEquals(11.0, dt.getExample(9).getValue("c1"), 0.0000001);
+        Assert.assertEquals(0.0, dt.getExample(9).getValue("c2"), 0.0000001);
+
+        dt.sortBy("c1", EColumnSortDirections.DECREASING);
+
+        Assert.assertEquals(7.0, dt.getExample(2).getValue("c1"), 0.0000001);
+        Assert.assertEquals(1.0, dt.getExample(2).getValue("c2"), 0.0000001);
+        Assert.assertEquals(4.0, dt.getExample(5).getValue("c1"), 0.0000001);
+        Assert.assertEquals(0.0, dt.getExample(5).getValue("c2"), 0.0000001);
+        Assert.assertEquals(1.0, dt.getExample(9).getValue("c1"), 0.0000001);
+        Assert.assertEquals(1.0, dt.getExample(9).getValue("c2"), 0.0000001);
+    }
+
+    @Test
+    public void QuickSortTest() {
+
+        Object [][] data = new Object[][]{
+                {1.0, "val1"},
+                {4.0, "val2"},
+                {10.0, "val1"},
+                {3.0, "val2"},
+                {7.0, "val1"},
+                {11.0, "val2"},
+                {2.0, "val1"},
+                {5.0, "val2"},
+                {4.0, "val1"},
+                {3.0, "val2"}
+        };
+
+        String [] colNames = new String[]{ "c1", "c2" };
+
+        DataTable dt = new DataTable(data, colNames, "c2", "c1", null);
+
+        dt.customSort("c2", EColumnSortDirections.INCREASING, ESortAlgorithm.QuickSort);
+
+        Assert.assertEquals(11.0, dt.getExample(2).getValue("c1"), 0.0000001);
+        Assert.assertEquals(0.0, dt.getExample(2).getValue("c2"), 0.0000001);
+        Assert.assertEquals(10.0, dt.getExample(5).getValue("c1"), 0.0000001);
+        Assert.assertEquals(1.0, dt.getExample(5).getValue("c2"), 0.0000001);
+        Assert.assertEquals(7.0, dt.getExample(9).getValue("c1"), 0.0000001);
+        Assert.assertEquals(1.0, dt.getExample(9).getValue("c2"), 0.0000001);
+
+        dt.sortBy("c1", EColumnSortDirections.INCREASING);
+
+        Assert.assertEquals(3.0, dt.getExample(2).getValue("c1"), 0.0000001);
+        Assert.assertEquals(0.0, dt.getExample(2).getValue("c2"), 0.0000001);
+        Assert.assertEquals(4.0, dt.getExample(5).getValue("c1"), 0.0000001);
+        Assert.assertEquals(1.0, dt.getExample(5).getValue("c2"), 0.0000001);
+        Assert.assertEquals(11.0, dt.getExample(9).getValue("c1"), 0.0000001);
+        Assert.assertEquals(0.0, dt.getExample(9).getValue("c2"), 0.0000001);
+
+        dt.sortBy("c2", EColumnSortDirections.DECREASING);
+
+        Assert.assertEquals(4.0, dt.getExample(2).getValue("c1"), 0.0000001);
+        Assert.assertEquals(1.0, dt.getExample(2).getValue("c2"), 0.0000001);
+        Assert.assertEquals(3.0, dt.getExample(5).getValue("c1"), 0.0000001);
+        Assert.assertEquals(0.0, dt.getExample(5).getValue("c2"), 0.0000001);
+        Assert.assertEquals(11.0, dt.getExample(9).getValue("c1"), 0.0000001);
+        Assert.assertEquals(0.0, dt.getExample(9).getValue("c2"), 0.0000001);
+
+        dt.sortBy("c1", EColumnSortDirections.DECREASING);
+
+        Assert.assertEquals(7.0, dt.getExample(2).getValue("c1"), 0.0000001);
+        Assert.assertEquals(1.0, dt.getExample(2).getValue("c2"), 0.0000001);
+        Assert.assertEquals(4.0, dt.getExample(5).getValue("c1"), 0.0000001);
+        Assert.assertEquals(0.0, dt.getExample(5).getValue("c2"), 0.0000001);
+        Assert.assertEquals(1.0, dt.getExample(9).getValue("c1"), 0.0000001);
+        Assert.assertEquals(1.0, dt.getExample(9).getValue("c2"), 0.0000001);
     }
 }
