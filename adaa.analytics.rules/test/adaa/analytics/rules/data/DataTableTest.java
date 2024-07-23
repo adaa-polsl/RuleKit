@@ -297,35 +297,45 @@ public class DataTableTest {
 
         DataTable dt = new DataTable(data, colNames, "c2", "c1", null);
 
+        Assert.assertFalse(dt.isDoubleColumnSorted("c2", EColumnSortDirections.INCREASING));
+
+        dt.customSort("c2", EColumnSortDirections.INCREASING, ESortAlgorithm.QuickSort);
         dt.customSort("c2", EColumnSortDirections.INCREASING, ESortAlgorithm.QuickSort);
 
+        Assert.assertTrue(dt.isDoubleColumnSorted("c2", EColumnSortDirections.INCREASING));
         Assert.assertEquals(11.0, dt.getExample(2).getValue("c1"), 0.0000001);
         Assert.assertEquals(0.0, dt.getExample(2).getValue("c2"), 0.0000001);
         Assert.assertEquals(10.0, dt.getExample(5).getValue("c1"), 0.0000001);
         Assert.assertEquals(1.0, dt.getExample(5).getValue("c2"), 0.0000001);
         Assert.assertEquals(7.0, dt.getExample(9).getValue("c1"), 0.0000001);
         Assert.assertEquals(1.0, dt.getExample(9).getValue("c2"), 0.0000001);
+        Assert.assertFalse(dt.isDoubleColumnSorted("c1", EColumnSortDirections.INCREASING));
 
         dt.sortBy("c1", EColumnSortDirections.INCREASING);
 
+        Assert.assertTrue(dt.isDoubleColumnSorted("c1", EColumnSortDirections.INCREASING));
         Assert.assertEquals(3.0, dt.getExample(2).getValue("c1"), 0.0000001);
         Assert.assertEquals(0.0, dt.getExample(2).getValue("c2"), 0.0000001);
         Assert.assertEquals(4.0, dt.getExample(5).getValue("c1"), 0.0000001);
         Assert.assertEquals(1.0, dt.getExample(5).getValue("c2"), 0.0000001);
         Assert.assertEquals(11.0, dt.getExample(9).getValue("c1"), 0.0000001);
         Assert.assertEquals(0.0, dt.getExample(9).getValue("c2"), 0.0000001);
+        Assert.assertFalse(dt.isDoubleColumnSorted("c2", EColumnSortDirections.DECREASING));
 
         dt.sortBy("c2", EColumnSortDirections.DECREASING);
 
+        Assert.assertTrue(dt.isDoubleColumnSorted("c2", EColumnSortDirections.DECREASING));
         Assert.assertEquals(4.0, dt.getExample(2).getValue("c1"), 0.0000001);
         Assert.assertEquals(1.0, dt.getExample(2).getValue("c2"), 0.0000001);
         Assert.assertEquals(3.0, dt.getExample(5).getValue("c1"), 0.0000001);
         Assert.assertEquals(0.0, dt.getExample(5).getValue("c2"), 0.0000001);
         Assert.assertEquals(11.0, dt.getExample(9).getValue("c1"), 0.0000001);
         Assert.assertEquals(0.0, dt.getExample(9).getValue("c2"), 0.0000001);
+        Assert.assertFalse(dt.isDoubleColumnSorted("c1", EColumnSortDirections.DECREASING));
 
         dt.sortBy("c1", EColumnSortDirections.DECREASING);
 
+        Assert.assertTrue(dt.isDoubleColumnSorted("c1", EColumnSortDirections.DECREASING));
         Assert.assertEquals(7.0, dt.getExample(2).getValue("c1"), 0.0000001);
         Assert.assertEquals(1.0, dt.getExample(2).getValue("c2"), 0.0000001);
         Assert.assertEquals(4.0, dt.getExample(5).getValue("c1"), 0.0000001);
