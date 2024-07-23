@@ -14,6 +14,7 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
+import adaa.analytics.rules.logic.representation.exampleset.ExampleSetFactory;
 import adaa.analytics.rules.logic.representation.ruleset.RuleSetBase;
 import adaa.analytics.rules.logic.rulegenerator.OperatorCommandProxy;
 import adaa.analytics.rules.data.IExampleSet;
@@ -38,6 +39,7 @@ public abstract class AbstractSeparateAndConquer {
 	 */
 	protected RuleFactory factory;
 
+	protected ExampleSetFactory setFactory;
 
 	public void setOperatorCommandProxy(OperatorCommandProxy operatorCommandProxy) {
 		this.operatorCommandProxy = operatorCommandProxy;

@@ -17,7 +17,9 @@ package adaa.analytics.rules.logic.induction;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.exampleset.SortedExampleSetEx;
+import adaa.analytics.rules.logic.representation.exampleset.ExampleSetFactory;
+import adaa.analytics.rules.logic.representation.exampleset.RegressionExampleSet;
+import adaa.analytics.rules.logic.representation.rule.RuleType;
 import adaa.analytics.rules.logic.representation.ruleset.RegressionRuleSet;
 import adaa.analytics.rules.logic.representation.ruleset.RuleSetBase;
 import adaa.analytics.rules.data.IAttribute;
@@ -46,7 +48,8 @@ public class RegressionExpertSnC extends RegressionSnC {
 			InductionParameters params,
 			Knowledge knowledge) {
 		super(finder, params);
-		factory = new RuleFactory(RuleFactory.REGRESSION,  params, knowledge);
+		factory = new RuleFactory(RuleType.REGRESSION,  params, knowledge);
+		setFactory = new ExampleSetFactory(RuleType.REGRESSION);
 		this.knowledge = (Knowledge)SerializationUtils.clone(knowledge);
 		RegressionExpertFinder erf = (RegressionExpertFinder)finder;
 		erf.setKnowledge(this.knowledge);
@@ -59,14 +62,15 @@ public class RegressionExpertSnC extends RegressionSnC {
 		double beginTime;
 		beginTime = System.nanoTime();
 
-		SortedExampleSetEx sortedDataset = (SortedExampleSetEx)finder.preprocess(dataset);
+		IExampleSet sortedDataset = setFactory.create(dataset);
 		RuleSetBase ruleset = factory.create(sortedDataset);
+		finder.preprocess(dataset);
 		IAttribute label = dataset.getAttributes().getLabel();
 		//SortedExampleSet ses = new SortedExampleSetEx(dataset, label, SortedExampleSet.INCREASING);
 
 		sortedDataset.getAttributes().getLabel().recalculateStatistics();
 		
-		if (factory.getType() == RuleFactory.REGRESSION) {
+		if (factory.getType() == RuleType.REGRESSION) {
 			double median = sortedDataset.getExample(sortedDataset.size() / 2).getLabelValue();
 			RegressionRuleSet tmp = (RegressionRuleSet)ruleset;
 			tmp.setDefaultValue(median);

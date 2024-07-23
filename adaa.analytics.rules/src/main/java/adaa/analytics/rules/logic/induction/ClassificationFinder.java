@@ -68,12 +68,12 @@ public class ClassificationFinder extends AbstractFinder {
 	 * @param trainSet Training set.
 	 */
 	@Override
-	public IExampleSet preprocess(IExampleSet trainSet) {
+	public void preprocess(IExampleSet trainSet) {
 		super.preprocess(trainSet);
 
 		// do nothing for weighted datasets
 		if (trainSet.getAttributes().getWeight() != null) {
-			return trainSet;
+			return;
 		}
 
 		IAttributes attributes = trainSet.getAttributes();
@@ -128,8 +128,6 @@ public class ClassificationFinder extends AbstractFinder {
 		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
-
-		return trainSet;
 	}
 	
 	/**

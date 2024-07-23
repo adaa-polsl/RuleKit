@@ -74,7 +74,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
     }
 
     @Override
-    public IExampleSet preprocess(IExampleSet dataset) {
+    public void preprocess(IExampleSet dataset) {
         int n_examples = dataset.size();
         int n_attributes = dataset.getAttributes().regularSize();
 
@@ -114,8 +114,6 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
                 attributeValuesOrder.put(attr, valuesOrder);
             }
         }
-
-        return dataset;
     }
 
     /**

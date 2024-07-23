@@ -18,6 +18,8 @@ import adaa.analytics.rules.data.*;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.exampleset.ExampleSetFactory;
+import adaa.analytics.rules.logic.representation.rule.RuleType;
 import adaa.analytics.rules.logic.representation.ruleset.ClassificationRuleSet;
 import adaa.analytics.rules.logic.representation.ruleset.RuleSetBase;
 import adaa.analytics.rules.logic.representation.rule.ClassificationRule;
@@ -46,7 +48,8 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 	public ClassificationSnC(AbstractFinder finder, InductionParameters params) {
 		super(params);
 		this.finder = finder;
-		this.factory = new RuleFactory(RuleFactory.CLASSIFICATION,  params, null);
+		this.factory = new RuleFactory(RuleType.CLASSIFICATION,  params, null);
+		this.setFactory = new ExampleSetFactory(RuleType.CLASSIFICATION);
 	}
 	
 	/**

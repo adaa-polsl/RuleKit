@@ -21,7 +21,7 @@ import adaa.analytics.rules.data.IAttribute;
 import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.logic.representation.condition.ConditionBase;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.exampleset.SortedExampleSetEx;
+import adaa.analytics.rules.logic.representation.exampleset.RegressionExampleSet;
 import adaa.analytics.rules.logic.representation.rule.Rule;
 import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSetComplement;
@@ -40,11 +40,6 @@ import java.util.logging.Level;
 public class SurvivalLogRankFinder extends RegressionFinder{
 
 	public static class Implementation {
-		public IExampleSet preprocess(IExampleSet trainSet) {
-			IAttribute survTime = trainSet.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE);
-			SortedExampleSetEx ses = new SortedExampleSetEx(trainSet, survTime, EColumnSortDirections.INCREASING);
-			return ses;
-		}
 
 		public void postprocess(
 				final Rule rule,
@@ -141,12 +136,6 @@ public class SurvivalLogRankFinder extends RegressionFinder{
 		super(params);
 		this.params.setMeanBasedRegression(false);
 		// TODO Auto-generated constructor stub
-	}
-
-	@Override
-	public IExampleSet preprocess(IExampleSet trainSet) {
-		super.preprocess(trainSet);
-		return implementation.preprocess(trainSet);
 	}
 
 	/**

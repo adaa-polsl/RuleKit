@@ -21,6 +21,8 @@ import adaa.analytics.rules.data.*;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
+import adaa.analytics.rules.logic.representation.exampleset.ExampleSetFactory;
+import adaa.analytics.rules.logic.representation.rule.RuleType;
 import adaa.analytics.rules.logic.representation.ruleset.ClassificationRuleSet;
 import adaa.analytics.rules.logic.representation.rule.ClassificationRule;
 import adaa.analytics.rules.logic.representation.rule.Rule;
@@ -52,7 +54,8 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 	 */
 	public ClassificationExpertSnC(ClassificationFinder finder, InductionParameters params, Knowledge knowledge) {
 		super(finder, params);
-		factory = new RuleFactory(RuleFactory.CLASSIFICATION,  params, knowledge);
+		factory = new RuleFactory(RuleType.CLASSIFICATION,  params, knowledge);
+		setFactory = new ExampleSetFactory(RuleType.CLASSIFICATION);
 		this.knowledge = (Knowledge)SerializationUtils.clone(knowledge);
 	}
 	

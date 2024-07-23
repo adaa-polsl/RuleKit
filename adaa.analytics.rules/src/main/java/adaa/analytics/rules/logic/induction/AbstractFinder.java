@@ -88,7 +88,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 	 * @param trainSet Training set.
 	 * @return Preprocessed training set.
 	 */
-	public IExampleSet preprocess(IExampleSet trainSet) {
+	public void preprocess(IExampleSet trainSet) {
 
 		IAttributes attributes = trainSet.getAttributes();
 
@@ -110,8 +110,6 @@ public abstract class AbstractFinder implements AutoCloseable {
 
 			attributeValuesOrder.put(attr, valuesOrder);
 		}
-
-		return trainSet;
 	}
 
 

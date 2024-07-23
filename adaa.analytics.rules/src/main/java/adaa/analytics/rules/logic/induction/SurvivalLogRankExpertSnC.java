@@ -15,6 +15,8 @@
 package adaa.analytics.rules.logic.induction;
 
 import adaa.analytics.rules.logic.representation.*;
+import adaa.analytics.rules.logic.representation.exampleset.ExampleSetFactory;
+import adaa.analytics.rules.logic.representation.rule.RuleType;
 
 /**
  *  Separate'n'conquer algorithm for generating log rank-based survival rule sets with user's knowledge.
@@ -26,7 +28,8 @@ public class SurvivalLogRankExpertSnC extends RegressionExpertSnC {
 	public SurvivalLogRankExpertSnC(RegressionFinder finder,
 			InductionParameters params, Knowledge knowledge) {
 		super(finder, params, knowledge);
-		this.factory = new RuleFactory(RuleFactory.SURVIVAL,  params, knowledge);
+		this.factory = new RuleFactory(RuleType.SURVIVAL,  params, null);
+		this.setFactory = new ExampleSetFactory(RuleType.SURVIVAL);
 	}
 
 }

@@ -14,6 +14,9 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
+import adaa.analytics.rules.logic.representation.exampleset.ExampleSetFactory;
+import adaa.analytics.rules.logic.representation.rule.RuleType;
+
 /**
  *  Separate'n'conquer algorithm for generating log rank-based survival rule sets.
  * @author Adam Gudys
@@ -28,7 +31,8 @@ public class SurvivalLogRankSnC extends RegressionSnC {
 	 */
 	public SurvivalLogRankSnC(RegressionFinder finder, InductionParameters params) {
 		super(finder, params);
-		this.factory = new RuleFactory(RuleFactory.SURVIVAL,  params, null);
+		this.factory = new RuleFactory(RuleType.SURVIVAL,  params, null);
+		this.setFactory = new ExampleSetFactory(RuleType.SURVIVAL);
 	}
 
 }

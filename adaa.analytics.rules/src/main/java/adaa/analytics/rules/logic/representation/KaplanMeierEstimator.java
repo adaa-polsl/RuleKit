@@ -15,7 +15,6 @@
 package adaa.analytics.rules.logic.representation;
 
 import adaa.analytics.rules.data.IExampleSet;
-import adaa.analytics.rules.logic.representation.exampleset.SortedExampleSetEx;
 import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
 import tech.tablesaw.api.DoubleColumn;
 

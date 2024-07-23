@@ -23,7 +23,7 @@ import adaa.analytics.rules.logic.quality.ChiSquareVarianceTest;
 import adaa.analytics.rules.logic.quality.IQualityMeasure;
 import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.exampleset.SortedExampleSetEx;
+import adaa.analytics.rules.logic.representation.exampleset.RegressionExampleSet;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
 import adaa.analytics.rules.utils.DoubleFormatter;
 import adaa.analytics.rules.utils.Pair;
@@ -138,9 +138,9 @@ public class RegressionRule extends Rule {
 	public void covers(IExampleSet set, ContingencyTable ct, Set<Integer> positives, Set<Integer> negatives) {
 		DoubleColumn weightDataColumnDoubleAdapter = set.getDoubleColumn(set.getAttributes().getWeight());
 
-		SortedExampleSetEx ses = (set instanceof SortedExampleSetEx) ? (SortedExampleSetEx)set : null;
+		RegressionExampleSet ses = (set instanceof RegressionExampleSet) ? (RegressionExampleSet)set : null;
 		if (ses == null) {
-			throw new InvalidParameterException("RegressionRules support only ListedExampleSet example sets");
+			throw new InvalidParameterException("RegressionRules support only RegressionExampleSet example sets");
 		}
 		double sum_y = 0.0, sum_y2 = 0.0;
 		//initially, everything as negatives

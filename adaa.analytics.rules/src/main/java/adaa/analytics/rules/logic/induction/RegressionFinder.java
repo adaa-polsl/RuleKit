@@ -22,7 +22,7 @@ import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
 import adaa.analytics.rules.logic.representation.condition.ConditionBase;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.exampleset.SortedExampleSetEx;
+import adaa.analytics.rules.logic.representation.exampleset.RegressionExampleSet;
 import adaa.analytics.rules.logic.representation.rule.RegressionRule;
 import adaa.analytics.rules.logic.representation.rule.Rule;
 import adaa.analytics.rules.logic.representation.valueset.Interval;
@@ -49,15 +49,6 @@ public class RegressionFinder extends AbstractFinder {
 		RegressionRule.setUseMean(params.isMeanBasedRegression());
 	}
 
-	@Override
-	public IExampleSet preprocess(IExampleSet trainSet) {
-		super.preprocess(trainSet);
-
-		IAttribute label = trainSet.getAttributes().getLabel();
-		SortedExampleSetEx ses = new SortedExampleSetEx(trainSet, label, EColumnSortDirections.INCREASING);
-		return ses;
-	}
-
 	protected ElementaryCondition induceCondition_mean(
 			final Rule rule,
 			final IExampleSet dataset,
@@ -66,7 +57,7 @@ public class RegressionFinder extends AbstractFinder {
 			final Set<IAttribute> allowedAttributes,
 			Object... extraParams) {
 
-		SortedExampleSetEx set = (dataset instanceof SortedExampleSetEx) ? (SortedExampleSetEx)dataset : null;
+		RegressionExampleSet set = (dataset instanceof RegressionExampleSet) ? (RegressionExampleSet)dataset : null;
 		if (set == null) {
 			throw new InvalidParameterException("RegressionRules support only ListedExampleSet example sets");
 		}

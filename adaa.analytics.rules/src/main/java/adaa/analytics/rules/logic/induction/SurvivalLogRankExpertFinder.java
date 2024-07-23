@@ -35,13 +35,6 @@ public class SurvivalLogRankExpertFinder extends RegressionExpertFinder {
 
 	SurvivalLogRankFinder.Implementation implementation = new SurvivalLogRankFinder.Implementation();
 
-
-	@Override
-	public IExampleSet preprocess(IExampleSet trainSet) {
-		super.preprocess(trainSet);
-		return implementation.preprocess(trainSet);
-	}
-
 	/**
 	 * Postprocesses a rule.
 	 *

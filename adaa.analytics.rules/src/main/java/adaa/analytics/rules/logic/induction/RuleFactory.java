@@ -28,12 +28,7 @@ import adaa.analytics.rules.logic.representation.rule.*;
  */
 public class RuleFactory {
 	
-	public static final int CLASSIFICATION = 1; 
-	public static final int REGRESSION = 2;
-	public static final int SURVIVAL = 3;
-	public static final int CONTRAST = 4;
-	public static final int CONTRAST_REGRESSION = 5;
-	public static final int CONTRAST_SURVIVAL = 6;
+
 	/**
 	 * Rule type (classification/regression/survival).
 	 */
@@ -81,17 +76,17 @@ public class RuleFactory {
 	 */
 	public Rule create(CompoundCondition premise, ElementaryCondition consequence) {
 		switch (type) {
-		case CLASSIFICATION:
+		case RuleType.CLASSIFICATION:
 			return new ClassificationRule(premise, consequence);
-		case REGRESSION:
+		case RuleType.REGRESSION:
 			return new RegressionRule(premise, consequence);
-		case SURVIVAL:
+		case RuleType.SURVIVAL:
 			return new SurvivalRule(premise, consequence);
-		case CONTRAST:
+		case RuleType.CONTRAST:
 			return new ContrastRule(premise, consequence);
-		case CONTRAST_REGRESSION:
+		case RuleType.CONTRAST_REGRESSION:
 			return new ContrastRegressionRule(premise, consequence);
-		case CONTRAST_SURVIVAL:
+		case RuleType.CONTRAST_SURVIVAL:
 			return new ContrastSurvivalRule(premise, consequence);
 		}
 		
@@ -105,17 +100,17 @@ public class RuleFactory {
 	 */
 	public RuleSetBase create(IExampleSet set) {
 		switch (type) {
-		case CLASSIFICATION:
+		case RuleType.CLASSIFICATION:
 			return new ClassificationRuleSet(set, isVoting, params, knowledge);
-		case REGRESSION:
+		case RuleType.REGRESSION:
 			return new RegressionRuleSet(set, isVoting, params, knowledge);
-		case SURVIVAL:
+		case RuleType.SURVIVAL:
 			return new SurvivalRuleSet(set, isVoting, params, knowledge);
-		case CONTRAST:
+		case RuleType.CONTRAST:
 			return new ContrastRuleSet(set, isVoting, params, knowledge);
-		case CONTRAST_REGRESSION:
+		case RuleType.CONTRAST_REGRESSION:
 			return new ContrastRegressionRuleSet(set, isVoting, params, knowledge);
-		case CONTRAST_SURVIVAL:
+		case RuleType.CONTRAST_SURVIVAL:
 			return new ContrastSurvivalRuleSet(set, isVoting, params, knowledge);
 		}
 		

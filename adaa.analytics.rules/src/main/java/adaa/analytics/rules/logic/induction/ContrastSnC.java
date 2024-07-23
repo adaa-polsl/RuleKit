@@ -6,6 +6,8 @@ import adaa.analytics.rules.data.condition.StringCondition;
 import adaa.analytics.rules.logic.representation.exampleset.ContrastExampleSet;
 import adaa.analytics.rules.logic.representation.exampleset.ContrastRegressionExampleSet;
 import adaa.analytics.rules.logic.representation.exampleset.ContrastSurvivalExampleSet;
+import adaa.analytics.rules.logic.representation.exampleset.ExampleSetFactory;
+import adaa.analytics.rules.logic.representation.rule.RuleType;
 import adaa.analytics.rules.logic.representation.ruleset.ContrastRuleSet;
 import adaa.analytics.rules.logic.representation.ruleset.RuleSetBase;
 import adaa.analytics.rules.data.IAttribute;
@@ -25,16 +27,17 @@ public class ContrastSnC extends ClassificationSnC {
     public ContrastSnC(AbstractFinder finder, InductionParameters params) {
         super(finder, params);
 
-        int ruleType = RuleFactory.CONTRAST;
+        int ruleType = RuleType.CONTRAST;
 
         if (finder instanceof ContrastRegressionFinder) {
-            ruleType = RuleFactory.CONTRAST_REGRESSION;
+            ruleType = RuleType.CONTRAST_REGRESSION;
         } else if (finder instanceof  ContrastSurvivalFinder) {
-            ruleType = RuleFactory.CONTRAST_SURVIVAL;
+            ruleType = RuleType.CONTRAST_SURVIVAL;
         }
 
         // replace the factory
        this.factory = new RuleFactory(ruleType,  params, null);
+       this.setFactory = new ExampleSetFactory(ruleType);
     }
 
     /**
@@ -45,16 +48,7 @@ public class ContrastSnC extends ClassificationSnC {
     public RuleSetBase run(IExampleSet dataset) {
 
         // make a contrast dataset
-        ContrastExampleSet ces;
-
-        if (factory.getType() == RuleFactory.CONTRAST_REGRESSION) {
-            ces = new ContrastRegressionExampleSet( dataset);
-        } else if (factory.getType() == RuleFactory.CONTRAST_SURVIVAL) {
-            ces = new ContrastSurvivalExampleSet(dataset);
-        } else {
-            ces = new ContrastExampleSet( dataset);
-        }
-
+        ContrastExampleSet ces = (ContrastExampleSet) setFactory.create(dataset);
         ContrastRuleSet rs = (ContrastRuleSet) factory.create(ces);
         IPenalizedFinder pf = (IPenalizedFinder)finder;
 

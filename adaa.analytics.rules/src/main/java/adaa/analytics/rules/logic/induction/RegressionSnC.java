@@ -17,7 +17,9 @@ package adaa.analytics.rules.logic.induction;
 import adaa.analytics.rules.logic.representation.*;
 import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
-import adaa.analytics.rules.logic.representation.exampleset.SortedExampleSetEx;
+import adaa.analytics.rules.logic.representation.exampleset.ExampleSetFactory;
+import adaa.analytics.rules.logic.representation.exampleset.RegressionExampleSet;
+import adaa.analytics.rules.logic.representation.rule.RuleType;
 import adaa.analytics.rules.logic.representation.ruleset.RegressionRuleSet;
 import adaa.analytics.rules.logic.representation.ruleset.RuleSetBase;
 import adaa.analytics.rules.data.IAttribute;
@@ -43,7 +45,8 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 	public RegressionSnC(final RegressionFinder finder, final InductionParameters params) {
 		super(params);
 		this.finder = finder;
-		factory = new RuleFactory(RuleFactory.REGRESSION,  params, null);
+		factory = new RuleFactory(RuleType.REGRESSION,  params, null);
+		setFactory = new ExampleSetFactory(RuleType.REGRESSION);
 	}
 
 	@Override
@@ -51,14 +54,15 @@ public class RegressionSnC extends AbstractSeparateAndConquer {
 
 		Logger.log("RegressionSnC.run()\n", Level.FINE);
 
-		SortedExampleSetEx sortedDataset = (SortedExampleSetEx)finder.preprocess(dataset);
+		IExampleSet sortedDataset = setFactory.create(dataset);
 		RuleSetBase ruleset = factory.create(sortedDataset);
+		finder.preprocess(sortedDataset);
+
 		IAttribute label = dataset.getAttributes().getLabel();
-		//SortedExampleSetEx ses = new SortedExampleSetEx(dataset, label, SortedExampleSet.INCREASING);
 
 		sortedDataset.getAttributes().getLabel().recalculateStatistics();
 			
-		if (factory.getType() == RuleFactory.REGRESSION) {
+		if (factory.getType() == RuleType.REGRESSION) {
 			double median = sortedDataset.getExample(sortedDataset.size() / 2).getLabelValue();
 			RegressionRuleSet tmp = (RegressionRuleSet)ruleset;
 			tmp.setDefaultValue(median); // use this even in mean-based variant
