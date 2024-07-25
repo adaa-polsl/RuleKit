@@ -28,6 +28,7 @@ public class AttributeInfo {
         }
 
         List<String> tokens = getTokens(arffAttributeLine, ' ');
+        tokens.removeIf(str -> str.trim().isEmpty());
 
         if (tokens.get(0).equalsIgnoreCase("@attribute")) {
 
