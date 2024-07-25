@@ -114,7 +114,7 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 			// change default class if necessary
 			if (weighted_P > defaultClassWeight) {
 				defaultClassWeight = weighted_P;
-				ruleset.setDefaultClass(classId);
+				ruleset.setDefaultClass(label);
 			}
 			
 			Knowledge classKnowledge = null;

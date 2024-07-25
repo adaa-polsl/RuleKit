@@ -115,7 +115,7 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 
 			if (weighted_P > defaultClassP) {
 				defaultClassP = weighted_P;
-				ruleset.setDefaultClass(classId);
+				ruleset.setDefaultClass(label);
 			}
 
 			boolean carryOn = uncoveredPositives.size() > 0;

@@ -5,7 +5,7 @@ plugins {
     id 'java'
 }
 
-version = '2.1.14'
+version = '2.1.15'
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }

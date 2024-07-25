@@ -54,13 +54,13 @@ public class ClassificationRuleSet extends RuleSetBase {
     /**
      * Identifier of the default class.
      */
-    private int defaultClass = -1;
+    private String defaultClass = null;
 
 
     /**
      * Sets {@link #defaultClass}
      */
-    public void setDefaultClass(int defaultClass) {
+    public void setDefaultClass(String defaultClass) {
         this.defaultClass = defaultClass;
     }
 
@@ -87,7 +87,7 @@ public class ClassificationRuleSet extends RuleSetBase {
     public double predict(Example example) throws OperatorException{
         IAttribute label = example.getAttributes().getLabel();
         assert (label.isNominal());
-        int result = defaultClass;
+        int result = label.getMapping().getIndex(defaultClass);
 
         double[] votes = new double[label.getMapping().size()];
         int[] voteCounts = new int[label.getMapping().size()];
