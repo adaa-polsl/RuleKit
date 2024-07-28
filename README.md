@@ -133,6 +133,11 @@ Contributors:
 * [Wojciech Sikora](https://github.com/Denominatee)
 
 The software is publicly available under [GNU AGPL-3.0 license](LICENSE).
+
+## Commercial applications
+
+The software is publicly available under [GNU AGPL-3.0 license](LICENSE). Any derivative work obtained under this license must be licensed under the AGPL if this derivative work is distributed to a third party.
+For commercial projects that require the ability to distribute RuleKit code as part of a program that cannot be distributed under the AGPL, it may be possible to obtain an appropriate license from the authors.
  
 # Citing
 
