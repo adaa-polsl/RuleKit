@@ -1,10 +1,10 @@
-# RuleKit
+# RuleKit 2
 [![GitHub downloads](https://img.shields.io/github/downloads/adaa-polsl/RuleKit/total.svg?style=flag&label=GitHub%20downloads)](https://github.com/adaa-polsl/RuleKit/releases)
 [![GitHub Actions CI](../../actions/workflows/main.yml/badge.svg)](../../actions/workflows/main.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
 
-Rule-based models are often used for data analysis as they combine interpretability with predictive power. We present RuleKit, a versatile tool for rule learning. Based on a sequential covering induction algorithm, it is suitable for classification, regression, and survival problems. The presence of user-guided induction mode facilitates verifying hypotheses concerning data dependencies which are expected or of interest. The powerful and flexible experimental environment allows straightforward investigation of different induction schemes. The analysis can be performed in batch mode, through RapidMiner plugin, as well as R package and [Python](https://github.com/adaa-polsl/RuleKit-python) packages. A documented Java API is also provided for convenience. 
+Rule-based models are often used for data analysis as they combine interpretability with predictive power. We present RuleKit 2, a versatile tool for rule learning. Based on a sequential covering induction algorithm, it is suitable for classification, regression, and survival problems. The presence of user-guided induction mode facilitates verifying hypotheses concerning data dependencies which are expected or of interest. The powerful and flexible experimental environment allows straightforward investigation of different induction schemes. Unlike the first revision, RuleKit 2 does not depend on RapidMiner. The analysis can be performed in batch mode and through [Python](https://github.com/adaa-polsl/RuleKit-python) package. A documented Java API is also provided for convenience. Running RuleKit as a RapidMiner plugin and R package is no longer supported in version 2.
 
 RuleKit provides latest versions of our algorithms (some of them were initially published as independent packages and integrated later):
 * [LR-Rules](https://github.com/adaa-polsl/LR-Rules) ([Wróbel et al, 2017](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-017-1693-x)) - survival rules induction,
@@ -14,7 +14,7 @@ RuleKit provides latest versions of our algorithms (some of them were initially 
 
 # Getting started
 
-In the following subsections we provide a brief introduction on how to install and use RuleKit batch interface, RapidMiner plugin, and R package. The software requires Java Development Kit in version 8 (version 1.8.0 tested) to work properly. In Windows one can download the installer from Oracle webpage. In Linux, a system package manager should be used instead. For instance, in Ubuntu 16.04 execute the following command:
+In the following subsections we provide a brief introduction on how to install and use RuleKit batch interface. The software requires Java Development Kit in version 8 (version 1.8.0 tested) to work properly. In Windows one can download the installer from Oracle webpage. In Linux, a system package manager should be used instead. For instance, in Ubuntu 16.04 execute the following command:
 ```
 sudo apt-get install default-jdk
 ``` 
@@ -35,46 +35,6 @@ The JAR file will be placed in *adaa.analytics.rules/build/libs* subdirectory. O
 java -jar rulekit-<version>-all.jar minimal-deals.xml
 ```
 Ignore the SLF4J warning reported on the console - it does not affect the procedure. The results of the analysis will be located in *./examples/results-minimal/deals/* folder. Note, that the repository already contains reference results - they will be overwritten. See [this Wiki section](https://github.com/adaa-polsl/RuleKit/wiki/1-Batch-interface) for detailed information on how to configure batch analyses in RuleKit. 
-
-## RapidMiner plugin
-
-In order to use RuleKit RapidMiner plugin, download *rulekit-\<version\>-rmbundle.zip* file from the [releases](../../releases) folder. The archive contains RapidMiner 9.3 bundled with the plugin. The bundle can be also built from the sources by running the following commands in the *adaa.analytics.rules* directory.
-Windows:
-```
-gradlew -b build.gradle rmbundle
-```
-Linux:
-```
-./gradlew -b build.gradle rmbundle
-```
-The output archive will be stored in *adaa.analytics.rules/build/distributions*. After unpacking ZIP file, please execute *RapidMiner-Studio.bat* (Windows) or *RapidMiner-Studio.sh* (Linux) script. Note, that the archive built under Windows may not work on Linux due to different new line characters in the shell script. The opposite situation is not the problem, though. In the releases we provide the archive that works under both systems. 
-
-In the following subsection we show an example regression analysis with a use of the plugin. The investigated dataset is named *methane* and concerns the problem of predicting methane concentration in a coal mine. The set is split into separate testing and training parts distributed in ARFF format ([download](data/methane)). For demonstration needs, a smaller version of these datasets suffixed with *-minimal* have been provided. 
-
-To perform the analysis under RapidMiner, import [./examples/preparation.rmp](/examples/preparation.rmp) process (*File &rarr; Import Process...*) and execute it (*Play* button). Its role is to add metadata to the sets and store them in the RM format (RapidMiner does not support metadata for ARFF files). After loading sets with *Read ARFF*, the *Set Role* operator is used for setting *MM116_pred* as the label attribute (in the survival analysis, a *survival_time* role has to be additionally assigned to some other attribute). Then, the sets are saved in RapidMiner repository under locations *Local Repository/methane-train-minimal* and *Local Repository/methane-test-minimal* with *Store* operators. 
-
-As the next step, please import [./examples/regression.rmp](./examples/regression.rmp) process. After executing it, datasets are loaded from the RM repository with *Retrieve* operators. Then, the training set is provided as an input for *RuleKit Generator*. The model generated by *RuleKit Generator* is then applied on unseen data (*Apply Model* operator). The performance of the prediction is assesed using *RuleKit Evaluator* operator. Performance metrices as well as generated model are passed as process outputs.
-
-See [this Wiki section](https://github.com/adaa-polsl/RuleKit/wiki/2-RapidMiner-plugin) for detailed information how to configure RuleKit RapidMiner plugin. 
-
-## R package
-
-
-RuleKit is compatible with R 3.4.x or later. In Linux, *curl*, *ssl*, and *xml* system packages are additionally required for RuleKit building. For instance, under Ubuntu 18.04, execute in terminal:
-```
-sudo apt-get install libcurl4-gnutls-dev
-sudo apt-get install libssl-dev
-sudo apt-get install libxml2-dev
-```
-In other distributions, package names may differ slightly. To build RuleKit, please download the *rulekit-\<version\>-all.jar* file from the [releases](../../releases) folder and copy it to the *./r-package/inst/java/* directory of the repository. Then, open *./r-package/rulekit.Rproj* project under RStudio environment and install all required dependencies:
-```
-install.packages(c('RWeka','XML','caret','rprojroot','devtools'))
-``` 
-Then, build the package with *Install and Restart* button (the appropiate version of RTools will be downloaded automatically, if it is not present at the target platform). RuleKit will be installed under default R package directory.
-
-Below we present a survival analysis of *BMT-Ch* dataset with RuleKit R package. The set concerns the problem of analyzing factors contributing to the patients’ survival following bone marrow transplants. In order to perform the experiment, please run [./examples/survival.R](./examples/survival.R) script in R. As a result, a rule model is trained and survival function estimates for the entire dataset and for the rules are plotted.
- 
-[This Wiki section](https://github.com/adaa-polsl/RuleKit/wiki/3-R-package) contains detailed information on using RuleKit R package. 
 
 ## Python package
 
