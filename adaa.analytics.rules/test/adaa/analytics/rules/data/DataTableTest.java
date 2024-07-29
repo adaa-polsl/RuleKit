@@ -343,4 +343,19 @@ public class DataTableTest {
         Assert.assertEquals(1.0, dt.getExample(9).getValue("c1"), 0.0000001);
         Assert.assertEquals(1.0, dt.getExample(9).getValue("c2"), 0.0000001);
     }
+
+    @Test
+    public void FirstElementAsNullTest() {
+
+        Object [][] obj = {
+                {null, null},
+                {null, "1"},
+                {null, "2"},
+                {3, null}
+        };
+
+        DataTable dt = new DataTable(obj, new String[] {"col1", "col2"}, "col2", "", "");
+
+        Assert.assertNotNull(dt);
+    }
 }

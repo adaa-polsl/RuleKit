@@ -85,7 +85,15 @@ public class DataTable implements Serializable, IExampleSet {
 
         for (int i = 0; i < attributesNames.length; i++) {
             String attName = attributesNames[i];
-            Object obj = values[0][i];
+
+            Object obj = null;
+            for (Object[] value : values) {
+                if (value[i] != null) {
+                    obj = value[i];
+                    break;
+                }
+            }
+
             EColumnType colType = EColumnType.OTHER;
             if (obj instanceof String) {
                 colType = EColumnType.NOMINAL;
