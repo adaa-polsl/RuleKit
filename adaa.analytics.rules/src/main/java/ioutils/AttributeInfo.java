@@ -17,6 +17,8 @@ public class AttributeInfo {
 
     public AttributeInfo(String arffAttributeLine) {
 
+        arffAttributeLine = arffAttributeLine.replace('\t', ' ');
+
         Pattern pattern = Pattern.compile("\\{(.*?)\\}");
         Matcher matcher = pattern.matcher(arffAttributeLine);
 

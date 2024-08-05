@@ -204,7 +204,7 @@ public class DataTable implements Serializable, IExampleSet {
     }
 
     public void sortBy(String columnName, EColumnSortDirections sortDir) {
-        customSort(columnName, sortDir, ESortAlgorithm.QuickSort);
+        customSort(columnName, sortDir, ESortAlgorithm.MergeSort);
     }
 
     public boolean isDoubleColumnSorted(String columnName, EColumnSortDirections sortDir) {
@@ -242,6 +242,9 @@ public class DataTable implements Serializable, IExampleSet {
             else if(sortAlgorithm == ESortAlgorithm.QuickSort) {
                 sortDoubleColumnQuick(dCol, sortDir, 0, table.rowCount() - 1);
             }
+            else if(sortAlgorithm == ESortAlgorithm.MergeSort) {
+                sortDoubleColumnMerge(dCol, sortDir);
+            }
         } else {
             throw new IllegalArgumentException("Unsupported column type for custom sorting");
         }
@@ -262,6 +265,70 @@ public class DataTable implements Serializable, IExampleSet {
                 }
             }
         } while (swapped);
+    }
+
+    private void sortDoubleColumnMerge(DoubleColumn column, EColumnSortDirections sortDir) {
+        mergeSort(column.name(), 0, table.rowCount()-1, sortDir);
+    }
+
+    private void mergeSort(String columnName, int low, int high, EColumnSortDirections sortDir) {
+        if (low < high) {
+            int mid = (low + high) / 2;
+            mergeSort(columnName, low, mid, sortDir);
+            mergeSort(columnName, mid + 1, high, sortDir);
+            merge(columnName, low, mid, high, sortDir);
+        }
+    }
+
+    private void merge(String columnName, int low, int mid, int high, EColumnSortDirections sortDir) {
+        int n1 = mid - low + 1;
+        int n2 = high - mid;
+
+        Table leftTable = table.emptyCopy();
+        Table rightTable = table.emptyCopy();
+
+        for (int i = 0; i < n1; i++) {
+            leftTable.addRow(table.row(low + i));
+        }
+
+        for (int j = 0; j < n2; j++) {
+            rightTable.addRow(table.row(mid + 1 + j));
+        }
+
+        int i = 0, j = 0;
+        int k = low;
+        while (i < n1 && j < n2) {
+            double leftValue = leftTable.doubleColumn(columnName).get(i);
+            double rightValue = rightTable.doubleColumn(columnName).get(j);
+            boolean comparison = sortDir == EColumnSortDirections.INCREASING ? leftValue <= rightValue : leftValue >= rightValue;
+
+            if (comparison) {
+                copyRow(table, leftTable, k, i);
+                i++;
+            } else {
+                copyRow(table, rightTable, k, j);
+                j++;
+            }
+            k++;
+        }
+
+        while (i < n1) {
+            copyRow(table, leftTable, k, i);
+            i++;
+            k++;
+        }
+
+        while (j < n2) {
+            copyRow(table, rightTable, k, j);
+            j++;
+            k++;
+        }
+    }
+
+    private void copyRow(Table destinationTable, Table sourceTable, int destIndex, int sourceIndex) {
+        for (Column<?> column : sourceTable.columns()) {
+            ((DoubleColumn)destinationTable.column(column.name())).set(destIndex, ((DoubleColumn)column).get(sourceIndex));
+        }
     }
 
     private void sortDoubleColumnQuick(DoubleColumn column, EColumnSortDirections sortDir, int low, int high) {
