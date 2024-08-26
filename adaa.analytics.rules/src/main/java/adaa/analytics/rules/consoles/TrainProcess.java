@@ -44,7 +44,6 @@ public class TrainProcess {
         ruleGenerator = new RuleGenerator();
         ruleGenerator.setRuleGeneratorParams(paramSetWrapper.generateRuleGeneratorParams());
 
-
         // Train process
         if (datasetConfiguration.trainElements.size() > 0) {
             Logger.log("TRAINING\n"

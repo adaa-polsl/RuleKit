@@ -17,8 +17,13 @@ package adaa.analytics.rules.logic.rulegenerator;
 import adaa.analytics.rules.logic.quality.IUserMeasure;
 import adaa.analytics.rules.logic.representation.ruleset.RuleSetBase;
 import adaa.analytics.rules.data.IExampleSet;
+import adaa.analytics.rules.utils.Logger;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * The basic RuleKit learner operator. It enables inducing classification, regression,
@@ -38,11 +43,36 @@ public class RuleGenerator {
         operatorCommandProxy = new OperatorCommandProxy();
     }
 
+    /**
+     * Used by python wrapper
+     * */
     public RuleGenerator(boolean useExpert) {
         this.useExpert = useExpert;
         operatorCommandProxy = new OperatorCommandProxy();
     }
 
+    private void configureLogger(PrintStream printStream, String level)
+    {
+        Logger.getInstance().addStream(printStream, level.contains("vv") ? Level.FINEST : (level.contains("v")? Level.FINE : Level.INFO));
+    }
+    /**
+     * Used by python wrapper
+     * */
+    public void configureLogger(String level)
+    {
+        configureLogger(System.out, level);
+    }
+
+    /**
+     * Used by python wrapper
+     * */
+    public void configureLogger(String filePath, String level) throws FileNotFoundException {
+        configureLogger(new PrintStream(new FileOutputStream(filePath)), level);
+    }
+
+    /**
+     * Used by python wrapper
+     * */
     public void addOperatorListener(ICommandListener commandListener) {
         operatorCommandProxy.addCommandListener(commandListener);
     }
@@ -64,6 +94,9 @@ public class RuleGenerator {
         return m;
     }
 
+    /**
+     * Used by python wrapper
+     * */
     public boolean containsParameter(String key) {
         return ruleGeneratorParams.contains(key);
     }
@@ -71,24 +104,40 @@ public class RuleGenerator {
     public void setRuleGeneratorParams(RuleGeneratorParams ruleGeneratorParams) {
         this.ruleGeneratorParams = ruleGeneratorParams;
     }
-
+    /**
+     * Used by python wrapper
+     * */
     public void setParameter(String key, String o) {
         ruleGeneratorParams.setParameter(key, o);
     }
-
+    /**
+     * Used by python wrapper
+     * */
     public void setListParameter(String key, List<String[]> o) {
         ruleGeneratorParams.setListParameter(key, o);
     }
-
+    /**
+     * Used by python wrapper
+     * */
     public void setUserMeasureInductionObject(IUserMeasure userMeasureInductionObject) {
         ruleGeneratorParams.setUserMeasureInductionObject(userMeasureInductionObject);
     }
-
+    /**
+     * Used by python wrapper
+     * */
     public void setUserMeasurePurningObject(IUserMeasure userMeasurePurningObject) {
         ruleGeneratorParams.setUserMeasurePurningObject(userMeasurePurningObject);
     }
-
+    /**
+     * Used by python wrapper
+     * */
     public void setUserMeasureVotingObject(IUserMeasure userMeasureVotingObject) {
         ruleGeneratorParams.setUserMeasureVotingObject(userMeasureVotingObject);
     }
+
+    public String getParamsAsJsonString()
+    {
+        return ruleGeneratorParams.toJsonString();
+    }
+
 }

@@ -416,4 +416,44 @@ public class RuleGeneratorParams {
 
         return params;
     }
+
+    public String toJsonString()
+    {
+        StringBuilder result = new StringBuilder();
+        result.append("{\n");
+        for(Map.Entry<String,Object> e:parameterValues.entrySet())
+        {
+            result.append("\"");
+            result.append(e.getKey());
+            result.append("\":");
+            if (e.getValue()==null)
+            {
+                result.append("null");
+            }else {
+                if (e.getValue() instanceof Boolean || e.getValue() instanceof Integer || e.getValue() instanceof Double) {
+                    result.append(e.getValue());
+                } else if (e.getValue() instanceof String[]) {
+                    result.append("[");
+                    for (String p : (String[]) e.getValue()) {
+                        result.append("\"");
+                        result.append(p);
+                        result.append("\"");
+                        result.append(",");
+                    }
+                    result.deleteCharAt(result.length() - 1);
+                    result.append("]");
+                } else {
+                    result.append("\"");
+                    result.append(e.getValue());
+                    result.append("\"");
+                }
+            }
+            result.append(",\n");
+        }
+        result.deleteCharAt(result.length()-2);
+
+
+        result.append("}");
+        return result.toString();
+    }
 }
