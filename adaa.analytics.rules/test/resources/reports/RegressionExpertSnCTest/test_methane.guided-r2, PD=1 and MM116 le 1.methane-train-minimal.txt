@@ -19,4 +19,3 @@ Rules
 	IF MM116 = (-inf, 0.85) AND DMM116 = (-inf, 0.05) AND AS038 = (-inf, 2.45) AND MM31 = (-inf, 0.36) AND PG072 = <1.65, inf) THEN MM116_pred = {0.50} 
 	IF MM31 = (-inf, 0.36) THEN MM116_pred = {0.50} 
 	IF MM116 = (-inf, 0.95) AND MM31 = <0.32, inf) THEN MM116_pred = {0.80} 
-	IF MM116 = <1.05, inf) AND AS038 = <2.15, inf) AND MM31 = (-inf, 0.67) THEN MM116_pred = {1.20} 
