@@ -1,12 +1,12 @@
 
 
 Rules
-	IF [seismic = {a}] AND goenergy = <-73.50, inf) AND nbumps3 = (-inf, 0.50) THEN class = {0}
-	IF [seismic = {a}] AND goenergy = <-73.50, inf) AND nbumps = (-inf, 1.50) THEN class = {0}
+	IF [seismic = {a}] AND nbumps3 = (-inf, 0.50) AND goenergy = <-73.50, inf) THEN class = {0}
+	IF [seismic = {a}] AND nbumps = (-inf, 1.50) AND goenergy = <-73.50, inf) THEN class = {0}
 	IF [seismic = {a}] AND goenergy = <-37.50, inf) AND goimpuls = <-39, inf) THEN class = {0}
 	IF [ghazard = {b}] THEN class = {0}
 	IF [seismoacoustic = {a}] AND genergy = (-inf, 18890) THEN class = {0}
 	IF [seismoacoustic = {a}] AND gimpuls = (-inf, 1350.50) AND goimpuls = <-39.50, inf) THEN class = {0}
-	IF genergy = (-inf, 25125) AND nbumps = (-inf, 1.50) THEN class = {0}
-	IF goenergy = <-73.50, inf) AND gimpuls = (-inf, 1350.50) AND nbumps = (-inf, 2.50) THEN class = {0}
-	IF [seismic = {b}] AND ghazard = {a} AND goenergy = <-39, 94.50) AND maxenergy = (-inf, 45000) AND genergy = <25125, inf) AND goimpuls = <-15.50, inf) THEN class = {1}
+	IF nbumps = (-inf, 1.50) AND genergy = (-inf, 25125) THEN class = {0}
+	IF gimpuls = (-inf, 1350.50) AND nbumps = (-inf, 2.50) AND goenergy = <-73.50, inf) THEN class = {0}
+	IF [seismic = {b}] AND genergy = <25125, inf) AND goenergy = <-39, 94.50) AND goimpuls = <-15.50, inf) AND ghazard = {a} AND maxenergy = (-inf, 45000) THEN class = {1}

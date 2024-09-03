@@ -2,7 +2,7 @@
 
 Rules
 	IF [gimpuls = (-inf, 1350.50)] AND [senergy = (-inf, 5750)] AND nbumps = (-inf, 1.50) THEN class = {0}
-	IF [gimpuls = (-inf, 1350.50)] AND [senergy = (-inf, 5750)] AND goenergy = <-73.50, inf) AND nbumps = (-inf, 2.50) THEN class = {0}
-	IF [gimpuls = (-inf, 1350.50)] AND [genergy = (-inf, 122140)] AND goenergy = <-73.50, inf) AND nbumps = (-inf, 5.50) THEN class = {0}
+	IF [gimpuls = (-inf, 1350.50)] AND [senergy = (-inf, 5750)] AND nbumps = (-inf, 2.50) AND goenergy = <-73.50, inf) THEN class = {0}
+	IF [gimpuls = (-inf, 1350.50)] AND [genergy = (-inf, 122140)] AND nbumps = (-inf, 5.50) AND goenergy = <-73.50, inf) THEN class = {0}
 	IF [gimpuls = (-inf, 2784)] AND [senergy = (-inf, 5750)] AND goenergy = <-73.50, inf) AND goimpuls = (-inf, 107.50) THEN class = {0}
-	IF [genergy = <18890, inf)] AND [senergy = <950, inf)] AND ghazard = {a} AND goenergy = (-inf, 12) AND maxenergy = (-inf, 6500) AND gimpuls = (-inf, 1845.50) AND goimpuls = (-inf, 10.50) AND shift = {W} AND nbumps3 = <0.50, inf) THEN class = {1}
+	IF [genergy = <18890, inf)] AND [senergy = <950, inf)] AND goimpuls = (-inf, 10.50) AND maxenergy = (-inf, 6500) AND shift = {W} AND goenergy = (-inf, 12) AND gimpuls = (-inf, 1845.50) AND nbumps3 = <0.50, inf) AND ghazard = {a} THEN class = {1}

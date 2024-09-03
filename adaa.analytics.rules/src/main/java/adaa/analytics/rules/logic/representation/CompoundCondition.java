@@ -106,8 +106,9 @@ public class CompoundCondition extends ConditionBase {
 	 */
 	public String toString() {
 		String s = "";
-		String op = operator == LogicalOperator.ALTERNATIVE ? " OR " : " AND "; 
-		
+		String op = operator == LogicalOperator.ALTERNATIVE ? " OR " : " AND ";
+
+		/*
 		Map<String, ElementaryCondition> shortened = new HashMap<String, ElementaryCondition>();
 		Set<ConditionBase> unshortened = new LinkedHashSet<>();
 		
@@ -135,8 +136,37 @@ public class CompoundCondition extends ConditionBase {
 		// add shortened conditions
 		for (ConditionBase cnd : shortened.values()) {
 			s += cnd.toString() + op; 
+		}*/
+
+		List<ConditionBase> outConditions = new ArrayList<>();
+		Map<String, Integer> attr2position = new HashMap<>();
+
+		for (ConditionBase cnd : subconditions) {
+			if (cnd instanceof ElementaryCondition && cnd.isPrunable()) {
+				ElementaryCondition ec = (ElementaryCondition)cnd;
+				String attr = ec.getAttribute();
+
+				if (attr2position.containsKey(attr)) {
+					// if condition built upon current attribute exists - replace with intersection
+					int pos = attr2position.get(attr);
+					ElementaryCondition parent = (ElementaryCondition) outConditions.get(pos);
+					outConditions.set(pos, parent.intersect(ec));
+				} else {
+					// otherwise - add condition and save positon of the attribute
+					attr2position.put(attr, outConditions.size());
+					outConditions.add(ec);
+				}
+			} else {
+				// if not elementary condition - add it as it is
+				outConditions.add(cnd);
+			}
 		}
-		
+
+		for (ConditionBase cnd : outConditions) {
+			s += cnd.toString() + op;
+		}
+
+
 		s = s.substring(0, Math.max(0, s.length() - op.length()));
 		
 		if (type == Type.FORCED) {
