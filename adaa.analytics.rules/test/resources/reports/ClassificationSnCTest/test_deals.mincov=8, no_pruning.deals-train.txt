@@ -1,25 +1,26 @@
 
 
 Rules
-	IF Gender = {female} AND Age = <34.50, inf) THEN Future Customer = {no}
-	IF Payment Method = {cash} AND Age = <37.50, inf) THEN Future Customer = {no}
+	IF Age = <34.50, inf) AND Gender = {female} THEN Future Customer = {no}
+	IF Age = <37.50, inf) AND Payment Method = {cash} THEN Future Customer = {no}
 	IF Age = <72.50, inf) THEN Future Customer = {no}
-	IF Payment Method = {cheque} AND Age = <54.50, 71.50) THEN Future Customer = {no}
-	IF Payment Method = {cheque} AND Age = <41.50, 55.50) THEN Future Customer = {no}
-	IF Gender = {female} AND Age = <32.50, inf) THEN Future Customer = {no}
+	IF Age = <54.50, 71.50) AND Payment Method = {cheque} THEN Future Customer = {no}
+	IF Age = <41.50, 55.50) AND Payment Method = {cheque} THEN Future Customer = {no}
+	IF Age = <32.50, inf) AND Gender = {female} THEN Future Customer = {no}
 	IF Age = <31.50, 42.50) THEN Future Customer = {no}
 	IF Gender = {female} AND Age = <27.50, inf) THEN Future Customer = {no}
 	IF Gender = {female} AND Age = <24.50, inf) THEN Future Customer = {no}
 	IF Gender = {female} AND Age = <19.50, inf) THEN Future Customer = {no}
-	IF Payment Method = {credit card} AND Age = (-inf, 30.50) THEN Future Customer = {yes}
-	IF Gender = {male} AND Payment Method = {credit card} AND Age = (-inf, 32.50) THEN Future Customer = {yes}
-	IF Gender = {male} AND Age = <18.50, 21.50) THEN Future Customer = {yes}
-	IF Gender = {male} AND Age = <17.50, 22.50) THEN Future Customer = {yes}
-	IF Gender = {male} AND Age = (-inf, 25.50) THEN Future Customer = {yes}
-	IF Gender = {male} AND Age = <18.50, 27.50) THEN Future Customer = {yes}
-	IF Gender = {male} AND Age = <20.50, 30.50) THEN Future Customer = {yes}
-	IF Gender = {male} AND Payment Method = {credit card} AND Age = (-inf, 34.50) THEN Future Customer = {yes}
-	IF Gender = {male} AND Age = (-inf, 34.50) THEN Future Customer = {yes}
-	IF Gender = {male} AND Age = (-inf, 35.50) THEN Future Customer = {yes}
-	IF Gender = {male} AND Payment Method = {credit card} AND Age = (-inf, 36.50) THEN Future Customer = {yes}
+	IF Gender = {female} THEN Future Customer = {no}
+	IF Age = (-inf, 30.50) AND Payment Method = {credit card} THEN Future Customer = {yes}
+	IF Age = (-inf, 32.50) AND Payment Method = {credit card} AND Gender = {male} THEN Future Customer = {yes}
+	IF Age = <18.50, 21.50) AND Gender = {male} THEN Future Customer = {yes}
+	IF Age = <17.50, 22.50) AND Gender = {male} THEN Future Customer = {yes}
+	IF Age = (-inf, 25.50) AND Gender = {male} THEN Future Customer = {yes}
+	IF Age = <18.50, 27.50) AND Gender = {male} THEN Future Customer = {yes}
+	IF Age = <20.50, 30.50) AND Gender = {male} THEN Future Customer = {yes}
+	IF Age = (-inf, 34.50) AND Payment Method = {credit card} AND Gender = {male} THEN Future Customer = {yes}
+	IF Age = (-inf, 34.50) AND Gender = {male} THEN Future Customer = {yes}
+	IF Age = (-inf, 35.50) AND Gender = {male} THEN Future Customer = {yes}
+	IF Age = (-inf, 36.50) AND Gender = {male} AND Payment Method = {credit card} THEN Future Customer = {yes}
 	IF Gender = {male} AND Payment Method = {credit card} AND Age = (-inf, 72.50) THEN Future Customer = {yes}

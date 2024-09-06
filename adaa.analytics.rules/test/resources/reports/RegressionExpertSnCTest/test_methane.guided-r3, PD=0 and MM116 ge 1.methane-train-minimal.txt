@@ -2,16 +2,16 @@
 
 Rules
 	IF [PD = (-inf, 0.50) AND MM116 = (1, inf)] AND AS038 = (-inf, 2.25) THEN MM116_pred = {1.20} 
-	IF MM116 = (-inf, 0.60) AND MM31 = (-inf, 0.24) THEN MM116_pred = {0.40} 
+	IF MM31 = (-inf, 0.24) AND MM116 = (-inf, 0.60) THEN MM116_pred = {0.40} 
 	IF MM31 = <0.24, 0.31) AND PG072 = (-inf, 1.95) AND BA13 = (-inf, 1075.50) THEN MM116_pred = {0.50} 
-	IF MM116 = (-inf, 0.65) AND MM31 = <0.24, 0.30) AND BA13 = <1073.50, inf) THEN MM116_pred = {0.50} 
-	IF MM116 = <0.55, 0.85) AND DMM116 = <-0.05, inf) AND AS038 = <2.25, inf) AND MM31 = <0.26, inf) AND PG072 = (-inf, 1.95) AND BA13 = <1074.50, inf) THEN MM116_pred = {0.70} 
-	IF PD = (-inf, 0.50) AND MM116 = <0.55, 0.85) AND DMM116 = <-0.05, inf) AND AS038 = (-inf, 2.45) AND MM31 = (-inf, 0.33) THEN MM116_pred = {0.60} 
+	IF MM31 = <0.24, 0.30) AND BA13 = <1073.50, inf) AND MM116 = (-inf, 0.65) THEN MM116_pred = {0.50} 
+	IF MM116 = <0.55, 0.85) AND DMM116 = <-0.05, inf) AND PG072 = (-inf, 1.95) AND AS038 = <2.25, inf) AND MM31 = <0.26, inf) AND BA13 = <1074.50, inf) THEN MM116_pred = {0.70} 
+	IF MM31 = (-inf, 0.33) AND MM116 = <0.55, 0.85) AND AS038 = (-inf, 2.45) AND DMM116 = <-0.05, inf) AND PD = (-inf, 0.50) THEN MM116_pred = {0.60} 
 	IF MM31 = (-inf, 0.33) THEN MM116_pred = {0.50} 
 	IF MM116 = (-inf, 0.75) AND MM31 = <0.24, inf) THEN MM116_pred = {0.60} 
 	IF MM116 = <1.05, 1.25) AND AS038 = (-inf, 2.45) AND MM31 = <0.39, inf) AND BA13 = (-inf, 1076.50) THEN MM116_pred = {1.20} 
-	IF PD = (-inf, 0.50) AND MM116 = (-inf, 1.05) AND AS038 = <2.15, inf) AND PG072 = <1.75, inf) AND BA13 = <1069.50, inf) THEN MM116_pred = {0.50} 
+	IF AS038 = <2.15, inf) AND PG072 = <1.75, inf) AND BA13 = <1069.50, inf) AND PD = (-inf, 0.50) AND MM116 = (-inf, 1.05) THEN MM116_pred = {0.50} 
 	IF MM116 = <0.95, 1.25) THEN MM116_pred = {1.10} 
 	IF MM116 = <0.95, 1.35) THEN MM116_pred = {1.10} 
 	IF MM116 = (-inf, 0.95) AND MM31 = <0.30, inf) THEN MM116_pred = {0.80} 
-	IF MM116 = <1.05, inf) AND AS038 = <2.15, inf) AND MM31 = (-inf, 0.67) THEN MM116_pred = {1.20} 
+	IF AS038 = <2.15, inf) AND MM31 = (-inf, 0.67) AND MM116 = <1.05, inf) THEN MM116_pred = {1.20} 

@@ -1,8 +1,8 @@
 
 
 Rules
-	IF goenergy = <-73.50, inf) AND nbumps3 = (-inf, 0.50) AND nbumps4 = (-inf, 1.50) THEN class = {0}
+	IF nbumps4 = (-inf, 1.50) AND nbumps3 = (-inf, 0.50) AND goenergy = <-73.50, inf) THEN class = {0}
 	IF goenergy = <-73.50, inf) AND nbumps = (-inf, 1.50) THEN class = {0}
-	IF goenergy = <-73.50, inf) AND genergy = (-inf, 117615) AND nbumps2 = (-inf, 1.50) THEN class = {0}
+	IF genergy = (-inf, 117615) AND goenergy = <-73.50, inf) AND nbumps2 = (-inf, 1.50) THEN class = {0}
 	IF nbumps = (-inf, 5.50) THEN class = {0}
-	IF goenergy = (-inf, 9) AND maxenergy = (-inf, 6500) AND genergy = <18890, 314675) AND shift = {W} AND nbumps3 = <0.50, inf) THEN class = {1}
+	IF genergy = <18890, 314675) AND goenergy = (-inf, 9) AND nbumps3 = <0.50, inf) AND shift = {W} AND maxenergy = (-inf, 6500) THEN class = {1}

@@ -2,5 +2,5 @@
 
 Rules
 	IF gimpuls = (-inf, 1350.50) THEN class = {0}
-	IF goenergy = <-32.50, inf) AND gimpuls = (-inf, 2784) AND goimpuls = <-39, 111) THEN class = {0}
-	IF ghazard = {a} AND goenergy = <-38.50, 9) AND gimpuls = <263, 1878) AND genergy = <24830, 314675) AND goimpuls = (-inf, 17.50) AND shift = {W} THEN class = {1}
+	IF gimpuls = (-inf, 2784) AND goimpuls = <-39, 111) AND goenergy = <-32.50, inf) THEN class = {0}
+	IF goenergy = <-38.50, 9) AND genergy = <24830, 314675) AND goimpuls = (-inf, 17.50) AND ghazard = {a} AND gimpuls = <263, 1878) AND shift = {W} THEN class = {1}
