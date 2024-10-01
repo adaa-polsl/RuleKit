@@ -241,10 +241,10 @@ public class RegressionFinder extends AbstractFinder {
 
 				} else {
 					// try all possible conditions
-					for (int j = 0; j < attr.getMapping().size(); ++j) {
+					for (int j = 0; j < attributeValuesOrder.get(attr).size(); ++j) {
 
 						// evaluate straight condition
-						int i = attributeValuesOrder.get(attr)[j];
+						int i = attributeValuesOrder.get(attr).get(j);
 						ElementaryCondition candidate = new ElementaryCondition(
 								attr.getName(), new SingletonSet((double)i, attr.getMapping().getValues()));
 						checkCandidate(dataset, rule, candidate, uncovered, covered, best);
@@ -358,10 +358,10 @@ public class RegressionFinder extends AbstractFinder {
 					}
 				} else {
 					// try all possible conditions
-					for (int j = 0; j < attr.getMapping().size(); ++j) {
+					for (int j = 0; j < attributeValuesOrder.get(attr).size(); ++j) {
 
 						// evaluate straight condition
-						int i = attributeValuesOrder.get(attr)[j];
+						int i = attributeValuesOrder.get(attr).get(j);
 						ElementaryCondition candidate = new ElementaryCondition(
 								attr.getName(), new SingletonSet((double)i, attr.getMapping().getValues()));
 						checkCandidate(dataset, rule, candidate, uncovered, covered, best);

@@ -729,13 +729,13 @@ public class ClassificationFinder extends AbstractFinder {
 			} else {
 				// unweighted case
 				// try all possible conditions
-				Integer[] attributeValueOrder = attributeValuesOrder.get(attr);
+				List<Integer> attributeValueOrder = attributeValuesOrder.get(attr);
 				Map<Double, IntegerBitSet> precalculatedCovering = precalculatedCoverings.get(attr);
 				Map<Double, IntegerBitSet> precalculatedCoveringComplement = precalculatedCoveringsComplement.get(attr);
-				for (int j = 0; j < attr.getMapping().size(); ++j) {
+				for (int j = 0; j < attributeValueOrder.size(); ++j) {
 
 					// evaluate straight condition
-					int i = attributeValueOrder[j];
+					int i = attributeValueOrder.get(j);
 					IntegerBitSet conditionCovered = precalculatedCovering.get((double) i);
 					double p = conditionCovered.calculateIntersectionSize(rule.getCoveredPositives());
 					int toCover_p = conditionCovered.calculateIntersectionSize((IntegerBitSet) coveredByRule, (IntegerBitSet) uncoveredPositives);

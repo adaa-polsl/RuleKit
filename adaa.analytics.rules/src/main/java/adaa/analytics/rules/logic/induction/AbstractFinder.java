@@ -58,8 +58,8 @@ public abstract class AbstractFinder implements AutoCloseable {
 
 	private List<IFinderObserver> observers = new ArrayList<IFinderObserver>();
 
-	protected Map<IAttribute, Integer[]> attributeValuesOrder
-			= new HashMap<IAttribute, Integer[]>();
+	protected Map<IAttribute, List<Integer>> attributeValuesOrder
+			= new HashMap<IAttribute, List<Integer>>();
 
 	public void addObserver(IFinderObserver o) { observers.add(o); }
 	public void clearObservers() { observers.clear(); }
@@ -94,17 +94,21 @@ public abstract class AbstractFinder implements AutoCloseable {
 
 		for (IAttribute attr : attributes) {
 
-			Integer[] valuesOrder = null;
+			List<Integer> valuesOrder = null;
 
 			// check if attribute is nominal
 			if (attr.isNominal()) {
 				// get orders
-				valuesOrder = new Integer[attr.getMapping().size()];
+				valuesOrder = new ArrayList<Integer>();
 				List<String> labels = new ArrayList<>();
 				labels.addAll(attr.getMapping().getValues());
 				Collections.sort(labels);
 				for (int j = 0; j < labels.size(); ++j) {
-					valuesOrder[j] = attr.getMapping().getIndex(labels.get(j));
+					int index = attr.getMapping().getIndex(labels.get(j));
+
+					if (trainSet.getDoubleColumn(attr).contains((double)index)) {
+						valuesOrder.add(index);
+					}
 				}
 			}
 

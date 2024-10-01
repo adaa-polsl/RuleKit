@@ -104,12 +104,16 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
 
             if (attr.isNominal()) {
                 // get orders
-                Integer[] valuesOrder = new Integer[attr.getMapping().size()];
+                List<Integer> valuesOrder = new ArrayList<Integer>();
                 List<String> labels = new ArrayList<>();
                 labels.addAll(attr.getMapping().getValues());
                 Collections.sort(labels);
                 for (int j = 0; j < labels.size(); ++j) {
-                    valuesOrder[j] = attr.getMapping().getIndex(labels.get(j));
+                    int index = attr.getMapping().getIndex(labels.get(j));
+
+                    if (trainSet.getDoubleColumn(attr).contains((double)index)) {
+                        valuesOrder.add(index);
+                    }
                 }
                 attributeValuesOrder.put(attr, valuesOrder);
             }
@@ -431,8 +435,8 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
                     stats[0] = new Stats(0, 0, 0);
                     stats[1] = new Stats(finalCovered_p - stats[0].p, finalCovered_n - stats[0].n, finalCovered_new_p - stats[0].p_new);
 
-                    for (int j = 0; j < attr.getMapping().size(); ++j) {
-                        int bid = attributeValuesOrder.get(attr)[j];
+                    for (int j = 0; j < attributeValuesOrder.get(attr).size(); ++j) {
+                        int bid = attributeValuesOrder.get(attr).get(j);
 
                         // update stats
                         stats[0].p = cur_positives[bid];
