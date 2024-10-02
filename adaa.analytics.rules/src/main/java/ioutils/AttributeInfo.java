@@ -85,7 +85,7 @@ public class AttributeInfo {
         Scanner scanner = new Scanner(arffAttributeLine);
         scanner.useDelimiter(String.valueOf(delimiterChar));
         while (scanner.hasNext()) {
-            String token = scanner.next();
+            String token = scanner.next().trim();
             if (startsWithOneOfChars(token, quoteChars)) {
                 currQuoteChar = token.charAt(0);
                 if(token.endsWith(String.valueOf(currQuoteChar))) {
