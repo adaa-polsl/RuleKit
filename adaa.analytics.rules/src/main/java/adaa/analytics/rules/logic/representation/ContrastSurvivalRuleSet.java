@@ -62,13 +62,16 @@ public class ContrastSurvivalRuleSet extends ContrastRuleSet {
         sb.append(super.toString());
         sb.append("\nEstimator:\n");
 
+        IContrastExampleSet ces = (IContrastExampleSet)trainingSet;
+        List<String> groups = ces.getContrastAttribute().getMapping().getValues();
+
         // get times from training estimator
         ArrayList<Double> times = trainingEstimator.getTimes();
 
         // build header
         sb.append("time,entire-set");
         for (int i = 0; i < groupEstimators.size(); ++i) {
-            sb.append(",group-" + (i + 1));
+            sb.append(",group-" + groups.get(i));
         }
 
         for (int i = 0; i < rules.size(); ++i) {
