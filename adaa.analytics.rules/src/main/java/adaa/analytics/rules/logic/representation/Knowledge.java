@@ -19,8 +19,10 @@ import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
 import adaa.analytics.rules.logic.representation.condition.ConditionBase;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.rule.Rule;
+import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
 import adaa.analytics.rules.logic.representation.valueset.IValueSet;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
+import adaa.analytics.rules.logic.representation.valueset.UndefinedSet;
 import adaa.analytics.rules.logic.representation.valueset.Universum;
 
 import java.io.Serializable;
@@ -60,10 +62,7 @@ public class Knowledge implements Serializable {
 	
 	/** Maximum number of preferred attributes per rule. */
 	protected int preferredAttributesPerRule;
-	
-	/** Auxiliary files indicating whether the knowledge concerns regression problem. */
-	protected boolean isRegression;
-	
+
 	/** Auxiliary files indicating number classes (classification problems only). */
 	protected int numClasses;
 	
@@ -166,7 +165,7 @@ public class Knowledge implements Serializable {
 	 */
 	public Knowledge(IExampleSet dataset, MultiSet<Rule> rules, MultiSet<Rule> preferredConditions, MultiSet<Rule> forbiddenConditions) {
 		
-		this.isRegression = dataset.getAttributes().getLabel().isNumerical();
+		boolean isSurvival = dataset.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE) != null;
 		
 		this.extendUsingPreferred = false;
 		this.extendUsingAutomatic = false;
@@ -176,7 +175,7 @@ public class Knowledge implements Serializable {
 		this.preferredConditionsPerRule = Integer.MAX_VALUE;
 		this.preferredAttributesPerRule = Integer.MAX_VALUE;
 
-		int numClasses = (dataset.getAttributes().getLabel().isNominal()) 
+		this.numClasses = (dataset.getAttributes().getLabel().isNominal() && !isSurvival)
 			?  dataset.getAttributes().getLabel().getMapping().size() : 1;
 		
 		for (int i = 0; i < numClasses; ++i) {
@@ -188,14 +187,14 @@ public class Knowledge implements Serializable {
 		}
 		
 		for (Rule r : rules) {
-			SingletonSet set = (SingletonSet)r.getConsequence().getValueSet();
-			 int c = (int)set.getValue();
+			 SingletonSet set = (SingletonSet)r.getConsequence().getValueSet();
+			 int c = (set instanceof UndefinedSet) ? 0 : (int)set.getValue();
 			 this.rules.get(c).add(r);
 		}
 		
 		for (Rule r : preferredConditions) {
 			SingletonSet set = (SingletonSet)r.getConsequence().getValueSet();
-			 int c = (int)set.getValue();
+			int c = (set instanceof UndefinedSet) ? 0 : (int)set.getValue();
 			 
 			 ElementaryCondition ec = (ElementaryCondition) r.getPremise().getSubconditions().get(0);
 			 if (ec.getValueSet() instanceof Universum) {
@@ -207,7 +206,7 @@ public class Knowledge implements Serializable {
 		
 		for (Rule r : forbiddenConditions) {
 			SingletonSet set = (SingletonSet)r.getConsequence().getValueSet();
-			 int c = (int)set.getValue();
+			int c = (set instanceof UndefinedSet) ? 0 : (int)set.getValue();
 			 
 			 ElementaryCondition ec = (ElementaryCondition) r.getPremise().getSubconditions().get(0);
 			 if (ec.getValueSet() instanceof Universum) {

@@ -202,10 +202,15 @@ public class ExpertRule {
      */
     private void fixMappings(Iterable<Rule> rules, IExampleSet set) {
 
+        boolean isSurvival = (set.getAttributes().getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE) != null);
+
         for (Rule r : rules) {
             List<ConditionBase> toCheck = new ArrayList<ConditionBase>(); // list of elementary conditions to check
             toCheck.addAll(r.getPremise().getSubconditions());
-            toCheck.add(r.getConsequence());
+
+            if (!isSurvival) {
+                toCheck.add(r.getConsequence());
+            }
 
             for (ConditionBase c : toCheck) {
                 ElementaryCondition ec = (c instanceof ElementaryCondition) ? (ElementaryCondition) c : null;

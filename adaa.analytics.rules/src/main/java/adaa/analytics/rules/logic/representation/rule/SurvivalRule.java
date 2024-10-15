@@ -22,6 +22,7 @@ import adaa.analytics.rules.data.IExampleSet;
 import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.KaplanMeierEstimator;
+import adaa.analytics.rules.logic.representation.valueset.UndefinedSet;
 import org.jetbrains.annotations.NotNull;
 import tech.tablesaw.api.DoubleColumn;
 
@@ -156,6 +157,12 @@ public class SurvivalRule extends Rule {
 			}
 		}
 		return covered;
+	}
+
+	@Override
+	public String toString() {
+		String s = "IF " + premise.toString() + " THEN ";
+		return s;
 	}
 	
 }

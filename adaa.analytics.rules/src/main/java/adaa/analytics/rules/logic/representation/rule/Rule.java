@@ -24,6 +24,7 @@ import adaa.analytics.rules.logic.representation.condition.CompoundCondition;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.IntegerBitSet;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
+import adaa.analytics.rules.logic.representation.valueset.UndefinedSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
@@ -285,14 +286,7 @@ public abstract class Rule implements Serializable, Cloneable {
 	 * @return Text representation.
 	 */
 	public String toString() {
-		String consequenceString;
-		if (consequence.getValueSet() instanceof SingletonSet &&
-				Double.isNaN(((SingletonSet) consequence.getValueSet()).getValue()) && ((SingletonSet) consequence.getValueSet()).getMapping() == null) {
-			consequenceString = "";
-		} else {
-			consequenceString = consequence.toString();
-		}
-		String s = "IF " + premise.toString() + " THEN " + consequenceString;
+		String s = "IF " + premise.toString() + " THEN " + consequence.toString();
 		return s;
 	}
 	

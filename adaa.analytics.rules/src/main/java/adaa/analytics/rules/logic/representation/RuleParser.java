@@ -23,14 +23,12 @@ import adaa.analytics.rules.logic.representation.rule.ClassificationRule;
 import adaa.analytics.rules.logic.representation.rule.RegressionRule;
 import adaa.analytics.rules.logic.representation.rule.Rule;
 import adaa.analytics.rules.logic.representation.rule.SurvivalRule;
-import adaa.analytics.rules.logic.representation.valueset.IValueSet;
-import adaa.analytics.rules.logic.representation.valueset.Interval;
-import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
-import adaa.analytics.rules.logic.representation.valueset.Universum;
+import adaa.analytics.rules.logic.representation.valueset.*;
 import adaa.analytics.rules.utils.Logger;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -57,10 +55,7 @@ public class RuleParser {
 		Pattern pattern = Pattern.compile("IF\\s+(?<premise>.+)\\s+THEN(?<consequence>\\s+.*|\\s*)");
 		Matcher matcher = pattern.matcher(s);
 
-		boolean isSurvival = false;
-		if (meta.getColumnByRoleUnsafe(SurvivalRule.SURVIVAL_TIME_ROLE) != null) {
-			isSurvival = true;
-		}
+		boolean isSurvival = (meta.getColumnByRoleUnsafe(SurvivalRule.SURVIVAL_TIME_ROLE) != null);
 
 		if (matcher.find()) {
 			String pre = matcher.group("premise");
@@ -70,12 +65,14 @@ public class RuleParser {
 			CompoundCondition premise = parseCompoundCondition(pre, meta);
 
 			if (con == null || con.trim().length() == 0) {
-				if (!meta.getLabelUnsafe().isNumerical()) {
-					Logger.log("Empty conclusion for nominal label"+ "\n", Level.WARNING);
-				} else {
-					consequence = new ElementaryCondition(meta.getLabelUnsafe().getName(),  new SingletonSet(NaN, null));
+				if (isSurvival) {
+					consequence = new ElementaryCondition(meta.getLabelUnsafe().getName(), new UndefinedSet());
+				} else if (meta.getLabelUnsafe().isNumerical()) {
+					consequence = new ElementaryCondition(meta.getLabelUnsafe().getName(), new SingletonSet(NaN, null));
 					consequence.setAdjustable(false);
-					consequence.setDisabled( false);
+					consequence.setDisabled(false);
+				} else{
+					Logger.log("Empty conclusion for nominal label"+ "\n", Level.WARNING);
 				}
 			} else {
 				consequence = parseElementaryCondition(con, meta);
@@ -83,11 +80,13 @@ public class RuleParser {
 
 			if (premise != null && consequence != null) {
 
-				rule = meta.getLabelUnsafe().isNominal()
-						? new ClassificationRule(premise, consequence)
-						: (isSurvival
-						? new SurvivalRule(premise, consequence)
-						: new RegressionRule(premise, consequence));
+				if (isSurvival) {
+					rule = new SurvivalRule(premise, consequence);
+				} else {
+					rule = meta.getLabelUnsafe().isNominal()
+							? new ClassificationRule(premise, consequence)
+							: new RegressionRule(premise, consequence);
+				}
 			}
 		}
 
@@ -158,9 +157,11 @@ public class RuleParser {
 	    	}
 	    	
 	    	IValueSet valueSet = null;
+			IAttribute attributeMeta = meta.get(attribute);
 
-	    	IAttribute attributeMeta = meta.get(attribute);
-	    	if (attributeMeta == null) {
+			boolean isSurvival = (meta.getColumnByRole(SurvivalRule.SURVIVAL_TIME_ROLE) != null) && (meta.getLabel() == attributeMeta);
+
+			if (attributeMeta == null) {
 				Logger.log("Attribute <" + attribute + "> not found"+ "\n", Level.WARNING);
 				return null;
 			}
@@ -176,13 +177,19 @@ public class RuleParser {
 		    	matcher = regex.matcher(valueString);
 		    	if (matcher.find()) {
 		    		String value = matcher.group("discrete");
-                    List<String> mapping = new ArrayList<String>(attributeMeta.getMapping().getValues());
-					double v = mapping.indexOf(value);
-		    		if (v == -1) {
-						Logger.log("Invalid value <" + value + "> of the nominal attribute <" + attribute + ">"+ "\n", Level.WARNING);
-						return null;
-		    		}
-		    		valueSet = new SingletonSet(v, mapping);
+
+					if (value.equals("NaN") && isSurvival) {
+						valueSet = new UndefinedSet();
+					} else {
+
+						List<String> mapping = new ArrayList<String>(attributeMeta.getMapping().getValues());
+						double v = mapping.indexOf(value);
+						if (v == -1) {
+							Logger.log("Invalid value <" + value + "> of the nominal attribute <" + attribute + ">" + "\n", Level.WARNING);
+							return null;
+						}
+						valueSet = new SingletonSet(v, mapping);
+					}
 		    			
 		    	}
 	    	} else if (attributeMeta.isNumerical()) {
@@ -191,8 +198,11 @@ public class RuleParser {
 		    	// 
 		    	if (matcher.find()) {
 		    		String value = matcher.group("discrete");
-		    		double v = value.equals("NaN") ? Double.NaN : Double.parseDouble(value);
-		    		valueSet = new SingletonSet(v, null);
+					if (value.equals("NaN")) {
+						valueSet = new UndefinedSet();
+					} else {
+						valueSet = new SingletonSet(Double.parseDouble(value), null);
+					}
 		    	} else {
 		    		boolean leftClosed = Pattern.compile("\\<.+").matcher(valueString).find();
 			    	boolean rightClosed = Pattern.compile(".+\\>").matcher(valueString).find();
