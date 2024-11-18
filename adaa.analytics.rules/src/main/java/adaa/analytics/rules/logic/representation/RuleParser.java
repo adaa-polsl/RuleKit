@@ -199,7 +199,7 @@ public class RuleParser {
 		    	if (matcher.find()) {
 		    		String value = matcher.group("discrete");
 					if (value.equals("NaN")) {
-						valueSet = new UndefinedSet();
+						valueSet = new SingletonSet(NaN, null);
 					} else {
 						valueSet = new SingletonSet(Double.parseDouble(value), null);
 					}
