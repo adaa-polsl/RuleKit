@@ -3,4 +3,6 @@
 Rules
 	IF gimpuls = (-inf, 1350.50) THEN class = {0}
 	IF gimpuls = (-inf, 2784) AND goimpuls = <-39, 111) AND goenergy = <-32.50, inf) THEN class = {0}
+	IF gimpuls = (-inf, 2784) AND seismoacoustic = {a} AND goimpuls = <-7.50, inf) THEN class = {0}
 	IF goenergy = <-38.50, 9) AND genergy = <24830, 314675) AND goimpuls = (-inf, 17.50) AND ghazard = {a} AND gimpuls = <263, 1878) AND shift = {W} THEN class = {1}
+	IF genergy = <18890, 1158410) AND goenergy = (-inf, 92) AND ghazard = {a} AND gimpuls = <174.50, inf) AND goimpuls = <-72, inf) THEN class = {1}

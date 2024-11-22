@@ -165,9 +165,12 @@ public class ClassificationSnC extends AbstractSeparateAndConquer {
 					uncovered.removeAll(rule.getCoveredNegatives());
 
 					uncovered_p = 0;
-
-					for (int id : uncoveredPositives) {
-						uncovered_p += dataset.getAttributes().getWeight() == null ? 1.0 : weightDataColumnDoubleAdapter.getDouble(id);
+					if (dataset.getAttributes().getWeight() == null) {
+						uncovered_p = uncoveredPositives.size();
+					} else {
+						for (int id : uncoveredPositives) {
+							uncovered_p += weightDataColumnDoubleAdapter.getDouble(id);
+						}
 					}
 
 					Logger.log("Uncovered positives" + uncovered_p + "\n", Level.FINER);

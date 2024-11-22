@@ -11,6 +11,7 @@ import adaa.analytics.rules.logic.representation.valueset.Interval;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSetComplement;
 import adaa.analytics.rules.utils.Logger;
+import adaa.analytics.rules.utils.Pair;
 import tech.tablesaw.api.DoubleColumn;
 
 import java.util.*;
@@ -289,7 +290,7 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
             Set<Integer> uncoveredPositives,
             Set<Integer> coveredByRule,
             Set<IAttribute> allowedAttributes,
-            Object... extraParams) {
+            Pair<String,Object>... extraParams) {
 
         if (allowedAttributes.size() == 0) {
             return null;

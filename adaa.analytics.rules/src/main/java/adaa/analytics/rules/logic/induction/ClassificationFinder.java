@@ -32,6 +32,7 @@ import adaa.analytics.rules.logic.representation.valueset.Interval;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSetComplement;
 import adaa.analytics.rules.utils.Logger;
+import adaa.analytics.rules.utils.Pair;
 import tech.tablesaw.api.DoubleColumn;
 
 
@@ -465,7 +466,7 @@ public class ClassificationFinder extends AbstractFinder {
 
 	/**
 	 * Induces an elementary condition.
-	 * 
+	 *
 	 * @param rule Current rule.
 	 * @param trainSet Training set.
 	 * @param uncoveredPositives Set of positive examples uncovered by the model.
@@ -476,12 +477,12 @@ public class ClassificationFinder extends AbstractFinder {
 	 */
 	@Override
 	protected ElementaryCondition induceCondition(
-		Rule rule,
-		IExampleSet trainSet,
-		Set<Integer> uncoveredPositives,
-		Set<Integer> coveredByRule, 
-		Set<IAttribute> allowedAttributes,
-		Object... extraParams) {
+			Rule rule,
+			IExampleSet trainSet,
+			Set<Integer> uncoveredPositives,
+			Set<Integer> coveredByRule,
+			Set<IAttribute> allowedAttributes,
+			Pair<String, Object>... extraParams) {
 
 		if (allowedAttributes.size() == 0) {
 			return null;
@@ -495,7 +496,17 @@ public class ClassificationFinder extends AbstractFinder {
 		double P = rule.getWeighted_P();
 		double N = rule.getWeighted_N();
 
-		double apriori_prec = params.isControlAprioriPrecision()
+
+		boolean controlPrecision = params.isControlAprioriPrecision();
+		// override precision verification
+		for (Pair<String, Object> param : extraParams) {
+			if (param.getFirst().equals("disable_precision_control") && (Boolean)param.getSecond()) {
+				controlPrecision = false;
+				break;
+			}
+		}
+
+		double apriori_prec = controlPrecision
 				? P / (P + N)
 				: Double.MIN_VALUE;
 

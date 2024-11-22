@@ -14,7 +14,6 @@
  ******************************************************************************/
 package adaa.analytics.rules.logic.induction;
 
-import adaa.analytics.rules.data.metadata.EColumnSortDirections;
 import adaa.analytics.rules.logic.representation.*;
 
 import adaa.analytics.rules.data.IAttribute;
@@ -29,6 +28,7 @@ import adaa.analytics.rules.logic.representation.valueset.Interval;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSetComplement;
 import adaa.analytics.rules.utils.Logger;
+import adaa.analytics.rules.utils.Pair;
 import tech.tablesaw.api.DoubleColumn;
 
 import java.security.InvalidParameterException;
@@ -55,7 +55,7 @@ public class RegressionFinder extends AbstractFinder {
 			final Set<Integer> uncovered,
 			final Set<Integer> covered,
 			final Set<IAttribute> allowedAttributes,
-			Object... extraParams) {
+			Pair<String,Object>... extraParams) {
 
 		RegressionExampleSet set = (dataset instanceof RegressionExampleSet) ? (RegressionExampleSet)dataset : null;
 		if (set == null) {
@@ -300,12 +300,12 @@ public class RegressionFinder extends AbstractFinder {
 
 	@Override
 	protected ElementaryCondition induceCondition(
-		final Rule rule,
-		final IExampleSet dataset,
-		final Set<Integer> uncovered, 
-		final Set<Integer> covered, 
-		final Set<IAttribute> allowedAttributes,
-		Object... extraParams) {
+			final Rule rule,
+			final IExampleSet dataset,
+			final Set<Integer> uncovered,
+			final Set<Integer> covered,
+			final Set<IAttribute> allowedAttributes,
+			Pair<String, Object>... extraParams) {
 		
 		if (allowedAttributes.size() == 0) {
 			return null;

@@ -3,4 +3,6 @@
 Rules
 	IF [gimpuls = (-inf, 1350.50)] THEN class = {0}
 	IF gimpuls = (-inf, 2784) AND nbumps = (-inf, 5.50) AND goimpuls = <-39, 111) AND goenergy = <-32.50, inf) THEN class = {0}
+	IF nbumps = (-inf, 1.50) AND seismoacoustic = {a} AND goimpuls = <-6.50, inf) THEN class = {0}
 	IF [gimpuls = <408.50, inf)] AND genergy = <35165, 294530) AND goenergy = (-inf, 94.50) AND ghazard = {a} AND senergy = (-inf, 8750) AND nbumps3 = (-inf, 2.50) AND maxenergy = (-inf, 6500) THEN class = {1}
+	IF genergy = <18890, 1158410) AND ghazard = {a} AND maxenergy = (-inf, 45000) AND gimpuls = <174.50, inf) AND goimpuls = <-72, 58) AND goenergy = (-inf, 50) AND nbumps3 = (-inf, 1.50) AND nbumps2 = (-inf, 2.50) THEN class = {1}

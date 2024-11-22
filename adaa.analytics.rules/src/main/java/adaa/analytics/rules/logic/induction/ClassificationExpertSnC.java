@@ -229,9 +229,18 @@ public class ClassificationExpertSnC extends ClassificationSnC {
 					uncoveredPositives.removeAll(rule.getCoveredPositives());
 					uncovered.removeAll(rule.getCoveredPositives());
 					uncovered.removeAll(rule.getCoveredNegatives());
-					
+
+					double uncovered_p = 0;
+					if (dataset.getAttributes().getWeight() == null) {
+						uncovered_p = uncoveredPositives.size();
+					} else {
+						for (int id : uncoveredPositives) {
+							uncovered_p += weightDataColumnDoubleAdapter.getDouble(id);
+						}
+					}
+
 					// stop if no positive examples remaining
-					if (uncoveredPositives.size() == 0) {
+					if (uncovered_p <= params.getMaximumUncoveredFraction() * weighted_P) {
 						carryOn = false;
 					}
 					

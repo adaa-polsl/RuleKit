@@ -9,4 +9,6 @@ Rules
 	IF [seismoacoustic = {a}] AND gimpuls = (-inf, 1350.50) AND goimpuls = <-39.50, inf) THEN class = {0}
 	IF nbumps = (-inf, 1.50) AND genergy = (-inf, 25125) THEN class = {0}
 	IF gimpuls = (-inf, 1350.50) AND nbumps = (-inf, 2.50) AND goenergy = <-73.50, inf) THEN class = {0}
+	IF gimpuls = (-inf, 2784) AND nbumps = (-inf, 5.50) THEN class = {0}
 	IF [seismic = {b}] AND genergy = <25125, inf) AND goenergy = <-39, 94.50) AND goimpuls = <-15.50, inf) AND ghazard = {a} AND maxenergy = (-inf, 45000) THEN class = {1}
+	IF genergy = <18890, inf) AND maxenergy = (-inf, 6500) AND gimpuls = <166, inf) AND goimpuls = <-72, -17.50) AND nbumps2 = (-inf, 2.50) AND nbumps3 = (-inf, 1.50) AND goenergy = (-inf, -19) AND seismic = {a} THEN class = {1}

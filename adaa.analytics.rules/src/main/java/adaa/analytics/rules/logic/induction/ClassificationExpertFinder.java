@@ -27,6 +27,7 @@ import adaa.analytics.rules.logic.representation.rule.Rule;
 import adaa.analytics.rules.logic.representation.valueset.SingletonSet;
 import adaa.analytics.rules.logic.representation.valueset.Universum;
 import adaa.analytics.rules.utils.Logger;
+import adaa.analytics.rules.utils.Pair;
 import org.apache.commons.lang3.SerializationUtils;
 import tech.tablesaw.api.DoubleColumn;
 
@@ -85,17 +86,20 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 		CompoundCondition expertPremise = rule.getPremise();
 		rule.setPremise(new CompoundCondition());
 		
-		HashSet<Integer> covered = new HashSet<Integer>();
+		//HashSet<Integer> covered = new HashSet<Integer>();
+		Set<Integer> covered = new IntegerBitSet(dataset.size());
 		
 		// bit vectors for faster operations on coverings
 
 		covered.addAll(rule.getCoveredPositives());
 		covered.addAll(rule.getCoveredNegatives());
-		
+
 		for (ConditionBase cnd : expertPremise.getSubconditions()) {
 			ElementaryCondition ec = (ElementaryCondition)cnd;
 			ElementaryCondition newCondition;
-			
+
+			boolean alreadyAdded = false;
+
 			if (ec.isAdjustable()) {
 				// determine attribute
 				Set<IAttribute> attr = new TreeSet<IAttribute>(new AttributeComparator());
@@ -113,13 +117,24 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 					ec.evaluate(dataset, mustBeCovered);
 					mustBeCovered.retainAll(rule.getCoveredPositives());
 				}
-				
-				newCondition = induceCondition(
-						rule, dataset, mustBeCovered, covered, attr);
-				newCondition.setType(Type.FORCED);
-				tryAddCondition(rule, null, newCondition, dataset, covered, uncoveredPositives);
-				
-			} else {
+
+				if (mustBeCovered.size() > 0) {
+					newCondition = induceCondition(
+							rule, dataset, mustBeCovered, covered, attr, new Pair<String, Object>("disable_precision_control", (Object) true));
+
+					// use original condition if adjustment fails
+					if (newCondition != null) {
+						newCondition.setType(Type.FORCED);
+						tryAddCondition(rule, null, newCondition, dataset, covered, mustBeCovered);
+						alreadyAdded = true;
+					} else {
+						Logger.log("Unable to adjust condition: " + ec, Level.FINE);
+					}
+				} else {
+					Logger.log("Adjustable condition does not cover any positives: " + ec, Level.FINE);
+				}
+			}
+			if (!alreadyAdded) {
 				// add condition as it is without verification
 				IntegerBitSet conditionCovered = new IntegerBitSet(dataset.size());
 				newCondition = SerializationUtils.clone(ec);
@@ -305,7 +320,9 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 			int preferredCounter = knowledge.getPreferredAttributesPerRule();
 						
 			do {
-				ElementaryCondition condition = induceCondition(rule, dataset, uncoveredPositives, covered, localAllowed, rule.getCoveredPositives());
+				ElementaryCondition condition = induceCondition(rule, dataset, uncoveredPositives, covered, localAllowed,
+						new Pair<String,Object>("covered_positives", rule.getCoveredPositives()));
+
 				carryOn = tryAddCondition(rule, null, condition, dataset, covered,uncoveredPositives);
 				// fixme: we are not sure if condition was added
 				if (carryOn) {
@@ -340,7 +357,8 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 
 			do {
 				ElementaryCondition condition = induceCondition(
-						rule, dataset, uncoveredPositives, covered, allowedAttributes, rule.getCoveredPositives());
+						rule, dataset, uncoveredPositives, covered, allowedAttributes,
+							new Pair<String,Object>("covered_positives", rule.getCoveredPositives()));
 
 				if (params.getSelectBestCandidate()) {
 					carryOn = tryAddCondition(currentRule, rule, condition, dataset, covered, uncoveredPositives);
@@ -367,9 +385,8 @@ public class ClassificationExpertFinder extends ClassificationFinder implements 
 	 */
 	@Override
 	protected boolean checkCandidate(ElementaryCondition cnd, double classId, double p, double n, double new_p, double P,double uncoveredSize,  int ruleOrderNum) {
-		return new_p >= params.getAbsoluteMinimumCovered(P)
-				&& p >= params.getAbsoluteMinimumCoveredAll(P)
-				&& !knowledge.isForbidden(cnd.getAttribute(), cnd.getValueSet(), (int)classId);
+		boolean ok = super.checkCandidate(cnd, classId, p, n, new_p, P, uncoveredSize, ruleOrderNum);
+		return ok && !knowledge.isForbidden(cnd.getAttribute(), cnd.getValueSet(), (int)classId);
 
 	}
 	

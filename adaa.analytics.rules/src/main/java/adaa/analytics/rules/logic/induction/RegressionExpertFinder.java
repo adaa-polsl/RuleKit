@@ -62,6 +62,8 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 
 			for (ConditionBase cnd : expertPremise.getSubconditions()) {
 				ElementaryCondition ec = (ElementaryCondition)cnd;
+				boolean alreadyAdded = false;
+
 				if (ec.isAdjustable()) {
 					
 					// update covering information - needed for automatic induction
@@ -84,23 +86,26 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 						
 					} else {
 						// condition in other form - find best condition using this attribute with non-empty intersection with specified condition
-						mustBeCovered = new HashSet<Integer>();
-						for (int i : covered) {
-							if (ec.evaluate(dataset.getExample(i))) {
-								mustBeCovered.add(i);
-							}
-						}	
+						mustBeCovered = new IntegerBitSet(dataset.size());
+						ec.evaluate(dataset, mustBeCovered);
+						mustBeCovered.retainAll(rule.getCoveredPositives());
 					}
-					
-					ElementaryCondition newCondition = induceCondition(
-							rule, dataset, mustBeCovered, covered, attr);
-					
-					if (newCondition != null) {
-						newCondition.setType(Type.FORCED);
-						rule.getPremise().addSubcondition(newCondition);
+
+					if (!mustBeCovered.isEmpty()) {
+						ElementaryCondition newCondition = induceCondition(
+								rule, dataset, mustBeCovered, covered, attr);
+
+						if (newCondition != null) {
+							newCondition.setType(Type.FORCED);
+							rule.getPremise().addSubcondition(newCondition);
+							alreadyAdded = true;
+						}
+					} else {
+						Logger.log("Adjustable condition does not cover any positives: " + ec, Level.FINE);
 					}
-					
-				} else {
+				}
+
+				if (!alreadyAdded) {
 					rule.getPremise().addSubcondition((ElementaryCondition)SerializationUtils.clone(ec));
 				}
 			}

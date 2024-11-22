@@ -173,9 +173,10 @@ public class RuleParser {
 	    	if (Pattern.compile("Any").matcher(valueString).find()) {
 	    		valueSet = new Universum();
 	    	} else if (attributeMeta.isNominal()) { 
-	    		regex = Pattern.compile("\\{(?<discrete>.+)\\}");
+	    		regex = Pattern.compile("(?<negation>(!?))\\{(?<discrete>.+)\\}");
 		    	matcher = regex.matcher(valueString);
 		    	if (matcher.find()) {
+					String negation = matcher.group("negation");
 		    		String value = matcher.group("discrete");
 
 					if (value.equals("NaN") && isSurvival) {
@@ -188,7 +189,11 @@ public class RuleParser {
 							Logger.log("Invalid value <" + value + "> of the nominal attribute <" + attribute + ">" + "\n", Level.WARNING);
 							return null;
 						}
-						valueSet = new SingletonSet(v, mapping);
+						if (negation.isEmpty()) {
+							valueSet = new SingletonSet(v, mapping);
+						} else {
+							valueSet = new SingletonSetComplement(v, mapping);
+						}
 					}
 		    			
 		    	}

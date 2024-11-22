@@ -30,6 +30,7 @@ import adaa.analytics.rules.logic.representation.condition.ConditionBase;
 import adaa.analytics.rules.logic.representation.condition.ElementaryCondition;
 import adaa.analytics.rules.logic.representation.rule.Rule;
 import adaa.analytics.rules.utils.Logger;
+import adaa.analytics.rules.utils.Pair;
 
 /**
  * Abstract base class for growing and pruning procedures for all types of rules (classification, regression, survival).
@@ -350,7 +351,7 @@ public abstract class AbstractFinder implements AutoCloseable {
 
 	/**
 	 * Abstract method representing all procedures which induce an elementary condition.
-	 * 
+	 *
 	 * @param rule Current rule.
 	 * @param trainSet Training set.
 	 * @param uncoveredByRuleset Set of examples uncovered by the model.
@@ -360,12 +361,12 @@ public abstract class AbstractFinder implements AutoCloseable {
 	 * @return Induced elementary condition.
 	 */
 	protected abstract ElementaryCondition induceCondition(
-		final Rule rule,
-		final IExampleSet trainSet,
-		final Set<Integer> uncoveredByRuleset,
-		final Set<Integer> coveredByRule, 
-		final Set<IAttribute> allowedAttributes,
-		Object... extraParams);
+			final Rule rule,
+			final IExampleSet trainSet,
+			final Set<Integer> uncoveredByRuleset,
+			final Set<Integer> coveredByRule,
+			final Set<IAttribute> allowedAttributes,
+			Pair<String, Object>... extraParams);
 	
 	/**
 	 * Maps a set of attribute names to a set of attributes.
