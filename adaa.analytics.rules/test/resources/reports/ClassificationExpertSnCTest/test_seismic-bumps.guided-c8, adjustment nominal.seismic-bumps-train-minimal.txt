@@ -1,0 +1,5 @@
+
+
+Rules
+	IF [[seismoacoustic = {a}]] THEN class = {0}
+	IF [[seismoacoustic = {a}]] THEN class = {1}

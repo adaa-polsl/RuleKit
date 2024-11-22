@@ -58,7 +58,12 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 			CompoundCondition expertPremise = rule.getPremise();
 			rule.setPremise(new CompoundCondition());
 
+			IntegerBitSet positives = new IntegerBitSet(dataset.size());
+			IntegerBitSet negatives = new IntegerBitSet(dataset.size());
 			Covering covering = new Covering();
+			// ugly
+			covering.positives = positives;
+			covering.negatives = negatives;
 
 			for (ConditionBase cnd : expertPremise.getSubconditions()) {
 				ElementaryCondition ec = (ElementaryCondition)cnd;
@@ -68,10 +73,12 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 					
 					// update covering information - needed for automatic induction
 					covering.clear();
+
 					rule.covers(dataset, covering, covering.positives, covering.negatives);
-					Set<Integer> covered = new HashSet<Integer>();
-					covered.addAll(covering.positives);
-					covered.addAll(covering.negatives);
+					Set<Integer> covered = new IntegerBitSet(dataset.size());
+					covered.addAll(positives);
+					covered.addAll(negatives);
+
 					rule.setCoveringInformation(covering);
 					
 					// determine attribute
@@ -111,13 +118,7 @@ public class RegressionExpertFinder extends RegressionFinder implements IExpertF
 			}
 			
 			covering.clear();
-			IntegerBitSet positives = new IntegerBitSet(dataset.size());
-			IntegerBitSet negatives = new IntegerBitSet(dataset.size());
-			rule.covers(dataset, covering, positives, negatives);
-
-			// ugly
-			covering.positives = positives;
-			covering.negatives = negatives;
+			rule.covers(dataset, covering, covering.positives, covering.negatives);
 			rule.setCoveringInformation(covering);
 
 			rule.setCoveredNegatives(negatives);

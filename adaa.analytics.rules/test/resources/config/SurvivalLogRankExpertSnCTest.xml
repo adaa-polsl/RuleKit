@@ -77,6 +77,24 @@
 			<param name ="expert_forbidden_conditions">
 			</param>
 		</parameter_set>
+		
+		<parameter_set name="guided-s5, adjust">
+			<param name="min_rule_covered">5</param>	
+			<param name="use_expert">true</param>
+			<param name="extend_using_preferred">false</param>
+			<param name="extend_using_automatic">false</param>
+			<param name="induce_using_preferred">false</param>
+			<param name="induce_using_automatic">false</param>
+			<param name ="expert_rules">
+				<entry name="rule-0">IF CD34kgx10d6 @= Any THEN </entry>
+				<entry name="rule-1">IF Donorage @= Any THEN </entry>
+				<entry name="rule-2">IF Donorage @= (50, inf) THEN </entry>
+			</param>
+			<param name ="expert_preferred_conditions">
+			</param>
+			<param name ="expert_forbidden_conditions">
+			</param>
+		</parameter_set>
 
 	</parameter_sets>
 

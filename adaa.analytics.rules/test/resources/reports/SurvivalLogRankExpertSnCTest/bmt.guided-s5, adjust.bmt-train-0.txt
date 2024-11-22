@@ -1,0 +1,6 @@
+
+
+Rules
+	IF [[CD34kgx10d6 = (-inf, 11.86)]] THEN 
+	IF [[Donorage = (-inf, 45.53)]] THEN 
+	IF [[Donorage = <45.53, inf)]] THEN 
