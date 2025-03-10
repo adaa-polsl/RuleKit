@@ -59,6 +59,11 @@ public class LogRank implements IQualityMeasure, Serializable {
 		IntegerBitSet uncoveredIndices = new IntegerBitSet(dataset.size());
 		coveredIndices.negate(uncoveredIndices);
 
+		// return immediately if everything is covered
+		if (uncoveredIndices.isEmpty()) {
+			return 0;
+		}
+
 		KaplanMeierEstimator coveredEstimator = new KaplanMeierEstimator(dataset, coveredIndices);
 		KaplanMeierEstimator uncoveredEstimator = new KaplanMeierEstimator(dataset, uncoveredIndices);
 

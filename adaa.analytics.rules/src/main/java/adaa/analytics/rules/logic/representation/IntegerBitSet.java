@@ -285,7 +285,13 @@ public class IntegerBitSet implements Set<Integer>, Serializable {
 	 */
 	@Override
 	public boolean isEmpty() {
-		return false;
+		for (long word : words) {
+			if (word != 0) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
