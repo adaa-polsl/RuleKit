@@ -1,5 +1,6 @@
 # RuleKit 2
 [![GitHub downloads](https://img.shields.io/github/downloads/adaa-polsl/RuleKit/total.svg?style=flag&label=GitHub%20downloads)](https://github.com/adaa-polsl/RuleKit/releases)
+[![PyPI - Total Downloads](https://static.pepy.tech/personalized-badge/rulekit?period=total&units=abbreviation&left_color=grey&right_color=green&left_text=PyPI%20total%20downloads)](https://www.pepy.tech/projects/rulekit)
 [![GitHub Actions CI](../../actions/workflows/main.yml/badge.svg)](../../actions/workflows/main.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
