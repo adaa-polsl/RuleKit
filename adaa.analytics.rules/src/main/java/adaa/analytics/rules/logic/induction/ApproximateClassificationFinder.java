@@ -125,7 +125,6 @@ public class ApproximateClassificationFinder extends ClassificationFinder {
      * Removes irrelevant conditions from the rule using hill-climbing strategy.
      * @param rule Rule to be pruned.
      * @param dataset Training set.
-     * @return Updated covering object.
      */
     @Override
     public void prune(

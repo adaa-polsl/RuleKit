@@ -215,8 +215,7 @@ public class ClassificationFinder extends AbstractFinder {
 	/**
 	 * Removes irrelevant conditions from the rule using hill-climbing strategy. 
 	 * @param rule Rule to be pruned.
-	 * @param trainSet Training set. 
-	 * @return Updated covering object.
+	 * @param trainSet Training set.
 	 */
 	public void prune(final Rule rule, final IExampleSet trainSet, final Set<Integer> uncovered) {
 		Logger.log("ClassificationFinder.prune()\n", Level.FINE);

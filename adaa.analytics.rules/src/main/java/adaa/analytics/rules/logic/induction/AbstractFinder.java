@@ -87,7 +87,6 @@ public abstract class AbstractFinder implements AutoCloseable {
 	/**
 	 * Can be implemented by subclasses to perform some initial processing prior growing.
 	 * @param trainSet Training set.
-	 * @return Preprocessed training set.
 	 */
 	public void preprocess(IExampleSet trainSet) {
 
@@ -219,7 +218,6 @@ public abstract class AbstractFinder implements AutoCloseable {
 	 * @param rule Rule to be pruned.
 	 * @param trainSet Training set. 
 	 * @param uncovered Collection of examples yet uncovered by the model (positive examples in the classification problems).
-	 * @return Covering of the rule after pruning.
 	 */
 	public void prune(
 			final Rule rule,

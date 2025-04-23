@@ -81,7 +81,6 @@ public class ContrastSnC extends ClassificationSnC {
     /**
      * Generates contrast sets on the basis of a training set.
      * @param dataset Training data set.
-     * @return Rule set.
      */
     protected void run(ContrastExampleSet dataset, ContrastRuleSet crs) {
         Logger.log("ContrastSnC.run()\n", Level.FINE);
