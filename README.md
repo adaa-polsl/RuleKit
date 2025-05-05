@@ -45,34 +45,27 @@ Rulekit Python package can be found [here](https://github.com/adaa-polsl/RuleKit
 
 The detailed RuleKit documentation can be found on [Wiki pages](https://github.com/adaa-polsl/RuleKit/wiki) which cover the following topics: 
 
+
 1. [Batch interface](https://github.com/adaa-polsl/RuleKit/wiki/1-Batch-interface)
     1. [General information](https://github.com/adaa-polsl/RuleKit/wiki/1-Batch-interface#11-general-information)
     2. [Parameter set definition](https://github.com/adaa-polsl/RuleKit/wiki/1-Batch-interface#12-parameter-set-definition)
     3. [Dataset definition](https://github.com/adaa-polsl/RuleKit/wiki/1-Batch-interface#13-dataset-definition)
     4. [Example](https://github.com/adaa-polsl/RuleKit/wiki/1-Batch-interface#14-example)
-2. [RapidMiner plugin](https://github.com/adaa-polsl/RuleKit/wiki/2-RapidMiner-plugin)
-	1. [Installation](https://github.com/adaa-polsl/RuleKit/wiki/2-RapidMiner-plugin#21-installation)
-	2. [Usage](https://github.com/adaa-polsl/RuleKit/wiki/2-RapidMiner-plugin#22-usage)
-	3. [Example](https://github.com/adaa-polsl/RuleKit/wiki/2-RapidMiner-plugin#23-example)
-3. [R package](https://github.com/adaa-polsl/RuleKit/wiki/3-R-package)
-	1. [Installation](https://github.com/adaa-polsl/RuleKit/wiki/3-R-package#31-installation)
-	2. [Usage](https://github.com/adaa-polsl/RuleKit/wiki/3-R-package#32-usage)
-	3. [Example](https://github.com/adaa-polsl/RuleKit/wiki/3-R-package#33-example)
-4. [Quality and evaluation](https://github.com/adaa-polsl/RuleKit/wiki/4-Quality-and-evaluation)
+2. [Graphical user interface](https://github.com/adaa-polsl/RuleKit/wiki/2-GUI)
+3. [Python package](https://github.com/adaa-polsl/RuleKit/wiki/3-Python-package)
+4. [Quality and evaluation](./4-Quality-and-evaluation)
     1. [Rule quality](https://github.com/adaa-polsl/RuleKit/wiki/4-Quality-and-evaluation#41-rule-quality)
 	2. [Model characteristics](https://github.com/adaa-polsl/RuleKit/wiki/4-Quality-and-evaluation#42-model-characteristics)
-	2. [Performance metrices](https://github.com/adaa-polsl/RuleKit/wiki/4-Quality-and-evaluation#43-performance-metrices)
+	3. [Performance metrices](https://github.com/adaa-polsl/RuleKit/wiki/4-Quality-and-evaluation#43-performance-metrices)
 5. [Output files](https://github.com/adaa-polsl/RuleKit/wiki/5-Output-files)
     1. [Training report](https://github.com/adaa-polsl/RuleKit/wiki/5-Output-files#51-training-report)
     2. [Prediction performance report](https://github.com/adaa-polsl/RuleKit/wiki/5-Output-files#52-prediction-performance-report)    	
 6. [User-guided induction](https://github.com/adaa-polsl/RuleKit/wiki/6-User-guided-induction)
 	1. [Defining user's knowledge](https://github.com/adaa-polsl/RuleKit/wiki/6-User-guided-induction#61-defining-users-knowledge)
 	2. [Examples from GuideR paper](https://github.com/adaa-polsl/RuleKit/wiki/6-User-guided-induction#62-examples-from-guider-paper)
-7. [Library API](https://github.com/adaa-polsl/RuleKit/wiki/7-Library-API)
-	1.	[Running an experiment](https://github.com/adaa-polsl/RuleKit/wiki/7-Library-API#71-running-an-experiment)
-	2.	[Developing a new algorithm](https://github.com/adaa-polsl/RuleKit/wiki/7-Library-API#72-developing-a-new-algorithm)
-8. [Empirical results](https://github.com/adaa-polsl/RuleKit/wiki/8-Empirical-results)
-9. [Contrast set mining](https://github.com/adaa-polsl/RuleKit/wiki/9-Contrast-set-mining)
+7. [Contrast set mining](https://github.com/adaa-polsl/RuleKit/wiki/7-Contrast-set-mining)	
+8. [Library API](https://github.com/adaa-polsl/RuleKit/wiki/8-Library-API)
+9. [Empirical results](https://github.com/adaa-polsl/RuleKit/wiki/9-Empirical-results)
 
 JavaDoc for the project is available [here](https://adaa-polsl.github.io/RuleKit/).  
 
