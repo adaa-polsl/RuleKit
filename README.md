@@ -102,6 +102,8 @@ For commercial projects that require the ability to distribute RuleKit code as p
  
 # Citing
 
+[Gudyś, A, Maszczyk, C, Badura, J, Grzelak, A, Sikora, M, Wróbel, Ł (2025) RuleKit 2: Faster and simpler rule learning, arXiv:2504.20650](https://arxiv.org/abs/2504.20650)
+
 [Gudyś, A, Sikora, M, Wróbel, Ł (2024) Separate and conquer heuristic allows robust mining of contrast sets in classification, regression, and survival data, Expert Systems with Applications, 248: 123376](https://www.sciencedirect.com/science/article/pii/S0957417424002410?dgcid=author)
 
 [Gudyś, A, Sikora, M, Wróbel, Ł (2020) RuleKit: A comprehensive suite for rule-based learning, Knowledge-Based Systems, 194: 105480](https://doi.org/10.1016/j.knosys.2020.105480)
