@@ -1,17 +1,31 @@
-# RuleKit 2
+# RuleKit2
 [![GitHub downloads](https://img.shields.io/github/downloads/adaa-polsl/RuleKit/total.svg?style=flag&label=GitHub%20downloads)](https://github.com/adaa-polsl/RuleKit/releases)
 [![PyPI - Total Downloads](https://static.pepy.tech/personalized-badge/rulekit?period=total&units=abbreviation&left_color=grey&right_color=green&left_text=PyPI%20total%20downloads)](https://www.pepy.tech/projects/rulekit)
 [![GitHub Actions CI](../../actions/workflows/main.yml/badge.svg)](../../actions/workflows/main.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
 
-Rule-based models are often used for data analysis as they combine interpretability with predictive power. We present RuleKit 2, a versatile tool for rule learning. Based on a sequential covering induction algorithm, it is suitable for classification, regression, and survival problems. The presence of user-guided induction mode facilitates verifying hypotheses concerning data dependencies which are expected or of interest. The powerful and flexible experimental environment allows straightforward investigation of different induction schemes. Unlike the first revision, RuleKit 2 does not depend on RapidMiner. The analysis can be performed in batch mode and through [Python](https://github.com/adaa-polsl/RuleKit-python) package. A documented Java API is also provided for convenience. Running RuleKit as a RapidMiner plugin and R package is no longer supported in version 2.
+Rule-based models are often used for data analysis as they combine interpretability with predictive power. We present RuleKit2, a versatile tool for rule learning. Based on a sequential covering induction algorithm, it comes with a set of useful features:
+* Suitability for different kind of problems:    
+    * classification,
+    * regression,
+    * survival. 
+* User-guided induction for verifying hypotheses concerning data dependencies which are expected or of interest.
+* Contrast set mining.
+* Different experimental environments:   
+    * standalone command line tool implemented in Java,
+    * Python package: [https://github.com/adaa-polsl/RuleKit-python](https://github.com/adaa-polsl/RuleKit-python),
+    * browser application  with a graphical user interface: [https://ruleminer.github.io/rulekit-gui](https://ruleminer.github.io/rulekit-gui).
+* Documented Java API: [https://adaa-polsl.github.io/RuleKit](https://adaa-polsl.github.io/RuleKit). 
+  
+Unlike the first revision, RuleKit2 does not depend on RapidMiner. Running RuleKit as a RapidMiner plugin and R package is no longer supported in version 2. The overview of RuleKit2 architecture is presented below.
+
+<img src="./img/architecture-v3.png" alt="RuleKit2 architecture" style="width:70%; height:auto;">
 
 RuleKit provides latest versions of our algorithms (some of them were initially published as independent packages and integrated later):
-* [LR-Rules](https://github.com/adaa-polsl/LR-Rules) ([Wróbel et al, 2017](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-017-1693-x)) - survival rules induction,
-* [GuideR](https://github.com/adaa-polsl/GuideR) ([Sikora et al, 2019](https://www.sciencedirect.com/science/article/abs/pii/S0950705119300802?dgcid=coauthor)) - user-guided induction.
+* LR-Rules ([Wróbel et al, 2017](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-017-1693-x)) - survival rules induction,
+* GuideR ([Sikora et al, 2019](https://www.sciencedirect.com/science/article/abs/pii/S0950705119300802?dgcid=coauthor)) - user-guided induction.
 * RuleKit-CS ([Gudyś et al, 2024](https://www.sciencedirect.com/science/article/pii/S0957417424002410?dgcid=author)) - contrast set mining.
-
 
 # Getting started
 
@@ -35,11 +49,56 @@ The JAR file will be placed in *adaa.analytics.rules/build/libs* subdirectory. O
 ```
 java -jar rulekit-<version>-all.jar minimal-deals.xml
 ```
-Ignore the SLF4J warning reported on the console - it does not affect the procedure. The results of the analysis will be located in *./examples/results-minimal/deals/* folder. Note, that the repository already contains reference results - they will be overwritten. See [this Wiki section](https://github.com/adaa-polsl/RuleKit/wiki/1-Batch-interface) for detailed information on how to configure batch analyses in RuleKit. 
+The results of the analysis will be located in *./examples/results-minimal/deals/* folder. Note, that the repository already contains reference results - they will be overwritten. See [this Wiki section](https://github.com/adaa-polsl/RuleKit/wiki/1-Batch-interface) for detailed information on how to configure batch analyses in RuleKit. 
 
 ## Python package
 
-Rulekit Python package can be found [here](https://github.com/adaa-polsl/RuleKit-python)
+The full documentation of RuleKit-python can be found [here](https://github.com/adaa-polsl/RuleKit-python). 
+
+Installation from command line: 
+```bash
+pip install rulekit
+```
+
+Code snippet performing classification analysis on the example data set with results visualization.
+```python
+import pandas
+import matplotlib.pyplot as plt
+from sklearn.metrics import ConfusionMatrixDisplay
+from rulekit.classification import RuleClassifier
+from rulekit.params import Measures
+
+URL = 'https://github.com/adaa-polsl/RuleKit/raw/refs/heads/master/data/car/'
+
+train = pandas.read_parquet(URL + 'train.parquet')
+X = train.drop('class', axis=1)
+y = train['class']
+
+test = pandas.read_parquet(URL + 'test.parquet')
+X_test = test.drop('class', axis=1)
+y_test = test['class']
+
+clf = RuleClassifier(
+    minsupp_new=1,
+    induction_measure=Measures.C2,
+    pruning_measure=Measures.C2,
+    voting_measure=Measures.Correlation)
+clf.fit(X, y)
+
+disp = ConfusionMatrixDisplay.from_predictions(
+    y_test, clf.predict(X_test), labels=y.unique(),
+    normalize='pred', cmap='Blues')
+```
+
+The resulting confusion matrix looks as presented below.
+
+<img src="./img/confusion.png" alt="Confusion matrix" style="width:40%; height:auto;">
+
+## Graphical user interface
+
+RuleKit2 GUI is available through browser application: [https://ruleminer.github.io/rulekit-gui](https://ruleminer.github.io/rulekit-gui). The screenshot illustrating the analysis of the example survival data set was presented below.
+
+<img src="./img/survival.png" alt="Survival analysis" style="width:70%; height:auto;">
 
 # Documentation
 
@@ -75,20 +134,22 @@ The repository contains the datasets used in the GuideR study. We also provide t
 
 # Authors and licensing
 
-RuleKit Development Team:
+## Contributors
+
 * [Adam Gudyś](https://github.com/agudys)
 * [Łukasz Wróbel](https://github.com/l-wrobel)
-* Marek Sikora
-
-Contributors:
-* Wojciech Górka
-* [Joanna Henzel](https://github.com/AsiaHenzel)
+* [Marek Sikora](https://github.com/mrksikora)
+* [Cezary Maszczyk](https://github.com/cezary986)
+* [Wojciech Górka](https://github.com/wgorkaemag)
+* Mateusz Kalisch
+* [Joanna Badura](https://github.com/AsiaHenzel)
 * [Paweł Matyszok](https://github.com/pmatyszok)
 * [Wojciech Sikora](https://github.com/Denominatee)
+* Dawid Macha
 
-The software is publicly available under [GNU AGPL-3.0 license](LICENSE).
+Everyone interested in RuleKit development is welcome to contribute. The preferred way is to use GitHub issues and pull requests.
 
-## Commercial applications
+## Licencing, commercial applications
 
 The software is publicly available under [GNU AGPL-3.0 license](LICENSE). Any derivative work obtained under this license must be licensed under the AGPL if this derivative work is distributed to a third party.
 For commercial projects that require the ability to distribute RuleKit code as part of a program that cannot be distributed under the AGPL, it may be possible to obtain an appropriate license from the authors.
